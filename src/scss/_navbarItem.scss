@@ -1,0 +1,33 @@
+.navbarItem {
+  font-size: 1.1rem;
+  border-top: 1px solid rgba(#394760, 0.1);
+  color: #3c4760;
+  font-family: 'Poppins-Medium';
+  position: relative;
+  cursor: pointer;
+  &:last-child {
+    border-bottom: 1px solid rgba(#394760, 0.1);
+  }
+  &--active {
+    font-family: 'Poppins-SemiBold';
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0px;
+      width: 6px;
+      height: 100%;
+
+      background: transparent
+        linear-gradient(
+          180deg,
+          var(--unnamed-color-ff69ce) 0%,
+          var(--unnamed-color-bc5cf7) 100%
+        )
+        0% 0% no-repeat padding-box;
+      background: transparent linear-gradient(180deg, #ff69ce 0%, #bc5cf7 100%)
+        0% 0% no-repeat padding-box;
+      opacity: 1;
+    }
+  }
+}

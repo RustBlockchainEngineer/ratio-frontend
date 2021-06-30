@@ -1,2 +1,13 @@
 @import './layer';
 @import './navbar';
+@import './navbarItem';
+@import './font-face';
+
+@include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
+@include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
+@include font-face('Poppins-Medium', '../assets/fonts/Poppins-Medium');
+@include font-face('Poppins-Regular', '../assets/fonts/Poppins-Regular');
+
+p {
+  margin-bottom: 0px !important;
+}
