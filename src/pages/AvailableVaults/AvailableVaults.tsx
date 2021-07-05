@@ -1,7 +1,23 @@
-import React from 'react'
+import React, { useState } from 'react'
+
+import FilterPanel from '../../components/FilterPanel'
 
 const AvailableVaults = () => {
-  return <div>AvailableVaults</div>
+  const [viewType, setViewType] = useState('tile')
+
+  const onViewType = (type: string) => {
+    setViewType(type)
+  }
+
+  return (
+    <div className="availablevaults">
+      <FilterPanel
+        label="Available Vaults"
+        viewType={viewType}
+        onViewType={onViewType}
+      />
+    </div>
+  )
 }
 
 export default AvailableVaults

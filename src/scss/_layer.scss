@@ -1,6 +1,4 @@
 .layer {
-  display: flex;
-  min-height: 100vh;
   overflow-y: hidden;
   &::before {
     content: '';
@@ -27,14 +25,18 @@
   &::after {
     content: '';
     position: absolute;
+    left: 100px;
     bottom: 0px;
     z-index: -1;
     right: 0px;
-    width: 1407px;
-    height: 337px;
+    height: 400px;
     transform: rotate(0deg);
     background-image: url('../assets/images/Footer.png');
     background-repeat: no-repeat;
     filter: blur(50px);
+  }
+  &_container {
+    margin-left: 300px;
+    min-height: 100vh;
   }
 }

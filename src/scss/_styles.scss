@@ -2,12 +2,31 @@
 @import './navbar';
 @import './navbarItem';
 @import './font-face';
+@import './button';
+@import './footer';
+@import './header';
+@import './filterpanel';
+@import './availablevaults';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
 @include font-face('Poppins-Medium', '../assets/fonts/Poppins-Medium');
 @include font-face('Poppins-Regular', '../assets/fonts/Poppins-Regular');
 
+// --unnamed-color-002332: #002332;
+// --unnamed-color-4c646f: #4c646f;
+// --unnamed-color-f48c57: #f48c57;
+// --unnamed-color-ff69ce: #ff69ce;
+// --unnamed-color-bc5cf7: #bc5cf7;
+// --unnamed-color-0f6eff: #0f6eff;
+// --unnamed-color-5fb5ff: #5fb5ff;
+// --unnamed-color-ff3131: #ff3131;
+// --unnamed-color-07b127: #07b127;
+
 p {
   margin-bottom: 0px !important;
+}
+
+input {
+  height: auto !important;
 }

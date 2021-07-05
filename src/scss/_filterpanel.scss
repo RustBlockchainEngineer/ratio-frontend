@@ -1,0 +1,78 @@
+.filterpanel {
+  h2 {
+    font-family: 'Poppins-Medium';
+    letter-spacing: -0.72px;
+    color: #3c4760;
+    font-size: 24px;
+  }
+  .form-group {
+    margin-bottom: 0px;
+  }
+  .has-search {
+    position: relative;
+    .form-control {
+      margin-bottom: 0px;
+      padding-left: 2.5rem;
+      border: 1px solid rgba(#4c646f, 0.2);
+      border-radius: 4px;
+      color: #3c4760;
+      font-family: 'Poppins-Regular';
+      height: 3rem !important;
+      &:focus {
+        border-bottom: 1px solid rgba(#4c646f, 0.2) !important;
+        -webkit-box-shadow: 0px !important;
+        box-shadow: none !important;
+      }
+    }
+
+    .form-control-feedback {
+      position: absolute;
+      z-index: 2;
+      display: block;
+      line-height: 2.375rem;
+      text-align: center;
+      pointer-events: none;
+      color: #3c4760;
+      top: 10px;
+      left: 8px;
+    }
+  }
+  &__sortby {
+    font-family: 'Poppins-Regular';
+    color: #3c4760;
+    font-size: 16px;
+  }
+  &__viewtype {
+    opacity: 0.4;
+    cursor: pointer;
+    margin: 6px;
+    &:hover {
+      opacity: 1;
+    }
+    &-active {
+      opacity: 1;
+    }
+  }
+  .react-select {
+    &__control {
+      min-width: 100px;
+      border: 1px solid rgba(#4c646f, 0.4);
+      &:hover {
+        border: 1px solid rgba(#4c646f, 0.4);
+      }
+      &--is-focused {
+        border: 1px solid rgba(#4c646f, 0.4);
+        box-shadow: none;
+      }
+    }
+    &__single-value {
+      color: #3c4760;
+    }
+    &__indicator-separator {
+      display: none;
+    }
+    &__option {
+      color: #3c4760;
+    }
+  }
+}
