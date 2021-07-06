@@ -8,7 +8,7 @@ import instaBuyIcon from '../../assets/images/insta-buy-icon.svg'
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg'
 import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg'
 
-interface NavbarProps {
+type NavbarProps = {
   history: any
 }
 

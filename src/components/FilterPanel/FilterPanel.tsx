@@ -5,7 +5,7 @@ import { IoSearchOutline } from 'react-icons/io5'
 import title from '../../assets/images/tile.svg'
 import list from '../../assets/images/list.svg'
 
-interface FilterPanelProps {
+type FilterPanelProps = {
   label: string
   onViewType: (type: string) => void
   viewType: string

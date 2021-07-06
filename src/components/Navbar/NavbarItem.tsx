@@ -1,7 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
 
-interface NavbarItemProps {
+type NavbarItemProps = {
   icon: string
   name: string
   active: boolean

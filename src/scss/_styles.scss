@@ -7,6 +7,7 @@
 @import './header';
 @import './filterpanel';
 @import './availablevaults';
+@import './tokenpaircard';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
@@ -29,4 +30,13 @@ p {
 
 input {
   height: auto !important;
+}
+
+.tooltip-inner {
+  max-width: 250px !important;
+  padding: 16px !important;
+  // font-family: 'Poppins-Regular' !important;
+  font-size: 12px !important;
+  text-align: left !important;
+  border-radius: 8px !important;
 }
