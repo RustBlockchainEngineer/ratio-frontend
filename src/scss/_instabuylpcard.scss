@@ -1,0 +1,57 @@
+.instabuylpcard {
+  width: 480px;
+  min-height: 600px;
+  display: inline-block;
+  border: 1px solid #d6dbdd;
+  border-radius: 12px;
+  margin-top: 24px;
+  text-align: left;
+  &__top {
+    padding: 42px;
+    background-color: white;
+    .balance {
+      display: flex;
+      justify-content: flex-end;
+      color: rgba(#3c4760, 0.7);
+      p {
+        padding-left: 5px;
+        color: #3c4760;
+      }
+    }
+  }
+  &__bottom {
+    padding: 42px;
+    background: #dbe0e233 0% 0% no-repeat padding-box;
+    border-top: 1px solid #d6dbdd;
+    border-bottom: 1px solid #d6dbdd;
+    .walletBtn {
+      margin-left: 10px;
+      font-family: 'Poppins-Medium';
+      font-size: 14px;
+      padding: 1rem 0.8rem;
+      white-space: nowrap;
+    }
+  }
+  &__footer {
+    padding: 42px;
+    padding-top: 20px;
+    background: white;
+
+    .swaptokensBtn {
+      font-family: 'Poppins-Medium';
+      font-size: 15px;
+      padding: 1rem 0rem;
+      width: 100%;
+    }
+  }
+  img {
+    width: 32px;
+    height: 32px;
+  }
+  label {
+    letter-spacing: -0.14px;
+    color: #4c646f;
+    font-family: 'Poppins-Regular';
+    font-size: 14px;
+  }
+}

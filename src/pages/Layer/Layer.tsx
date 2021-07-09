@@ -20,8 +20,8 @@ const Layer = () => {
               <Redirect to="/available-vaults" />
             </Route>
           </Switch>
+          <Footer />
         </div>
-        <Footer />
       </div>
     </div>
   )

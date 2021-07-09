@@ -8,6 +8,10 @@
 @import './filterpanel';
 @import './availablevaults';
 @import './tokenpaircard';
+@import './instabuylp';
+@import './instabuylpcard';
+@import './customInput';
+@import './customSelect';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');

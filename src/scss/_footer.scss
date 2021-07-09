@@ -1,13 +1,12 @@
 .footer {
-  position: fixed;
-  right: 0px;
+  // position: fixed;
+  margin-top: 80px;
   left: 300px;
-  bottom: 0px;
   height: 186px;
   background: #dbe0e234 0% 0% no-repeat padding-box;
   opacity: 1;
   border-top: 1px solid #dbe0e2;
-  padding: 2.5rem 3rem;
+  padding: 2.5rem 5rem;
   a {
     img {
       border: 1px solid rgba(#4c646f, 0.3);

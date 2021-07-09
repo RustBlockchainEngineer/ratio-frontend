@@ -1,8 +1,9 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
+import classNames from 'classnames'
 import Button from '../Button'
-
 import riskLevel from '../../assets/images/risklevel.svg'
 import highRisk from '../../assets/images/highrisk.svg'
 
@@ -11,7 +12,7 @@ type PairType = {
   icons: Array<string>
   title: string
   tvl: string
-  risk: number
+  risk: string
   apr: number
   details: string
 }
@@ -24,8 +25,8 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
   const [isOpen, setOpen] = React.useState(false)
 
   return (
-    <div className="col col-4">
-      <div className="tokenpaircard">
+    <div className="col col-xl-4 col-lg-6 col-md-12">
+      <div className="tokenpaircard mt-4">
         <div className="tokenpaircard__header">
           <div className="d-flex">
             <div>
@@ -63,8 +64,15 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
               </OverlayTrigger>
             </div>
             <div className="d-flex justify-content-end align-items-center mt-1">
-              <img src={highRisk} alt="highRisk" />
-              <h6 className="text-right ml-1 high">High</h6>
+              {data.risk === 'HIGH' && <img src={highRisk} alt="highRisk" />}
+              <h6
+                className={classNames(
+                  'text-right ml-1',
+                  data.risk.toLocaleLowerCase()
+                )}
+              >
+                {data.risk}
+              </h6>
             </div>
           </div>
         </div>
@@ -74,9 +82,12 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
         </div>
         <div className="tokenpaircard__btnBox d-flex">
           <div className="col">
-            <Button className="button--gradientBorder insta-buy-lp">
-              Insta-buy Lp
-            </Button>
+            <Link to="/insta-buy-lp">
+              {' '}
+              <Button className="button--gradientBorder insta-buy-lp">
+                Insta-buy Lp
+              </Button>
+            </Link>
           </div>
           <div className="col">
             <OverlayTrigger
