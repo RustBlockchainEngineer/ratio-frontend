@@ -5,14 +5,16 @@ type ButtonProps = {
   children: string
   className: string
   onClick?: () => void
+  disabled?: boolean
 }
 
-const Button = ({ children, className, onClick }: ButtonProps) => {
+const Button = ({ children, className, disabled, onClick }: ButtonProps) => {
   return (
     <button
       type="button"
       className={classNames('button', className)}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>
@@ -21,6 +23,7 @@ const Button = ({ children, className, onClick }: ButtonProps) => {
 
 Button.defaultProps = {
   onClick: () => null,
+  disabled: false,
 }
 
 export default Button

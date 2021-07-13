@@ -12,6 +12,7 @@
 @import './instabuylpcard';
 @import './customInput';
 @import './customSelect';
+@import './lockvaultmodal';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
@@ -43,4 +44,25 @@ input {
   font-size: 12px !important;
   text-align: left !important;
   border-radius: 8px !important;
+}
+
+.modal {
+  background-color: transparent;
+  box-shadow: none;
+  max-height: 100%;
+}
+
+.modal .modal-content {
+  padding: 0px;
+  border-radius: 16px;
+}
+
+.modal .modal-footer {
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.modal-lg,
+.modal-xl {
+  max-width: 480px !important;
 }

@@ -1,0 +1,91 @@
+.lockvaultmodal {
+  .modal-body {
+    background-color: rgba(#dbe0e2, 0.4);
+  }
+  .modal-footer {
+    height: auto;
+    text-align: left;
+    display: block;
+  }
+
+  &__label1 {
+    font-family: 'Poppins-Regular';
+    font-size: 14px;
+    color: #4c646f;
+    margin-bottom: 0px;
+    margin-top: 10px;
+  }
+  &__label2 {
+    font-family: 'Poppins-Regular';
+    font-size: 12px;
+    color: #4c646f;
+    margin-bottom: 8px;
+    margin-top: 4px;
+    strong {
+      color: #002332;
+    }
+  }
+
+  &__header {
+    width: 100%;
+    padding: 20px;
+    padding-bottom: 0px;
+    position: relative;
+    img {
+      width: 48px;
+      height: 48px;
+    }
+    h3 {
+      font-family: 'Poppins-SemiBold';
+      font-size: 24px;
+      margin-top: 16px;
+      color: #3c4760;
+    }
+    &-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      color: #002332;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    &-icon {
+      margin-left: -10px;
+    }
+  }
+  &__body {
+    padding: 10px 20px;
+    &-label {
+      font-family: 'Poppins-Medium';
+      font-size: 16px;
+      color: #3c4760;
+    }
+    &-value {
+      font-family: 'Poppins-Medium';
+      color: #3c4760;
+    }
+    &-red {
+      font-family: 'Poppins-Medium';
+      color: #ff3131;
+    }
+    .opacity-5 {
+      opacity: 0.5;
+    }
+  }
+  &__footer {
+    padding: 20px;
+    padding-top: 5px;
+    label {
+      display: block;
+    }
+    .lockBtn {
+      margin-top: 16px;
+      font-family: 'Poppins-Medium';
+      font-size: 15px;
+      padding: 0.9rem 0rem;
+      width: 100%;
+    }
+  }
+}

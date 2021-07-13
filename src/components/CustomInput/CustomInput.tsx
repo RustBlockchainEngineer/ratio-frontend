@@ -5,9 +5,16 @@ import { InputGroup, FormControl } from 'react-bootstrap'
 type CustomInputProps = {
   appendStr: String
   tokenStr: String
+  appendValueStr?: String
+  className?: String
 }
 
-const CustomInput = ({ appendStr, tokenStr }: CustomInputProps) => {
+const CustomInput = ({
+  appendStr,
+  tokenStr,
+  appendValueStr,
+  className,
+}: CustomInputProps) => {
   const [value, setValue] = React.useState('0')
 
   const handleChange = (e: any) => {
@@ -15,7 +22,7 @@ const CustomInput = ({ appendStr, tokenStr }: CustomInputProps) => {
   }
 
   return (
-    <InputGroup className="customInput mb-1">
+    <InputGroup className={classNames('customInput mb-1', className)}>
       <FormControl
         placeholder=""
         aria-label=""
@@ -34,11 +41,18 @@ const CustomInput = ({ appendStr, tokenStr }: CustomInputProps) => {
       </p>
       {appendStr !== '' && (
         <InputGroup.Append>
-          <InputGroup.Text id="customInput">{appendStr}</InputGroup.Text>
+          <InputGroup.Text id="customInput">
+            {appendStr} <i>{appendValueStr && appendValueStr}</i>
+          </InputGroup.Text>
         </InputGroup.Append>
       )}
     </InputGroup>
   )
+}
+
+CustomInput.defaultProps = {
+  appendValueStr: '',
+  className: '',
 }
 
 export default CustomInput

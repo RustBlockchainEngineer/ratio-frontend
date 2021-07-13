@@ -53,7 +53,7 @@ const InstaBuyLpCard = () => {
         <label className="mt-4">
           Estimated <strong>RAY-SOL-LP</strong> tokens
         </label>
-        <CustomInput appendStr="" tokenStr="RAY-SOL-LP" />
+        <CustomInput appendStr="" tokenStr="MEDIA-USDC-LP" />
       </div>
       <div className="instabuylpcard__footer">
         <Button className="button--fill swaptokensBtn">Swap Tokens</Button>

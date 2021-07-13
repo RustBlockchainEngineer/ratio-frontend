@@ -2,6 +2,45 @@
   padding-top: 1rem;
   padding-bottom: 1rem;
   padding-right: 4rem;
+  // min-height: 85px;
+
+  &__connected {
+    display: flex;
+    align-items: center;
+    padding: 12px 22px;
+    border: 1px solid rgba(#4c646f, 0.2);
+    border-radius: 8px;
+    position: relative;
+    &::before {
+      content: 'Connected Wallet';
+      position: absolute;
+      top: -10px;
+      left: -3px;
+      font-family: 'Poppins-Medium';
+      font-size: 12px;
+      background-color: white;
+      padding-right: 6px;
+      color: rgba(#002332, 0.4);
+    }
+    h6 {
+      margin-bottom: 0px;
+      font-family: 'Poppins-Medium';
+      font-size: 16px;
+      margin-left: 8px;
+    }
+  }
+
+  &__checked {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #07b127;
+    width: 27px;
+    height: 27px;
+    background-color: rgba(#07b127, 0.2);
+    border-radius: 100%;
+  }
+
   .walletBtn {
     font-family: 'Poppins-Medium';
     font-size: 14px;

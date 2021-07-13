@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { withRouter } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import NavbarItem from './NavbarItem'
 import Button from '../Button'
 import logo from '../../assets/images/logo-side.svg'
@@ -9,10 +9,12 @@ import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg'
 import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg'
 
 type NavbarProps = {
-  history: any
+  onClickWalletBtn: () => void
+  connectedWallet: boolean
 }
 
-const Navbar = ({ history }: NavbarProps) => {
+const Navbar = ({ onClickWalletBtn, connectedWallet }: NavbarProps) => {
+  const history = useHistory()
   const [navIndex, setNavIndex] = useState('available-vaults')
 
   const onItemClick = (index: string) => {
@@ -54,10 +56,30 @@ const Navbar = ({ history }: NavbarProps) => {
         />
       </div>
       <div>
-        <Button className="button--fill walletBtn">Connect Wallet</Button>
+        {connectedWallet ? (
+          <div className="navbar-vertical__connectedBox">
+            <hr />
+            <div className="navbar-vertical__item">
+              <h6>Active Vaults</h6>
+              <div>0</div>
+            </div>
+            <div className="navbar-vertical__item">
+              <h6>Total Vault Value</h6>
+              <div>0</div>
+            </div>
+            <div className="navbar-vertical__item">
+              <h6>USDr Minted</h6>
+              <div>0</div>
+            </div>
+          </div>
+        ) : (
+          <Button className="button--fill walletBtn" onClick={onClickWalletBtn}>
+            Connect Wallet
+          </Button>
+        )}
       </div>
     </div>
   )
 }
 
-export default withRouter(Navbar)
+export default Navbar
