@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11">
+  <g id="Group_346" data-name="Group 346" transform="translate(-1093 -202)">
+    <g id="Rectangle_134" data-name="Rectangle 134" transform="translate(1093 203)" fill="none" stroke="#4c646f" stroke-width="1">
+      <rect width="10" height="10" rx="2" stroke="none"/>
+      <rect x="0.5" y="0.5" width="9" height="9" rx="1.5" fill="none"/>
+    </g>
+    <path id="Union_3" data-name="Union 3" d="M-5037,4V1h-3V0h4V4Z" transform="translate(6140 202)" fill="#4c646f"/>
+    <path id="Union_4" data-name="Union 4" d="M-5038,6V2h-4V0h6V6Z" transform="translate(6139 203)" fill="#fff"/>
+    <rect id="Rectangle_139" data-name="Rectangle 139" width="1" height="8" transform="translate(1102.914 202.379) rotate(45)" fill="#4c646f"/>
+  </g>
+</svg>

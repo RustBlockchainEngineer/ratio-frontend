@@ -7,6 +7,7 @@ import AvailableVaults from '../AvailableVaults'
 import InstaBuyLp from '../InstaBuyLP'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
+import VaultDashboard from '../VaultDashboard'
 
 import { actionTypes, selectors } from '../../features/wallet'
 
@@ -32,6 +33,7 @@ const Layer = () => {
           <Switch>
             <Route path="/available-vaults" component={AvailableVaults} exact />
             <Route path="/insta-buy-lp" component={InstaBuyLp} exact />
+            <Route path="/vaultdashboard" component={VaultDashboard} exact />
             <Route exact path="/">
               <Redirect to="/available-vaults" />
             </Route>

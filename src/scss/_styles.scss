@@ -13,6 +13,11 @@
 @import './customInput';
 @import './customSelect';
 @import './lockvaultmodal';
+@import './vaultdashboard';
+@import './risklevel';
+@import './speedometer';
+@import './vaultdebt';
+@import './pricecard';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
@@ -35,6 +40,11 @@ p {
 
 input {
   height: auto !important;
+}
+
+.row {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
 }
 
 .tooltip-inner {

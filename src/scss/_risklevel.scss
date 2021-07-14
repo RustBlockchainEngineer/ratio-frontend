@@ -1,0 +1,50 @@
+.risklevel {
+  display: flex;
+
+  &__name {
+    padding: 14px 20px;
+    border: 1px solid #4c646f33;
+    border-right: 0px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    font-family: 'Poppins-Medium';
+    font-size: 14px;
+    color: #3c4760;
+    img {
+      margin-left: 0.5rem;
+      width: 24px;
+      height: 24px;
+    }
+  }
+  &__level {
+    padding: 14px 20px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    p {
+      font-family: 'Poppins-SemiBold';
+      font-size: 14px;
+      margin-left: 4px;
+    }
+  }
+  &-HIGH {
+    border: 1px solid #ff3131;
+    background-color: rgba(#ff3131, 0.1);
+    p {
+      color: #ff3131;
+    }
+  }
+  &-MEDIUM {
+    border: 1px solid #f48c57;
+    background-color: rgba(#f48c57, 0.1);
+    p {
+      color: #f48c57;
+    }
+  }
+  &-LOW {
+    border: 1px solid #07b127;
+    background-color: rgba(#07b127, 0.1);
+    p {
+      color: #07b127;
+    }
+  }
+}

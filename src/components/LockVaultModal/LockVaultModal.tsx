@@ -1,6 +1,7 @@
 import React from 'react'
 import { Modal } from 'react-bootstrap'
 import { IoMdClose } from 'react-icons/io'
+import { useHistory } from 'react-router-dom'
 import Button from '../Button'
 import CustomInput from '../CustomInput'
 
@@ -22,6 +23,7 @@ type LockVaultModalProps = {
 }
 
 const LockVaultModal = ({ data }: LockVaultModalProps) => {
+  const history = useHistory()
   const [show, setShow] = React.useState(false)
 
   return (
@@ -114,7 +116,12 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
               appendValueStr="(1000)"
               tokenStr={`${data.title}-LP`}
             />
-            <Button className="button--fill lockBtn">Lock Assets & Mint</Button>
+            <Button
+              className="button--fill lockBtn"
+              onClick={() => history.push('/vaultdashboard')}
+            >
+              Lock Assets & Mint
+            </Button>
           </div>
         </Modal.Footer>
       </Modal>

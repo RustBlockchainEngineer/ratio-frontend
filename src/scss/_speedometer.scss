@@ -1,0 +1,26 @@
+.speedometer {
+  margin-top: 1.5rem;
+  text-align: center;
+  p {
+    font-family: 'Poppins-Medium';
+    font-size: 16px;
+    padding-bottom: 1rem;
+  }
+  &__labelBox {
+    margin-top: -10px;
+    display: flex;
+    justify-content: space-between;
+
+    p {
+      font-size: 12px;
+      text-transform: capitalize;
+      &:first-child {
+        color: #ff3131;
+      }
+      &:last-child {
+        color: #07b127;
+        padding-right: 1rem;
+      }
+    }
+  }
+}

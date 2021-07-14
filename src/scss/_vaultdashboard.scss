@@ -1,0 +1,40 @@
+.vaultdashboard {
+  margin-top: 1rem;
+  &__header {
+    border-top: 1px solid #dbe0e2;
+    border-bottom: 1px solid #dbe0e2;
+    &_titleBox {
+      display: flex;
+      justify-content: space-between;
+      padding: 3rem 5rem !important;
+      h3 {
+        font-family: 'Poppins-Medium';
+        color: #3c4760;
+        font-size: 24px;
+        margin-bottom: 24px;
+      }
+      a {
+        display: block;
+        color: #4c646f;
+        text-align: right;
+        &:hover {
+          color: #4c646f;
+        }
+      }
+    }
+    &_speedometerBox {
+      background-color: #f8f9f9;
+      border-left: 1px solid #dbe0e2;
+      border-right: 1px solid #dbe0e2;
+    }
+    &_vaultdebtBox {
+      background-color: #f8f9f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  &__bodyleft {
+    padding: 2rem 5rem !important;
+  }
+}
