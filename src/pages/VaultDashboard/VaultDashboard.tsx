@@ -4,8 +4,12 @@ import RiskLevel from '../../components/Dashboard/RiskLevel'
 import SpeedoMetor from '../../components/Dashboard/SpeedoMeter'
 import VaultDebt from '../../components/Dashboard/VaultDebt'
 import PriceCard from '../../components/Dashboard/PriceCard'
+import ModalCard from '../../components/Dashboard/ModalCard'
 
 import share from '../../assets/images/share.svg'
+import rayIcon from '../../assets/images/RAY.svg'
+import solIcon from '../../assets/images/SOL.svg'
+import usdrIcon from '../../assets/images/USDr.svg'
 
 const priceCardData = [
   {
@@ -21,6 +25,25 @@ const priceCardData = [
     mainValue: '295.85%',
     minimumRatio: '295.85%',
     stabilityFee: '4%',
+  },
+]
+
+const modalCardData = [
+  {
+    title: 'TokensLocked',
+    tokens: [rayIcon, solIcon],
+    tokenNames: 'RAY-SOL-LP',
+    tokenValue: '20.36',
+    type: 'deposit',
+    withdrawValue: '0.1RAY-SOL-LP',
+  },
+  {
+    title: 'Outstanding USDr Debt',
+    tokens: [usdrIcon],
+    tokenNames: 'USDr',
+    tokenValue: '52.28',
+    type: 'payback',
+    GenerateValue: '32.28USDr',
   },
 ]
 
@@ -56,9 +79,13 @@ const VaultDashboard = () => {
                 </div>
               )
             })}
-
-            <div className="col col-6" />
-            <div className="col col-6" />
+            {modalCardData.map((item) => {
+              return (
+                <div className="col col-6">
+                  <ModalCard key={item.title} data={item} />
+                </div>
+              )
+            })}
           </div>
         </div>
         <div className="col col-4 vaultdashboard__bodyright">dasdasdas</div>

@@ -44,7 +44,7 @@ const PriceCard = ({ data }: PriceCardProps) => {
             </div>
             <div>
               <label>Stability Fee</label>
-              <p>{data.stabilityFee}</p>
+              <p className="text-right">{data.stabilityFee}</p>
             </div>
           </div>
         )}
