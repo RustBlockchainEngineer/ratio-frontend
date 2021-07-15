@@ -1,6 +1,29 @@
 import React from 'react'
+import DepositModal from '../DepositModal'
+import PaybackModal from '../PaybackModal'
+import WithdrawModal from '../WithdrawModal'
+import GenerateModal from '../GenerateModal'
 
-import Button from '../../Button'
+import usdrIcon from '../../../assets/images/USDr.svg'
+import rayIcon from '../../../assets/images/RAY.svg'
+import solIcon from '../../../assets/images/SOL.svg'
+
+const depositData = { icons: [rayIcon, solIcon], title: 'RAY-SOL' }
+const paybackData = {
+  icons: [usdrIcon],
+  title: 'RAY-SOL',
+  usdrValue: '$7.45',
+}
+const withdrawData = {
+  icons: [rayIcon, solIcon],
+  title: 'RAY-SOL',
+  value: '12.54',
+}
+
+const generateData = {
+  icons: [usdrIcon],
+  usdrValue: '32.34',
+}
 
 interface ModalcardInterface {
   title: string
@@ -39,16 +62,8 @@ const ModalCard = ({ data }: ModalCardProps) => {
             </div>
           </div>
           <div>
-            {data.type === 'deposit' && (
-              <Button className="button--fill modalCard__fillBtn">
-                Deposit
-              </Button>
-            )}
-            {data.type === 'payback' && (
-              <Button className="button--fill modalCard__fillBtn">
-                Pay Back
-              </Button>
-            )}
+            {data.type === 'deposit' && <DepositModal data={depositData} />}
+            {data.type === 'payback' && <PaybackModal data={paybackData} />}
           </div>
         </div>
         <div className="modalCard__footer">
@@ -65,12 +80,8 @@ const ModalCard = ({ data }: ModalCardProps) => {
             )}
           </div>
           <div>
-            {data.type === 'deposit' && (
-              <Button className="modalCard__gradientBtn">Withdraw</Button>
-            )}
-            {data.type === 'payback' && (
-              <Button className="modalCard__gradientBtn">Generate</Button>
-            )}
+            {data.type === 'deposit' && <WithdrawModal data={withdrawData} />}
+            {data.type === 'payback' && <GenerateModal data={generateData} />}
           </div>
         </div>
       </div>
