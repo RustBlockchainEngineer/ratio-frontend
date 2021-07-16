@@ -5,6 +5,7 @@ import SpeedoMetor from '../../components/Dashboard/SpeedoMeter'
 import VaultDebt from '../../components/Dashboard/VaultDebt'
 import PriceCard from '../../components/Dashboard/PriceCard'
 import ModalCard from '../../components/Dashboard/ModalCard'
+import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable'
 
 import share from '../../assets/images/share.svg'
 import rayIcon from '../../assets/images/RAY.svg'
@@ -86,6 +87,9 @@ const VaultDashboard = () => {
                 </div>
               )
             })}
+          </div>
+          <div className="vaultdashboard__bodyleft row pt-0">
+            <VaultHistoryTable />
           </div>
         </div>
         <div className="col col-4 vaultdashboard__bodyright">dasdasdas</div>
