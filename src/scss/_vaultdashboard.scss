@@ -37,4 +37,11 @@
   &__bodyleft {
     padding: 2rem 5rem !important;
   }
+  &__bodyright {
+    padding: 0px 0px !important;
+    margin-top: 2rem;
+    border: 1px solid rgba(#214769, 0.2);
+    border-right: 0px;
+    border-radius: 25px;
+  }
 }

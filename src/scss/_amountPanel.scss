@@ -1,0 +1,58 @@
+.amountPanel {
+  h4 {
+    font-family: 'Poppins-Medium';
+    font-size: 18px;
+    color: #3c4760;
+    margin-top: 2rem;
+    margin-left: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h5 {
+    font-family: 'Poppins-SemiBold';
+    font-size: 14px;
+    color: #002332;
+  }
+
+  h6 {
+    font-size: 14px;
+    color: #3c4760;
+  }
+
+  .lastToken {
+    margin-left: -5px;
+  }
+
+  table td {
+    font-family: 'Poppins-SemiBold';
+    font-size: 14px;
+    color: #3c4760;
+  }
+  table td,
+  .table th {
+    border-top: 0px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .table th {
+    padding-bottom: 0.5rem;
+    color: #4c646f;
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+  .systemInfo {
+    border-top: 1px solid rgba(#4c646f, 0.2);
+    margin-top: 2rem;
+    background-color: rgba(#dbe0e2, 0.2);
+    padding-top: 2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    padding-bottom: 2rem;
+    h4 {
+      margin: 0px;
+    }
+  }
+}

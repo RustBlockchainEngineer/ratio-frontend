@@ -1,8 +1,40 @@
 .vaulthistorytable {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
   h4 {
     font-family: 'Poppins-Medium';
     letter-spacing: -0.36px;
     color: #3c4760;
     opacity: 1;
+  }
+  &__table {
+    border: 1px solid rgba(#4c646f, 0.2);
+    border-radius: 16px;
+    .table td,
+    .table th {
+      border-top: 0px;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    .table th {
+      padding-bottom: 0.5rem;
+      color: #4c646f;
+      font-weight: 400;
+      font-size: 12px;
+    }
+    .activity {
+      font-family: 'Poppins-SemiBold';
+      font-size: 14px;
+      color: #3c4760;
+    }
+    .date {
+      font-size: 14px;
+      color: #4c646f;
+    }
+    .tx_hash {
+      font-size: 14px;
+      color: #4c646f;
+    }
   }
 }
