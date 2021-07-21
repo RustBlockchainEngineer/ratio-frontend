@@ -22,6 +22,8 @@
 @import './dashboardModal';
 @import './vaulthistorytable';
 @import './amountPanel';
+@import './activeVaults';
+@import './activePairCard';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
