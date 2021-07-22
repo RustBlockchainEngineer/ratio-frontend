@@ -49,6 +49,11 @@
       background: linear-gradient(to bottom, #5fb5ff, #0f6eff);
     }
   }
+  &--danger {
+    border: 2px solid #ff3131;
+    background-color: white;
+    color: #ff3131;
+  }
 
   &--disabled {
     background-color: rgba(#4c646f, 0.5);

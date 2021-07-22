@@ -4,6 +4,7 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 
 import Navbar from '../../components/Navbar'
 import AvailableVaults from '../AvailableVaults'
+import ArchivedVaults from '../ArchivedVaults'
 import ActiveVaults from '../ActiveVaults'
 import InstaBuyLp from '../InstaBuyLP'
 import Header from '../../components/Header'
@@ -34,6 +35,11 @@ const Layer = () => {
           <Switch>
             <Route path="/available-vaults" component={AvailableVaults} exact />
             <Route path="/my-active-vaults" component={ActiveVaults} exact />
+            <Route
+              path="/my-archived-vaults"
+              component={ArchivedVaults}
+              exact
+            />
             <Route path="/insta-buy-lp" component={InstaBuyLp} exact />
             <Route path="/vaultdashboard" component={VaultDashboard} exact />
             <Route exact path="/">

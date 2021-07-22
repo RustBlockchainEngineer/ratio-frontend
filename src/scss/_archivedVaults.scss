@@ -1,0 +1,16 @@
+.archivedVaults {
+  padding-left: 5rem;
+  padding-right: 5rem;
+  .row {
+    overflow: hidden;
+  }
+
+  [class*='col-'] {
+    margin-bottom: -99999px;
+    padding-bottom: 99999px;
+  }
+  .table td,
+  .table th {
+    border-top: 0px;
+  }
+}

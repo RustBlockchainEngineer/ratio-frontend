@@ -1,58 +1,41 @@
-.activepaircard {
-  border: 1px solid rgba(#4c646f, 0.2);
+.archivedpaircard {
+  box-shadow: 0px 2px 8px #ff3131;
+  border: 2px solid #ff3131;
   border-radius: 8px;
   height: calc(100% - 26px);
-  &--warning {
-    box-shadow: 0px 2px 8px #f48c5780;
-    border: 2px solid #f48c57;
-  }
+
   &__header {
     padding: 20px;
     display: flex;
     justify-content: space-between;
+    img {
+      border: 1px solid #ff3131;
+      border-radius: 100%;
+    }
     &-icon {
       margin-left: -10px;
     }
   }
   &__titleBox {
     margin-left: 1rem;
-    &--warning {
-      h6,
-      p {
-        color: #f48c57 !important;
-      }
-    }
     h6 {
       font-family: 'Poppins-SemiBold';
       font-size: 1rem;
-      color: #002332;
+      color: #ff3131;
     }
     p {
       font-family: 'Poppins-Regular';
       font-size: 12px;
-      color: #3c4760;
+      color: #ff3131;
     }
   }
   &__riskBox {
-    p {
-      font-family: 'Poppins-Medium';
-      font-size: 12px;
-      color: #3c4760;
-    }
     h6 {
       font-family: 'Poppins-SemiBold';
       font-size: 14px;
       margin-bottom: 0px;
       text-transform: uppercase;
-    }
-    .high {
       color: #ff3131;
-    }
-    .medium {
-      color: #f48c57;
-    }
-    .low {
-      color: #07b127;
     }
   }
   &__aprBox {
@@ -68,6 +51,9 @@
     }
     .semiBold {
       font-family: 'Poppins-SemiBold';
+    }
+    .danger {
+      color: #ff3131;
     }
   }
   &__btnBox {
@@ -92,7 +78,7 @@
     align-items: flex-start;
     padding: 20px;
     padding-top: 0px;
-    color: #f48c57;
+    color: #ff3131;
     p {
       margin-bottom: 0px;
       margin-left: 0.5rem;

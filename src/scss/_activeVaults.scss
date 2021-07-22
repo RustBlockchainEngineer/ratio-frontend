@@ -9,4 +9,36 @@
     margin-bottom: -99999px;
     padding-bottom: 99999px;
   }
+
+  .table td,
+  .table th {
+    border-top: 0px;
+  }
+
+  &__list {
+    h6 {
+      font-size: 16px;
+      color: #3c4760;
+      margin-bottom: 0px;
+      font-family: 'Poppins-Medium';
+    }
+    .semiBold {
+      font-family: 'Poppins-SemiBold';
+    }
+    .activepaircard__btnBox {
+      padding: 10px;
+      &--warning {
+        padding-bottom: 40px;
+      }
+    }
+    .activepaircard__warningBox {
+      position: absolute;
+      top: 85px;
+      left: 0px;
+      padding-left: 0px;
+    }
+    .warning_position {
+      position: relative;
+    }
+  }
 }
