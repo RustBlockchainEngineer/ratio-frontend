@@ -179,7 +179,7 @@ const rowClasses = (row: any) => {
 }
 
 const ActiveVaults = () => {
-  const [viewType, setViewType] = React.useState('list')
+  const [viewType, setViewType] = React.useState('tile')
 
   const onViewType = (type: string) => {
     setViewType(type)

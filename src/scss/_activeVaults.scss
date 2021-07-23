@@ -1,6 +1,7 @@
 .activeVaults {
   padding-left: 5rem;
   padding-right: 5rem;
+  min-height: calc(100vh - 350px);
   .row {
     overflow: hidden;
   }

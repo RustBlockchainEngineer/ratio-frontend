@@ -18,6 +18,12 @@
   }
   &__titleBox {
     margin-left: 1rem;
+    &--warning {
+      h6,
+      p {
+        color: #f48c57 !important;
+      }
+    }
     h6 {
       font-family: 'Poppins-SemiBold';
       font-size: 1rem;

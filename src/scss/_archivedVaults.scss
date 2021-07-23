@@ -1,6 +1,7 @@
 .archivedVaults {
   padding-left: 5rem;
   padding-right: 5rem;
+  min-height: calc(100vh - 350px);
   .row {
     overflow: hidden;
   }
@@ -12,5 +13,35 @@
   .table td,
   .table th {
     border-top: 0px;
+  }
+
+  &__list {
+    .danger {
+      color: #ff3131;
+    }
+    h6 {
+      font-size: 16px;
+      color: #3c4760;
+      margin-bottom: 0px;
+      font-family: 'Poppins-Medium';
+    }
+    .semiBold {
+      font-family: 'Poppins-SemiBold';
+    }
+    .archivedpaircard__btnBox {
+      padding: 10px;
+      &--warning {
+        padding-bottom: 40px;
+      }
+    }
+    .archivedpaircard__warningBox {
+      position: absolute;
+      top: 85px;
+      left: 0px;
+      padding-left: 0px;
+    }
+    .warning_position {
+      position: relative;
+    }
   }
 }

@@ -44,7 +44,7 @@ const ArchivedPairCard = ({ data }: ArchivedCardProps) => {
             </div>
             <div className="archivedpaircard__riskBox">
               <div className="d-flex justify-content-end align-items-center mt-1">
-                <h6>LIQUIDATED</h6>
+                <h6>{data.risk}</h6>
               </div>
             </div>
           </div>
