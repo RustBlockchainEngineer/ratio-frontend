@@ -5,6 +5,7 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import classNames from 'classnames'
 import LockVaultModal from '../LockVaultModal'
+import DisclaimerModal from '../DisclaimerModal'
 import Button from '../Button'
 import riskLevel from '../../assets/images/risklevel.svg'
 import highRisk from '../../assets/images/highrisk.svg'
@@ -28,6 +29,11 @@ interface TokenPairCardProps {
 const TokenPairCard = ({ data }: TokenPairCardProps) => {
   const [isOpen, setOpen] = React.useState(false)
   const connectedWallet = useSelector(selectors.getConnectedStatus)
+
+  const renderModalButton = () => {
+    if (data.risk === 'EXTREME') return <DisclaimerModal data={data} />
+    return <LockVaultModal data={data} />
+  }
 
   return (
     <>
@@ -66,7 +72,9 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
                 </OverlayTrigger>
               </div>
               <div className="d-flex justify-content-end align-items-center mt-1">
-                {data.risk === 'HIGH' && <img src={highRisk} alt="highRisk" />}
+                {(data.risk === 'HIGH' || data.risk === 'EXTREME') && (
+                  <img src={highRisk} alt="highRisk" />
+                )}
                 <h6
                   className={classNames(
                     'text-right ml-1',
@@ -92,7 +100,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
             </div>
             <div className="col">
               {connectedWallet ? (
-                <LockVaultModal data={data} />
+                renderModalButton()
               ) : (
                 <OverlayTrigger
                   placement="top"

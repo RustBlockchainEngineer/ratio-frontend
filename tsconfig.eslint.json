@@ -4,5 +4,8 @@
     "allowJs": true,
     "types": ["jest"]
   },
-  "include": ["src", "tests"]
+  "include": ["src", "tests"],
+  "rules": {
+    "@typescript-eslint/dot-notation": ["error"]
+  }
 }
