@@ -24,7 +24,7 @@ const AvailableVaults = () => {
 
   function factorialOf(d: any) {
     if (d !== undefined) {
-      const p = Object.keys(d).map(function (key, index) {
+      const p = Object.keys(d).map((key, index) => {
         return {
           id: index,
           icons: [rayIcon, ethIcon],
