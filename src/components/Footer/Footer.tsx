@@ -11,15 +11,23 @@ const Footer = () => {
       <div className="d-flex justify-content-between">
         <img src={imageLogo} alt="imageLogo" />
         <div className="d-flex">
-          <Link to="/">
+          <a target="_blank" href="https://t.me/ratiofinance" rel="noreferrer">
             <img src={telegram} alt="telegram" />
-          </Link>
-          <Link to="/">
+          </a>
+          <a
+            target="_blank"
+            href="https://twitter.com/ratiofinance"
+            rel="noreferrer"
+          >
             <img src={twitter} alt="twitter" />
-          </Link>
-          <Link to="/">
+          </a>
+          <a
+            target="_blank"
+            href="https://medium.com/@ratiofinance"
+            rel="noreferrer"
+          >
             <img src={medium} alt="medium" />
-          </Link>
+          </a>
         </div>
       </div>
       <div className="mt-4 d-flex justify-content-between">
@@ -32,10 +40,22 @@ const Footer = () => {
             <Link to="/">Whitepaper</Link>
           </li>
           <li className="list-group-item">
-            <Link to="/">Terms & Conditions</Link>
+            <a
+              target="_blank"
+              href="https://www.termsandconditionsgenerator.com/live.php?token=rsyWvkb1kWABkMw0tccnyaYF1VErQeOk"
+              rel="noreferrer"
+            >
+              Terms & Conditions
+            </a>
           </li>
           <li className="list-group-item">
-            <Link to="/">Privacy Policy</Link>
+            <a
+              target="_blank"
+              href="https://www.privacypolicygenerator.info/live.php?token=BdvNralxCwYJOo06TYdHMniHdNH4icGj"
+              rel="noreferrer"
+            >
+              Privacy Policy
+            </a>
           </li>
         </ul>
       </div>

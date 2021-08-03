@@ -114,7 +114,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
                 >
                   <div>
                     <Button className="button--disabled generate">
-                      Generate USDr
+                      Mint USDr
                     </Button>
                   </div>
                 </OverlayTrigger>
