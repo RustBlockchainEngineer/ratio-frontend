@@ -6,9 +6,17 @@
   border-radius: 12px;
   margin-top: 24px;
   text-align: left;
+  @include respond-to(sm) {
+    width: 95%;
+  }
   &__top {
     padding: 42px;
     background-color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    @include respond-to(sm) {
+      padding: 20px;
+    }
     .balance {
       display: flex;
       justify-content: flex-end;
@@ -24,6 +32,9 @@
     background: #dbe0e233 0% 0% no-repeat padding-box;
     border-top: 1px solid #d6dbdd;
     border-bottom: 1px solid #d6dbdd;
+    @include respond-to(sm) {
+      padding: 20px;
+    }
     .walletBtn {
       margin-left: 10px;
       font-family: 'Poppins-Medium';
@@ -36,7 +47,11 @@
     padding: 42px;
     padding-top: 20px;
     background: white;
-
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    @include respond-to(sm) {
+      padding: 20px;
+    }
     .swaptokensBtn {
       font-family: 'Poppins-Medium';
       font-size: 15px;

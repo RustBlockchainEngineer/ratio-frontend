@@ -2,6 +2,11 @@
   padding-left: 5rem;
   padding-right: 5rem;
   min-height: calc(100vh - 350px);
+  @include respond-to(sm) {
+    padding-top: 2rem;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
   .row {
     overflow: hidden;
   }

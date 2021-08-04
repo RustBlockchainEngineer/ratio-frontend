@@ -1,3 +1,8 @@
+.closed {
+  -webkit-transform: translate3d(0px, 0px, 0px) !important;
+  transform: translate3d(0px, 0px, 0px) !important;
+  visibility: visible;
+}
 .navbar-vertical {
   width: 300px;
   box-shadow: 10px 0px 40px #00000034;
@@ -7,7 +12,24 @@
   top: 0px;
   left: 0px;
   bottom: 0px;
+  @include respond-to(sm) {
+    padding-top: 0px;
+    top: 110px;
+    background-color: white;
+    z-index: 3;
+    width: 100%;
+    box-shadow: none;
+    -webkit-transform: translate3d(-100%, 0px, 0px);
+    transform: translate3d(-100%, 0px, 0px);
+    visibility: visible;
+    transition: all 0.5s ease 0s;
+    -webkit-transition: all 0.5s ease 0s;
+  }
+
   &::before {
+    @include respond-to(sm) {
+      display: none;
+    }
     content: '';
     z-index: -1;
     position: absolute;

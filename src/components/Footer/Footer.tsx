@@ -30,7 +30,7 @@ const Footer = () => {
           </a>
         </div>
       </div>
-      <div className="mt-4 d-flex justify-content-between">
+      <div className="mt-4 d-md-flex justify-content-between">
         <h6>
           Copyright © 2021. Ratio Protocol.
           <br /> All rights reserved.

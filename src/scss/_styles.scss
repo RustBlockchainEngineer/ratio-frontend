@@ -1,3 +1,4 @@
+@import './screensize';
 @import './layer';
 @import './navbar';
 @import './navbarItem';
@@ -27,6 +28,7 @@
 @import './archivedVaults';
 @import './archivedPairCard';
 @import './disclaimerModal';
+@import './_mobileMenuTrigger';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');

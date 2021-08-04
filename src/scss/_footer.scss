@@ -1,5 +1,4 @@
 .footer {
-  // position: fixed;
   margin-top: 80px;
   left: 300px;
   height: 186px;
@@ -7,6 +6,10 @@
   opacity: 1;
   border-top: 1px solid #dbe0e2;
   padding: 2.5rem 5rem;
+  @include respond-to(sm) {
+    padding: 2.5rem 1.5rem;
+    height: auto;
+  }
   a {
     img {
       border: 1px solid rgba(#4c646f, 0.3);
@@ -19,10 +22,18 @@
     color: #4c646f;
     font-size: 12px;
   }
+  .list-group {
+    @include respond-to(sm) {
+      display: block;
+    }
+  }
 
   .list-group-item {
     border: 0px;
     background: transparent;
+    @include respond-to(sm) {
+      padding-left: 0px;
+    }
     a {
       color: #4c646f;
       font-size: 14px;

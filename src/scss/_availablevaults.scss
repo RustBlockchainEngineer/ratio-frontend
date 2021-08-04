@@ -1,6 +1,11 @@
 .availablevaults {
   padding-left: 5rem;
   padding-right: 5rem;
+  @include respond-to(sm) {
+    padding-top: 2rem;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
   &__loading {
     min-height: 50vh !important;
     display: flex;

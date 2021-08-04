@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
+import { useMediaQuery } from 'react-responsive'
+import classNames from 'classnames'
 import NavbarItem from './NavbarItem'
 import Button from '../Button'
 import logo from '../../assets/images/logo-side.svg'
@@ -11,9 +13,17 @@ import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg'
 type NavbarProps = {
   onClickWalletBtn: () => void
   connectedWallet: boolean
+  clickMenuItem: () => void
+  open: boolean
 }
 
-const Navbar = ({ onClickWalletBtn, connectedWallet }: NavbarProps) => {
+const Navbar = ({
+  onClickWalletBtn,
+  connectedWallet,
+  clickMenuItem,
+  open,
+}: NavbarProps) => {
+  const isDefault = useMediaQuery({ minWidth: 768 })
   const location = useLocation()
   const history = useHistory()
   const [navIndex, setNavIndex] = useState(location.pathname)
@@ -25,12 +35,13 @@ const Navbar = ({ onClickWalletBtn, connectedWallet }: NavbarProps) => {
   const onItemClick = (index: string) => {
     setNavIndex(index)
     history.push(`${index}`)
+    clickMenuItem()
   }
 
   return (
-    <div className="navbar-vertical">
-      <img src={logo} alt="logo" />
-      <div className="mt-5">
+    <div className={classNames('navbar-vertical', { closed: open })}>
+      {isDefault && <img src={logo} alt="logo" />}
+      <div className="mt-md-5">
         <NavbarItem
           icon={availableVaultsIcon}
           name="Available Vaults"

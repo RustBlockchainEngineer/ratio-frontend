@@ -1,6 +1,10 @@
 .layer {
   overflow-y: hidden;
+
   &::before {
+    @include respond-to(sm) {
+      display: none;
+    }
     content: '';
     position: absolute;
     top: -169.42041015625px;
@@ -23,6 +27,9 @@
     filter: blur(50px);
   }
   &::after {
+    @include respond-to(sm) {
+      display: none;
+    }
     content: '';
     position: fixed;
     left: 100px;
@@ -36,6 +43,9 @@
     filter: blur(50px);
   }
   &_container {
+    @include respond-to(sm) {
+      margin-left: 0px;
+    }
     margin-left: 300px;
     min-height: 100vh;
   }

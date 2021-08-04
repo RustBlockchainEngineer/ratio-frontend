@@ -1,5 +1,6 @@
 import React from 'react'
 import { IoWarningOutline } from 'react-icons/io5'
+import { useMediaQuery } from 'react-responsive'
 import classNames from 'classnames'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Button from '../../components/Button'
@@ -179,7 +180,14 @@ const rowClasses = (row: any) => {
 }
 
 const ActiveVaults = () => {
+  const isMobile = useMediaQuery({ maxWidth: 767 })
   const [viewType, setViewType] = React.useState('tile')
+
+  React.useEffect(() => {
+    if (isMobile) {
+      setViewType('tile')
+    }
+  }, [isMobile])
 
   const onViewType = (type: string) => {
     setViewType(type)

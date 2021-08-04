@@ -1,6 +1,8 @@
 import React from 'react'
+import { useMediaQuery } from 'react-responsive'
 import { FaCheck } from 'react-icons/fa'
 import Button from '../Button'
+import logo from '../../assets/images/logo-side.svg'
 
 type HeaderProps = {
   onClickWalletBtn: () => void
@@ -8,8 +10,10 @@ type HeaderProps = {
 }
 
 const Header = ({ onClickWalletBtn, connectedWallet }: HeaderProps) => {
+  const isMobile = useMediaQuery({ maxWidth: 767 })
   return (
-    <div className="header d-flex justify-content-end">
+    <div className="header d-flex ">
+      {isMobile && <img src={logo} alt="logo" />}
       {connectedWallet ? (
         <div className="header__connected">
           <div className="header__checked">
