@@ -1,17 +1,31 @@
 .vaultdashboard {
   margin-top: 1rem;
   &__header {
-    border-top: 1px solid #dbe0e2;
-    border-bottom: 1px solid #dbe0e2;
+    display: flex;
+    @include respond-to(sm) {
+      display: block;
+    }
     &_titleBox {
+      border-top: 1px solid #dbe0e2;
+      border-bottom: 1px solid #dbe0e2;
       display: flex;
       justify-content: space-between;
       padding: 3rem 5rem !important;
+      width: 80%;
+      @include respond-to(sm) {
+        padding: 2rem 1rem !important;
+        border-top: 0px;
+        border-bottom: 0px;
+        width: 100%;
+      }
       h3 {
         font-family: 'Poppins-Medium';
         color: #3c4760;
         font-size: 24px;
         margin-bottom: 24px;
+        @include respond-to(sm) {
+          margin-bottom: 12px;
+        }
       }
       a {
         display: block;
@@ -20,14 +34,30 @@
         &:hover {
           color: #4c646f;
         }
+        @include respond-to(sm) {
+          text-align: left;
+          margin-bottom: 12px;
+        }
+      }
+    }
+    &_rightBox {
+      border-top: 1px solid #dbe0e2;
+      border-bottom: 1px solid #dbe0e2;
+      width: 40%;
+      display: flex;
+      @include respond-to(sm) {
+        width: 100%;
       }
     }
     &_speedometerBox {
+      width: 50%;
       background-color: #f8f9f9;
       border-left: 1px solid #dbe0e2;
       border-right: 1px solid #dbe0e2;
+      padding-left: 1rem;
     }
     &_vaultdebtBox {
+      width: 50%;
       background-color: #f8f9f9;
       display: flex;
       align-items: center;
@@ -36,12 +66,26 @@
   }
   &__bodyleft {
     padding: 2rem 5rem !important;
+    @include respond-to(sm) {
+      padding: 2rem 0rem !important;
+      .col-sm-12 {
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+    }
   }
   &__bodyright {
     padding: 0px 0px !important;
     margin-top: 2rem;
     border: 1px solid rgba(#214769, 0.2);
     border-right: 0px;
-    border-radius: 25px;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    @include respond-to(sm) {
+      margin-left: 10px;
+      margin-right: 10px;
+      border: 1px solid rgba(#214769, 0.2);
+      border-radius: 25px;
+    }
   }
 }

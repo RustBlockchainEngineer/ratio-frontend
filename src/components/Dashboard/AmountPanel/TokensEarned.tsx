@@ -11,8 +11,8 @@ const TokensEarned = () => {
       <Table striped hover>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Amount farmed</th>
+            <th className="w-75">Name</th>
+            <th className="w-25">Amount farmed</th>
             <th className="text-right">$vale of tokens</th>
           </tr>
         </thead>

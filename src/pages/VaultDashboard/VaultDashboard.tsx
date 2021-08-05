@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useMediaQuery } from 'react-responsive'
 import RiskLevel from '../../components/Dashboard/RiskLevel'
 import SpeedoMetor from '../../components/Dashboard/SpeedoMeter'
 import VaultDebt from '../../components/Dashboard/VaultDebt'
@@ -50,40 +51,52 @@ const modalCardData = [
 ]
 
 const VaultDashboard = () => {
+  const isMobile = useMediaQuery({ maxWidth: 767 })
+  const isDefault = useMediaQuery({ minWidth: 768 })
   return (
     <div className="vaultdashboard">
-      <div className="vaultdashboard__header row">
-        <div className="col col-8 vaultdashboard__header_titleBox">
+      <div className="vaultdashboard__header">
+        <div className="vaultdashboard__header_titleBox">
           <div>
             <h3>RAY-SOL-LP Vault #2024</h3>
+            {isMobile && (
+              <Link to="/">
+                View on Solana Beach
+                <img src={share} alt="share" />
+              </Link>
+            )}
             <RiskLevel level="HIGH" />
           </div>
-          <div className="text-right mt-4">
-            <img src={share} alt="share" />
-            <Link to="/">View on</Link>
-            <Link to="/">Solana Beach</Link>
+          {isDefault && (
+            <div className="text-right mt-4">
+              <img src={share} alt="share" />
+              <Link to="/">View on</Link>
+              <Link to="/">Solana Beach</Link>
+            </div>
+          )}
+        </div>
+        <div className="vaultdashboard__header_rightBox">
+          <div className="vaultdashboard__header_speedometerBox">
+            <SpeedoMetor />
           </div>
-        </div>
-        <div className="col col-2 vaultdashboard__header_speedometerBox">
-          <SpeedoMetor />
-        </div>
-        <div className="col col-2 vaultdashboard__header_vaultdebtBox">
-          <VaultDebt />
+          <div className="vaultdashboard__header_vaultdebtBox">
+            <VaultDebt />
+          </div>
         </div>
       </div>
       <div className="vaultdashboard__body row">
-        <div className="col col-8">
+        <div className="col col-md-8">
           <div className="vaultdashboard__bodyleft row">
             {priceCardData.map((item) => {
               return (
-                <div className="col col-6">
+                <div className="col col-md-6 col-sm-12">
                   <PriceCard key={item.title} data={item} />
                 </div>
               )
             })}
             {modalCardData.map((item) => {
               return (
-                <div className="col col-6">
+                <div className="col col-md-6 col-sm-12">
                   <ModalCard key={item.title} data={item} />
                 </div>
               )
@@ -93,7 +106,7 @@ const VaultDashboard = () => {
             <VaultHistoryTable />
           </div>
         </div>
-        <div className="col col-4 vaultdashboard__bodyright">
+        <div className="col col-md-4 vaultdashboard__bodyright">
           <AmountPanel />
         </div>
       </div>

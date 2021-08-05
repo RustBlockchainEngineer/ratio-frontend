@@ -1,6 +1,9 @@
 .pricecard {
   border: 1px solid rgba(#4c646f, 0.2);
   border-radius: 16px;
+  @include respond-to(sm) {
+    margin-top: 15px;
+  }
   &__header {
     padding: 1.5rem;
   }

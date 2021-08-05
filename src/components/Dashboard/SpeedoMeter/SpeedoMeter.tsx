@@ -2,6 +2,9 @@ import React from 'react'
 import GaugeChart from 'react-gauge-chart'
 
 const SpeedoMeter = () => {
+  // const chartStyle = {
+  //   width: '100%',
+  // }
   return (
     <div className="speedometer">
       <p>Vault Health</p>
@@ -13,6 +16,7 @@ const SpeedoMeter = () => {
         percent={0.7}
         hideText
         textColor="#FF0000"
+        // style={chartStyle}
       />
       <div className="speedometer__labelBox">
         <p>Liquidation</p>
