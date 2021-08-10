@@ -34,10 +34,7 @@ const Layer = () => {
   return (
     <div className="layer">
       <div className="layer_container">
-        <Header
-          onClickWalletBtn={onClickWalletBtn}
-          connectedWallet={connectedWallet}
-        />
+        <Header onClickWalletBtn={onClickWalletBtn} />
 
         <Navbar
           onClickWalletBtn={onClickWalletBtn}

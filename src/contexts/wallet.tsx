@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable func-names */
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable import/no-useless-path-segments */
 import type { PublicKey } from '@solana/web3.js'
 
 import Wallet from '@project-serum/sol-wallet-adapter'
 import { Transaction } from '@solana/web3.js'
-import { Button, Modal } from 'antd'
+import { Button, Modal } from 'react-bootstrap'
 import EventEmitter from 'eventemitter3'
 import React, {
   useCallback,
@@ -119,7 +123,7 @@ export function WalletProvider({ children = null as any }) {
 
           notify({
             message: 'Wallet update',
-            description: 'Connected to wallet ' + keyToDisplay,
+            description: `Connected to wallet ${keyToDisplay}`,
           })
         }
       })
@@ -167,11 +171,11 @@ export function WalletProvider({ children = null as any }) {
       {children}
       <Modal
         title="Select Wallet"
-        okText="Connect"
-        visible={isModalVisible}
-        okButtonProps={{ style: { display: 'none' } }}
-        onCancel={close}
-        width={400}
+        // okText="Connect"
+        show={isModalVisible}
+        // okButtonProps={{ style: { display: 'none' } }}
+        onHide={close}
+        // width={400}
       >
         {WALLET_PROVIDERS.map((provider) => {
           const onClick = function () {
@@ -182,18 +186,18 @@ export function WalletProvider({ children = null as any }) {
 
           return (
             <Button
-              size="large"
-              type={providerUrl === provider.url ? 'primary' : 'ghost'}
+              size="lg"
+              type={providerUrl === provider.url ? 'primary' : 'secondary'}
               onClick={onClick}
-              icon={
-                <img
-                  alt={`${provider.name}`}
-                  width={20}
-                  height={20}
-                  src={provider.icon}
-                  style={{ marginRight: 8 }}
-                />
-              }
+              // icon={
+              //   <img
+              //     alt={`${provider.name}`}
+              //     width={20}
+              //     height={20}
+              //     src={provider.icon}
+              //     style={{ marginRight: 8 }}
+              //   />
+              // }
               style={{
                 display: 'block',
                 width: '100%',

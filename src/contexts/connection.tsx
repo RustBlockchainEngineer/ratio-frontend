@@ -1,4 +1,8 @@
-import { useLocalStorageState } from './../utils/utils'
+/* eslint-disable no-plusplus */
+/* eslint-disable no-cond-assign */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/prop-types */
+/* eslint-disable import/no-cycle */
 import {
   Account,
   clusterApiUrl,
@@ -8,16 +12,17 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { notify } from './../utils/notifications'
-// import { ExplorerLink } from '../components/ExplorerLink'
-import { setProgramIds } from '../utils/ids'
-import { WalletAdapter } from './wallet'
-import { cache, getMultipleAccounts, MintParser } from './accounts'
 import {
   TokenListProvider,
   ENV as ChainID,
   TokenInfo,
 } from '@solana/spl-token-registry'
+import { useLocalStorageState } from '../utils/utils'
+import { notify } from '../utils/notifications'
+// import { ExplorerLink } from '../components/ExplorerLink'
+import { setProgramIds } from '../utils/ids'
+import { WalletAdapter } from './wallet'
+import { cache, getMultipleAccounts, MintParser } from './accounts'
 
 export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet'
 
@@ -257,7 +262,7 @@ export const sendTransaction = async (
   }
   transaction = await wallet.signTransaction(transaction)
   const rawTransaction = transaction.serialize()
-  let options = {
+  const options = {
     skipPreflight: true,
     commitment: 'singleGossip',
   }

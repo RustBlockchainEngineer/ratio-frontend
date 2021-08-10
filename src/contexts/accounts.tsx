@@ -1,6 +1,12 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable no-console */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable new-cap */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable consistent-return */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable import/no-cycle */
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { useConnection } from './connection'
-import { useWallet } from './wallet'
 import {
   AccountInfo,
   ConfirmedSignatureInfo,
@@ -9,9 +15,11 @@ import {
   PublicKey,
 } from '@solana/web3.js'
 import { AccountLayout, u64, MintInfo, MintLayout } from '@solana/spl-token'
-import { TokenAccount } from './../models'
-import { chunks } from './../utils/utils'
-import { EventEmitter } from './../utils/eventEmitter'
+import { useConnection } from './connection'
+import { useWallet } from './wallet'
+import { TokenAccount } from '../models'
+import { chunks } from '../utils/utils'
+import { EventEmitter } from '../utils/eventEmitter'
 import { useUserAccounts } from '../hooks/useUserAccounts'
 import { WRAPPED_SOL_MINT, programIds } from '../utils/ids'
 
@@ -111,7 +119,7 @@ export const cache = {
 
     const address = id.toBase58()
 
-    let account = genericCache.get(address)
+    const account = genericCache.get(address)
     if (account) {
       return account
     }
@@ -143,7 +151,7 @@ export const cache = {
     }
 
     const address = typeof id === 'string' ? id : id?.toBase58()
-    const deserialize = parser ? parser : keyToAccountParser.get(address)
+    const deserialize = parser || keyToAccountParser.get(address)
     if (!deserialize) {
       throw new Error(
         'Deserializer needs to be registered or passed as a parameter'
@@ -246,7 +254,7 @@ function wrapNativeAccount(
   }
 
   return {
-    pubkey: pubkey,
+    pubkey,
     account,
     info: {
       address: pubkey,
@@ -363,8 +371,8 @@ export function AccountsProvider({ children = null as any }) {
     const subs: number[] = []
     cache.emitter.onCache((args) => {
       if (args.isNew) {
-        let id = args.id
-        let deserialize = args.parser
+        const { id } = args
+        const deserialize = args.parser
         connection.onAccountChange(new PublicKey(id), (info) => {
           cache.add(id, info, deserialize)
         })
@@ -473,7 +481,7 @@ const getMultipleAccountsCore = async (
   const unsafeRes = await connection._rpcRequest('getMultipleAccounts', args)
   if (unsafeRes.error) {
     throw new Error(
-      'failed to get info about account ' + unsafeRes.error.message
+      `failed to get info about account ${unsafeRes.error.message}`
     )
   }
 
@@ -527,8 +535,6 @@ export const useAccountByMint = (mint: string) => {
   if (index !== -1) {
     return userAccounts[index]
   }
-
-  return
 }
 
 export function useAccount(pubKey?: PublicKey) {

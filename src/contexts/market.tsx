@@ -1,3 +1,11 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable import/no-cycle */
+/* eslint-disable import/order */
+/* eslint-disable import/no-useless-path-segments */
+/* eslint-disable import/no-duplicates */
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { MINT_TO_MARKET } from './../models/marketOverrides'
 import { STABLE_COINS } from './../utils/utils'

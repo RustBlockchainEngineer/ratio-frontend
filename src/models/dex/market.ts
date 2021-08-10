@@ -1,13 +1,9 @@
-import { Market, MARKETS, Orderbook } from "@project-serum/serum";
-import { AccountInfo, PublicKey } from "@solana/web3.js";
-import {
-  MintParser,
-  ParsedAccountBase,
-  cache,
-} from "./../../contexts/accounts";
+import { Market, MARKETS, Orderbook } from '@project-serum/serum'
+import { AccountInfo, PublicKey } from '@solana/web3.js'
+import { MintParser, ParsedAccountBase, cache } from './../../contexts/accounts'
 
 export const OrderBookParser = (id: PublicKey, acc: AccountInfo<Buffer>) => {
-  const decoded = Orderbook.LAYOUT.decode(acc.data);
+  const decoded = Orderbook.LAYOUT.decode(acc.data)
 
   const details = {
     pubkey: id,
@@ -15,23 +11,23 @@ export const OrderBookParser = (id: PublicKey, acc: AccountInfo<Buffer>) => {
       ...acc,
     },
     info: decoded,
-  } as ParsedAccountBase;
+  } as ParsedAccountBase
 
-  return details;
-};
+  return details
+}
 
 const DEFAULT_DEX_ID = new PublicKey(
-  "EUqojwWA2rd19FZrzeBncJsm38Jm1hEhE3zsmX3bRc2o"
-);
+  'EUqojwWA2rd19FZrzeBncJsm38Jm1hEhE3zsmX3bRc2o'
+)
 
 export const DexMarketParser = (
   pubkey: PublicKey,
   acc: AccountInfo<Buffer>
 ) => {
-  const market = MARKETS.find((m) => m.address.equals(pubkey));
+  const market = MARKETS.find((m) => m.address.equals(pubkey))
   const decoded = Market.getLayout(market?.programId || DEFAULT_DEX_ID).decode(
     acc.data
-  );
+  )
 
   const details = {
     pubkey,
@@ -39,12 +35,12 @@ export const DexMarketParser = (
       ...acc,
     },
     info: decoded,
-  } as ParsedAccountBase;
+  } as ParsedAccountBase
 
-  cache.registerParser(details.info.baseMint, MintParser);
-  cache.registerParser(details.info.quoteMint, MintParser);
-  cache.registerParser(details.info.bids, OrderBookParser);
-  cache.registerParser(details.info.asks, OrderBookParser);
+  cache.registerParser(details.info.baseMint, MintParser)
+  cache.registerParser(details.info.quoteMint, MintParser)
+  cache.registerParser(details.info.bids, OrderBookParser)
+  cache.registerParser(details.info.asks, OrderBookParser)
 
-  return details;
-};
+  return details
+}

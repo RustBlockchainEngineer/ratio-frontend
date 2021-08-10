@@ -22,7 +22,18 @@
     "jsx-a11y/label-has-associated-control": "off",
     "react/jsx-props-no-spreading": "off",
     "@typescript-eslint/dot-notation": ["error"],
-    "no-else-return": "off"
+    "no-else-return": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-shadow": ["off"],
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "new-cap": "off",
+    "consistent-return": "off",
+    "no-restricted-syntax": "off",
+    "import/no-cycle": "off",
+    "import/no-useless-path-segments": "off",
+    "no-shadow": "off"
   },
   "overrides": [
     {

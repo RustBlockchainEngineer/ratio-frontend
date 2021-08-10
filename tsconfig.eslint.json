@@ -7,6 +7,15 @@
   },
   "include": ["src", "tests"],
   "rules": {
-    "@typescript-eslint/dot-notation": ["error"]
+    "@typescript-eslint/dot-notation": ["error"],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["off"],
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "new-cap": "off",
+    "@typescript-eslint/no-use-before-define": ["off"],
+    "consistent-return": "off",
+    "no-restricted-syntax": "off",
+    "import/no-cycle": "off"
   }
 }
