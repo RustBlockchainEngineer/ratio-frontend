@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { useMediaQuery } from 'react-responsive'
 import MobileMenuTrigger from '../../components/MobileMenuTrigger'
@@ -12,7 +12,7 @@ import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import VaultDashboard from '../VaultDashboard'
 
-import { actionTypes, selectors } from '../../features/wallet'
+import { actionTypes } from '../../features/wallet'
 
 // const isMobile = useMediaQuery({ maxWidth: 767 })
 
@@ -21,7 +21,6 @@ const Layer = () => {
   const isDefault = useMediaQuery({ minWidth: 768 })
   const [menuOpen, setMenuOpen] = React.useState(false)
   const dispatch = useDispatch()
-  const connectedWallet = useSelector(selectors.getConnectedStatus)
 
   const onClickWalletBtn = () => {
     dispatch({ type: actionTypes.CONNECTED_WALLET })
@@ -34,14 +33,10 @@ const Layer = () => {
   return (
     <div className="layer">
       <div className="layer_container">
-        <Header
-          onClickWalletBtn={onClickWalletBtn}
-          connectedWallet={connectedWallet}
-        />
+        <Header onClickWalletBtn={onClickWalletBtn} />
 
         <Navbar
           onClickWalletBtn={onClickWalletBtn}
-          connectedWallet={connectedWallet}
           clickMenuItem={clickMenuTrigger}
           open={menuOpen}
         />
