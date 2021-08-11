@@ -206,7 +206,9 @@ export function WalletProvider({ children = null as any }) {
           })}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="walletProviderModal__closeBtn">Close</Button>
+          <Button onClick={close} className="walletProviderModal__closeBtn">
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     </WalletContext.Provider>
