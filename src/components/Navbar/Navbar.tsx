@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import { useMediaQuery } from 'react-responsive'
 import classNames from 'classnames'
+import { useWallet } from '../../contexts/wallet'
 import NavbarItem from './NavbarItem'
 import Button from '../Button'
 import logo from '../../assets/images/logo-side.svg'
@@ -12,21 +13,16 @@ import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg'
 
 type NavbarProps = {
   onClickWalletBtn: () => void
-  connectedWallet: boolean
   clickMenuItem: () => void
   open: boolean
 }
 
-const Navbar = ({
-  onClickWalletBtn,
-  connectedWallet,
-  clickMenuItem,
-  open,
-}: NavbarProps) => {
+const Navbar = ({ onClickWalletBtn, clickMenuItem, open }: NavbarProps) => {
   const isDefault = useMediaQuery({ minWidth: 768 })
   const location = useLocation()
   const history = useHistory()
   const [navIndex, setNavIndex] = useState(location.pathname)
+  const { connected, connect } = useWallet()
 
   React.useEffect(() => {
     setNavIndex(location.pathname)
@@ -72,7 +68,7 @@ const Navbar = ({
         />
       </div>
       <div>
-        {connectedWallet ? (
+        {connected ? (
           <div className="navbar-vertical__connectedBox">
             <hr />
             <div className="navbar-vertical__item">
@@ -89,7 +85,10 @@ const Navbar = ({
             </div>
           </div>
         ) : (
-          <Button className="button--fill walletBtn" onClick={onClickWalletBtn}>
+          <Button
+            onClick={connected ? onClickWalletBtn : connect}
+            className="button--fill walletBtn"
+          >
             Connect Wallet
           </Button>
         )}

@@ -170,45 +170,44 @@ export function WalletProvider({ children = null as any }) {
     >
       {children}
       <Modal
-        title="Select Wallet"
-        // okText="Connect"
         show={isModalVisible}
-        // okButtonProps={{ style: { display: 'none' } }}
         onHide={close}
-        // width={400}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        className="walletProviderModal"
       >
-        {WALLET_PROVIDERS.map((provider) => {
-          const onClick = function () {
-            setProviderUrl(provider.url)
-            setAutoConnect(true)
-            close()
-          }
+        <Modal.Header closeButton>
+          <p className="walletProviderModal__header">Connect to a wallet</p>
+        </Modal.Header>
+        <Modal.Body>
+          {WALLET_PROVIDERS.map((provider) => {
+            const onClick = function () {
+              setProviderUrl(provider.url)
+              setAutoConnect(true)
+              close()
+            }
 
-          return (
-            <Button
-              size="lg"
-              type={providerUrl === provider.url ? 'primary' : 'secondary'}
-              onClick={onClick}
-              // icon={
-              //   <img
-              //     alt={`${provider.name}`}
-              //     width={20}
-              //     height={20}
-              //     src={provider.icon}
-              //     style={{ marginRight: 8 }}
-              //   />
-              // }
-              style={{
-                display: 'block',
-                width: '100%',
-                textAlign: 'left',
-                marginBottom: 8,
-              }}
-            >
-              {provider.name}
-            </Button>
-          )
-        })}
+            return (
+              <Button
+                size="lg"
+                onClick={onClick}
+                className="walletProviderModal__button d-block"
+              >
+                <img
+                  alt={`${provider.name}`}
+                  width={20}
+                  height={20}
+                  src={provider.icon}
+                  style={{ marginRight: 8 }}
+                />
+                {provider.name}
+              </Button>
+            )
+          })}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className="walletProviderModal__closeBtn">Close</Button>
+        </Modal.Footer>
       </Modal>
     </WalletContext.Provider>
   )

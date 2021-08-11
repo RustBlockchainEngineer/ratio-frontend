@@ -16,10 +16,6 @@ const Header = ({ onClickWalletBtn }: HeaderProps) => {
 
   const isMobile = useMediaQuery({ maxWidth: 767 })
 
-  if (!wallet?.publicKey) {
-    return null
-  }
-
   return (
     <div className="header d-flex ">
       {isMobile && <img src={logo} alt="logo" />}
@@ -28,13 +24,13 @@ const Header = ({ onClickWalletBtn }: HeaderProps) => {
           <div className="header__checked">
             <FaCheck />
           </div>
-          <h6>{shortenAddress(`${wallet.publicKey}`)}</h6>
+          <h6>{shortenAddress(`${wallet?.publicKey}`)}</h6>
         </div>
       ) : (
         <Button
           onClick={connected ? onClickWalletBtn : connect}
           // disabled={connected && disabled}
-          className="mt-4"
+          className="button--fill walletBtn"
         >
           Connect Wallet
         </Button>
