@@ -1,7 +1,7 @@
 .activepaircard {
   border: 1px solid rgba(#4c646f, 0.2);
   border-radius: 8px;
-  height: calc(100% - 26px);
+  // height: calc(100% - 26px);
   &--warning {
     box-shadow: 0px 2px 8px #f48c5780;
     border: 2px solid #f48c57;
@@ -88,6 +88,7 @@
     }
   }
   &__warningBox {
+    min-height: 70px;
     display: flex;
     align-items: flex-start;
     padding: 20px;
@@ -96,6 +97,37 @@
     p {
       margin-bottom: 0px;
       margin-left: 0.5rem;
+    }
+  }
+  &__detailBox {
+    &__content {
+      padding: 20px;
+      padding-top: 0px;
+      color: #4c646f;
+      p {
+        font-family: 'Poppins-SemiBold';
+        color: #002332
+      }
+      &--tokens {
+        margin-top: 10px;
+        img {
+          width: 20px;
+          margin-right: 5px;
+        }
+        font-size: 12px;
+        font-family: 'Poppins-Regular';
+      }
+    }
+    &__toggle {
+      cursor: pointer;
+      text-align: center;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      color: #4c646f;
+      border-top: 1px solid rgba(#4c646f, 0.2);
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }

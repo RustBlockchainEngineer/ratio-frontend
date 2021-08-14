@@ -1,17 +1,20 @@
 import React from 'react'
 import { IoWarningOutline } from 'react-icons/io5'
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import classNames from 'classnames'
 import Button from '../Button'
 import riskLevel from '../../assets/images/risklevel.svg'
 import highRisk from '../../assets/images/highrisk.svg'
+import RayIcon from '../../assets/images/RAY.svg'
+import USDrIcon from '../../assets/images/USDr.svg'
 
 type PairType = {
   id: number
   icons: Array<string>
   title: string
   tvl: string
-  risk: string
+  risk: number
   apr: number
   owed: string
   mint: string
@@ -24,8 +27,7 @@ interface ActiveCardProps {
 }
 
 const ActivePairCard = ({ data }: ActiveCardProps) => {
-  //   const [isOpen, setOpen] = React.useState(false)
-  //   const connectedWallet = useSelector(selectors.getConnectedStatus)
+  const [isOpen, setOpen] = React.useState(false)
 
   return (
     <>
@@ -71,15 +73,15 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
                   <img src={riskLevel} alt="lisklevel" className="ml-2" />
                 </OverlayTrigger>
               </div>
-              <div className="d-flex justify-content-end align-items-center mt-1">
-                {data.risk === 'HIGH' && <img src={highRisk} alt="highRisk" />}
+              <div className="d-flex justify-content-start align-items-center mt-1">
+                {data.risk > 80 && <img src={highRisk} alt="highRisk" />}
                 <h6
                   className={classNames(
-                    'text-right ml-1',
-                    data.risk.toLocaleLowerCase()
+                    'ml-1',
+                    data.risk > 80 ? 'high' : 'medium'
                   )}
                 >
-                  {data.risk}
+                  {data.risk} %
                 </h6>
               </div>
             </div>
@@ -112,7 +114,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
               <Button className="button--fill lp-button">Enter Vault</Button>
             </div>
           </div>
-          {data.warning && (
+          {data.warning ? (
             <div className="activepaircard__warningBox">
               <div>
                 <IoWarningOutline size={27} />
@@ -122,7 +124,41 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
                 threshold of <strong>$90.</strong>
               </p>
             </div>
+          ) : (
+            <div className="activepaircard__warningBox" />
           )}
+          <div className="activepaircard__detailBox">
+            {isOpen && (
+              <div className="activepaircard__detailBox__content">
+                <div className="d-flex justify-content-between">
+                  <div>
+                    Position value:
+                    <p>$16,200</p>
+                    <div className="activepaircard__detailBox__content--tokens">
+                      <img src={RayIcon} alt="RayIcon" />
+                      RAY: $4200
+                    </div>
+                    <div className="activepaircard__detailBox__content--tokens">
+                      <img src={USDrIcon} alt="USDrIcon" />
+                      USDr: $6400
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    Rewards earned:
+                    <p>$2,700</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div
+              className="activepaircard__detailBox__toggle"
+              onClick={() => setOpen(!isOpen)}
+              aria-hidden="true"
+            >
+              Position Overview {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+            </div>
+          </div>
         </div>
       </div>
     </>
