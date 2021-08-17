@@ -30,6 +30,7 @@
 @import './disclaimerModal';
 @import './_mobileMenuTrigger';
 @import './walletProviderModal';
+@import './customDropdownInput';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
@@ -47,44 +48,44 @@
 // --unnamed-color-07b127: #07b127;
 
 p {
-  margin-bottom: 0px !important;
+    margin-bottom: 0px !important;
 }
 
 input {
-  height: auto !important;
+    height: auto !important;
 }
 
 .row {
-  margin-left: 0px !important;
-  margin-right: 0px !important;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
 }
 
 .tooltip-inner {
-  max-width: 250px !important;
-  padding: 16px !important;
-  // font-family: 'Poppins-Regular' !important;
-  font-size: 12px !important;
-  text-align: left !important;
-  border-radius: 8px !important;
+    max-width: 250px !important;
+    padding: 16px !important;
+    // font-family: 'Poppins-Regular' !important;
+    font-size: 12px !important;
+    text-align: left !important;
+    border-radius: 8px !important;
 }
 
 .modal {
-  background-color: transparent;
-  box-shadow: none;
-  max-height: 100%;
+    background-color: transparent;
+    box-shadow: none;
+    max-height: 100%;
 }
 
 .modal .modal-content {
-  padding: 0px;
-  border-radius: 16px;
+    padding: 0px;
+    border-radius: 16px;
 }
 
 .modal .modal-footer {
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
 }
 
 .modal-lg,
 .modal-xl {
-  max-width: 480px !important;
+    max-width: 480px !important;
 }

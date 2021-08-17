@@ -3,6 +3,7 @@ import { Modal } from 'react-bootstrap'
 import { IoMdClose } from 'react-icons/io'
 import Button from '../../Button'
 import CustomInput from '../../CustomInput'
+import CustomDropDownInput from '../../CustomDropDownInput'
 
 type PairType = {
   icons: Array<string>
@@ -55,6 +56,10 @@ const PaybackModal = ({ data }: PaybackModalProps) => {
               How much would you like to pay back?
             </label>
             <CustomInput appendStr="Max" tokenStr="USDr" />
+            <label className="dashboardModal__modal__label mt-3">
+              Estimated token value
+            </label>
+            <CustomDropDownInput />
             <Button
               className="button--fill bottomBtn"
               onClick={() => setShow(false)}

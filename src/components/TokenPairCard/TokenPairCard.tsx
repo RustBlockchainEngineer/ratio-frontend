@@ -1,16 +1,17 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import classNames from 'classnames'
+import { useWallet } from '../../contexts/wallet'
 import LockVaultModal from '../LockVaultModal'
 import DisclaimerModal from '../DisclaimerModal'
 import Button from '../Button'
 import riskLevel from '../../assets/images/risklevel.svg'
 import highRisk from '../../assets/images/highrisk.svg'
 
-import { selectors } from '../../features/wallet'
+// import { selectors } from '../../features/wallet'
 
 type PairType = {
   id: number
@@ -28,7 +29,8 @@ interface TokenPairCardProps {
 
 const TokenPairCard = ({ data }: TokenPairCardProps) => {
   const [isOpen, setOpen] = React.useState(false)
-  const connectedWallet = useSelector(selectors.getConnectedStatus)
+  // const connectedWallet = useSelector(selectors.getConnectedStatus)
+  const { connected } = useWallet()
 
   const renderModalButton = () => {
     if (data.risk === 'EXTREME') return <DisclaimerModal data={data} />
@@ -99,7 +101,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
               </Link>
             </div>
             <div className="col">
-              {connectedWallet ? (
+              {connected ? (
                 renderModalButton()
               ) : (
                 <OverlayTrigger
