@@ -1,3 +1,3 @@
-import CustomDropDownInput from './CustomDropDownInput'
+import CustomDropDownInput from './CustomDropDownInput';
 
-export default CustomDropDownInput
+export default CustomDropDownInput;
