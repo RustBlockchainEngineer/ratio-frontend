@@ -1,3 +1,3 @@
-import VaultHistoryTable from './VaultHistoryTable'
+import VaultHistoryTable from './VaultHistoryTable';
 
-export default VaultHistoryTable
+export default VaultHistoryTable;

@@ -1,3 +1,3 @@
-import ModalCard from './ModalCard'
+import ModalCard from './ModalCard';
 
-export default ModalCard
+export default ModalCard;

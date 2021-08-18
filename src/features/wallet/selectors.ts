@@ -1,4 +1,4 @@
-import { SystemState } from './types'
+import { SystemState } from './types';
 
 export const getConnectedStatus = (state: SystemState) =>
-  state.wallet.connected_status
+  state.wallet.connected_status;

@@ -1,3 +1,3 @@
-import InstaBuyLp from './InstaBuyLp'
+import InstaBuyLp from './InstaBuyLp';
 
-export default InstaBuyLp
+export default InstaBuyLp;

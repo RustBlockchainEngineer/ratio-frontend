@@ -1,22 +1,22 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap'
-import { IoMdClose } from 'react-icons/io'
-import Button from '../../Button'
-import CustomInput from '../../CustomInput'
-import CustomDropDownInput from '../../CustomDropDownInput'
+import React from 'react';
+import { Modal } from 'react-bootstrap';
+import { IoMdClose } from 'react-icons/io';
+import Button from '../../Button';
+import CustomInput from '../../CustomInput';
+import CustomDropDownInput from '../../CustomDropDownInput';
 
 type PairType = {
-  icons: Array<string>
-  title: string
-  usdrValue: string
-}
+  icons: Array<string>;
+  title: string;
+  usdrValue: string;
+};
 
 type PaybackModalProps = {
-  data: PairType
-}
+  data: PairType;
+};
 
 const PaybackModal = ({ data }: PaybackModalProps) => {
-  const [show, setShow] = React.useState(false)
+  const [show, setShow] = React.useState(false);
   return (
     <div className="dashboardModal">
       <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
@@ -70,7 +70,7 @@ const PaybackModal = ({ data }: PaybackModalProps) => {
         </Modal.Body>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default PaybackModal
+export default PaybackModal;

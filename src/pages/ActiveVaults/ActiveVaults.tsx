@@ -1,15 +1,15 @@
-import React from 'react'
-import { IoWarningOutline } from 'react-icons/io5'
-import { useMediaQuery } from 'react-responsive'
-import classNames from 'classnames'
-import BootstrapTable from 'react-bootstrap-table-next'
-import Button from '../../components/Button'
-import ActivePairCard from '../../components/ActivePairCard'
-import FilterPanel from '../../components/FilterPanel'
-import stepIcon from '../../assets/images/STEP.svg'
-import usdcIcon from '../../assets/images/USDC.svg'
-import rayIcon from '../../assets/images/RAY.svg'
-import solIcon from '../../assets/images/SOL.svg'
+import React from 'react';
+import { IoWarningOutline } from 'react-icons/io5';
+import { useMediaQuery } from 'react-responsive';
+import classNames from 'classnames';
+import BootstrapTable from 'react-bootstrap-table-next';
+import Button from '../../components/Button';
+import ActivePairCard from '../../components/ActivePairCard';
+import FilterPanel from '../../components/FilterPanel';
+import stepIcon from '../../assets/images/STEP.svg';
+import usdcIcon from '../../assets/images/USDC.svg';
+import rayIcon from '../../assets/images/RAY.svg';
+import solIcon from '../../assets/images/SOL.svg';
 
 const tokenPairs = [
   {
@@ -21,7 +21,7 @@ const tokenPairs = [
     apr: 125,
     owed: '$1,200',
     mint: '$600',
-    price: '$3,000',
+    price: '$3,000'
   },
   {
     id: 1,
@@ -33,16 +33,16 @@ const tokenPairs = [
     owed: '$1,200',
     mint: '$600',
     price: '$3,000',
-    warning: true,
-  },
-]
+    warning: true
+  }
+];
 
 const columns = [
   {
     dataField: 'id',
     text: 'Asset',
     headerStyle: {
-      width: '20%',
+      width: '20%'
     },
     formatter: (cell: any, row: any) => {
       return (
@@ -58,7 +58,7 @@ const columns = [
             </div>
             <div
               className={classNames('activepaircard__titleBox', {
-                'activepaircard__titleBox--warning': row.warning,
+                'activepaircard__titleBox--warning': row.warning
               })}
             >
               <h6>{row.title}</h6>
@@ -77,76 +77,76 @@ const columns = [
             </div>
           )}
         </div>
-      )
+      );
     },
     style: {
-      paddingTop: 35,
-    },
+      paddingTop: 35
+    }
   },
   {
     dataField: 'apr',
     text: 'APR',
     headerStyle: {
-      width: '7%',
+      width: '7%'
     },
     formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.apr}%</h6>
+      return <h6 className="semiBold">{row.apr}%</h6>;
     },
     style: {
-      paddingTop: 35,
-    },
+      paddingTop: 35
+    }
   },
   {
     dataField: 'owed',
     text: 'USDr Owed',
     headerStyle: {
-      width: '10%',
+      width: '10%'
     },
     formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.owed}</h6>
+      return <h6 className="semiBold">{row.owed}</h6>;
     },
     style: {
-      paddingTop: 35,
-    },
+      paddingTop: 35
+    }
   },
   {
     dataField: 'mint',
     text: 'Available to Mint',
     headerStyle: {
-      width: '12%',
+      width: '12%'
     },
     formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.mint}</h6>
+      return <h6 className="semiBold">{row.mint}</h6>;
     },
     style: {
-      paddingTop: 35,
-    },
+      paddingTop: 35
+    }
   },
   {
     dataField: 'price',
     text: 'Liquidation Price',
     headerStyle: {
-      width: '12%',
+      width: '12%'
     },
     formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.price}</h6>
+      return <h6 className="semiBold">{row.price}</h6>;
     },
     style: {
-      paddingTop: 35,
-    },
+      paddingTop: 35
+    }
   },
   {
     dataField: 'risk',
     text: 'Risk Level',
     headerStyle: {
-      width: '9%',
+      width: '9%'
     },
     formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.risk}</h6>
+      return <h6 className="semiBold">{row.risk}</h6>;
     },
     style: {
-      paddingTop: 35,
-    },
+      paddingTop: 35
+    }
   },
   {
     dataField: '',
@@ -155,7 +155,7 @@ const columns = [
       return (
         <div
           className={classNames('activepaircard__btnBox d-flex', {
-            'activepaircard__btnBox--warning': row.warning,
+            'activepaircard__btnBox--warning': row.warning
           })}
         >
           <div className="col">
@@ -167,31 +167,31 @@ const columns = [
             <Button className="button--fill lp-button">Enter Vault</Button>
           </div>
         </div>
-      )
-    },
-  },
-]
-const rowClasses = (row: any) => {
-  let classes = ''
-  if (row.warning) {
-    classes = 'warning_position'
+      );
+    }
   }
-  return classes
-}
+];
+const rowClasses = (row: any) => {
+  let classes = '';
+  if (row.warning) {
+    classes = 'warning_position';
+  }
+  return classes;
+};
 
 const ActiveVaults = () => {
-  const isMobile = useMediaQuery({ maxWidth: 767 })
-  const [viewType, setViewType] = React.useState('tile')
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const [viewType, setViewType] = React.useState('tile');
 
   React.useEffect(() => {
     if (isMobile) {
-      setViewType('tile')
+      setViewType('tile');
     }
-  }, [isMobile])
+  }, [isMobile]);
 
   const onViewType = (type: string) => {
-    setViewType(type)
-  }
+    setViewType(type);
+  };
 
   return (
     <div className="activeVaults">
@@ -203,7 +203,7 @@ const ActiveVaults = () => {
       <div className="row ">
         {viewType === 'tile' &&
           tokenPairs.map((item) => {
-            return <ActivePairCard data={item} key={item.id} />
+            return <ActivePairCard data={item} key={item.id} />;
           })}
         {viewType === 'list' && (
           <div className="mt-4 activeVaults__list">
@@ -219,7 +219,7 @@ const ActiveVaults = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ActiveVaults
+export default ActiveVaults;

@@ -1,3 +1,3 @@
-import ArchivedPairCard from './ArchivedPairCard'
+import ArchivedPairCard from './ArchivedPairCard';
 
-export default ArchivedPairCard
+export default ArchivedPairCard;

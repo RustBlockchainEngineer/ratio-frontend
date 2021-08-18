@@ -1,20 +1,20 @@
-import React from 'react'
-import classNames from 'classnames'
+import React from 'react';
+import classNames from 'classnames';
 
 type NavbarItemProps = {
-  icon: string
-  name: string
-  active: boolean
-  navIndex: string
-  onItemClick: (navIndex: string) => void
-}
+  icon: string;
+  name: string;
+  active: boolean;
+  navIndex: string;
+  onItemClick: (navIndex: string) => void;
+};
 
 const NavbarItem = ({
   icon,
   name,
   active,
   navIndex,
-  onItemClick,
+  onItemClick
 }: NavbarItemProps) => {
   return (
     <div
@@ -29,7 +29,7 @@ const NavbarItem = ({
       <img src={icon} alt="icon" />
       <p className="ml-3">{name}</p>
     </div>
-  )
-}
+  );
+};
 
-export default NavbarItem
+export default NavbarItem;

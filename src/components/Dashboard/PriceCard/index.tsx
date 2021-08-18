@@ -1,3 +1,3 @@
-import PriceCard from './PriceCard'
+import PriceCard from './PriceCard';
 
-export default PriceCard
+export default PriceCard;

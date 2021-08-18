@@ -1,10 +1,10 @@
-import React from 'react'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { WalletProvider } from './contexts/wallet'
-import { ConnectionProvider } from './contexts/connection'
-import { AccountsProvider } from './contexts/accounts'
-import { MarketProvider } from './contexts/market'
-import Layer from './pages/Layer'
+import React from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { WalletProvider } from './contexts/wallet';
+import { ConnectionProvider } from './contexts/connection';
+import { AccountsProvider } from './contexts/accounts';
+import { MarketProvider } from './contexts/market';
+import Layer from './pages/Layer';
 
 const App: React.FC = () => {
   return (
@@ -23,7 +23,7 @@ const App: React.FC = () => {
         </AccountsProvider>
       </WalletProvider>
     </ConnectionProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

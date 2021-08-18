@@ -1,3 +1,3 @@
-import GenerateModal from './GenerateModal'
+import GenerateModal from './GenerateModal';
 
-export default GenerateModal
+export default GenerateModal;

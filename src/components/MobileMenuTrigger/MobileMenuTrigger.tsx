@@ -1,14 +1,14 @@
-import React from 'react'
-import { IoMenu, IoClose } from 'react-icons/io5'
+import React from 'react';
+import { IoMenu, IoClose } from 'react-icons/io5';
 
 type MobileMenuTriggerProps = {
-  clickMenuTrigger: () => void
-  open: boolean
-}
+  clickMenuTrigger: () => void;
+  open: boolean;
+};
 
 const MobileMenuTrigger = ({
   clickMenuTrigger,
-  open,
+  open
 }: MobileMenuTriggerProps) => {
   return (
     <div
@@ -22,7 +22,7 @@ const MobileMenuTrigger = ({
         <IoClose size="40" color="white" />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default MobileMenuTrigger
+export default MobileMenuTrigger;

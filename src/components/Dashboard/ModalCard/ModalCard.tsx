@@ -1,43 +1,43 @@
-import React from 'react'
-import DepositModal from '../DepositModal'
-import PaybackModal from '../PaybackModal'
-import WithdrawModal from '../WithdrawModal'
-import GenerateModal from '../GenerateModal'
+import React from 'react';
+import DepositModal from '../DepositModal';
+import PaybackModal from '../PaybackModal';
+import WithdrawModal from '../WithdrawModal';
+import GenerateModal from '../GenerateModal';
 
-import usdrIcon from '../../../assets/images/USDr.svg'
-import rayIcon from '../../../assets/images/RAY.svg'
-import solIcon from '../../../assets/images/SOL.svg'
+import usdrIcon from '../../../assets/images/USDr.svg';
+import rayIcon from '../../../assets/images/RAY.svg';
+import solIcon from '../../../assets/images/SOL.svg';
 
-const depositData = { icons: [rayIcon, solIcon], title: 'RAY-SOL' }
+const depositData = { icons: [rayIcon, solIcon], title: 'RAY-SOL' };
 const paybackData = {
   icons: [usdrIcon],
   title: 'RAY-SOL',
-  usdrValue: '$7.45',
-}
+  usdrValue: '$7.45'
+};
 const withdrawData = {
   icons: [rayIcon, solIcon],
   title: 'RAY-SOL',
-  value: '12.54',
-}
+  value: '12.54'
+};
 
 const generateData = {
   icons: [usdrIcon],
-  usdrValue: '32.34',
-}
+  usdrValue: '32.34'
+};
 
 interface ModalcardInterface {
-  title: string
-  tokens: Array<string>
-  tokenNames: string
-  tokenValue: string
-  type: string
-  withdrawValue?: string
-  GenerateValue?: string
+  title: string;
+  tokens: Array<string>;
+  tokenNames: string;
+  tokenValue: string;
+  type: string;
+  withdrawValue?: string;
+  GenerateValue?: string;
 }
 
 type ModalCardProps = {
-  data: ModalcardInterface
-}
+  data: ModalcardInterface;
+};
 
 const ModalCard = ({ data }: ModalCardProps) => {
   return (
@@ -86,7 +86,7 @@ const ModalCard = ({ data }: ModalCardProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ModalCard
+export default ModalCard;

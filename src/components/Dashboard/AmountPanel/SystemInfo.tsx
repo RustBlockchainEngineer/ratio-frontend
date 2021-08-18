@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const SystemInfo = () => {
   return (
@@ -17,7 +17,7 @@ const SystemInfo = () => {
         <h5>10,000,000</h5>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SystemInfo
+export default SystemInfo;

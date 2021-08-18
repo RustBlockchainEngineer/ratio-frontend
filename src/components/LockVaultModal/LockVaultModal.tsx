@@ -1,30 +1,30 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap'
-import { IoMdClose } from 'react-icons/io'
-import { useHistory } from 'react-router-dom'
-import Button from '../Button'
-import CustomInput from '../CustomInput'
+import React from 'react';
+import { Modal } from 'react-bootstrap';
+import { IoMdClose } from 'react-icons/io';
+import { useHistory } from 'react-router-dom';
+import Button from '../Button';
+import CustomInput from '../CustomInput';
 
-import riskLevel from '../../assets/images/risklevel.svg'
-import highRisk from '../../assets/images/highrisk.svg'
+import riskLevel from '../../assets/images/risklevel.svg';
+import highRisk from '../../assets/images/highrisk.svg';
 
 type PairType = {
-  id: number
-  icons: Array<string>
-  title: string
-  tvl: string
-  risk: string
-  apr: number
-  details: string
-}
+  id: number;
+  icons: Array<string>;
+  title: string;
+  tvl: string;
+  risk: string;
+  apr: number;
+  details: string;
+};
 
 type LockVaultModalProps = {
-  data: PairType
-}
+  data: PairType;
+};
 
 const LockVaultModal = ({ data }: LockVaultModalProps) => {
-  const history = useHistory()
-  const [show, setShow] = React.useState(false)
+  const history = useHistory();
+  const [show, setShow] = React.useState(false);
 
   return (
     <>
@@ -126,7 +126,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
         </Modal.Footer>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default LockVaultModal
+export default LockVaultModal;

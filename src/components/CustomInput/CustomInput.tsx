@@ -1,25 +1,25 @@
-import React from 'react'
-import classNames from 'classnames'
-import { InputGroup, FormControl } from 'react-bootstrap'
+import React from 'react';
+import classNames from 'classnames';
+import { InputGroup, FormControl } from 'react-bootstrap';
 
 type CustomInputProps = {
-  appendStr: String
-  tokenStr: String
-  appendValueStr?: String
-  className?: String
-}
+  appendStr: String;
+  tokenStr: String;
+  appendValueStr?: String;
+  className?: String;
+};
 
 const CustomInput = ({
   appendStr,
   tokenStr,
   appendValueStr,
-  className,
+  className
 }: CustomInputProps) => {
-  const [value, setValue] = React.useState('0')
+  const [value, setValue] = React.useState('0');
 
   const handleChange = (e: any) => {
-    setValue(e.target.value.replace(/\D/, ''))
-  }
+    setValue(e.target.value.replace(/\D/, ''));
+  };
 
   return (
     <InputGroup className={classNames('customInput mb-1', className)}>
@@ -47,12 +47,12 @@ const CustomInput = ({
         </InputGroup.Append>
       )}
     </InputGroup>
-  )
-}
+  );
+};
 
 CustomInput.defaultProps = {
   appendValueStr: '',
-  className: '',
-}
+  className: ''
+};
 
-export default CustomInput
+export default CustomInput;

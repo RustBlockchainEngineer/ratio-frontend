@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-import Button from '../../Button'
+import Button from '../../Button';
 
 const VaultDebt = () => {
   return (
@@ -11,7 +11,7 @@ const VaultDebt = () => {
       </p>
       <Button className="button--fill paybackusdr">Pay Back USDr</Button>
     </div>
-  )
-}
+  );
+};
 
-export default VaultDebt
+export default VaultDebt;

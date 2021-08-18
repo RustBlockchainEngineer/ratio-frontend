@@ -1,25 +1,25 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap'
-import { IoMdClose } from 'react-icons/io'
-import LockVaultModal from '../LockVaultModal'
-import Button from '../Button'
+import React from 'react';
+import { Modal } from 'react-bootstrap';
+import { IoMdClose } from 'react-icons/io';
+import LockVaultModal from '../LockVaultModal';
+import Button from '../Button';
 
 type PairType = {
-  id: number
-  icons: Array<string>
-  title: string
-  tvl: string
-  risk: string
-  apr: number
-  details: string
-}
+  id: number;
+  icons: Array<string>;
+  title: string;
+  tvl: string;
+  risk: string;
+  apr: number;
+  details: string;
+};
 
 type LockVaultModalProps = {
-  data: PairType
-}
+  data: PairType;
+};
 
 const DisclaimerModal = ({ data }: LockVaultModalProps) => {
-  const [show, setShow] = React.useState(false)
+  const [show, setShow] = React.useState(false);
 
   return (
     <>
@@ -62,7 +62,7 @@ const DisclaimerModal = ({ data }: LockVaultModalProps) => {
         </Modal.Body>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default DisclaimerModal
+export default DisclaimerModal;

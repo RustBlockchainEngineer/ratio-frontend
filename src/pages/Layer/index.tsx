@@ -1,3 +1,3 @@
-import Layer from './Layer'
+import Layer from './Layer';
 
-export default Layer
+export default Layer;

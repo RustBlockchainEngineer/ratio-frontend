@@ -1,20 +1,20 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap'
-import { IoMdClose } from 'react-icons/io'
-import Button from '../../Button'
-import CustomInput from '../../CustomInput'
+import React from 'react';
+import { Modal } from 'react-bootstrap';
+import { IoMdClose } from 'react-icons/io';
+import Button from '../../Button';
+import CustomInput from '../../CustomInput';
 
 type PairType = {
-  icons: Array<string>
-  title: string
-}
+  icons: Array<string>;
+  title: string;
+};
 
 type DepositModalProps = {
-  data: PairType
-}
+  data: PairType;
+};
 
 const DepositModal = ({ data }: DepositModalProps) => {
-  const [show, setShow] = React.useState(false)
+  const [show, setShow] = React.useState(false);
   return (
     <div className="dashboardModal">
       <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
@@ -65,7 +65,7 @@ const DepositModal = ({ data }: DepositModalProps) => {
         </Modal.Body>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default DepositModal
+export default DepositModal;

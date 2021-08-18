@@ -1,3 +1,3 @@
-import DisclaimerModal from './DisclaimerModal'
+import DisclaimerModal from './DisclaimerModal';
 
-export default DisclaimerModal
+export default DisclaimerModal;

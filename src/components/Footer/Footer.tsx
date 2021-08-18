@@ -1,9 +1,9 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import imageLogo from '../../assets/images/image-logo.svg'
-import telegram from '../../assets/images/telegram.svg'
-import twitter from '../../assets/images/twitter.svg'
-import medium from '../../assets/images/medium.svg'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import imageLogo from '../../assets/images/image-logo.svg';
+import telegram from '../../assets/images/telegram.svg';
+import twitter from '../../assets/images/twitter.svg';
+import medium from '../../assets/images/medium.svg';
 
 const Footer = () => {
   return (
@@ -60,7 +60,7 @@ const Footer = () => {
         </ul>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

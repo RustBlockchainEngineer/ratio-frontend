@@ -1,3 +1,3 @@
-import DepositModal from './DepositModal'
+import DepositModal from './DepositModal';
 
-export default DepositModal
+export default DepositModal;

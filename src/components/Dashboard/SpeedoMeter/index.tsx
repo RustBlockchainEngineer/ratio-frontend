@@ -1,3 +1,3 @@
-import SpeedoMetor from './SpeedoMeter'
+import SpeedoMetor from './SpeedoMeter';
 
-export default SpeedoMetor
+export default SpeedoMetor;

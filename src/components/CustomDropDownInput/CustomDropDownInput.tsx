@@ -4,7 +4,7 @@ import {
   InputGroup,
   FormControl,
   DropdownButton,
-  Dropdown,
+  Dropdown
 } from 'react-bootstrap';
 
 import stepIcon from '../../assets/images/STEP.svg';
@@ -16,23 +16,23 @@ const tokenList = [
   {
     id: 0,
     icons: solIcon,
-    title: 'SOL',
+    title: 'SOL'
   },
   {
     id: 1,
     icons: rayIcon,
-    title: 'RAY',
+    title: 'RAY'
   },
   {
     id: 2,
     icons: stepIcon,
-    title: 'STEP',
+    title: 'STEP'
   },
   {
     id: 3,
     icons: usdcIcon,
-    title: 'USDC',
-  },
+    title: 'USDC'
+  }
 ];
 
 const CustomDropDownInput = () => {

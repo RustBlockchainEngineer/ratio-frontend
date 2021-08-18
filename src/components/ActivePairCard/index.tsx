@@ -1,3 +1,3 @@
-import ActivePairCard from './ActivePairCard'
+import ActivePairCard from './ActivePairCard';
 
-export default ActivePairCard
+export default ActivePairCard;

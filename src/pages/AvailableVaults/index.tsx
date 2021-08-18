@@ -1,3 +1,3 @@
-import AvailableVaults from './AvailableVaults'
+import AvailableVaults from './AvailableVaults';
 
-export default AvailableVaults
+export default AvailableVaults;

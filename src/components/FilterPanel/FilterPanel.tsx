@@ -1,26 +1,26 @@
-import React from 'react'
-import { useMediaQuery } from 'react-responsive'
-import classNames from 'classnames'
-import Select from 'react-select'
-import { IoSearchOutline } from 'react-icons/io5'
-import title from '../../assets/images/tile.svg'
-import list from '../../assets/images/list.svg'
+import React from 'react';
+import { useMediaQuery } from 'react-responsive';
+import classNames from 'classnames';
+import Select from 'react-select';
+import { IoSearchOutline } from 'react-icons/io5';
+import title from '../../assets/images/tile.svg';
+import list from '../../assets/images/list.svg';
 
 type FilterPanelProps = {
-  label: string
-  onViewType: (type: string) => void
-  viewType: string
-}
+  label: string;
+  onViewType: (type: string) => void;
+  viewType: string;
+};
 
 const options = [
   { value: 'APR', label: 'APR' },
   { value: 'RISK', label: 'RISK' },
-  { value: 'TVL', label: 'TVL' },
-]
+  { value: 'TVL', label: 'TVL' }
+];
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
-  const isDefault = useMediaQuery({ minWidth: 768 })
-  const isMobile = useMediaQuery({ maxWidth: 767 })
+  const isDefault = useMediaQuery({ minWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 767 });
   return (
     <div className="filterpanel">
       <h2>{label}</h2>
@@ -51,7 +51,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
                 onClick={() => onViewType('tile')}
                 className={classNames([
                   'ml-4 filterpanel__viewtype',
-                  { 'filterpanel__viewtype-active': viewType === 'tile' },
+                  { 'filterpanel__viewtype-active': viewType === 'tile' }
                 ])}
                 aria-hidden="true"
               />
@@ -61,7 +61,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
                 onClick={() => onViewType('list')}
                 className={classNames([
                   'filterpanel__viewtype',
-                  { 'filterpanel__viewtype-active': viewType === 'list' },
+                  { 'filterpanel__viewtype-active': viewType === 'list' }
                 ])}
                 aria-hidden="true"
               />
@@ -70,7 +70,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FilterPanel
+export default FilterPanel;

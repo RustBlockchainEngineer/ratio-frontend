@@ -1,5 +1,5 @@
-import React from 'react'
-import GaugeChart from 'react-gauge-chart'
+import React from 'react';
+import GaugeChart from 'react-gauge-chart';
 
 const SpeedoMeter = () => {
   // const chartStyle = {
@@ -23,7 +23,7 @@ const SpeedoMeter = () => {
         <p>Surplus</p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SpeedoMeter
+export default SpeedoMeter;

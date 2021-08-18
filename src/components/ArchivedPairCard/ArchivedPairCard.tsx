@@ -1,22 +1,22 @@
-import React from 'react'
-import { IoWarningOutline } from 'react-icons/io5'
-import classNames from 'classnames'
-import Button from '../Button'
+import React from 'react';
+import { IoWarningOutline } from 'react-icons/io5';
+import classNames from 'classnames';
+import Button from '../Button';
 
 type PairType = {
-  id: number
-  icons: Array<string>
-  title: string
-  tvl: string
-  risk: string
-  apr: number
-  owed: string
-  mint: string
-  price: string
-}
+  id: number;
+  icons: Array<string>;
+  title: string;
+  tvl: string;
+  risk: string;
+  apr: number;
+  owed: string;
+  mint: string;
+  price: string;
+};
 
 interface ArchivedCardProps {
-  data: PairType
+  data: PairType;
 }
 
 const ArchivedPairCard = ({ data }: ArchivedCardProps) => {
@@ -86,7 +86,7 @@ const ArchivedPairCard = ({ data }: ArchivedCardProps) => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ArchivedPairCard
+export default ArchivedPairCard;

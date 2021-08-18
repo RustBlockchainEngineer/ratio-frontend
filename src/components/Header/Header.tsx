@@ -1,20 +1,20 @@
-import React from 'react'
-import { useMediaQuery } from 'react-responsive'
-import { FaCheck } from 'react-icons/fa'
-import Button from '../Button'
-import { shortenAddress } from '../../utils/utils'
-import { useWallet } from '../../contexts/wallet'
-import logo from '../../assets/images/logo-side.svg'
+import React from 'react';
+import { useMediaQuery } from 'react-responsive';
+import { FaCheck } from 'react-icons/fa';
+import Button from '../Button';
+import { shortenAddress } from '../../utils/utils';
+import { useWallet } from '../../contexts/wallet';
+import logo from '../../assets/images/logo-side.svg';
 
 type HeaderProps = {
-  onClickWalletBtn: () => void
-}
+  onClickWalletBtn: () => void;
+};
 
 const Header = ({ onClickWalletBtn }: HeaderProps) => {
-  const { connected, connect, wallet } = useWallet()
+  const { connected, connect, wallet } = useWallet();
   // const { onClick, children, disabled, allowWalletChange, ...rest } = props
 
-  const isMobile = useMediaQuery({ maxWidth: 767 })
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
   return (
     <div className="header d-flex ">
@@ -36,7 +36,7 @@ const Header = ({ onClickWalletBtn }: HeaderProps) => {
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

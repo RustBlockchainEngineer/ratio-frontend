@@ -1,20 +1,20 @@
-import React from 'react'
+import React from 'react';
 
-import risklevel from '../../../assets/images/risklevel.svg'
+import risklevel from '../../../assets/images/risklevel.svg';
 
 interface PricecardInterface {
-  title: string
-  titleIcon: boolean
-  mainValue: string
-  mainUnit?: string
-  currentPrice?: string
-  minimumRatio?: string
-  stabilityFee?: string
+  title: string;
+  titleIcon: boolean;
+  mainValue: string;
+  mainUnit?: string;
+  currentPrice?: string;
+  minimumRatio?: string;
+  stabilityFee?: string;
 }
 
 type PriceCardProps = {
-  data: PricecardInterface
-}
+  data: PricecardInterface;
+};
 
 const PriceCard = ({ data }: PriceCardProps) => {
   return (
@@ -50,7 +50,7 @@ const PriceCard = ({ data }: PriceCardProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PriceCard
+export default PriceCard;

@@ -1,3 +1,3 @@
-import RiskLevel from './RiskLevel'
+import RiskLevel from './RiskLevel';
 
-export default RiskLevel
+export default RiskLevel;

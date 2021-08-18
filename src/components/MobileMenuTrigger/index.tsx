@@ -1,3 +1,3 @@
-import MobileMenuTrigger from './MobileMenuTrigger'
+import MobileMenuTrigger from './MobileMenuTrigger';
 
-export default MobileMenuTrigger
+export default MobileMenuTrigger;

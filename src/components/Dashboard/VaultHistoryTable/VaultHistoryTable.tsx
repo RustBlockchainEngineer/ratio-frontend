@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 
-import { Table } from 'react-bootstrap'
-import share from '../../../assets/images/share.svg'
+import { Table } from 'react-bootstrap';
+import share from '../../../assets/images/share.svg';
 
 const VaultHistoryTable = () => {
   return (
@@ -45,7 +45,7 @@ const VaultHistoryTable = () => {
         </Table>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default VaultHistoryTable
+export default VaultHistoryTable;

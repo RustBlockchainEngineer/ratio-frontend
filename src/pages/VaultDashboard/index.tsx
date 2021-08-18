@@ -1,3 +1,3 @@
-import VaultDashboard from './VaultDashboard'
+import VaultDashboard from './VaultDashboard';
 
-export default VaultDashboard
+export default VaultDashboard;

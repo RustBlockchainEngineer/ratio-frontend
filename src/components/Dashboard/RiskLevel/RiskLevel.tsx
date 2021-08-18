@@ -1,12 +1,12 @@
-import React from 'react'
-import classNames from 'classnames'
+import React from 'react';
+import classNames from 'classnames';
 
-import riskLevel from '../../../assets/images/risklevel.svg'
-import highRisk from '../../../assets/images/highrisk.svg'
+import riskLevel from '../../../assets/images/risklevel.svg';
+import highRisk from '../../../assets/images/highrisk.svg';
 
 type RiskLevelProps = {
-  level: string
-}
+  level: string;
+};
 
 const RiskLevel = ({ level }: RiskLevelProps) => {
   return (
@@ -26,7 +26,7 @@ const RiskLevel = ({ level }: RiskLevelProps) => {
         <p>{level}</p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RiskLevel
+export default RiskLevel;

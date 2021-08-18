@@ -1,12 +1,12 @@
-import React from 'react'
-import classNames from 'classnames'
+import React from 'react';
+import classNames from 'classnames';
 
 type ButtonProps = {
-  children: string
-  className: string
-  onClick?: () => void
-  disabled?: boolean
-}
+  children: string;
+  className: string;
+  onClick?: () => void;
+  disabled?: boolean;
+};
 
 const Button = ({ children, className, disabled, onClick }: ButtonProps) => {
   return (
@@ -18,12 +18,12 @@ const Button = ({ children, className, disabled, onClick }: ButtonProps) => {
     >
       {children}
     </button>
-  )
-}
+  );
+};
 
 Button.defaultProps = {
   onClick: () => null,
-  disabled: false,
-}
+  disabled: false
+};
 
-export default Button
+export default Button;

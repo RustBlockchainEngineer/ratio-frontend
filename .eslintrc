@@ -17,7 +17,7 @@
   "rules": {
     // Make prettier code formatting suggestions more verbose.
     "prettier/prettier": [
-      "error"
+      "warn"
     ],
     // Disable <Fragment> => <> replacement. Feel free to change
     "react/jsx-fragments": "off",

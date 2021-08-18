@@ -1,40 +1,40 @@
-import React from 'react'
-import { IoWarningOutline } from 'react-icons/io5'
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
-import { OverlayTrigger, Tooltip } from 'react-bootstrap'
-import classNames from 'classnames'
-import Button from '../Button'
-import riskLevel from '../../assets/images/risklevel.svg'
-import highRisk from '../../assets/images/highrisk.svg'
-import RayIcon from '../../assets/images/RAY.svg'
-import USDrIcon from '../../assets/images/USDr.svg'
+import React from 'react';
+import { IoWarningOutline } from 'react-icons/io5';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import classNames from 'classnames';
+import Button from '../Button';
+import riskLevel from '../../assets/images/risklevel.svg';
+import highRisk from '../../assets/images/highrisk.svg';
+import RayIcon from '../../assets/images/RAY.svg';
+import USDrIcon from '../../assets/images/USDr.svg';
 
 type PairType = {
-  id: number
-  icons: Array<string>
-  title: string
-  tvl: string
-  risk: number
-  apr: number
-  owed: string
-  mint: string
-  price: string
-  warning?: boolean
-}
+  id: number;
+  icons: Array<string>;
+  title: string;
+  tvl: string;
+  risk: number;
+  apr: number;
+  owed: string;
+  mint: string;
+  price: string;
+  warning?: boolean;
+};
 
 interface ActiveCardProps {
-  data: PairType
+  data: PairType;
 }
 
 const ActivePairCard = ({ data }: ActiveCardProps) => {
-  const [isOpen, setOpen] = React.useState(false)
+  const [isOpen, setOpen] = React.useState(false);
 
   return (
     <>
       <div className="col col-xl-4 col-lg-6 col-md-12">
         <div
           className={classNames('activepaircard mt-4', {
-            'activepaircard--warning': data.warning,
+            'activepaircard--warning': data.warning
           })}
         >
           <div className="activepaircard__header">
@@ -49,7 +49,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
               </div>
               <div
                 className={classNames('activepaircard__titleBox', {
-                  'activepaircard__titleBox--warning': data.warning,
+                  'activepaircard__titleBox--warning': data.warning
                 })}
               >
                 <h6>{data.title}</h6>
@@ -162,7 +162,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ActivePairCard
+export default ActivePairCard;

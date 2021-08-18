@@ -1,3 +1,3 @@
-import AmountPanel from './AmountPanel'
+import AmountPanel from './AmountPanel';
 
-export default AmountPanel
+export default AmountPanel;

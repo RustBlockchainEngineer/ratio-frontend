@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 
-import WalletBalances from './WalletBalances'
-import TokensEarned from './TokensEarned'
-import LossCalculator from './LossCalculator'
-import SystemInfo from './SystemInfo'
+import WalletBalances from './WalletBalances';
+import TokensEarned from './TokensEarned';
+import LossCalculator from './LossCalculator';
+import SystemInfo from './SystemInfo';
 
 const AmountPanel = () => {
   return (
@@ -13,7 +13,7 @@ const AmountPanel = () => {
       <LossCalculator />
       <SystemInfo />
     </div>
-  )
-}
+  );
+};
 
-export default AmountPanel
+export default AmountPanel;

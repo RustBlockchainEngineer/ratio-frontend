@@ -1,20 +1,20 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap'
-import { IoMdClose } from 'react-icons/io'
-import Button from '../../Button'
-import CustomInput from '../../CustomInput'
+import React from 'react';
+import { Modal } from 'react-bootstrap';
+import { IoMdClose } from 'react-icons/io';
+import Button from '../../Button';
+import CustomInput from '../../CustomInput';
 
 type PairType = {
-  icons: Array<string>
-  usdrValue: string
-}
+  icons: Array<string>;
+  usdrValue: string;
+};
 
 type GenerateModalProps = {
-  data: PairType
-}
+  data: PairType;
+};
 
 const GenerateModal = ({ data }: GenerateModalProps) => {
-  const [show, setShow] = React.useState(false)
+  const [show, setShow] = React.useState(false);
   return (
     <div className="dashboardModal">
       <Button className="gradientBtn" onClick={() => setShow(!show)}>
@@ -67,7 +67,7 @@ const GenerateModal = ({ data }: GenerateModalProps) => {
         </Modal.Body>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default GenerateModal
+export default GenerateModal;

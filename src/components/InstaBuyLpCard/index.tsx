@@ -1,3 +1,3 @@
-import InstaBuyLpCard from './InstaBuyLpCard'
+import InstaBuyLpCard from './InstaBuyLpCard';
 
-export default InstaBuyLpCard
+export default InstaBuyLpCard;

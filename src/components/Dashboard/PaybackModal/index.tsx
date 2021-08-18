@@ -1,3 +1,3 @@
-import PaybackModal from './PaybackModal'
+import PaybackModal from './PaybackModal';
 
-export default PaybackModal
+export default PaybackModal;

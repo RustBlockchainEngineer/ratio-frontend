@@ -1,21 +1,21 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap'
-import { IoMdClose } from 'react-icons/io'
-import Button from '../../Button'
-import CustomInput from '../../CustomInput'
+import React from 'react';
+import { Modal } from 'react-bootstrap';
+import { IoMdClose } from 'react-icons/io';
+import Button from '../../Button';
+import CustomInput from '../../CustomInput';
 
 type PairType = {
-  icons: Array<string>
-  title: string
-  value: string
-}
+  icons: Array<string>;
+  title: string;
+  value: string;
+};
 
 type WithdrawModalProps = {
-  data: PairType
-}
+  data: PairType;
+};
 
 const WithdrawModal = ({ data }: WithdrawModalProps) => {
-  const [show, setShow] = React.useState(false)
+  const [show, setShow] = React.useState(false);
   return (
     <div className="dashboardModal">
       <Button className="gradientBtn" onClick={() => setShow(!show)}>
@@ -74,7 +74,7 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
         </Modal.Body>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default WithdrawModal
+export default WithdrawModal;

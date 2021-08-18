@@ -1,3 +1,3 @@
-import LockVaultModal from './LockVaultModal'
+import LockVaultModal from './LockVaultModal';
 
-export default LockVaultModal
+export default LockVaultModal;

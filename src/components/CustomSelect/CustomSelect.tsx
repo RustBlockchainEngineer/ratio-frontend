@@ -1,20 +1,20 @@
-import React from 'react'
+import React from 'react';
 
-import Select, { components } from 'react-select'
+import Select, { components } from 'react-select';
 
 interface Option {
-  value: string
-  label: string
-  icon: Array<any>
+  value: string;
+  label: string;
+  icon: Array<any>;
 }
 
 type CustomSelectProps = {
-  options: Array<Option>
-}
+  options: Array<Option>;
+};
 
 const CustomSelect = ({ options }: CustomSelectProps) => {
   const CustomOption = (props: any) => {
-    const { children, innerProps, data } = props
+    const { children, innerProps, data } = props;
     return (
       <div className="customSelect__option">
         <div {...innerProps} className="px-3 py-2">
@@ -25,8 +25,8 @@ const CustomSelect = ({ options }: CustomSelectProps) => {
           <span className="ml-3">{children}</span>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   const Control = ({ children, selectProps, ...rest }: any) => {
     return (
@@ -41,8 +41,8 @@ const CustomSelect = ({ options }: CustomSelectProps) => {
         )}{' '}
         {children}
       </components.Control>
-    )
-  }
+    );
+  };
   return (
     <div className="customSelect">
       <Select
@@ -53,7 +53,7 @@ const CustomSelect = ({ options }: CustomSelectProps) => {
         isSearchable={false}
       />
     </div>
-  )
-}
+  );
+};
 
-export default CustomSelect
+export default CustomSelect;

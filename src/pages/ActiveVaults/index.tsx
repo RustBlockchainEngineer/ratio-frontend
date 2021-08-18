@@ -1,3 +1,3 @@
-import ActiveVaults from './ActiveVaults'
+import ActiveVaults from './ActiveVaults';
 
-export default ActiveVaults
+export default ActiveVaults;

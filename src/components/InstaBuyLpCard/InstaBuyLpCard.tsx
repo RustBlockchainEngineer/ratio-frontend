@@ -1,15 +1,15 @@
-import React from 'react'
-import CustomInput from '../CustomInput'
-import CustomSelect from '../CustomSelect'
-import Button from '../Button'
+import React from 'react';
+import CustomInput from '../CustomInput';
+import CustomSelect from '../CustomSelect';
+import Button from '../Button';
 
-import stepIcon from '../../assets/images/STEP.svg'
-import usdcIcon from '../../assets/images/USDC.svg'
-import rayIcon from '../../assets/images/RAY.svg'
-import solIcon from '../../assets/images/SOL.svg'
-import ethIcon from '../../assets/images/ETH.svg'
-import srmIcon from '../../assets/images/SRM.svg'
-import mediaIcon from '../../assets/images/MEDIA.svg'
+import stepIcon from '../../assets/images/STEP.svg';
+import usdcIcon from '../../assets/images/USDC.svg';
+import rayIcon from '../../assets/images/RAY.svg';
+import solIcon from '../../assets/images/SOL.svg';
+import ethIcon from '../../assets/images/ETH.svg';
+import srmIcon from '../../assets/images/SRM.svg';
+import mediaIcon from '../../assets/images/MEDIA.svg';
 
 const options = [
   { value: 'SOL', label: 'SOL', icon: [solIcon] },
@@ -18,8 +18,8 @@ const options = [
   { value: 'MEDIA', label: 'MEDIA', icon: [mediaIcon] },
   { value: 'ETH', label: 'ETH', icon: [ethIcon] },
   { value: 'USDC', label: 'USDC', icon: [usdcIcon] },
-  { value: 'STEP', label: 'STEP', icon: [stepIcon] },
-]
+  { value: 'STEP', label: 'STEP', icon: [stepIcon] }
+];
 
 const options1 = [
   { value: 'STEP-USDC', label: 'STEP-USDC-LP', icon: [stepIcon, usdcIcon] },
@@ -27,8 +27,8 @@ const options1 = [
   { value: 'RAY-EHT', label: 'RAY-EHT-LP', icon: [rayIcon, ethIcon] },
   { value: 'RAY-SRM', label: 'RAY-SRM-LP', icon: [rayIcon, srmIcon] },
   { value: 'RAY-USDC', label: 'RAY-USDC-LP', icon: [rayIcon, usdcIcon] },
-  { value: 'MEDIA-USDC', label: 'MEDIA-USDC-LP', icon: [mediaIcon, usdcIcon] },
-]
+  { value: 'MEDIA-USDC', label: 'MEDIA-USDC-LP', icon: [mediaIcon, usdcIcon] }
+];
 
 const InstaBuyLpCard = () => {
   return (
@@ -56,7 +56,7 @@ const InstaBuyLpCard = () => {
         <Button className="button--fill swaptokensBtn">Create LP</Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default InstaBuyLpCard
+export default InstaBuyLpCard;

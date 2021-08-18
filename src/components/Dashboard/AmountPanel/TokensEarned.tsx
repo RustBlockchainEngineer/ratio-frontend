@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 
-import { Table } from 'react-bootstrap'
-import RAY from '../../../assets/images/RAY.svg'
-import SOL from '../../../assets/images/SOL.svg'
+import { Table } from 'react-bootstrap';
+import RAY from '../../../assets/images/RAY.svg';
+import SOL from '../../../assets/images/SOL.svg';
 
 const TokensEarned = () => {
   return (
@@ -47,7 +47,7 @@ const TokensEarned = () => {
         </tbody>
       </Table>
     </div>
-  )
-}
+  );
+};
 
-export default TokensEarned
+export default TokensEarned;

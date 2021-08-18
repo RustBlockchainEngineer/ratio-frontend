@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-import { IoMdArrowDropdown } from 'react-icons/io'
+import { IoMdArrowDropdown } from 'react-icons/io';
 
 const LossCalculator = () => {
   return (
@@ -22,7 +22,7 @@ const LossCalculator = () => {
         </h5>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LossCalculator
+export default LossCalculator;

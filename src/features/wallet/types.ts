@@ -1,13 +1,13 @@
-import { CONNECTED_WALLET } from './actionTypes'
+import { CONNECTED_WALLET } from './actionTypes';
 
 interface ConnectedWalletAction {
-  type: typeof CONNECTED_WALLET
+  type: typeof CONNECTED_WALLET;
 }
 
 export interface SystemState {
   wallet: {
-    connected_status: false
-  }
+    connected_status: false;
+  };
 }
 
-export type WalletActionTypes = ConnectedWalletAction
+export type WalletActionTypes = ConnectedWalletAction;

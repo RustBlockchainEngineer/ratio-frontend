@@ -1,38 +1,38 @@
-import React, { useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
-import { useMediaQuery } from 'react-responsive'
-import classNames from 'classnames'
-import { useWallet } from '../../contexts/wallet'
-import NavbarItem from './NavbarItem'
-import Button from '../Button'
-import logo from '../../assets/images/logo-side.svg'
-import availableVaultsIcon from '../../assets/images/available-vaults-icon.svg'
-import instaBuyIcon from '../../assets/images/insta-buy-icon.svg'
-import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg'
-import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg'
+import React, { useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
+import classNames from 'classnames';
+import { useWallet } from '../../contexts/wallet';
+import NavbarItem from './NavbarItem';
+import Button from '../Button';
+import logo from '../../assets/images/logo-side.svg';
+import availableVaultsIcon from '../../assets/images/available-vaults-icon.svg';
+import instaBuyIcon from '../../assets/images/insta-buy-icon.svg';
+import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
+import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg';
 
 type NavbarProps = {
-  onClickWalletBtn: () => void
-  clickMenuItem: () => void
-  open: boolean
-}
+  onClickWalletBtn: () => void;
+  clickMenuItem: () => void;
+  open: boolean;
+};
 
 const Navbar = ({ onClickWalletBtn, clickMenuItem, open }: NavbarProps) => {
-  const isDefault = useMediaQuery({ minWidth: 768 })
-  const location = useLocation()
-  const history = useHistory()
-  const [navIndex, setNavIndex] = useState(location.pathname)
-  const { connected, connect } = useWallet()
+  const isDefault = useMediaQuery({ minWidth: 768 });
+  const location = useLocation();
+  const history = useHistory();
+  const [navIndex, setNavIndex] = useState(location.pathname);
+  const { connected, connect } = useWallet();
 
   React.useEffect(() => {
-    setNavIndex(location.pathname)
-  }, [location.pathname])
+    setNavIndex(location.pathname);
+  }, [location.pathname]);
 
   const onItemClick = (index: string) => {
-    setNavIndex(index)
-    history.push(`${index}`)
-    clickMenuItem()
-  }
+    setNavIndex(index);
+    history.push(`${index}`);
+    clickMenuItem();
+  };
 
   return (
     <div className={classNames('navbar-vertical', { closed: open })}>
@@ -94,7 +94,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open }: NavbarProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

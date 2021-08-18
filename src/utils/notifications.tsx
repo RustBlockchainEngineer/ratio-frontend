@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-import React from 'react'
-import { Toast } from 'react-bootstrap'
+import React from 'react';
+import { Toast } from 'react-bootstrap';
 // import Link from '../components/Link';
 
 export function notify({
@@ -8,7 +8,7 @@ export function notify({
   description = undefined as any,
   txid = '',
   type = 'info',
-  placement = 'bottomLeft',
+  placement = 'bottomLeft'
 }) {
   // if (txid) {
   //   //   <Link
@@ -34,5 +34,5 @@ export function notify({
       </Toast.Header>
       <Toast.Body>{placement}</Toast.Body>
     </Toast>
-  )
+  );
 }

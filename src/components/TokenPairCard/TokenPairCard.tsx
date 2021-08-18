@@ -1,41 +1,41 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
 // import { useSelector } from 'react-redux'
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
-import { OverlayTrigger, Tooltip } from 'react-bootstrap'
-import classNames from 'classnames'
-import { useWallet } from '../../contexts/wallet'
-import LockVaultModal from '../LockVaultModal'
-import DisclaimerModal from '../DisclaimerModal'
-import Button from '../Button'
-import riskLevel from '../../assets/images/risklevel.svg'
-import highRisk from '../../assets/images/highrisk.svg'
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import classNames from 'classnames';
+import { useWallet } from '../../contexts/wallet';
+import LockVaultModal from '../LockVaultModal';
+import DisclaimerModal from '../DisclaimerModal';
+import Button from '../Button';
+import riskLevel from '../../assets/images/risklevel.svg';
+import highRisk from '../../assets/images/highrisk.svg';
 
 // import { selectors } from '../../features/wallet'
 
 type PairType = {
-  id: number
-  icons: Array<string>
-  title: string
-  tvl: string
-  risk: string
-  apr: number
-  details: string
-}
+  id: number;
+  icons: Array<string>;
+  title: string;
+  tvl: string;
+  risk: string;
+  apr: number;
+  details: string;
+};
 
 interface TokenPairCardProps {
-  data: PairType
+  data: PairType;
 }
 
 const TokenPairCard = ({ data }: TokenPairCardProps) => {
-  const [isOpen, setOpen] = React.useState(false)
+  const [isOpen, setOpen] = React.useState(false);
   // const connectedWallet = useSelector(selectors.getConnectedStatus)
-  const { connected } = useWallet()
+  const { connected } = useWallet();
 
   const renderModalButton = () => {
-    if (data.risk === 'EXTREME') return <DisclaimerModal data={data} />
-    return <LockVaultModal data={data} />
-  }
+    if (data.risk === 'EXTREME') return <DisclaimerModal data={data} />;
+    return <LockVaultModal data={data} />;
+  };
 
   return (
     <>
@@ -141,7 +141,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default TokenPairCard
+export default TokenPairCard;

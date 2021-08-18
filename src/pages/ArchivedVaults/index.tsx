@@ -1,3 +1,3 @@
-import ArchivedVaults from './ArchivedVaults'
+import ArchivedVaults from './ArchivedVaults';
 
-export default ArchivedVaults
+export default ArchivedVaults;
