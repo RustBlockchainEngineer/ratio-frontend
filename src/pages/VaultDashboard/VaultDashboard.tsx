@@ -12,7 +12,7 @@ import AmountPanel from '../../components/Dashboard/AmountPanel';
 import share from '../../assets/images/share.svg';
 import rayIcon from '../../assets/images/RAY.svg';
 import solIcon from '../../assets/images/SOL.svg';
-import usdrIcon from '../../assets/images/USDr.svg';
+import usdrIcon from '../../assets/images/USDr.png';
 
 const priceCardData = [
   {

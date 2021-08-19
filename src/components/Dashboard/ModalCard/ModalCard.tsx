@@ -4,7 +4,7 @@ import PaybackModal from '../PaybackModal';
 import WithdrawModal from '../WithdrawModal';
 import GenerateModal from '../GenerateModal';
 
-import usdrIcon from '../../../assets/images/USDr.svg';
+import usdrIcon from '../../../assets/images/USDr.png';
 import rayIcon from '../../../assets/images/RAY.svg';
 import solIcon from '../../../assets/images/SOL.svg';
 

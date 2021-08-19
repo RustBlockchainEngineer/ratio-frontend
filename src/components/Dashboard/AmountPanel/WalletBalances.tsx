@@ -3,7 +3,7 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 import RAY from '../../../assets/images/RAY.svg';
 import SOL from '../../../assets/images/SOL.svg';
-import USDr from '../../../assets/images/USDr.svg';
+import USDr from '../../../assets/images/USDr.png';
 
 const WalletBalances = () => {
   return (

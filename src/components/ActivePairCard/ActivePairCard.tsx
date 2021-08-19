@@ -7,7 +7,7 @@ import Button from '../Button';
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
 import RayIcon from '../../assets/images/RAY.svg';
-import USDrIcon from '../../assets/images/USDr.svg';
+import USDrIcon from '../../assets/images/USDr.png';
 
 type PairType = {
   id: number;
