@@ -33,7 +33,8 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
   const { connected } = useWallet();
 
   const renderModalButton = () => {
-    if (data.risk >= 200 && data.risk < 250) return <DisclaimerModal data={data} />;
+    if (data.risk >= 200 && data.risk < 250)
+      return <DisclaimerModal data={data} />;
     return <LockVaultModal data={data} />;
   };
 
