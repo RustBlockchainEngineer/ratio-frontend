@@ -9,7 +9,7 @@ type PairType = {
   icons: Array<string>;
   title: string;
   tvl: string;
-  risk: string;
+  risk: number;
   apr: number;
   details: string;
 };

@@ -148,6 +148,9 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
                     <p>$2,700</p>
                   </div>
                 </div>
+                <div className="mt-3">
+                  <Button className="button--fill lp-button">Harvest</Button>
+                </div>
               </div>
             )}
 

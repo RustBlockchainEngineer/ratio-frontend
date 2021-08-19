@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useFetch from 'react-fetch-hook';
 import FilterPanel from '../../components/FilterPanel';
 import TokenPairCard from '../../components/TokenPairCard';
-import { getRiskLevel } from '../../libs/helper';
+// import { getRiskLevel } from '../../libs/helper';
 // import stepIcon from '../../assets/images/STEP.svg'
 // import usdcIcon from '../../assets/images/USDC.svg'
 import rayIcon from '../../assets/images/RAY.svg';
@@ -33,7 +33,7 @@ const AvailableVaults = () => {
           apr: 125,
           details:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
-          risk: getRiskLevel(d[key].c)
+          risk: d[key].c
         };
       });
       return p;

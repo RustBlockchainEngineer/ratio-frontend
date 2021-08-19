@@ -18,7 +18,7 @@ type PairType = {
   icons: Array<string>;
   title: string;
   tvl: string;
-  risk: string;
+  risk: number;
   apr: number;
   details: string;
 };
@@ -33,7 +33,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
   const { connected } = useWallet();
 
   const renderModalButton = () => {
-    if (data.risk === 'EXTREME') return <DisclaimerModal data={data} />;
+    if (data.risk >= 200 && data.risk < 250) return <DisclaimerModal data={data} />;
     return <LockVaultModal data={data} />;
   };
 
@@ -74,16 +74,14 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
                 </OverlayTrigger>
               </div>
               <div className="d-flex justify-content-end align-items-center mt-1">
-                {(data.risk === 'HIGH' || data.risk === 'EXTREME') && (
-                  <img src={highRisk} alt="highRisk" />
-                )}
+                {data.risk > 80 && <img src={highRisk} alt="highRisk" />}
                 <h6
                   className={classNames(
-                    'text-right ml-1',
-                    data.risk.toLocaleLowerCase()
+                    'ml-1',
+                    data.risk > 80 ? 'high' : 'medium'
                   )}
                 >
-                  {data.risk}
+                  {data.risk} %
                 </h6>
               </div>
             </div>
@@ -126,7 +124,27 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
           <div className="tokenpaircard__detailBox">
             {isOpen && (
               <div className="tokenpaircard__detailBox__content">
-                {data.details}
+                <div className="d-flex justify-content-between">
+                  <div>
+                    Position value:
+                    <p>$16,200</p>
+                    <div className="tokenpaircard__detailBox__content--tokens">
+                      <img src={data.icons[0]} alt="RayIcon" />
+                      RAY: $4200
+                    </div>
+                    <div className="tokenpaircard__detailBox__content--tokens">
+                      <img src={data.icons[1]} alt="USDrIcon" />
+                      USDr: $6400
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    Rewards earned:
+                    <p>$2,700</p>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <Button className="button--fill insta-buy-lp">Harvest</Button>
+                </div>
               </div>
             )}
 
@@ -135,7 +153,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
               onClick={() => setOpen(!isOpen)}
               aria-hidden="true"
             >
-              More details {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+              Position Overview {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
             </div>
           </div>
         </div>

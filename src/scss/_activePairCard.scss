@@ -1,6 +1,18 @@
 .activepaircard {
   border: 1px solid rgba(#4c646f, 0.2);
   border-radius: 8px;
+  .lp-button {
+    font-family: 'Poppins-Medium';
+    font-size: 15px;
+    padding: 0.8rem 0rem;
+    width: 100%;
+  }
+  .generate {
+    font-family: 'Poppins-Medium';
+    font-size: 15px;
+    padding: 0.9rem 0rem;
+    width: 100%;
+  }
   // height: calc(100% - 26px);
   &--warning {
     box-shadow: 0px 2px 8px #f48c5780;
@@ -73,19 +85,6 @@
   &__btnBox {
     margin: 0px;
     padding: 20px 10px;
-
-    .lp-button {
-      font-family: 'Poppins-Medium';
-      font-size: 15px;
-      padding: 0.8rem 0rem;
-      width: 100%;
-    }
-    .generate {
-      font-family: 'Poppins-Medium';
-      font-size: 15px;
-      padding: 0.9rem 0rem;
-      width: 100%;
-    }
   }
   &__warningBox {
     min-height: 70px;
@@ -106,7 +105,7 @@
       color: #4c646f;
       p {
         font-family: 'Poppins-SemiBold';
-        color: #002332
+        color: #002332;
       }
       &--tokens {
         margin-top: 10px;
