@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import riskLevel from '../../../assets/images/risklevel.svg';
 import highRisk from '../../../assets/images/highrisk.svg';
 
 type RiskLevelProps = {
@@ -11,10 +10,7 @@ type RiskLevelProps = {
 const RiskLevel = ({ level }: RiskLevelProps) => {
   return (
     <div className={classNames('risklevel')}>
-      <div className="risklevel__name">
-        Risk Level:
-        <img src={riskLevel} alt="risklevel" />
-      </div>
+      <div className="risklevel__name">Risk Level:</div>
       <div
         className={classNames(
           'd-flex align-items-center',

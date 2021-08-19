@@ -16,7 +16,7 @@ const SpeedoMeter = () => {
         percent={0.7}
         hideText
         textColor="#FF0000"
-        // style={chartStyle}
+        colors={['#FF3131', '#05B12C']}
       />
       <div className="speedometer__labelBox">
         <p>Liquidation</p>

@@ -69,7 +69,7 @@ const ModalCard = ({ data }: ModalCardProps) => {
         <div className="modalCard__footer">
           <div>
             {data.type === 'deposit' ? (
-              <label>Able to withdraw</label>
+              <label>Able to Mint</label>
             ) : (
               <label>Able to generate</label>
             )}

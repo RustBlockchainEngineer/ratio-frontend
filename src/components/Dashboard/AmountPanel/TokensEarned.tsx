@@ -13,7 +13,7 @@ const TokensEarned = () => {
           <tr>
             <th className="w-75">Name</th>
             <th className="w-25">Amount farmed</th>
-            <th className="text-right">$vale of tokens</th>
+            <th className="text-right">$value of tokens</th>
           </tr>
         </thead>
         <tbody>

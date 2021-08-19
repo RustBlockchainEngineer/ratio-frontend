@@ -18,7 +18,7 @@ const GenerateModal = ({ data }: GenerateModalProps) => {
   return (
     <div className="dashboardModal">
       <Button className="gradientBtn" onClick={() => setShow(!show)}>
-        Withdraw
+        Mint
       </Button>
       <Modal
         show={show}
@@ -47,7 +47,7 @@ const GenerateModal = ({ data }: GenerateModalProps) => {
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">
-              How much would you like to generate?
+              How much would you like to mint?
             </label>
             <CustomInput
               appendStr="Max"

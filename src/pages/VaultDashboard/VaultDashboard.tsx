@@ -33,7 +33,7 @@ const priceCardData = [
 
 const modalCardData = [
   {
-    title: 'TokensLocked',
+    title: 'Tokens Locked',
     tokens: [rayIcon, solIcon],
     tokenNames: 'RAY-SOL-LP',
     tokenValue: '20.36',
