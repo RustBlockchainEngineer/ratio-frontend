@@ -29,7 +29,7 @@ const WalletBalances = () => {
           </tr>
           <tr>
             <td>
-              <img src={USDr} alt="RAY" /> USDr
+              <img src={USDr} alt="RAY" style={{ width: 32 }} /> USDr
             </td>
             <td>52.28</td>
             <td className="text-right">$52.28</td>
