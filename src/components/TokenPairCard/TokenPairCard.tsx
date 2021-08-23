@@ -8,7 +8,7 @@ import { useWallet } from '../../contexts/wallet';
 import LockVaultModal from '../LockVaultModal';
 import DisclaimerModal from '../DisclaimerModal';
 import Button from '../Button';
-import riskLevel from '../../assets/images/risklevel.svg';
+// import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
 
 // import { selectors } from '../../features/wallet'
@@ -60,7 +60,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
             <div className="tokenpaircard__riskBox">
               <div className="d-flex">
                 <p>Risk Level:</p>
-                <OverlayTrigger
+                {/* <OverlayTrigger
                   placement="top"
                   delay={{ show: 250, hide: 400 }}
                   overlay={
@@ -72,7 +72,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
                   }
                 >
                   <img src={riskLevel} alt="lisklevel" className="ml-2" />
-                </OverlayTrigger>
+                </OverlayTrigger> */}
               </div>
               <div className="d-flex justify-content-end align-items-center mt-1">
                 {data.risk > 80 && <img src={highRisk} alt="highRisk" />}

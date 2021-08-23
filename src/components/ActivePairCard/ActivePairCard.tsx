@@ -1,10 +1,10 @@
 import React from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+// import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import Button from '../Button';
-import riskLevel from '../../assets/images/risklevel.svg';
+// import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
 import RayIcon from '../../assets/images/RAY.svg';
 import USDrIcon from '../../assets/images/USDr.png';
@@ -59,7 +59,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
             <div className="activepaircard__riskBox">
               <div className="d-flex">
                 <p>Risk Level:</p>
-                <OverlayTrigger
+                {/* <OverlayTrigger
                   placement="top"
                   delay={{ show: 250, hide: 400 }}
                   overlay={
@@ -71,7 +71,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
                   }
                 >
                   <img src={riskLevel} alt="lisklevel" className="ml-2" />
-                </OverlayTrigger>
+                </OverlayTrigger> */}
               </div>
               <div className="d-flex justify-content-start align-items-center mt-1">
                 {data.risk > 80 && <img src={highRisk} alt="highRisk" />}
