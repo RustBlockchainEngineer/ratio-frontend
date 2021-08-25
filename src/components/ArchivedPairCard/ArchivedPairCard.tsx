@@ -1,7 +1,6 @@
 import React from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 import classNames from 'classnames';
-// import Button from '../Button';
 
 type PairType = {
   id: number;
@@ -66,13 +65,6 @@ const ArchivedPairCard = ({ data }: ArchivedCardProps) => {
               <h6 className="semiBold">{data.price}</h6>
             </div>
           </div>
-          {/* <div className="archivedpaircard__btnBox d-flex">
-            <div className="col">
-              <Button className="button--danger lp-button">
-                View Liquidated Vault
-              </Button>
-            </div>
-          </div> */}
           <div className="archivedpaircard__warningBox mt-4">
             <div>
               <IoWarningOutline size={27} />
