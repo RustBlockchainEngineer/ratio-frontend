@@ -4,7 +4,7 @@ import { WalletProvider } from './contexts/wallet';
 import { ConnectionProvider } from './contexts/connection';
 import { AccountsProvider } from './contexts/accounts';
 import { MarketProvider } from './contexts/market';
-import { ThemeProvider } from "./contexts/ThemeContext";
+import { ThemeProvider } from './contexts/ThemeContext';
 import Layer from './pages/Layer';
 
 const App: React.FC = () => {
