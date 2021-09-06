@@ -1,5 +1,3 @@
-/* eslint-disable object-shorthand */
-/* eslint-disable import/order */
 import cope from '../assets/images/cope.svg';
 import eth from '../assets/images/eth.svg';
 import media from '../assets/images/media.svg';
@@ -52,15 +50,11 @@ export const getIcon = (name: any) => {
   return icon;
 };
 
-export const getSpreadsheet = async (
-  offset: any,
-  limit: any,
-  callback: any
-) => {
+export const getSpreadsheet = async (offset: any, limit: any, callback: any) => {
   try {
     await doc.useServiceAccountAuth({
       client_email: CLIENT_EMAIL || '',
-      private_key: PRIVATE_KEY.replace(/\\n/g, '\n')
+      private_key: PRIVATE_KEY.replace(/\\n/g, '\n'),
     });
     await doc.loadInfo();
     const sheet = doc.sheetsByIndex[0];
@@ -72,8 +66,7 @@ export const getSpreadsheet = async (
 };
 
 export function chunks(array: any, size: any) {
-  return Array.apply(
-    0,
-    new Array(Math.ceil(array.length / size))
-  ).map((_, index) => array.slice(index * size, (index + 1) * size));
+  return Array.apply(0, new Array(Math.ceil(array.length / size))).map((_, index) =>
+    array.slice(index * size, (index + 1) * size)
+  );
 }

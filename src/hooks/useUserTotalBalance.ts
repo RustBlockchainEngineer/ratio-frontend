@@ -19,10 +19,7 @@ export function useUserTotalBalance() {
         const mintAddress = account.info.mint.toBase58();
         const mint = cache.get(mintAddress);
         if (mint) {
-          const balance = fromLamports(
-            account.info.amount.toNumber(),
-            mint.info
-          );
+          const balance = fromLamports(account.info.amount.toNumber(), mint.info);
           total += balance * midPriceInUSD(mintAddress);
         }
       }
@@ -44,6 +41,6 @@ export function useUserTotalBalance() {
   return {
     balanceInUSD,
     accounts: userAccounts,
-    hasBalance: userAccounts.length > 0 && balanceInUSD > 0
+    hasBalance: userAccounts.length > 0 && balanceInUSD > 0,
   };
 }

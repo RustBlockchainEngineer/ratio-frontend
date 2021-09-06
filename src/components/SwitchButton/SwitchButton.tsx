@@ -17,11 +17,7 @@ export default function SwitchButton() {
 
   return (
     <div className="switchBtn" onClick={onClick} aria-hidden="true">
-      {darkMode ? (
-        <img src={darkIcon} alt="light" />
-      ) : (
-        <img src={lightIcon} alt="darkIcon" />
-      )}
+      {darkMode ? <img src={darkIcon} alt="light" /> : <img src={lightIcon} alt="darkIcon" />}
     </div>
   );
 }

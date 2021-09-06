@@ -20,9 +20,7 @@ const AvailableVaults = () => {
     setViewType(type);
   };
 
-  const { isLoading, data } = useFetch<any>(
-    'http://144.126.208.158/index.php/api/rate'
-  );
+  const { isLoading, data } = useFetch<any>('http://144.126.208.158/index.php/api/rate');
 
   function factorialOf(d: any) {
     if (d !== undefined) {
@@ -35,7 +33,7 @@ const AvailableVaults = () => {
           apr: 125,
           details:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
-          risk: d[key].c
+          risk: d[key].c,
         };
       });
       return p;
@@ -45,10 +43,9 @@ const AvailableVaults = () => {
 
   const factorial = React.useMemo(() => factorialOf(data), [data, connected]);
 
-  const renderModalButton = (row: any, connect: Boolean) => {
+  const renderModalButton = (row: any, connect: boolean) => {
     if (connect) {
-      if (row.risk >= 200 && row.risk < 250)
-        return <DisclaimerModal data={row} />;
+      if (row.risk >= 200 && row.risk < 250) return <DisclaimerModal data={row} />;
       return <LockVaultModal data={row} />;
     }
   };
@@ -58,7 +55,7 @@ const AvailableVaults = () => {
       dataField: 'id',
       text: 'Asset',
       headerStyle: {
-        width: '40%'
+        width: '40%',
       },
       formatter: (cell: any, row: any) => {
         return (
@@ -66,15 +63,11 @@ const AvailableVaults = () => {
             <div className="d-flex ">
               <div>
                 <img src={row.icons[0]} alt={row.icons[0].toString()} />
-                <img
-                  src={row.icons[1]}
-                  alt={row.icons[1].toString()}
-                  className="activepaircard__header-icon"
-                />
+                <img src={row.icons[1]} alt={row.icons[1].toString()} className="activepaircard__header-icon" />
               </div>
               <div
                 className={classNames('activepaircard__titleBox', {
-                  'activepaircard__titleBox--warning': row.warning
+                  'activepaircard__titleBox--warning': row.warning,
                 })}
               >
                 <h6>{row.title}</h6>
@@ -85,8 +78,8 @@ const AvailableVaults = () => {
         );
       },
       style: {
-        paddingTop: 35
-      }
+        paddingTop: 35,
+      },
     },
     {
       dataField: 'apr',
@@ -95,8 +88,8 @@ const AvailableVaults = () => {
         return <h6 className="semiBold">{row.apr}%</h6>;
       },
       style: {
-        paddingTop: 35
-      }
+        paddingTop: 35,
+      },
     },
     {
       dataField: 'risk',
@@ -105,27 +98,20 @@ const AvailableVaults = () => {
         return <h6 className="semiBold">{row.risk}</h6>;
       },
       style: {
-        paddingTop: 35
-      }
+        paddingTop: 35,
+      },
     },
     {
       dataField: '',
       text: '',
       headerStyle: {
-        width: '25%'
+        width: '25%',
       },
-      formatter: (
-        cell: any,
-        row: any,
-        rowIndex: any,
-        { walletConnected }: any
-      ) => {
+      formatter: (cell: any, row: any, rowIndex: any, { walletConnected }: any) => {
         return (
           <div className="activepaircard__btnBox d-flex">
             <div className="col">
-              <Button className="button--gradientBorder lp-button">
-                Insta-buy Lp
-              </Button>
+              <Button className="button--gradientBorder lp-button">Insta-buy Lp</Button>
             </div>
             <div className="col">
               {walletConnected ? (
@@ -135,16 +121,10 @@ const AvailableVaults = () => {
                   placement="top"
                   trigger="click"
                   delay={{ show: 250, hide: 400 }}
-                  overlay={
-                    <Tooltip id="tooltip">
-                      Connect your wallet to unlock this.
-                    </Tooltip>
-                  }
+                  overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
                 >
                   <div>
-                    <Button className="button--disabled generate">
-                      Mint USDr
-                    </Button>
+                    <Button className="button--disabled generate">Mint USDr</Button>
                   </div>
                 </OverlayTrigger>
               )}
@@ -152,8 +132,8 @@ const AvailableVaults = () => {
           </div>
         );
       },
-      formatExtraData: { walletConnected: connected }
-    }
+      formatExtraData: { walletConnected: connected },
+    },
   ];
 
   const expandRow = {
@@ -181,7 +161,7 @@ const AvailableVaults = () => {
           <Button className="button--fill lp-button">Harvest</Button>
         </div>
       </div>
-    )
+    ),
   };
 
   const showContent = (vtype: string) => {
@@ -207,11 +187,7 @@ const AvailableVaults = () => {
 
   return (
     <div className="availablevaults">
-      <FilterPanel
-        label="Available Vaults"
-        viewType={viewType}
-        onViewType={onViewType}
-      />
+      <FilterPanel label="Available Vaults" viewType={viewType} onViewType={onViewType} />
       <div className="row">
         {isLoading ? (
           <div className="col availablevaults__loading">

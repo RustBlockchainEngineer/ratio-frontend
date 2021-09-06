@@ -21,7 +21,7 @@ const tokenPairs = [
     apr: 125,
     owed: '$1,200',
     mint: '$600',
-    price: '$3,000'
+    price: '$3,000',
   },
   {
     id: 1,
@@ -33,8 +33,8 @@ const tokenPairs = [
     owed: '$1,200',
     mint: '$600',
     price: '$3,000',
-    warning: true
-  }
+    warning: true,
+  },
 ];
 
 const columns = [
@@ -42,7 +42,7 @@ const columns = [
     dataField: 'id',
     text: 'Asset',
     headerStyle: {
-      width: '20%'
+      width: '20%',
     },
     formatter: (cell: any, row: any) => {
       return (
@@ -50,15 +50,11 @@ const columns = [
           <div className="d-flex ">
             <div>
               <img src={row.icons[0]} alt={row.icons[0].toString()} />
-              <img
-                src={row.icons[1]}
-                alt={row.icons[1].toString()}
-                className="activepaircard__header-icon"
-              />
+              <img src={row.icons[1]} alt={row.icons[1].toString()} className="activepaircard__header-icon" />
             </div>
             <div
               className={classNames('activepaircard__titleBox', {
-                'activepaircard__titleBox--warning': row.warning
+                'activepaircard__titleBox--warning': row.warning,
               })}
             >
               <h6>{row.title}</h6>
@@ -71,8 +67,7 @@ const columns = [
                 <IoWarningOutline size={27} />
               </div>
               <p className="pt-1">
-                <strong>WARNING:</strong> You are approaching your liquidation
-                threshold of <strong>$90.</strong>
+                <strong>WARNING:</strong> You are approaching your liquidation threshold of <strong>$90.</strong>
               </p>
             </div>
           )}
@@ -80,73 +75,73 @@ const columns = [
       );
     },
     style: {
-      paddingTop: 35
-    }
+      paddingTop: 35,
+    },
   },
   {
     dataField: 'apr',
     text: 'APR',
     headerStyle: {
-      width: '7%'
+      width: '7%',
     },
     formatter: (cell: any, row: any) => {
       return <h6 className="semiBold">{row.apr}%</h6>;
     },
     style: {
-      paddingTop: 35
-    }
+      paddingTop: 35,
+    },
   },
   {
     dataField: 'owed',
     text: 'USDr Owed',
     headerStyle: {
-      width: '10%'
+      width: '10%',
     },
     formatter: (cell: any, row: any) => {
       return <h6 className="semiBold">{row.owed}</h6>;
     },
     style: {
-      paddingTop: 35
-    }
+      paddingTop: 35,
+    },
   },
   {
     dataField: 'mint',
     text: 'Available to Mint',
     headerStyle: {
-      width: '12%'
+      width: '12%',
     },
     formatter: (cell: any, row: any) => {
       return <h6 className="semiBold">{row.mint}</h6>;
     },
     style: {
-      paddingTop: 35
-    }
+      paddingTop: 35,
+    },
   },
   {
     dataField: 'price',
     text: 'Liquidation Price',
     headerStyle: {
-      width: '12%'
+      width: '12%',
     },
     formatter: (cell: any, row: any) => {
       return <h6 className="semiBold">{row.price}</h6>;
     },
     style: {
-      paddingTop: 35
-    }
+      paddingTop: 35,
+    },
   },
   {
     dataField: 'risk',
     text: 'Risk Level',
     headerStyle: {
-      width: '9%'
+      width: '9%',
     },
     formatter: (cell: any, row: any) => {
       return <h6 className="semiBold">{row.risk}</h6>;
     },
     style: {
-      paddingTop: 35
-    }
+      paddingTop: 35,
+    },
   },
   {
     dataField: '',
@@ -155,21 +150,19 @@ const columns = [
       return (
         <div
           className={classNames('activepaircard__btnBox d-flex', {
-            'activepaircard__btnBox--warning': row.warning
+            'activepaircard__btnBox--warning': row.warning,
           })}
         >
           <div className="col">
-            <Button className="button--gradientBorder lp-button">
-              Deposit LP
-            </Button>
+            <Button className="button--gradientBorder lp-button">Deposit LP</Button>
           </div>
           <div className="col">
             <Button className="button--fill lp-button">Enter Vault</Button>
           </div>
         </div>
       );
-    }
-  }
+    },
+  },
 ];
 const rowClasses = (row: any) => {
   let classes = '';
@@ -195,11 +188,7 @@ const ActiveVaults = () => {
 
   return (
     <div className="activeVaults">
-      <FilterPanel
-        label="My Active Vaults"
-        viewType={viewType}
-        onViewType={onViewType}
-      />
+      <FilterPanel label="My Active Vaults" viewType={viewType} onViewType={onViewType} />
       <div className="row ">
         {viewType === 'tile' &&
           tokenPairs.map((item) => {

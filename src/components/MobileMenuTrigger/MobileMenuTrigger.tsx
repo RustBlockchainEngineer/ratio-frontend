@@ -6,21 +6,10 @@ type MobileMenuTriggerProps = {
   open: boolean;
 };
 
-const MobileMenuTrigger = ({
-  clickMenuTrigger,
-  open
-}: MobileMenuTriggerProps) => {
+const MobileMenuTrigger = ({ clickMenuTrigger, open }: MobileMenuTriggerProps) => {
   return (
-    <div
-      className="mobileMenuTrigger"
-      onClick={clickMenuTrigger}
-      aria-hidden="true"
-    >
-      {!open ? (
-        <IoMenu size="40" color="white" />
-      ) : (
-        <IoClose size="40" color="white" />
-      )}
+    <div className="mobileMenuTrigger" onClick={clickMenuTrigger} aria-hidden="true">
+      {!open ? <IoMenu size="40" color="white" /> : <IoClose size="40" color="white" />}
     </div>
   );
 };

@@ -10,12 +10,7 @@ type ButtonProps = {
 
 const Button = ({ children, className, disabled, onClick }: ButtonProps) => {
   return (
-    <button
-      type="button"
-      className={classNames('button', className)}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <button type="button" className={classNames('button', className)} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );
@@ -23,7 +18,7 @@ const Button = ({ children, className, disabled, onClick }: ButtonProps) => {
 
 Button.defaultProps = {
   onClick: () => null,
-  disabled: false
+  disabled: false,
 };
 
 export default Button;

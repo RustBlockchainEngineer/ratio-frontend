@@ -31,18 +31,10 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
-            <IoMdClose
-              size={32}
-              className="dashboardModal__modal__header-close"
-              onClick={() => setShow(false)}
-            />
+            <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
             <div>
               <img src={data.icons[0]} alt={data.icons[0].toString()} />
-              <img
-                src={data.icons[1]}
-                alt={data.icons[1].toString()}
-                className="dashboardModal__modal__header-icon"
-              />
+              <img src={data.icons[1]} alt={data.icons[1].toString()} className="dashboardModal__modal__header-icon" />
             </div>
             <h4>Withdraw assets from vault</h4>
             <h5>
@@ -56,18 +48,9 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
         </Modal.Header>
         <Modal.Body>
           <div className="dashboardModal__modal__body">
-            <label className="dashboardModal__modal__label">
-              How much would you like to withdraw?
-            </label>
-            <CustomInput
-              appendStr="Max"
-              appendValueStr="(12.54)"
-              tokenStr={`${data.title}-LP`}
-            />
-            <Button
-              className="button--fill bottomBtn"
-              onClick={() => setShow(false)}
-            >
+            <label className="dashboardModal__modal__label">How much would you like to withdraw?</label>
+            <CustomInput appendStr="Max" appendValueStr="(12.54)" tokenStr={`${data.title}-LP`} />
+            <Button className="button--fill bottomBtn" onClick={() => setShow(false)}>
               Withdraw Assets
             </Button>
           </div>

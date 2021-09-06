@@ -37,16 +37,11 @@ const DisclaimerModal = ({ data }: LockVaultModalProps) => {
       >
         <Modal.Body>
           <div className="disclaimerModal__header">
-            <IoMdClose
-              size={32}
-              className="disclaimerModal__header-close"
-              onClick={() => setShow(false)}
-            />
+            <IoMdClose size={32} className="disclaimerModal__header-close" onClick={() => setShow(false)} />
             <h2 className="disclaimerModal__title">Disclaimer</h2>
             <div className="disclaimerModal__body">
               Are you sure you’d like to proceed? This LP pair has been
-              <strong> extremely volatile over the last 30 days</strong> and has
-              displayed considerable risk.
+              <strong> extremely volatile over the last 30 days</strong> and has displayed considerable risk.
             </div>
             <div className="disclaimerModal__btnBox row">
               <div className="col">

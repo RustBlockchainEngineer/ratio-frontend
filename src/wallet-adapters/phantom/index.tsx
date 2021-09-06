@@ -5,11 +5,7 @@ import { WalletAdapter } from '../../contexts/wallet';
 import { notify } from '../../utils/notifications';
 
 type PhantomEvent = 'disconnect' | 'connect';
-type PhantomRequestMethod =
-  | 'connect'
-  | 'disconnect'
-  | 'signTransaction'
-  | 'signAllTransactions';
+type PhantomRequestMethod = 'connect' | 'disconnect' | 'signTransaction' | 'signAllTransactions';
 
 interface PhantomProvider {
   publicKey?: PublicKey;
@@ -24,8 +20,7 @@ interface PhantomProvider {
   listeners: (event: PhantomEvent) => (() => void)[];
 }
 
-export class PhantomWalletAdapter extends EventEmitter
-  implements WalletAdapter {
+export class PhantomWalletAdapter extends EventEmitter implements WalletAdapter {
   constructor() {
     super();
     this.connect = this.connect.bind(this);
@@ -86,7 +81,7 @@ export class PhantomWalletAdapter extends EventEmitter
     if (!(window as any).solana.isPhantom) {
       notify({
         message: 'Phantom Error',
-        description: 'Please install Phantom wallet from Chrome '
+        description: 'Please install Phantom wallet from Chrome ',
       });
       return;
     }

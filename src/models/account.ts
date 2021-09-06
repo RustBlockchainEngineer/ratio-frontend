@@ -1,9 +1,4 @@
-import {
-  Account,
-  AccountInfo,
-  PublicKey,
-  TransactionInstruction
-} from '@solana/web3.js';
+import { Account, AccountInfo, PublicKey, TransactionInstruction } from '@solana/web3.js';
 
 import { AccountInfo as TokenAccountInfo, Token } from '@solana/spl-token';
 import { TOKEN_PROGRAM_ID } from '../utils/ids';
@@ -29,20 +24,11 @@ export function approve(
   const transferAuthority = new Account();
 
   instructions.push(
-    Token.createApproveInstruction(
-      tokenProgram,
-      account,
-      delegate ?? transferAuthority.publicKey,
-      owner,
-      [],
-      amount
-    )
+    Token.createApproveInstruction(tokenProgram, account, delegate ?? transferAuthority.publicKey, owner, [], amount)
   );
 
   if (autoRevoke) {
-    cleanupInstructions.push(
-      Token.createRevokeInstruction(tokenProgram, account, owner, [])
-    );
+    cleanupInstructions.push(Token.createRevokeInstruction(tokenProgram, account, owner, []));
   }
 
   return transferAuthority;

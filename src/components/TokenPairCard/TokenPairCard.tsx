@@ -33,8 +33,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
   const { connected } = useWallet();
 
   const renderModalButton = () => {
-    if (data.risk >= 200 && data.risk < 250)
-      return <DisclaimerModal data={data} />;
+    if (data.risk >= 200 && data.risk < 250) return <DisclaimerModal data={data} />;
     return <LockVaultModal data={data} />;
   };
 
@@ -46,11 +45,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
             <div className="d-flex">
               <div>
                 <img src={data.icons[0]} alt={data.icons[0].toString()} />
-                <img
-                  src={data.icons[1]}
-                  alt={data.icons[1].toString()}
-                  className="tokenpaircard__header-icon"
-                />
+                <img src={data.icons[1]} alt={data.icons[1].toString()} className="tokenpaircard__header-icon" />
               </div>
               <div className="tokenpaircard__titleBox">
                 <h6>{data.title}</h6>
@@ -76,14 +71,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
               </div>
               <div className="d-flex justify-content-end align-items-center mt-1">
                 {data.risk > 80 && <img src={highRisk} alt="highRisk" />}
-                <h6
-                  className={classNames(
-                    'ml-1',
-                    data.risk > 80 ? 'high' : 'medium'
-                  )}
-                >
-                  {data.risk} %
-                </h6>
+                <h6 className={classNames('ml-1', data.risk > 80 ? 'high' : 'medium')}>{data.risk} %</h6>
               </div>
             </div>
           </div>
@@ -94,9 +82,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
           <div className="tokenpaircard__btnBox d-flex">
             <div className="col">
               <Link to="/insta-buy-lp">
-                <Button className="button--gradientBorder insta-buy-lp">
-                  Insta-buy Lp
-                </Button>
+                <Button className="button--gradientBorder insta-buy-lp">Insta-buy Lp</Button>
               </Link>
             </div>
             <div className="col">
@@ -107,16 +93,10 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
                   placement="top"
                   trigger="click"
                   delay={{ show: 250, hide: 400 }}
-                  overlay={
-                    <Tooltip id="tooltip">
-                      Connect your wallet to unlock this.
-                    </Tooltip>
-                  }
+                  overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
                 >
                   <div>
-                    <Button className="button--disabled generate">
-                      Mint USDr
-                    </Button>
+                    <Button className="button--disabled generate">Mint USDr</Button>
                   </div>
                 </OverlayTrigger>
               )}
@@ -149,11 +129,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
               </div>
             )}
 
-            <div
-              className="tokenpaircard__detailBox__toggle"
-              onClick={() => setOpen(!isOpen)}
-              aria-hidden="true"
-            >
+            <div className="tokenpaircard__detailBox__toggle" onClick={() => setOpen(!isOpen)} aria-hidden="true">
               Position Overview {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
             </div>
           </div>

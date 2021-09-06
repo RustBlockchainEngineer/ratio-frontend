@@ -3,7 +3,7 @@ import React, { createContext, useReducer } from 'react';
 export const ThemeContext = createContext<any>(null);
 
 const initialState = {
-  darkMode: false
+  darkMode: false,
 };
 
 const themeReducer = (state: any, action: any) => {
@@ -20,9 +20,5 @@ const themeReducer = (state: any, action: any) => {
 export function ThemeProvider(props: any) {
   const [state, dispatch] = useReducer(themeReducer, initialState);
 
-  return (
-    <ThemeContext.Provider value={{ state, dispatch }}>
-      {props!.children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ state, dispatch }}>{props!.children}</ThemeContext.Provider>;
 }

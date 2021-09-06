@@ -85,10 +85,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open }: NavbarProps) => {
             </div>
           </div>
         ) : (
-          <Button
-            onClick={connected ? onClickWalletBtn : connect}
-            className="button--fill walletBtn"
-          >
+          <Button onClick={connected ? onClickWalletBtn : connect} className="button--fill walletBtn">
             Connect Wallet
           </Button>
         )}

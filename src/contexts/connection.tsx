@@ -1,22 +1,6 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable no-cond-assign */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react/prop-types */
-/* eslint-disable import/no-cycle */
-import {
-  Account,
-  clusterApiUrl,
-  Connection,
-  PublicKey,
-  Transaction,
-  TransactionInstruction
-} from '@solana/web3.js';
+import { Account, clusterApiUrl, Connection, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import {
-  TokenListProvider,
-  ENV as ChainID,
-  TokenInfo
-} from '@solana/spl-token-registry';
+import { TokenListProvider, ENV as ChainID, TokenInfo } from '@solana/spl-token-registry';
 import { useLocalStorageState } from '../utils/utils';
 import { notify } from '../utils/notifications';
 // import { ExplorerLink } from '../components/ExplorerLink'
@@ -30,23 +14,23 @@ export const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
     endpoint: 'https://solana-api.projectserum.com/',
-    chainID: ChainID.MainnetBeta
+    chainID: ChainID.MainnetBeta,
   },
   {
     name: 'testnet' as ENV,
     endpoint: clusterApiUrl('testnet'),
-    chainID: ChainID.Testnet
+    chainID: ChainID.Testnet,
   },
   {
     name: 'devnet' as ENV,
     endpoint: clusterApiUrl('devnet'),
-    chainID: ChainID.Devnet
+    chainID: ChainID.Devnet,
   },
   {
     name: 'localnet' as ENV,
     endpoint: 'http://127.0.0.1:8899',
-    chainID: ChainID.Devnet
-  }
+    chainID: ChainID.Devnet,
+  },
 ];
 
 const DEFAULT = ENDPOINTS[0].endpoint;
@@ -73,29 +57,18 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
   sendConnection: new Connection(DEFAULT, 'recent'),
   env: ENDPOINTS[0].name,
   tokens: [],
-  tokenMap: new Map<string, TokenInfo>()
+  tokenMap: new Map<string, TokenInfo>(),
 });
 
 export function ConnectionProvider({ children = undefined as any }) {
-  const [endpoint, setEndpoint] = useLocalStorageState(
-    'connectionEndpts',
-    ENDPOINTS[0].endpoint
-  );
+  const [endpoint, setEndpoint] = useLocalStorageState('connectionEndpts', ENDPOINTS[0].endpoint);
 
-  const [slippage, setSlippage] = useLocalStorageState(
-    'slippage',
-    DEFAULT_SLIPPAGE.toString()
-  );
+  const [slippage, setSlippage] = useLocalStorageState('slippage', DEFAULT_SLIPPAGE.toString());
 
-  const connection = useMemo(() => new Connection(endpoint, 'recent'), [
-    endpoint
-  ]);
-  const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [
-    endpoint
-  ]);
+  const connection = useMemo(() => new Connection(endpoint, 'recent'), [endpoint]);
+  const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [endpoint]);
 
-  const chain =
-    ENDPOINTS.find((end) => end.endpoint === endpoint) || ENDPOINTS[0];
+  const chain = ENDPOINTS.find((end) => end.endpoint === endpoint) || ENDPOINTS[0];
   const env = chain.name;
 
   const [tokens, setTokens] = useState<TokenInfo[]>([]);
@@ -105,20 +78,13 @@ export function ConnectionProvider({ children = undefined as any }) {
     // fetch token files
     (async () => {
       const res = await new TokenListProvider().resolve();
-      const list = res
-        .filterByChainId(chain.chainID)
-        .excludeByTag('nft')
-        .getList();
+      const list = res.filterByChainId(chain.chainID).excludeByTag('nft').getList();
       const knownMints = list.reduce((map, item) => {
         map.set(item.address, item);
         return map;
       }, new Map<string, TokenInfo>());
 
-      const accounts = await getMultipleAccounts(
-        connection,
-        [...knownMints.keys()],
-        'single'
-      );
+      const accounts = await getMultipleAccounts(connection, [...knownMints.keys()], 'single');
       accounts.keys.forEach((key, index) => {
         const account = accounts.array[index];
         if (!account) {
@@ -153,10 +119,7 @@ export function ConnectionProvider({ children = undefined as any }) {
   }, [connection]);
 
   useEffect(() => {
-    const id = sendConnection.onAccountChange(
-      new Account().publicKey,
-      () => {}
-    );
+    const id = sendConnection.onAccountChange(new Account().publicKey, () => {});
     return () => {
       sendConnection.removeAccountChangeListener(id);
     };
@@ -180,7 +143,7 @@ export function ConnectionProvider({ children = undefined as any }) {
         sendConnection,
         tokens,
         tokenMap,
-        env
+        env,
       }}
     >
       {children}
@@ -203,7 +166,7 @@ export function useConnectionConfig() {
     setEndpoint: context.setEndpoint,
     env: context.env,
     tokens: context.tokens,
-    tokenMap: context.tokenMap
+    tokenMap: context.tokenMap,
   };
 }
 
@@ -252,9 +215,7 @@ export const sendTransaction = async (
 
   let transaction = new Transaction();
   instructions.forEach((instruction) => transaction.add(instruction));
-  transaction.recentBlockhash = (
-    await connection.getRecentBlockhash('max')
-  ).blockhash;
+  transaction.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
   transaction.setSigners(
     // fee payied by the wallet owner
     wallet.publicKey,
@@ -267,18 +228,13 @@ export const sendTransaction = async (
   const rawTransaction = transaction.serialize();
   const options = {
     skipPreflight: true,
-    commitment: 'singleGossip'
+    commitment: 'singleGossip',
   };
 
   const txid = await connection.sendRawTransaction(rawTransaction, options);
 
   if (awaitConfirmation) {
-    const status = (
-      await connection.confirmTransaction(
-        txid,
-        options && (options.commitment as any)
-      )
-    ).value;
+    const status = (await connection.confirmTransaction(txid, options && (options.commitment as any))).value;
 
     if (status?.err) {
       const errors = await getErrorForTransaction(connection, txid);
@@ -292,12 +248,10 @@ export const sendTransaction = async (
             {/* <ExplorerLink address={txid} type="transaction" /> */}
           </>
         ),
-        type: 'error'
+        type: 'error',
       });
 
-      throw new Error(
-        `Raw transaction ${txid} failed (${JSON.stringify(status)})`
-      );
+      throw new Error(`Raw transaction ${txid} failed (${JSON.stringify(status)})`);
     }
   }
 

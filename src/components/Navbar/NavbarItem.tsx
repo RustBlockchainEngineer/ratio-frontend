@@ -9,19 +9,10 @@ type NavbarItemProps = {
   onItemClick: (navIndex: string) => void;
 };
 
-const NavbarItem = ({
-  icon,
-  name,
-  active,
-  navIndex,
-  onItemClick
-}: NavbarItemProps) => {
+const NavbarItem = ({ icon, name, active, navIndex, onItemClick }: NavbarItemProps) => {
   return (
     <div
-      className={classNames(
-        'navbarItem d-flex align-items-center px-5 py-4',
-        active ? 'navbarItem--active' : ''
-      )}
+      className={classNames('navbarItem d-flex align-items-center px-5 py-4', active ? 'navbarItem--active' : '')}
       onClick={() => onItemClick(navIndex)}
       onKeyDown={() => onItemClick(navIndex)}
       aria-hidden="true"

@@ -6,12 +6,9 @@ import { WalletReducer } from './features/wallet';
 /* Create root reducer, containing all features of the application */
 const rootReducer = combineReducers({
   count: CounterReducer,
-  wallet: WalletReducer
+  wallet: WalletReducer,
 });
 
-const store = createStore(
-  rootReducer,
-  /* preloadedState, */ devToolsEnhancer({})
-);
+const store = createStore(rootReducer, /* preloadedState, */ devToolsEnhancer({}));
 
 export default store;

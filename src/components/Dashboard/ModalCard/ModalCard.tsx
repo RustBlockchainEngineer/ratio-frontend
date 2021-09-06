@@ -12,17 +12,17 @@ const depositData = { icons: [rayIcon, solIcon], title: 'RAY-SOL' };
 const paybackData = {
   icons: [usdrIcon],
   title: 'RAY-SOL',
-  usdrValue: '$7.45'
+  usdrValue: '$7.45',
 };
 const withdrawData = {
   icons: [rayIcon, solIcon],
   title: 'RAY-SOL',
-  value: '12.54'
+  value: '12.54',
 };
 
 const generateData = {
   icons: [usdrIcon],
-  usdrValue: '32.34'
+  usdrValue: '32.34',
 };
 
 interface ModalcardInterface {
@@ -49,11 +49,7 @@ const ModalCard = ({ data }: ModalCardProps) => {
             <div>
               <img src={data.tokens[0]} alt={data.tokens[0].toString()} />
               {data.tokens[1] && (
-                <img
-                  src={data.tokens[1]}
-                  alt={data.tokens[1].toString()}
-                  className="modalCard__header-icon"
-                />
+                <img src={data.tokens[1]} alt={data.tokens[1].toString()} className="modalCard__header-icon" />
               )}
             </div>
             <div className="modalCard__header_tokenName">
@@ -68,16 +64,8 @@ const ModalCard = ({ data }: ModalCardProps) => {
         </div>
         <div className="modalCard__footer">
           <div>
-            {data.type === 'deposit' ? (
-              <label>Able to Mint</label>
-            ) : (
-              <label>Able to generate</label>
-            )}
-            {data.type === 'deposit' ? (
-              <p>{data.withdrawValue}</p>
-            ) : (
-              <p>{data.GenerateValue}</p>
-            )}
+            {data.type === 'deposit' ? <label>Able to Mint</label> : <label>Able to generate</label>}
+            {data.type === 'deposit' ? <p>{data.withdrawValue}</p> : <p>{data.GenerateValue}</p>}
           </div>
           <div>
             {data.type === 'deposit' && <WithdrawModal data={withdrawData} />}

@@ -1,11 +1,3 @@
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable import/no-cycle */
-/* eslint-disable import/order */
-/* eslint-disable import/no-useless-path-segments */
-/* eslint-disable import/no-duplicates */
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { MINT_TO_MARKET } from './../models/marketOverrides';
 import { STABLE_COINS } from './../utils/utils';
@@ -49,17 +41,13 @@ export function MarketProvider({ children = null as any }) {
   const [marketMints, setMarketMints] = useState<string[]>([]);
   const { userAccounts } = useUserAccounts();
 
-  const connection = useMemo(() => new Connection(endpoint, 'recent'), [
-    endpoint
-  ]);
+  const connection = useMemo(() => new Connection(endpoint, 'recent'), [endpoint]);
 
   const marketByMint = useMemo(() => {
     return [...new Set(marketMints).values()].reduce((acc, key) => {
       const mintAddress = key;
 
-      const SERUM_TOKEN = TOKEN_MINTS.find(
-        (a) => a.address.toBase58() === mintAddress
-      );
+      const SERUM_TOKEN = TOKEN_MINTS.find((a) => a.address.toBase58() === mintAddress);
 
       const marketAddress = MINT_TO_MARKET[mintAddress];
       const marketInfo = MARKETS.filter((m) => !m.deprecated).find(
@@ -71,7 +59,7 @@ export function MarketProvider({ children = null as any }) {
 
       if (marketInfo) {
         acc.set(mintAddress, {
-          marketInfo
+          marketInfo,
         });
       }
 
@@ -164,10 +152,7 @@ export function MarketProvider({ children = null as any }) {
 
   const midPriceInUSD = useCallback(
     (mintAddress: string) => {
-      return getMidPrice(
-        marketByMint.get(mintAddress)?.marketInfo.address.toBase58(),
-        mintAddress
-      );
+      return getMidPrice(marketByMint.get(mintAddress)?.marketInfo.address.toBase58(), mintAddress);
     },
     [marketByMint]
   );
@@ -227,7 +212,7 @@ export function MarketProvider({ children = null as any }) {
         accountsToObserve,
         marketByMint,
         subscribeToMarket,
-        precacheMarkets
+        precacheMarkets,
       }}
     >
       {children}
@@ -241,13 +226,11 @@ export const useMarkets = () => {
 };
 
 export const useMidPriceInUSD = (mint: string) => {
-  const { midPriceInUSD, subscribeToMarket, marketEmitter } = useContext(
-    MarketsContext
-  ) as MarketsContextState;
+  const { midPriceInUSD, subscribeToMarket, marketEmitter } = useContext(MarketsContext) as MarketsContextState;
   const [price, setPrice] = useState<number>(0);
 
   useEffect(() => {
-    let subscription = subscribeToMarket(mint);
+    const subscription = subscribeToMarket(mint);
     const update = () => {
       if (midPriceInUSD) {
         setPrice(midPriceInUSD(mint));
@@ -283,9 +266,7 @@ const bbo = (bidsBook: Orderbook, asksBook: Orderbook) => {
 };
 
 const getMidPrice = (marketAddress?: string, mintAddress?: string) => {
-  const SERUM_TOKEN = TOKEN_MINTS.find(
-    (a) => a.address.toBase58() === mintAddress
-  );
+  const SERUM_TOKEN = TOKEN_MINTS.find((a) => a.address.toBase58() === mintAddress);
 
   if (STABLE_COINS.has(SERUM_TOKEN?.name || '')) {
     return 1.0;
@@ -302,18 +283,10 @@ const getMidPrice = (marketAddress?: string, mintAddress?: string) => {
 
   const decodedMarket = marketInfo.info;
 
-  const baseMintDecimals =
-    cache.get(decodedMarket.baseMint)?.info.decimals || 0;
-  const quoteMintDecimals =
-    cache.get(decodedMarket.quoteMint)?.info.decimals || 0;
+  const baseMintDecimals = cache.get(decodedMarket.baseMint)?.info.decimals || 0;
+  const quoteMintDecimals = cache.get(decodedMarket.quoteMint)?.info.decimals || 0;
 
-  const market = new Market(
-    decodedMarket,
-    baseMintDecimals,
-    quoteMintDecimals,
-    undefined,
-    decodedMarket.programId
-  );
+  const market = new Market(decodedMarket, baseMintDecimals, quoteMintDecimals, undefined, decodedMarket.programId);
 
   const bids = cache.get(decodedMarket.bids)?.info;
   const asks = cache.get(decodedMarket.asks)?.info;
@@ -333,14 +306,12 @@ const refreshAccounts = async (connection: Connection, keys: string[]) => {
     return [];
   }
 
-  return getMultipleAccounts(connection, keys, 'single').then(
-    ({ keys, array }) => {
-      return array.map((item, index) => {
-        const address = keys[index];
-        return cache.add(new PublicKey(address), item);
-      });
-    }
-  );
+  return getMultipleAccounts(connection, keys, 'single').then(({ keys, array }) => {
+    return array.map((item, index) => {
+      const address = keys[index];
+      return cache.add(new PublicKey(address), item);
+    });
+  });
 };
 
 interface SerumMarket {

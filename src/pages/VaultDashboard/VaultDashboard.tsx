@@ -20,15 +20,15 @@ const priceCardData = [
     titleIcon: true,
     mainValue: '$90.00 USD',
     mainUnit: '(RAY/USD)',
-    currentPrice: '$300.00 USD'
+    currentPrice: '$300.00 USD',
   },
   {
     title: 'Collateralization Ratio',
     titleIcon: false,
     mainValue: '295.85%',
     minimumRatio: '295.85%',
-    stabilityFee: '4%'
-  }
+    stabilityFee: '4%',
+  },
 ];
 
 const modalCardData = [
@@ -38,7 +38,7 @@ const modalCardData = [
     tokenNames: 'RAY-SOL-LP',
     tokenValue: '20.36',
     type: 'deposit',
-    withdrawValue: '0.1RAY-SOL-LP'
+    withdrawValue: '0.1RAY-SOL-LP',
   },
   {
     title: 'Outstanding USDr Debt',
@@ -46,8 +46,8 @@ const modalCardData = [
     tokenNames: 'USDr',
     tokenValue: '52.28',
     type: 'payback',
-    GenerateValue: '32.28USDr'
-  }
+    GenerateValue: '32.28USDr',
+  },
 ];
 
 const VaultDashboard = () => {

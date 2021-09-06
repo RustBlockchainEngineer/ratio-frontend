@@ -30,11 +30,7 @@ const GenerateModal = ({ data }: GenerateModalProps) => {
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
-            <IoMdClose
-              size={32}
-              className="dashboardModal__modal__header-close"
-              onClick={() => setShow(false)}
-            />
+            <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
             <div>
               <img src={data.icons[0]} alt={data.icons[0].toString()} />
             </div>
@@ -46,21 +42,12 @@ const GenerateModal = ({ data }: GenerateModalProps) => {
         </Modal.Header>
         <Modal.Body>
           <div className="dashboardModal__modal__body">
-            <label className="dashboardModal__modal__label">
-              How much would you like to mint?
-            </label>
-            <CustomInput
-              appendStr="Max"
-              appendValueStr="(32.34)"
-              tokenStr="USDr"
-            />
+            <label className="dashboardModal__modal__label">How much would you like to mint?</label>
+            <CustomInput appendStr="Max" appendValueStr="(32.34)" tokenStr="USDr" />
             <p className="dashboardModal__modal__body-red">
               There will be a 2% stability fee associated with this transaction.
             </p>
-            <Button
-              className="button--fill bottomBtn"
-              onClick={() => setShow(false)}
-            >
+            <Button className="button--fill bottomBtn" onClick={() => setShow(false)}>
               Pay USDr Debt
             </Button>
           </div>

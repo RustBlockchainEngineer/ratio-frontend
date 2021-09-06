@@ -32,7 +32,7 @@ export class SolongWalletAdapter extends EventEmitter implements WalletAdapter {
     if ((window as any).solong === undefined) {
       notify({
         message: 'Solong Error',
-        description: 'Please install solong wallet from Chrome '
+        description: 'Please install solong wallet from Chrome ',
       });
       return;
     }

@@ -2,7 +2,7 @@ import { INCREMENT_COUNTER, DECREMENT_COUNTER } from './actionTypes';
 import { CounterActionTypes } from './types';
 
 const initialState = {
-  value: 0
+  value: 0,
 };
 
 export default (state = initialState, action: CounterActionTypes) => {

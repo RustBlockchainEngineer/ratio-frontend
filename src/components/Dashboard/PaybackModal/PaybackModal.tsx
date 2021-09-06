@@ -32,38 +32,24 @@ const PaybackModal = ({ data }: PaybackModalProps) => {
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
-            <IoMdClose
-              size={32}
-              className="dashboardModal__modal__header-close"
-              onClick={() => setShow(false)}
-            />
+            <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
             <div>
               <img src={data.icons[0]} alt={data.icons[0].toString()} />
             </div>
             <h4>Pay back USDr debt</h4>
             <h5>
-              You owe{' '}
-              <span className="dashboardModal__modal__header-red">
-                $7.45 USDr
-              </span>
-              . Pay back some or all of your debt below.
+              You owe <span className="dashboardModal__modal__header-red">$7.45 USDr</span>. Pay back some or all of
+              your debt below.
             </h5>
           </div>
         </Modal.Header>
         <Modal.Body>
           <div className="dashboardModal__modal__body">
-            <label className="dashboardModal__modal__label">
-              How much would you like to pay back?
-            </label>
+            <label className="dashboardModal__modal__label">How much would you like to pay back?</label>
             <CustomInput appendStr="Max" tokenStr="USDr" />
-            <label className="dashboardModal__modal__label mt-3">
-              Estimated token value
-            </label>
+            <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput />
-            <Button
-              className="button--fill bottomBtn"
-              onClick={() => setShow(false)}
-            >
+            <Button className="button--fill bottomBtn" onClick={() => setShow(false)}>
               Pay Back Debt
             </Button>
           </div>

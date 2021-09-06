@@ -14,18 +14,10 @@ const Footer = () => {
           <a target="_blank" href="https://t.me/ratiofinance" rel="noreferrer">
             <img src={telegram} alt="telegram" />
           </a>
-          <a
-            target="_blank"
-            href="https://twitter.com/ratiofinance"
-            rel="noreferrer"
-          >
+          <a target="_blank" href="https://twitter.com/ratiofinance" rel="noreferrer">
             <img src={twitter} alt="twitter" />
           </a>
-          <a
-            target="_blank"
-            href="https://medium.com/@ratiofinance"
-            rel="noreferrer"
-          >
+          <a target="_blank" href="https://medium.com/@ratiofinance" rel="noreferrer">
             <img src={medium} alt="medium" />
           </a>
         </div>

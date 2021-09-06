@@ -3,18 +3,13 @@ import classNames from 'classnames';
 import { InputGroup, FormControl } from 'react-bootstrap';
 
 type CustomInputProps = {
-  appendStr: String;
-  tokenStr: String;
-  appendValueStr?: String;
-  className?: String;
+  appendStr: string;
+  tokenStr: string;
+  appendValueStr?: string;
+  className?: string;
 };
 
-const CustomInput = ({
-  appendStr,
-  tokenStr,
-  appendValueStr,
-  className
-}: CustomInputProps) => {
+const CustomInput = ({ appendStr, tokenStr, appendValueStr, className }: CustomInputProps) => {
   const [value, setValue] = React.useState('0');
 
   const handleChange = (e: any) => {
@@ -31,14 +26,7 @@ const CustomInput = ({
         onChange={handleChange}
         className={classNames(appendStr === '' && 'onlytext')}
       />
-      <p
-        className={classNames(
-          'tokenName',
-          appendStr === '' && 'tokenName--onlytext'
-        )}
-      >
-        {tokenStr}
-      </p>
+      <p className={classNames('tokenName', appendStr === '' && 'tokenName--onlytext')}>{tokenStr}</p>
       {appendStr !== '' && (
         <InputGroup.Append>
           <InputGroup.Text id="customInput">
@@ -52,7 +40,7 @@ const CustomInput = ({
 
 CustomInput.defaultProps = {
   appendValueStr: '',
-  className: ''
+  className: '',
 };
 
 export default CustomInput;

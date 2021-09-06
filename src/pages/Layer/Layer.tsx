@@ -38,26 +38,14 @@ const Layer = () => {
       <div className="layer_container">
         <Header onClickWalletBtn={onClickWalletBtn} />
 
-        <Navbar
-          onClickWalletBtn={onClickWalletBtn}
-          clickMenuItem={clickMenuTrigger}
-          open={menuOpen}
-        />
+        <Navbar onClickWalletBtn={onClickWalletBtn} clickMenuItem={clickMenuTrigger} open={menuOpen} />
 
         {(isDefault || !menuOpen) && (
           <div>
             <Switch>
-              <Route
-                path="/available-vaults"
-                component={AvailableVaults}
-                exact
-              />
+              <Route path="/available-vaults" component={AvailableVaults} exact />
               <Route path="/my-active-vaults" component={ActiveVaults} exact />
-              <Route
-                path="/my-archived-vaults"
-                component={ArchivedVaults}
-                exact
-              />
+              <Route path="/my-archived-vaults" component={ArchivedVaults} exact />
               <Route path="/insta-buy-lp" component={InstaBuyLp} exact />
               <Route path="/vaultdashboard" component={VaultDashboard} exact />
               <Route exact path="/">
@@ -67,12 +55,7 @@ const Layer = () => {
             <Footer />
           </div>
         )}
-        {isMobile && (
-          <MobileMenuTrigger
-            clickMenuTrigger={clickMenuTrigger}
-            open={menuOpen}
-          />
-        )}
+        {isMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
       </div>
     </div>
   );

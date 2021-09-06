@@ -99,7 +99,7 @@ export const rustString = (property = 'string'): unknown => {
     [
       BufferLayout.u32('length'),
       BufferLayout.u32('lengthPadding'),
-      BufferLayout.blob(BufferLayout.offset(BufferLayout.u32(), -8), 'chars')
+      BufferLayout.blob(BufferLayout.offset(BufferLayout.u32(), -8), 'chars'),
     ],
     property
   );
@@ -113,7 +113,7 @@ export const rustString = (property = 'string'): unknown => {
 
   rsl.encode = (str: string, buffer: Buffer, offset: number) => {
     const data = {
-      chars: Buffer.from(str, 'utf8')
+      chars: Buffer.from(str, 'utf8'),
     };
     return _encode(data, buffer, offset);
   };

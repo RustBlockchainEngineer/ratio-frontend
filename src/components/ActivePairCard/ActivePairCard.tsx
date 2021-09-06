@@ -34,22 +34,18 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
       <div className="col col-xl-4 col-lg-6 col-md-12">
         <div
           className={classNames('activepaircard mt-4', {
-            'activepaircard--warning': data.warning
+            'activepaircard--warning': data.warning,
           })}
         >
           <div className="activepaircard__header">
             <div className="d-flex">
               <div>
                 <img src={data.icons[0]} alt={data.icons[0].toString()} />
-                <img
-                  src={data.icons[1]}
-                  alt={data.icons[1].toString()}
-                  className="activepaircard__header-icon"
-                />
+                <img src={data.icons[1]} alt={data.icons[1].toString()} className="activepaircard__header-icon" />
               </div>
               <div
                 className={classNames('activepaircard__titleBox', {
-                  'activepaircard__titleBox--warning': data.warning
+                  'activepaircard__titleBox--warning': data.warning,
                 })}
               >
                 <h6>{data.title}</h6>
@@ -75,14 +71,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
               </div>
               <div className="d-flex justify-content-start align-items-center mt-1">
                 {data.risk > 80 && <img src={highRisk} alt="highRisk" />}
-                <h6
-                  className={classNames(
-                    'ml-1',
-                    data.risk > 80 ? 'high' : 'medium'
-                  )}
-                >
-                  {data.risk} %
-                </h6>
+                <h6 className={classNames('ml-1', data.risk > 80 ? 'high' : 'medium')}>{data.risk} %</h6>
               </div>
             </div>
           </div>
@@ -106,9 +95,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
           </div>
           <div className="activepaircard__btnBox d-flex">
             <div className="col">
-              <Button className="button--gradientBorder lp-button">
-                Deposit LP
-              </Button>
+              <Button className="button--gradientBorder lp-button">Deposit LP</Button>
             </div>
             <div className="col">
               <Button className="button--fill lp-button">Enter Vault</Button>
@@ -120,8 +107,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
                 <IoWarningOutline size={27} />
               </div>
               <p>
-                <strong>WARNING:</strong> You are approaching your liquidation
-                threshold of <strong>$90.</strong>
+                <strong>WARNING:</strong> You are approaching your liquidation threshold of <strong>$90.</strong>
               </p>
             </div>
           ) : (
@@ -154,11 +140,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
               </div>
             )}
 
-            <div
-              className="activepaircard__detailBox__toggle"
-              onClick={() => setOpen(!isOpen)}
-              aria-hidden="true"
-            >
+            <div className="activepaircard__detailBox__toggle" onClick={() => setOpen(!isOpen)} aria-hidden="true">
               Position Overview {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
             </div>
           </div>

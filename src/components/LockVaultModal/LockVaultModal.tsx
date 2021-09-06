@@ -42,31 +42,17 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
       >
         <Modal.Header>
           <div className="lockvaultmodal__header">
-            <IoMdClose
-              size={32}
-              className="lockvaultmodal__header-close"
-              onClick={() => setShow(false)}
-            />
+            <IoMdClose size={32} className="lockvaultmodal__header-close" onClick={() => setShow(false)} />
             <div>
               <img src={data.icons[0]} alt={data.icons[0].toString()} />
-              <img
-                src={data.icons[1]}
-                alt={data.icons[1].toString()}
-                className="lockvaultmodal__header-icon"
-              />
+              <img src={data.icons[1]} alt={data.icons[1].toString()} className="lockvaultmodal__header-icon" />
             </div>
             <h3>Lock {data.title}-LP into vault</h3>
-            <label className="lockvaultmodal__label1">
-              How much would you like to lock up?
-            </label>
+            <label className="lockvaultmodal__label1">How much would you like to lock up?</label>
             <label className="lockvaultmodal__label2">
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
-            <CustomInput
-              appendStr="Max"
-              appendValueStr="(1000)"
-              tokenStr={`${data.title}-LP`}
-            />
+            <CustomInput appendStr="Max" appendValueStr="(1000)" tokenStr={`${data.title}-LP`} />
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -90,36 +76,23 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
               <div className="lockvaultmodal__body-value opacity-5">?</div>
             </div>
             <div className="d-flex justify-content-between mt-2">
-              <div className="lockvaultmodal__body-label">
-                Baseline Overcollateralization:
-              </div>
+              <div className="lockvaultmodal__body-label">Baseline Overcollateralization:</div>
               <div className="lockvaultmodal__body-value opacity-5">?</div>
             </div>
             <div className="d-flex justify-content-between mt-2">
-              <div className="lockvaultmodal__body-label">
-                Liquidation Ratio:
-              </div>
+              <div className="lockvaultmodal__body-label">Liquidation Ratio:</div>
               <div className="lockvaultmodal__body-value opacity-5">?</div>
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <div className="lockvaultmodal__footer">
-            <label className="lockvaultmodal__label1">
-              How much USDr would you like to generate?
-            </label>
+            <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label>
             <label className="lockvaultmodal__label2">
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
-            <CustomInput
-              appendStr="Max"
-              appendValueStr="(1000)"
-              tokenStr={`${data.title}-LP`}
-            />
-            <Button
-              className="button--fill lockBtn"
-              onClick={() => history.push('/vaultdashboard')}
-            >
+            <CustomInput appendStr="Max" appendValueStr="(1000)" tokenStr={`${data.title}-LP`} />
+            <Button className="button--fill lockBtn" onClick={() => history.push('/vaultdashboard')}>
               Lock Assets & Mint
             </Button>
           </div>

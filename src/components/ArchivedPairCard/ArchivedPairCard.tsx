@@ -30,11 +30,7 @@ const ArchivedPairCard = ({ data }: ArchivedCardProps) => {
             <div className="d-flex">
               <div>
                 <img src={data.icons[0]} alt={data.icons[0].toString()} />
-                <img
-                  src={data.icons[1]}
-                  alt={data.icons[1].toString()}
-                  className="archivedpaircard__header-icon"
-                />
+                <img src={data.icons[1]} alt={data.icons[1].toString()} className="archivedpaircard__header-icon" />
               </div>
               <div className={classNames('archivedpaircard__titleBox')}>
                 <h6>{data.title}</h6>
@@ -70,9 +66,8 @@ const ArchivedPairCard = ({ data }: ArchivedCardProps) => {
               <IoWarningOutline size={27} />
             </div>
             <p>
-              <strong>LIQUIDATED:</strong> The price of your assets reach the
-              liquidation price of <strong>$90</strong> meaning you have now
-              been liquidated.
+              <strong>LIQUIDATED:</strong> The price of your assets reach the liquidation price of <strong>$90</strong>{' '}
+              meaning you have now been liquidated.
             </p>
           </div>
         </div>

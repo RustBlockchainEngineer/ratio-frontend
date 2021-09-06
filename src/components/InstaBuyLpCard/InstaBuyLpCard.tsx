@@ -18,7 +18,7 @@ const options = [
   { value: 'MEDIA', label: 'MEDIA', icon: [mediaIcon] },
   { value: 'ETH', label: 'ETH', icon: [ethIcon] },
   { value: 'USDC', label: 'USDC', icon: [usdcIcon] },
-  { value: 'STEP', label: 'STEP', icon: [stepIcon] }
+  { value: 'STEP', label: 'STEP', icon: [stepIcon] },
 ];
 
 const options1 = [
@@ -27,7 +27,7 @@ const options1 = [
   { value: 'RAY-EHT', label: 'RAY-EHT-LP', icon: [rayIcon, ethIcon] },
   { value: 'RAY-SRM', label: 'RAY-SRM-LP', icon: [rayIcon, srmIcon] },
   { value: 'RAY-USDC', label: 'RAY-USDC-LP', icon: [rayIcon, usdcIcon] },
-  { value: 'MEDIA-USDC', label: 'MEDIA-USDC-LP', icon: [mediaIcon, usdcIcon] }
+  { value: 'MEDIA-USDC', label: 'MEDIA-USDC-LP', icon: [mediaIcon, usdcIcon] },
 ];
 
 const InstaBuyLpCard = () => {

@@ -6,8 +6,7 @@ export const LABELS = {
   GIVE_SOL: 'Give me SOL',
   LIQUIDATION_INFO:
     'This view displays all loans that can be liquidated. A liquidation is a process where borrower collateral does not cover value of the loan. It is represented by health factor falling below 1.0. When a loan is liquidated, an liquidator can purchase collateral at a discount by repaing the portio of the loan. ',
-  FAUCET_INFO:
-    'This faucet will help you fund your accounts outside of Solana main network.',
+  FAUCET_INFO: 'This faucet will help you fund your accounts outside of Solana main network.',
   ACCOUNT_FUNDED: 'Account funded.',
   REPAY_QUESTION: 'How much would you like to repay?',
   REPAY_ACTION: 'Repay',
@@ -89,19 +88,14 @@ export const LABELS = {
   TRADING_TABLE_TITLE_ACTIONS: 'Action',
   TRADING_ADD_POSITION: 'Add Position',
   MARGIN_TRADE_ACTION: 'Margin Trade',
-  MARGIN_TRADE_CHOOSE_COLLATERAL_AND_LEVERAGE:
-    'Please choose your collateral and leverage.',
-  MARGIN_TRADE_QUESTION:
-    'Please choose how much of this asset you wish to purchase.',
+  MARGIN_TRADE_CHOOSE_COLLATERAL_AND_LEVERAGE: 'Please choose your collateral and leverage.',
+  MARGIN_TRADE_QUESTION: 'Please choose how much of this asset you wish to purchase.',
   TABLE_TITLE_BUYING_POWER: 'Total Buying Power',
-  NOT_ENOUGH_MARGIN_MESSAGE:
-    'Not enough buying power in oyster to make this trade at this leverage.',
-  SET_MORE_MARGIN_MESSAGE:
-    'You need more margin to match this leverage amount to make this trade.',
+  NOT_ENOUGH_MARGIN_MESSAGE: 'Not enough buying power in oyster to make this trade at this leverage.',
+  SET_MORE_MARGIN_MESSAGE: 'You need more margin to match this leverage amount to make this trade.',
   LEVERAGE_LIMIT_MESSAGE: 'You will need more margin to make this trade.',
-  NO_DEPOSIT_MESSAGE:
-    'You need to deposit coin of this type into oyster before trading with it on margin.',
+  NO_DEPOSIT_MESSAGE: 'You need to deposit coin of this type into oyster before trading with it on margin.',
   NO_COLL_TYPE_MESSAGE: 'Choose Collateral CCY',
   SAFER: 'Safer',
-  RISKIER: 'Riskier'
+  RISKIER: 'Riskier',
 };

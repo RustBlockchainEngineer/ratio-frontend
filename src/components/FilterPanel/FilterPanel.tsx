@@ -15,7 +15,7 @@ type FilterPanelProps = {
 const options = [
   { value: 'APR', label: 'APR' },
   { value: 'RISK', label: 'RISK' },
-  { value: 'TVL', label: 'TVL' }
+  { value: 'TVL', label: 'TVL' },
 ];
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
@@ -29,20 +29,12 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
           {isMobile && <p className="mr-2 filterpanel__sortby">Search: </p>}
           <div className="form-group has-search">
             <IoSearchOutline className="form-control-feedback" size={25} />
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search all vaults"
-            />
+            <input type="text" className="form-control" placeholder="Search all vaults" />
           </div>
         </div>
         <div className="d-md-flex align-items-center">
           <p className="mr-2 filterpanel__sortby">Sort by: </p>
-          <Select
-            options={options}
-            classNamePrefix="react-select"
-            defaultValue={{ label: 'APR', value: 'APR' }}
-          />
+          <Select options={options} classNamePrefix="react-select" defaultValue={{ label: 'APR', value: 'APR' }} />
           {isDefault && (
             <>
               <img
@@ -51,7 +43,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
                 onClick={() => onViewType('tile')}
                 className={classNames([
                   'ml-4 filterpanel__viewtype',
-                  { 'filterpanel__viewtype-active': viewType === 'tile' }
+                  { 'filterpanel__viewtype-active': viewType === 'tile' },
                 ])}
                 aria-hidden="true"
               />
@@ -61,7 +53,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
                 onClick={() => onViewType('list')}
                 className={classNames([
                   'filterpanel__viewtype',
-                  { 'filterpanel__viewtype-active': viewType === 'list' }
+                  { 'filterpanel__viewtype-active': viewType === 'list' },
                 ])}
                 aria-hidden="true"
               />
