@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+import { ThemeContext } from '../../contexts/ThemeContext';
 import MobileMenuTrigger from '../../components/MobileMenuTrigger';
 import Navbar from '../../components/Navbar';
 import AvailableVaults from '../AvailableVaults';
@@ -17,6 +18,8 @@ import { actionTypes } from '../../features/wallet';
 // const isMobile = useMediaQuery({ maxWidth: 767 })
 
 const Layer = () => {
+  const theme = React.useContext(ThemeContext);
+  const { darkMode } = theme.state;
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -31,7 +34,7 @@ const Layer = () => {
   };
 
   return (
-    <div className="layer">
+    <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
       <div className="layer_container">
         <Header onClickWalletBtn={onClickWalletBtn} />
 

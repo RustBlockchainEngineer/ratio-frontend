@@ -2,6 +2,7 @@ import React from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { FaCheck } from 'react-icons/fa';
 import Button from '../Button';
+import SwitchButton from '../SwitchButton';
 import { shortenAddress } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
 import logo from '../../assets/images/logo-side.svg';
@@ -17,7 +18,8 @@ const Header = ({ onClickWalletBtn }: HeaderProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
   return (
-    <div className="header d-flex ">
+    <div className="header d-flex">
+      <SwitchButton />
       {isMobile && <img src={logo} alt="logo" />}
       {connected ? (
         <div className="header__connected">

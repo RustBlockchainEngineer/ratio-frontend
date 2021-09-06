@@ -3,6 +3,7 @@
   padding-bottom: 1rem;
   padding-right: 4rem;
   justify-content: flex-end;
+  background-color: var(--background);
   @include respond-to(sm) {
     padding-top: 2rem;
     padding-bottom: 2rem;
@@ -57,5 +58,13 @@
     font-family: 'Poppins-Medium';
     font-size: 14px;
     padding: 0.8rem 2rem;
+  }
+  .switchBtn {
+    margin-right: 1rem;
+    margin-top: 6px;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
   }
 }

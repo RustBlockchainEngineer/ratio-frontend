@@ -3,15 +3,17 @@
   transform: translate3d(0px, 0px, 0px) !important;
   visibility: visible;
 }
+
 .navbar-vertical {
   width: 300px;
-  box-shadow: 10px 0px 40px #00000034;
+  box-shadow: var(--nav-boxshadow);
   text-align: center;
   padding-top: 3rem;
   position: fixed;
   top: 0px;
   left: 0px;
   bottom: 0px;
+
   @include respond-to(sm) {
     position: absolute;
     padding-top: 0px;
@@ -38,8 +40,8 @@
     left: 0px;
     width: 300px;
     height: 100%;
-    background: #ffffff 0% 0% no-repeat padding-box;
-    opacity: 0.4;
+    background-color: var(--background);
+    // opacity: 0.4;
   }
   &__connectedBox {
     position: absolute;

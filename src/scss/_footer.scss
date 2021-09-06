@@ -1,25 +1,25 @@
 .footer {
-  margin-top: 80px;
+  padding-top: 80px;
   left: 300px;
   height: 186px;
-  background: #dbe0e234 0% 0% no-repeat padding-box;
   opacity: 1;
-  border-top: 1px solid #dbe0e2;
+  border-top: 1px solid var(--primary-border);
   padding: 2.5rem 5rem;
+  background-color: var(--background);
   @include respond-to(sm) {
     padding: 2.5rem 1.5rem;
     height: auto;
   }
   a {
     img {
-      border: 1px solid rgba(#4c646f, 0.3);
+      border: 1px solid rgba(var(--secondary-border), 0.3);
       border-radius: 8px;
       margin: 0px 3px;
     }
   }
   h6 {
     font-family: 'Poppins-Light';
-    color: #4c646f;
+    color: var(--link-color);
     font-size: 12px;
   }
   .list-group {
@@ -35,7 +35,7 @@
       padding-left: 0px;
     }
     a {
-      color: #4c646f;
+      color: var(--link-color);
       font-size: 14px;
       font-family: 'Poppins-Light';
     }

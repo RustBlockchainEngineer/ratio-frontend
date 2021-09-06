@@ -1,31 +1,31 @@
 .layer {
   overflow-y: hidden;
 
-  &::before {
-    @include respond-to(sm) {
-      display: none;
-    }
-    content: '';
-    position: absolute;
-    top: -169.42041015625px;
-    left: -238.78857421875px;
-    width: 705px;
-    height: 730px;
-    z-index: -1;
-    transform: matrix(0.97, -0.26, 0.26, 0.97, 0, 0);
-    background: transparent
-      linear-gradient(
-        180deg,
-        #a0d4ff 0%,
-        #d48ec5 33%,
-        #ffc2ac 58%,
-        #ffe9b1 86%,
-        #fff5c7 100%
-      )
-      0% 0% no-repeat padding-box;
-    opacity: 0.4;
-    filter: blur(50px);
-  }
+  // &::before {
+  //   @include respond-to(sm) {
+  //     display: none;
+  //   }
+  //   content: '';
+  //   position: absolute;
+  //   top: -169.42041015625px;
+  //   left: -238.78857421875px;
+  //   width: 705px;
+  //   height: 730px;
+  //   z-index: 0;
+  //   transform: matrix(0.97, -0.26, 0.26, 0.97, 0, 0);
+  //   background: transparent
+  //     linear-gradient(
+  //       180deg,
+  //       #a0d4ff 0%,
+  //       #d48ec5 33%,
+  //       #ffc2ac 58%,
+  //       #ffe9b1 86%,
+  //       #fff5c7 100%
+  //     )
+  //     0% 0% no-repeat padding-box;
+  //   opacity: 0.4;
+  //   filter: blur(50px);
+  // }
   &::after {
     @include respond-to(sm) {
       display: none;
@@ -43,6 +43,7 @@
     filter: blur(50px);
   }
   &_container {
+    background-color: var(--background);
     @include respond-to(sm) {
       margin-left: 0px;
     }

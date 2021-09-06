@@ -4,6 +4,7 @@ import { WalletProvider } from './contexts/wallet';
 import { ConnectionProvider } from './contexts/connection';
 import { AccountsProvider } from './contexts/accounts';
 import { MarketProvider } from './contexts/market';
+import { ThemeProvider } from "./contexts/ThemeContext";
 import Layer from './pages/Layer';
 
 const App: React.FC = () => {
@@ -12,13 +13,15 @@ const App: React.FC = () => {
       <WalletProvider>
         <AccountsProvider>
           <MarketProvider>
-            <Router>
-              <div>
-                <Switch>
-                  <Route path="/" component={Layer} />
-                </Switch>
-              </div>
-            </Router>
+            <ThemeProvider>
+              <Router>
+                <div>
+                  <Switch>
+                    <Route path="/" component={Layer} />
+                  </Switch>
+                </div>
+              </Router>
+            </ThemeProvider>
           </MarketProvider>
         </AccountsProvider>
       </WalletProvider>

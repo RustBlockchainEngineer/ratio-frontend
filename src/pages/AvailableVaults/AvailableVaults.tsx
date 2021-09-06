@@ -21,7 +21,7 @@ const AvailableVaults = () => {
   };
 
   const { isLoading, data } = useFetch<any>(
-    'https://ratio-finance.herokuapp.com/api/rate'
+    'http://144.126.208.158/index.php/api/rate'
   );
 
   function factorialOf(d: any) {
