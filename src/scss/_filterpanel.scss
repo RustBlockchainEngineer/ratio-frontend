@@ -4,7 +4,7 @@
   h2 {
     font-family: 'Poppins-Medium';
     letter-spacing: -0.72px;
-    color: var(--primary-color);
+    color: var(--unnamed-color-002332);
     font-size: 24px;
   }
   .form-group {
@@ -17,7 +17,7 @@
       padding-left: 2.5rem;
       border: 1px solid rgba(#4c646f, 0.2);
       border-radius: 4px;
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
       font-family: 'Poppins-Regular';
       height: 3rem !important;
       @include respond-to(sm) {
@@ -37,14 +37,14 @@
       line-height: 2.375rem;
       text-align: center;
       pointer-events: none;
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
       top: 10px;
       left: 8px;
     }
   }
   &__sortby {
     font-family: 'Poppins-Regular';
-    color: #3c4760;
+    color: var(--unnamed-color-3c4760);
     font-size: 16px;
   }
   &__viewtype {

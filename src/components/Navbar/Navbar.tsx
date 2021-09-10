@@ -6,6 +6,7 @@ import { useWallet } from '../../contexts/wallet';
 import NavbarItem from './NavbarItem';
 import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
+import darkLogo from '../../assets/images/dark-logoside.svg';
 import availableVaultsIcon from '../../assets/images/available-vaults-icon.svg';
 import instaBuyIcon from '../../assets/images/insta-buy-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
@@ -15,9 +16,10 @@ type NavbarProps = {
   onClickWalletBtn: () => void;
   clickMenuItem: () => void;
   open: boolean;
+  darkMode: boolean;
 };
 
-const Navbar = ({ onClickWalletBtn, clickMenuItem, open }: NavbarProps) => {
+const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode }: NavbarProps) => {
   const isDefault = useMediaQuery({ minWidth: 768 });
   const location = useLocation();
   const history = useHistory();
@@ -36,7 +38,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open }: NavbarProps) => {
 
   return (
     <div className={classNames('navbar-vertical', { closed: open })}>
-      {isDefault && <img src={logo} alt="logo" />}
+      {isDefault && <img src={darkMode ? darkLogo : logo} alt="logo" />}
       <div className="mt-md-5">
         <NavbarItem
           icon={availableVaultsIcon}

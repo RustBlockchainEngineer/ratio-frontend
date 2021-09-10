@@ -4,21 +4,28 @@ import imageLogo from '../../assets/images/image-logo.svg';
 import telegram from '../../assets/images/telegram.svg';
 import twitter from '../../assets/images/twitter.svg';
 import medium from '../../assets/images/medium.svg';
+import telegramDark from '../../assets/images/telegram-dark.svg';
+import twitterDark from '../../assets/images/twitter-dark.svg';
+import mediumDark from '../../assets/images/medium-dark.svg';
 
-const Footer = () => {
+type FooterProps = {
+  darkMode: boolean;
+};
+
+const Footer = ({ darkMode }: FooterProps) => {
   return (
     <div className="footer">
       <div className="d-flex justify-content-between">
         <img src={imageLogo} alt="imageLogo" />
-        <div className="d-flex">
+        <div className="d-flex footer__social">
           <a target="_blank" href="https://t.me/ratiofinance" rel="noreferrer">
-            <img src={telegram} alt="telegram" />
+            <img src={darkMode ? telegramDark : telegram} alt="telegram" />
           </a>
           <a target="_blank" href="https://twitter.com/ratiofinance" rel="noreferrer">
-            <img src={twitter} alt="twitter" />
+            <img src={darkMode ? twitterDark : twitter} alt="twitter" />
           </a>
           <a target="_blank" href="https://medium.com/@ratiofinance" rel="noreferrer">
-            <img src={medium} alt="medium" />
+            <img src={darkMode ? mediumDark : medium} alt="medium" />
           </a>
         </div>
       </div>

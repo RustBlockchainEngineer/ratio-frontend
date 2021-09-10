@@ -2,16 +2,17 @@
   width: 480px;
   min-height: 600px;
   display: inline-block;
-  border: 1px solid #d6dbdd;
+  border: 1px solid rgba(var(--secondary-border), 0.2);
   border-radius: 12px;
   margin-top: 24px;
+  margin-bottom: 100px;
   text-align: left;
   @include respond-to(sm) {
     width: 95%;
   }
   &__top {
     padding: 42px;
-    background-color: white;
+    background-color: var(--unnamed-color-1B1E29);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     @include respond-to(sm) {
@@ -20,18 +21,18 @@
     .balance {
       display: flex;
       justify-content: flex-end;
-      color: rgba(#3c4760, 0.7);
+      color: var(--unnamed-color-3c4760);
       p {
         padding-left: 5px;
-        color: #3c4760;
+        color: var(--unnamed-color-3c4760);
       }
     }
   }
   &__bottom {
     padding: 42px;
-    background: #dbe0e233 0% 0% no-repeat padding-box;
-    border-top: 1px solid #d6dbdd;
-    border-bottom: 1px solid #d6dbdd;
+    background: var(--unnamed-color-171A23);
+    border-top: 1px solid rgba(var(--secondary-border), 0.2);
+    border-bottom: 1px solid rgba(var(--secondary-border), 0.2);
     @include respond-to(sm) {
       padding: 20px;
     }
@@ -46,7 +47,7 @@
   &__footer {
     padding: 42px;
     padding-top: 20px;
-    background: white;
+    background-color: var(--unnamed-color-1B1E29);
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     @include respond-to(sm) {
@@ -65,7 +66,7 @@
   }
   label {
     letter-spacing: -0.14px;
-    color: #4c646f;
+    color: var(--unnamed-color-4c646f);
     font-family: 'Poppins-Regular';
     font-size: 14px;
   }

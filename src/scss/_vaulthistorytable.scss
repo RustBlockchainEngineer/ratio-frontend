@@ -9,7 +9,7 @@
   h4 {
     font-family: 'Poppins-Medium';
     letter-spacing: -0.36px;
-    color: #3c4760;
+    color: var(--unnamed-color-3c4760);
     opacity: 1;
   }
   &__table {
@@ -23,7 +23,7 @@
     }
     .table th {
       padding-bottom: 0.5rem;
-      color: #4c646f;
+      color: var(--unnamed-color-4c646f);
       font-weight: 400;
       font-size: 12px;
     }
@@ -34,11 +34,11 @@
     }
     .date {
       font-size: 14px;
-      color: #4c646f;
+      color: var(--unnamed-color-4c646f);
     }
     .tx_hash {
       font-size: 14px;
-      color: #4c646f;
+      color: var(--unnamed-color-4c646f);
     }
   }
 }

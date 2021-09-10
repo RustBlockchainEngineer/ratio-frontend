@@ -1,7 +1,7 @@
 .navbarItem {
   font-size: 1.1rem;
   border-top: 1px solid rgba(#394760, 0.1);
-  color: var(--primary-color);
+  color: var(--unnamed-color-002332);
   font-family: 'Poppins-Medium';
   position: relative;
   cursor: pointer;
@@ -18,8 +18,7 @@
       width: 6px;
       height: 100%;
 
-      background: transparent linear-gradient(180deg, #ff69ce 0%, #bc5cf7 100%)
-        0% 0% no-repeat padding-box;
+      background: transparent linear-gradient(180deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
       opacity: 1;
     }
   }

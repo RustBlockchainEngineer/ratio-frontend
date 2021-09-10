@@ -38,7 +38,12 @@ const Layer = () => {
       <div className="layer_container">
         <Header onClickWalletBtn={onClickWalletBtn} />
 
-        <Navbar onClickWalletBtn={onClickWalletBtn} clickMenuItem={clickMenuTrigger} open={menuOpen} />
+        <Navbar
+          darkMode={darkMode}
+          onClickWalletBtn={onClickWalletBtn}
+          clickMenuItem={clickMenuTrigger}
+          open={menuOpen}
+        />
 
         {(isDefault || !menuOpen) && (
           <div>
@@ -52,7 +57,7 @@ const Layer = () => {
                 <Redirect to="/available-vaults" />
               </Route>
             </Switch>
-            <Footer />
+            <Footer darkMode={darkMode} />
           </div>
         )}
         {isMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}

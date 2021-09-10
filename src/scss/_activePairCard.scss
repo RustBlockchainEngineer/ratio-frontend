@@ -1,5 +1,5 @@
 .activepaircard {
-  border: 1px solid rgba(#4c646f, 0.2);
+  border: 1px solid rgba(var(--secondary-border), 0.2);
   border-radius: 8px;
   .lp-button {
     font-family: 'Poppins-Medium';
@@ -37,19 +37,19 @@
     h6 {
       font-family: 'Poppins-SemiBold';
       font-size: 1rem;
-      color: #002332;
+      color: var(--unnamed-color-002332);
     }
     p {
       font-family: 'Poppins-Regular';
       font-size: 12px;
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
     }
   }
   &__riskBox {
     p {
       font-family: 'Poppins-Medium';
       font-size: 12px;
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
     }
     h6 {
       font-family: 'Poppins-SemiBold';
@@ -69,12 +69,12 @@
   }
   &__aprBox {
     padding: 20px;
-    background-color: rgba(#dbe0e2, 0.2);
-    border-top: 1px solid rgba(#4c646f, 0.2);
-    border-bottom: 1px solid rgba(#4c646f, 0.2);
+    background: var(--unnamed-color-171A23);
+    border-top: 1px solid rgba(var(--secondary-border), 0.2);
+    border-bottom: 1px solid rgba(var(--secondary-border), 0.2);
     h6 {
       font-size: 16px;
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
       margin-bottom: 0px;
       font-family: 'Poppins-Medium';
     }
@@ -102,10 +102,10 @@
     &__content {
       padding: 20px;
       padding-top: 0px;
-      color: #4c646f;
+      color: var(--unnamed-color-4c646f);
       p {
         font-family: 'Poppins-SemiBold';
-        color: #002332;
+        color: var(--unnamed-color-002332);
       }
       &--tokens {
         margin-top: 10px;
@@ -122,8 +122,8 @@
       text-align: center;
       padding-top: 16px;
       padding-bottom: 16px;
-      color: #4c646f;
-      border-top: 1px solid rgba(#4c646f, 0.2);
+      color: var(--unnamed-color-4c646f);
+      border: 1px solid rgba(var(--secondary-border), 0.2);
       &:hover {
         text-decoration: underline;
       }

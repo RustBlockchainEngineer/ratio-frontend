@@ -1,10 +1,13 @@
 import React from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { ThemeContext } from '../../contexts/ThemeContext';
 import classNames from 'classnames';
 import Select from 'react-select';
 import { IoSearchOutline } from 'react-icons/io5';
 import title from '../../assets/images/tile.svg';
 import list from '../../assets/images/list.svg';
+import titleDark from '../../assets/images/tile-dark.svg';
+import listDark from '../../assets/images/list-dark.svg';
 
 type FilterPanelProps = {
   label: string;
@@ -19,6 +22,8 @@ const options = [
 ];
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
+  const theme = React.useContext(ThemeContext);
+  const { darkMode } = theme.state;
   const isDefault = useMediaQuery({ minWidth: 768 });
   const isMobile = useMediaQuery({ maxWidth: 767 });
   return (
@@ -38,7 +43,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
           {isDefault && (
             <>
               <img
-                src={title}
+                src={darkMode ? titleDark : title}
                 alt="tile"
                 onClick={() => onViewType('tile')}
                 className={classNames([
@@ -48,7 +53,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
                 aria-hidden="true"
               />
               <img
-                src={list}
+                src={darkMode ? listDark : list}
                 alt="list"
                 onClick={() => onViewType('list')}
                 className={classNames([
