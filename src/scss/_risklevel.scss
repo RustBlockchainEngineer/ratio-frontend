@@ -3,13 +3,13 @@
 
   &__name {
     padding: 14px 20px;
-    border: 1px solid #4c646f33;
+    border: 1px solid var(--unnamed-color-f9fbfe);
     border-right: 0px;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
     font-family: 'Poppins-Medium';
     font-size: 14px;
-    color: #3c4760;
+    color: var(--unnamed-color-3c4760);
     img {
       margin-left: 0.5rem;
       width: 24px;

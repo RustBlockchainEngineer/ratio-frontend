@@ -6,8 +6,8 @@
       display: block;
     }
     &_titleBox {
-      border-top: 1px solid #dbe0e2;
-      border-bottom: 1px solid #dbe0e2;
+      border-top: 1px solid var(--unnamed-color-f9fbfe);
+      border-bottom: 1px solid var(--unnamed-color-f9fbfe);
       display: flex;
       justify-content: space-between;
       padding: 3rem 5rem !important;
@@ -20,7 +20,7 @@
       }
       h3 {
         font-family: 'Poppins-Medium';
-        color: #3c4760;
+        color: var(--unnamed-color-3c4760);
         font-size: 24px;
         margin-bottom: 24px;
         @include respond-to(sm) {
@@ -29,10 +29,10 @@
       }
       a {
         display: block;
-        color: #4c646f;
+        color: var(--unnamed-color-4c646f);
         text-align: right;
         &:hover {
-          color: #4c646f;
+          color: var(--unnamed-color-4c646f);
         }
         @include respond-to(sm) {
           text-align: left;
@@ -41,8 +41,8 @@
       }
     }
     &_rightBox {
-      border-top: 1px solid #dbe0e2;
-      border-bottom: 1px solid #dbe0e2;
+      border-top: 1px solid var(--unnamed-color-f9fbfe);
+      border-bottom: 1px solid var(--unnamed-color-f9fbfe);
       width: 40%;
       display: flex;
       @include respond-to(sm) {
@@ -51,17 +51,24 @@
     }
     &_speedometerBox {
       width: 50%;
-      background-color: #f8f9f9;
-      border-left: 1px solid #dbe0e2;
-      border-right: 1px solid #dbe0e2;
+      background-color: var(--unnamed-color-f8f9f9);
+      border-left: 1px solid var(--unnamed-color-f8f9f9);
+      border-right: 1px solid var(--unnamed-color-f8f9f9);
       padding-left: 1rem;
+      p {
+        color: var(--unnamed-color-4c646f);
+      }
     }
     &_vaultdebtBox {
       width: 50%;
-      background-color: #f8f9f9;
+      background-color: var(--unnamed-color-f8f9f9);
       display: flex;
       align-items: center;
       justify-content: center;
+      h4,
+      p {
+        color: var(--unnamed-color-4c646f);
+      }
     }
   }
   &__bodyleft {

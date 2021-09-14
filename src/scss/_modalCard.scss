@@ -4,11 +4,11 @@
     font-family: 'Poppins-Medium';
     font-size: 18px;
     letter-spacing: -0.36px;
-    color: #3c4760;
+    color: var(--unnamed-color-3c4760);
     opacity: 1;
   }
   &__cardbody {
-    border: 1px solid rgba(#4c646f, 0.2);
+    border: 1px solid var(--unnamed-color-f9fbfe);
     border-radius: 16px;
   }
   &__fillBtn {
@@ -41,7 +41,7 @@
       margin-left: 10px;
       p {
         font-size: 14px;
-        color: #4c646f;
+        color: var(--unnamed-color-4c646f);
       }
       h6 {
         font-family: 'Poppins-SemiBold';
@@ -54,19 +54,19 @@
   &__footer {
     display: flex;
     justify-content: space-between;
-    border-top: 1px solid rgba(#4c646f, 0.2);
-    background-color: #f8f9f9;
+    border-top: 1px solid var(--unnamed-color-f9fbfe);
+    background-color: var(--unnamed-color-f8f9f9);
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
     padding: 20px;
     label {
       font-size: 14px;
-      color: #4c646f;
+      color: var(--unnamed-color-4c646f);
       margin-bottom: 3px;
     }
     p {
       font-family: 'Poppins-SemiBold';
-      color: #002332;
+      color: var(--unnamed-color-4c646f);
     }
   }
 }

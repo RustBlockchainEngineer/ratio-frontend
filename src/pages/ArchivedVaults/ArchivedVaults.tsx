@@ -143,7 +143,7 @@ const columns = [
           })}
         >
           <div className="col">
-            <Button className="button--danger lp-button">View Liquidated Vault</Button>
+            <Button className="button--fill lp-button">View Liquidated Vault</Button>
           </div>
         </div>
       );
