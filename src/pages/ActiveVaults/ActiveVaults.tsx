@@ -1,4 +1,5 @@
 import React from 'react';
+import { getRiskLevel } from '../../libs/helper';
 import { IoWarningOutline } from 'react-icons/io5';
 import { useMediaQuery } from 'react-responsive';
 import classNames from 'classnames';
@@ -137,7 +138,7 @@ const columns = [
       width: '9%',
     },
     formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.risk}</h6>;
+      return <h6 className={classNames('semiBold', getRiskLevel(row.risk))}>{getRiskLevel(row.risk)}</h6>;
     },
     style: {
       paddingTop: 35,

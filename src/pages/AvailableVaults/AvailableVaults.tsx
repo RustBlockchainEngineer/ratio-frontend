@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getRiskLevel } from '../../libs/helper';
 import useFetch from 'react-fetch-hook';
 import classNames from 'classnames';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -21,7 +22,7 @@ const AvailableVaults = () => {
     setViewType(type);
   };
 
-  const { isLoading, data } = useFetch<any>('http://144.126.208.158/index.php/api/rate');
+  const { isLoading, data } = useFetch<any>('https://144.126.208.158/index.php/api/rate');
 
   function factorialOf(d: any) {
     if (d !== undefined) {
@@ -96,7 +97,7 @@ const AvailableVaults = () => {
       dataField: 'risk',
       text: 'Risk Level',
       formatter: (cell: any, row: any) => {
-        return <h6 className="semiBold">{row.risk}</h6>;
+        return <h6 className={classNames('semiBold', getRiskLevel(row.risk))}>{getRiskLevel(row.risk)}</h6>;
       },
       style: {
         paddingTop: 35,

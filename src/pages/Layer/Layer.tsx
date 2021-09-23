@@ -36,7 +36,7 @@ const Layer = () => {
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
       <div className="layer_container">
-        <Header onClickWalletBtn={onClickWalletBtn} />
+        <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
 
         <Navbar
           darkMode={darkMode}

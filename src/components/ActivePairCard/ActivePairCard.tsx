@@ -1,6 +1,7 @@
 import React from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { getRiskLevel } from '../../libs/helper';
 // import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import Button from '../Button';
@@ -70,8 +71,8 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
                 </OverlayTrigger> */}
               </div>
               <div className="d-flex justify-content-start align-items-center mt-1">
-                {data.risk > 80 && <img src={highRisk} alt="highRisk" />}
-                <h6 className={classNames('ml-1', data.risk > 80 ? 'high' : 'medium')}>{data.risk} %</h6>
+                {getRiskLevel(data.risk) === 'EXTREME' && <img src={highRisk} alt="highRisk" />}
+                <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
               </div>
             </div>
           </div>

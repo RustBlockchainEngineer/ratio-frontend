@@ -18,7 +18,7 @@
     position: absolute;
     padding-top: 0px;
     top: 110px;
-    background-color: white;
+    background-color: var(--background);
     z-index: 3;
     width: 100%;
     box-shadow: none;
@@ -98,13 +98,13 @@
     font-family: 'Poppins-Medium';
     font-size: 18px;
     padding: 1rem 3rem;
+    white-space: nowrap;
     @include respond-to(sm) {
       position: absolute !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      left: 0px !important;
-      right: 0px !important;
+      left: 50%;
+      transform: translate(-50%, 0);
       text-align: center !important;
+      white-space: nowrap;
     }
   }
 }

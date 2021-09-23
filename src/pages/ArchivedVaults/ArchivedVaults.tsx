@@ -1,6 +1,7 @@
 import React from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 import { useMediaQuery } from 'react-responsive';
+import { getRiskLevel } from '../../libs/helper';
 import classNames from 'classnames';
 import BootstrapTable from 'react-bootstrap-table-next';
 import Button from '../../components/Button';
@@ -97,7 +98,7 @@ const columns = [
     dataField: 'mint',
     text: 'Available to Mint',
     headerStyle: {
-      width: '12%',
+      width: '20%',
     },
     formatter: (cell: any, row: any) => {
       return <h6 className="danger semiBold">{row.mint}</h6>;
@@ -110,7 +111,7 @@ const columns = [
     dataField: 'price',
     text: 'Liquidation Price',
     headerStyle: {
-      width: '12%',
+      width: '20%',
     },
     formatter: (cell: any, row: any) => {
       return <h6 className="semiBold">{row.price}</h6>;
@@ -119,19 +120,19 @@ const columns = [
       paddingTop: 35,
     },
   },
-  {
-    dataField: 'risk',
-    text: 'Risk Level',
-    headerStyle: {
-      width: '9%',
-    },
-    formatter: (cell: any, row: any) => {
-      return <h6 className="danger semiBold">{row.risk}</h6>;
-    },
-    style: {
-      paddingTop: 35,
-    },
-  },
+  // {
+  //   dataField: 'risk',
+  //   text: 'Risk Level',
+  //   headerStyle: {
+  //     width: '9%',
+  //   },
+  //   formatter: (cell: any, row: any) => {
+  //     return <h6 className={classNames('semiBold', getRiskLevel(row.risk))}>{getRiskLevel(row.risk)}</h6>;
+  //   },
+  //   style: {
+  //     paddingTop: 35,
+  //   },
+  // },
   {
     dataField: '',
     text: '',

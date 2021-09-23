@@ -6,12 +6,14 @@ import SwitchButton from '../SwitchButton';
 import { shortenAddress } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
 import logo from '../../assets/images/logo-side.svg';
+import darkLogo from '../../assets/images/dark-logoside.svg';
 
 type HeaderProps = {
   onClickWalletBtn: () => void;
+  darkMode: boolean;
 };
 
-const Header = ({ onClickWalletBtn }: HeaderProps) => {
+const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
   const { connected, connect, wallet } = useWallet();
   // const { onClick, children, disabled, allowWalletChange, ...rest } = props
 
@@ -19,8 +21,8 @@ const Header = ({ onClickWalletBtn }: HeaderProps) => {
 
   return (
     <div className="header d-flex">
+      {isMobile && <img src={darkMode ? darkLogo : logo} alt="logo" />}
       <SwitchButton />
-      {isMobile && <img src={logo} alt="logo" />}
       {connected ? (
         <div className="header__connected">
           <div className="header__checked">
