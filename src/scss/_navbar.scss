@@ -52,16 +52,17 @@
     left: 0;
     right: 0;
     hr {
+      border-top: 1px solid var(--unnamed-color-f9fbfe);
       &::before {
         content: 'My Overview';
         position: absolute;
         left: 30px;
         top: 5px;
-        background-color: white;
+        background-color: var(--unnamed-color-17161f);
         padding: 0px 8px;
         font-family: 'Poppins-Medium';
         font-size: 12px;
-        color: rgba(#002332, 0.4);
+        color: var(--unnamed-color-3c4760);
       }
     }
   }
@@ -75,7 +76,7 @@
     h6 {
       font-family: 'Poppins-Medium';
       font-size: 12px;
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
       margin-bottom: 0px;
     }
     div {

@@ -21,7 +21,7 @@
     display: flex;
     align-items: center;
     padding: 12px 22px;
-    border: 1px solid rgba(#4c646f, 0.2);
+    border: 1px solid var(--unnamed-color-f9fbfe);
     border-radius: 8px;
     position: relative;
     &::before {
@@ -31,15 +31,16 @@
       left: -3px;
       font-family: 'Poppins-Medium';
       font-size: 12px;
-      background-color: white;
+      background-color: var(--unnamed-color-17161f);
       padding-right: 6px;
-      color: rgba(#002332, 0.4);
+      color: var(--unnamed-color-bg);
     }
     h6 {
       margin-bottom: 0px;
       font-family: 'Poppins-Medium';
       font-size: 16px;
       margin-left: 8px;
+      color: var(--unnamed-color-3c4760);
     }
   }
 

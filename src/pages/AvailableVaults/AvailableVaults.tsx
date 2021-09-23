@@ -9,6 +9,7 @@ import TokenPairCard from '../../components/TokenPairCard';
 import { useWallet } from '../../contexts/wallet';
 import LockVaultModal from '../../components/LockVaultModal';
 import DisclaimerModal from '../../components/DisclaimerModal';
+import factorialData from '../../constants/factorial.json';
 import rayIcon from '../../assets/images/RAY.svg';
 import ethIcon from '../../assets/images/ETH.svg';
 
@@ -41,7 +42,7 @@ const AvailableVaults = () => {
     return [];
   }
 
-  const factorial = React.useMemo(() => factorialOf(data), [data, connected]);
+  const factorial = React.useMemo(() => factorialOf(factorialData), [factorialData, connected]);
 
   const renderModalButton = (row: any, connect: boolean) => {
     if (connect) {
