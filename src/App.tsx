@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { WalletProvider } from './contexts/wallet';
 import { ConnectionProvider } from './contexts/connection';
 import { AccountsProvider } from './contexts/accounts';
@@ -20,6 +20,9 @@ const App: React.FC = () => {
                   <Switch>
                     <Route path="/dashboard" component={Layer} />
                     <Route path="/faucet" exact component={Faucet} />
+                    <Route exact path="/">
+                      <Redirect to="/dashboard" />
+                    </Route>
                   </Switch>
                 </div>
               </Router>
