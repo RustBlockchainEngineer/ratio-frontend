@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { FaCheck } from 'react-icons/fa';
 import Button from '../Button';
@@ -14,6 +15,7 @@ type HeaderProps = {
 };
 
 const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
+  const history = useHistory();
   const { connected, connect, wallet } = useWallet();
   // const { onClick, children, disabled, allowWalletChange, ...rest } = props
 
@@ -22,6 +24,9 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
   return (
     <div className="header d-flex">
       {isMobile && <img src={darkMode ? darkLogo : logo} alt="logo" />}
+      <button className="header__faucet" onClick={() => history.push('/faucet')}>
+        Faucet
+      </button>
       <SwitchButton />
       {connected ? (
         <div className="header__connected">

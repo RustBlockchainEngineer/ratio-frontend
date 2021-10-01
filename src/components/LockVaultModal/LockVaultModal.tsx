@@ -92,7 +92,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
             <CustomInput appendStr="Max" appendValueStr="(1000)" tokenStr={`${data.title}-LP`} />
-            <Button className="button--fill lockBtn" onClick={() => history.push('/vaultdashboard')}>
+            <Button className="button--fill lockBtn" onClick={() => history.push('/dashboard/vaultdashboard')}>
               Lock Assets & Mint
             </Button>
           </div>

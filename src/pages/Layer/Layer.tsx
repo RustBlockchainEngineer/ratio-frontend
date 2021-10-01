@@ -48,13 +48,13 @@ const Layer = () => {
         {(isDefault || !menuOpen) && (
           <div>
             <Switch>
-              <Route path="/available-vaults" component={AvailableVaults} exact />
-              <Route path="/my-active-vaults" component={ActiveVaults} exact />
-              <Route path="/my-archived-vaults" component={ArchivedVaults} exact />
-              <Route path="/insta-buy-lp" component={InstaBuyLp} exact />
-              <Route path="/vaultdashboard" component={VaultDashboard} exact />
-              <Route exact path="/">
-                <Redirect to="/available-vaults" />
+              <Route path="/dashboard/available-vaults" component={AvailableVaults} exact />
+              <Route path="/dashboard/my-active-vaults" component={ActiveVaults} exact />
+              <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
+              <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
+              <Route path="/dashboard/vaultdashboard" component={VaultDashboard} exact />
+              <Route exact path="/dashboard">
+                <Redirect to="/dashboard/available-vaults" />
               </Route>
             </Switch>
             <Footer darkMode={darkMode} />

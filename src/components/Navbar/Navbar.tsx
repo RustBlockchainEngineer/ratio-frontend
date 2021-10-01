@@ -43,29 +43,29 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode }: NavbarProps
         <NavbarItem
           icon={availableVaultsIcon}
           name="Available Vaults"
-          active={navIndex === '/available-vaults'}
-          navIndex="/available-vaults"
+          active={navIndex === '/dashboard/available-vaults'}
+          navIndex="/dashboard/available-vaults"
           onItemClick={onItemClick}
         />
         <NavbarItem
           icon={activeVaultsIcon}
           name="My Active Vaults"
-          active={navIndex === '/my-active-vaults'}
-          navIndex="/my-active-vaults"
+          active={navIndex === '/dashboard/my-active-vaults'}
+          navIndex="/dashboard/my-active-vaults"
           onItemClick={onItemClick}
         />
         <NavbarItem
           icon={archivedVaultsIcon}
           name="My Archived Vaults"
-          active={navIndex === '/my-archived-vaults'}
-          navIndex="/my-archived-vaults"
+          active={navIndex === '/dashboard/my-archived-vaults'}
+          navIndex="/dashboard/my-archived-vaults"
           onItemClick={onItemClick}
         />
         <NavbarItem
           icon={instaBuyIcon}
           name="Insta-buy LP"
-          active={navIndex === '/insta-buy-lp'}
-          navIndex="/insta-buy-lp"
+          active={navIndex === '/dashboard/insta-buy-lp'}
+          navIndex="/dashboard/insta-buy-lp"
           onItemClick={onItemClick}
         />
       </div>

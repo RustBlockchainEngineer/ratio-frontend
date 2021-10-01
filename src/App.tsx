@@ -6,6 +6,7 @@ import { AccountsProvider } from './contexts/accounts';
 import { MarketProvider } from './contexts/market';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Layer from './pages/Layer';
+import Faucet from './pages/Faucet';
 
 const App: React.FC = () => {
   return (
@@ -17,7 +18,8 @@ const App: React.FC = () => {
               <Router>
                 <div>
                   <Switch>
-                    <Route path="/" component={Layer} />
+                    <Route path="/dashboard" component={Layer} />
+                    <Route path="/faucet" exact component={Faucet} />
                   </Switch>
                 </div>
               </Router>
