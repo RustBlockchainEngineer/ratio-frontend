@@ -7,13 +7,20 @@ type CustomInputProps = {
   tokenStr: string;
   appendValueStr?: string;
   className?: string;
+  onTextChange?: (value: string) => void;
 };
 
-const CustomInput = ({ appendStr, tokenStr, appendValueStr, className }: CustomInputProps) => {
+const CustomInput = ({ appendStr, tokenStr, appendValueStr, className, onTextChange }: CustomInputProps) => {
   const [value, setValue] = React.useState('0');
 
   const handleChange = (e: any) => {
     setValue(e.target.value.replace(/\D/, ''));
+    onTextChange && onTextChange(e.target.value.replace(/\D/, ''));
+  };
+
+  const setMaxValue = () => {
+    setValue('100');
+    onTextChange && onTextChange('100');
   };
 
   return (
@@ -28,7 +35,7 @@ const CustomInput = ({ appendStr, tokenStr, appendValueStr, className }: CustomI
       />
       <p className={classNames('tokenName', appendStr === '' && 'tokenName--onlytext')}>{tokenStr}</p>
       {appendStr !== '' && (
-        <InputGroup.Append>
+        <InputGroup.Append onClick={setMaxValue}>
           <InputGroup.Text id="customInput">
             {appendStr} <i>{appendValueStr && appendValueStr}</i>
           </InputGroup.Text>
