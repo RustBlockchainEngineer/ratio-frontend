@@ -3,11 +3,20 @@ import { useMediaQuery } from 'react-responsive';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import classNames from 'classnames';
 import Select from 'react-select';
+import FilterSelect from '../FilterSelect';
 import { IoSearchOutline } from 'react-icons/io5';
 import title from '../../assets/images/tile.svg';
 import list from '../../assets/images/list.svg';
 import titleDark from '../../assets/images/tile-dark.svg';
 import listDark from '../../assets/images/list-dark.svg';
+
+import stepIcon from '../../assets/images/STEP.svg';
+import usdcIcon from '../../assets/images/USDC.svg';
+import rayIcon from '../../assets/images/RAY.svg';
+import solIcon from '../../assets/images/SOL.svg';
+import ethIcon from '../../assets/images/ETH.svg';
+import srmIcon from '../../assets/images/SRM.svg';
+import mediaIcon from '../../assets/images/MEDIA.svg';
 
 type FilterPanelProps = {
   label: string;
@@ -21,21 +30,41 @@ const options = [
   { value: 'TVL', label: 'TVL' },
 ];
 
+const filter_options = [
+  { value: 'SOL', label: 'SOL', network: 'solana', icon: [solIcon] },
+  { value: 'RAY', label: 'RAY', network: 'solana', icon: [rayIcon] },
+  { value: 'SRM', label: 'SRM', network: 'solana', icon: [srmIcon] },
+  { value: 'MEDIA', label: 'MEDIA', network: 'solana', icon: [mediaIcon] },
+  { value: 'ETH', label: 'ETH', network: 'solana', icon: [ethIcon] },
+  { value: 'USDC', label: 'USDC', network: 'solana', icon: [usdcIcon] },
+  { value: 'STEP', label: 'STEP', network: 'solana', icon: [stepIcon] },
+];
+
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const theme = React.useContext(ThemeContext);
   const { darkMode } = theme.state;
   const isDefault = useMediaQuery({ minWidth: 768 });
   const isMobile = useMediaQuery({ maxWidth: 767 });
+
+  const [filterSelected, setFilterSelected] = React.useState([]);
+
+  const onFilterChange = (values: any) => {
+    setFilterSelected(values);
+  };
+
   return (
     <div className="filterpanel">
       <h2>{label}</h2>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between align-items-start">
         <div>
           {isMobile && <p className="mr-2 filterpanel__sortby">Search: </p>}
-          <div className="form-group has-search">
-            <IoSearchOutline className="form-control-feedback" size={25} />
-            <input type="text" className="form-control" placeholder="Search all vaults" />
-          </div>
+          <FilterSelect
+            options={filter_options}
+            onFilterChange={onFilterChange}
+            filterValue={filterSelected}
+            placeholder="Search all valuts by token"
+            isMulti
+          />
         </div>
         <div className="d-md-flex align-items-center">
           <p className="mr-2 filterpanel__sortby">Sort by: </p>
