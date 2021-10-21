@@ -1,0 +1,1 @@
+export const SET_COMPARE_VAULTS = 'SET_COMPARE_VAULTS';

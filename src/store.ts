@@ -2,11 +2,13 @@ import { combineReducers, createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension';
 import { CounterReducer } from './features/counter';
 import { WalletReducer } from './features/wallet';
+import { DashboardReducer } from './features/dashboard';
 
 /* Create root reducer, containing all features of the application */
 const rootReducer = combineReducers({
   count: CounterReducer,
   wallet: WalletReducer,
+  dashboard: DashboardReducer,
 });
 
 const store = createStore(rootReducer, /* preloadedState, */ devToolsEnhancer({}));

@@ -1,10 +1,13 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import classNames from 'classnames';
 import Select from 'react-select';
+import Switch from 'react-switch';
 import FilterSelect from '../FilterSelect';
-import { IoSearchOutline } from 'react-icons/io5';
+import { actionTypes } from '../../features/dashboard';
+
 import title from '../../assets/images/tile.svg';
 import list from '../../assets/images/list.svg';
 import titleDark from '../../assets/images/tile-dark.svg';
@@ -41,10 +44,12 @@ const filter_options = [
 ];
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
+  const dispatch = useDispatch();
   const theme = React.useContext(ThemeContext);
   const { darkMode } = theme.state;
   const isDefault = useMediaQuery({ minWidth: 768 });
   const isMobile = useMediaQuery({ maxWidth: 767 });
+  const [compareVaults, setCompareVaults] = React.useState(false);
 
   const [filterSelected, setFilterSelected] = React.useState([]);
 
@@ -52,11 +57,16 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
     setFilterSelected(values);
   };
 
+  const handleCompareVaults = () => {
+    setCompareVaults(!compareVaults);
+    dispatch({ type: actionTypes.SET_COMPARE_VAULTS, payload: !compareVaults });
+  };
+
   return (
     <div className="filterpanel">
       <h2>{label}</h2>
       <div className="d-flex justify-content-between align-items-start">
-        <div>
+        <div className="d-flex align-items-start">
           {isMobile && <p className="mr-2 filterpanel__sortby">Search: </p>}
           <FilterSelect
             options={filter_options}
@@ -64,6 +74,17 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             filterValue={filterSelected}
             placeholder="Search all valuts by token"
             isMulti
+          />
+          <Switch
+            onChange={handleCompareVaults}
+            checked={compareVaults}
+            className="mt-2 ml-3"
+            uncheckedIcon={false}
+            checkedIcon={false}
+            onColor="#07B127"
+            offColor="#DBE0E2"
+            handleDiameter={18}
+            width={48}
           />
         </div>
         <div className="d-md-flex align-items-center">

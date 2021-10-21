@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// import { useSelector } from 'react-redux'
+import { useSelector } from 'react-redux';
 import { getRiskLevel } from '../../libs/helper';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -9,10 +9,8 @@ import { useWallet } from '../../contexts/wallet';
 import LockVaultModal from '../LockVaultModal';
 import DisclaimerModal from '../DisclaimerModal';
 import Button from '../Button';
-// import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
-
-// import { selectors } from '../../features/wallet'
+import { selectors } from '../../features/dashboard';
 
 type PairType = {
   id: number;
@@ -30,12 +28,17 @@ interface TokenPairCardProps {
 
 const TokenPairCard = ({ data }: TokenPairCardProps) => {
   const [isOpen, setOpen] = React.useState(false);
-  // const connectedWallet = useSelector(selectors.getConnectedStatus)
+  const [checked, setChecked] = React.useState(false);
+  const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
   const { connected } = useWallet();
 
   const renderModalButton = () => {
     if (data.risk >= 200 && data.risk < 250) return <DisclaimerModal data={data} />;
     return <LockVaultModal data={data} />;
+  };
+
+  const handleChangeComparison = (e: any) => {
+    setChecked(e.target.checked);
   };
 
   return (
@@ -80,29 +83,39 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
             <h6>APR:</h6>
             <h6 className="semiBold">{data.apr}%</h6>
           </div>
-          <div className="tokenpaircard__btnBox d-flex">
-            <div className="col">
-              <Link to="/insta-buy-lp">
-                <Button className="button--gradientBorder insta-buy-lp">Insta-buy Lp</Button>
-              </Link>
+          {compare_valuts_status ? (
+            <div className={classNames('tokenpaircard__btnBox', { 'tokenpaircard__btnBox--checked': checked })}>
+              <label>
+                <input type="checkbox" className="filled-in" checked={checked} onChange={handleChangeComparison} />
+                <span>Compare this vault</span>
+              </label>
             </div>
-            <div className="col">
-              {connected ? (
-                renderModalButton()
-              ) : (
-                <OverlayTrigger
-                  placement="top"
-                  trigger="click"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
-                >
-                  <div>
-                    <Button className="button--disabled generate">Mint USDr</Button>
-                  </div>
-                </OverlayTrigger>
-              )}
+          ) : (
+            <div className="tokenpaircard__btnBox d-flex">
+              <div className="col">
+                <Link to="/insta-buy-lp">
+                  <Button className="button--gradientBorder insta-buy-lp">Insta-buy Lp</Button>
+                </Link>
+              </div>
+              <div className="col">
+                {connected ? (
+                  renderModalButton()
+                ) : (
+                  <OverlayTrigger
+                    placement="top"
+                    trigger="click"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
+                  >
+                    <div>
+                      <Button className="button--disabled generate">Mint USDr</Button>
+                    </div>
+                  </OverlayTrigger>
+                )}
+              </div>
             </div>
-          </div>
+          )}
+
           <div className="tokenpaircard__detailBox">
             {isOpen && (
               <div className="tokenpaircard__detailBox__content">

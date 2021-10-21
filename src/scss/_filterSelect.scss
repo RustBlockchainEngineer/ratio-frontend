@@ -1,4 +1,7 @@
 .filterselect {
+  &--active {
+    margin-bottom: 40px;
+  }
   &__searchIcon {
     color: #4c646f;
   }
@@ -52,6 +55,7 @@
     }
   }
   &__valuesContainer {
+    position: absolute;
     margin-top: 10px;
     display: flex;
     flex-wrap: wrap;

@@ -57,7 +57,7 @@ const FilterSelect = ({ options, onFilterChange, filterValue, isMulti, placehold
   };
 
   return (
-    <div className="filterselect">
+    <div className={classNames('filterselect', { 'filterselect--active': filterValue.length > 0 })}>
       <Select
         components={{ Option: CustomOption, Control }}
         classNamePrefix="filter-select"
