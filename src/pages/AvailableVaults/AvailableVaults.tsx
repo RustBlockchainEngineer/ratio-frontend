@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { getRiskLevel } from '../../libs/helper';
-import useFetch from 'react-fetch-hook';
-import classNames from 'classnames';
-import BootstrapTable from 'react-bootstrap-table-next';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { useWallet } from '../../contexts/wallet';
+import { PairType } from '../../models/UInterface';
+import { selectors, actionTypes } from '../../features/dashboard';
+
+import classNames from 'classnames';
+import useFetch from 'react-fetch-hook';
+import BootstrapTable from 'react-bootstrap-table-next';
 import Button from '../../components/Button';
 import FilterPanel from '../../components/FilterPanel';
 import TokenPairCard from '../../components/TokenPairCard';
-import { useWallet } from '../../contexts/wallet';
 import LockVaultModal from '../../components/LockVaultModal';
 import DisclaimerModal from '../../components/DisclaimerModal';
+import ComparingFooter from '../../components/ComparingFooter';
+
 import factorialData from '../../constants/factorial.json';
 import rayIcon from '../../assets/images/RAY.svg';
 import ethIcon from '../../assets/images/ETH.svg';
 
 const AvailableVaults = () => {
+  const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
   const { connected } = useWallet();
+  const compareValutsList = useSelector(selectors.getCompareVaultsList);
 
   const onViewType = (type: string) => {
     setViewType(type);
@@ -167,9 +175,19 @@ const AvailableVaults = () => {
   };
 
   const showContent = (vtype: string) => {
+    const onCompareVault = (data: PairType, status: boolean) => {
+      console.log(data, status);
+      if (status) {
+        dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: [...compareValutsList, data] });
+      } else {
+        const arr = compareValutsList.filter((vault: PairType) => vault.id !== data.id);
+        dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: arr });
+      }
+    };
+
     if (vtype === 'tile') {
       return factorial.map((item) => {
-        return <TokenPairCard data={item} key={item.id} />;
+        return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
       });
     } else {
       return (
@@ -201,6 +219,7 @@ const AvailableVaults = () => {
           showContent(viewType)
         )}
       </div>
+      {compareValutsList.length > 0 && <ComparingFooter list={compareValutsList} />}
     </div>
   );
 };

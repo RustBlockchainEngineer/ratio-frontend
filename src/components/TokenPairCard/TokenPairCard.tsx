@@ -11,22 +11,9 @@ import DisclaimerModal from '../DisclaimerModal';
 import Button from '../Button';
 import highRisk from '../../assets/images/highrisk.svg';
 import { selectors } from '../../features/dashboard';
+import { TokenPairCardProps } from '../../models/UInterface';
 
-type PairType = {
-  id: number;
-  icons: Array<string>;
-  title: string;
-  tvl: string;
-  risk: number;
-  apr: number;
-  details: string;
-};
-
-interface TokenPairCardProps {
-  data: PairType;
-}
-
-const TokenPairCard = ({ data }: TokenPairCardProps) => {
+const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
   const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
@@ -39,6 +26,7 @@ const TokenPairCard = ({ data }: TokenPairCardProps) => {
 
   const handleChangeComparison = (e: any) => {
     setChecked(e.target.checked);
+    onCompareVault(data, e.target.checked);
   };
 
   return (

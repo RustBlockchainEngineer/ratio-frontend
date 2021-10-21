@@ -50,9 +50,9 @@
     }
   }
   &--danger {
-    border: 2px solid #ff3131;
+    border: 2px solid var(--unnamed-color-ff3131);
+    color: var(--unnamed-color-ff3131);
     background-color: white;
-    color: #ff3131;
   }
 
   &--disabled {
