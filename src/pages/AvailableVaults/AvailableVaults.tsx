@@ -138,7 +138,7 @@ const AvailableVaults = () => {
         return (
           <div className="activepaircard__btnBox d-flex">
             <div className="col">
-              <Button className="button--gradientBorder lp-button">Insta-buy Lp</Button>
+              <Button className="button--gradientBorder lp-button">Insta-buy LP</Button>
             </div>
             <div className="col">
               {walletConnected ? (
@@ -184,9 +184,9 @@ const AvailableVaults = () => {
             <p>$2,700</p>
           </div>
         </div>
-        <div className="mt-3 w-25">
+        {/* <div className="mt-3 w-25">
           <Button className="button--fill lp-button">Harvest</Button>
-        </div>
+        </div> */}
       </div>
     ),
   };

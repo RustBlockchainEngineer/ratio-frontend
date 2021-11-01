@@ -82,7 +82,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             <div className="tokenpaircard__btnBox d-flex">
               <div className="col">
                 <Link to="/insta-buy-lp">
-                  <Button className="button--gradientBorder insta-buy-lp">Insta-buy Lp</Button>
+                  <Button className="button--gradientBorder insta-buy-lp">Insta-buy LP</Button>
                 </Link>
               </div>
               <div className="col">
@@ -125,9 +125,9 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                     <p>$2,700</p>
                   </div>
                 </div>
-                <div className="mt-3">
+                {/* <div className="mt-3">
                   <Button className="button--fill insta-buy-lp">Harvest</Button>
-                </div>
+                </div> */}
               </div>
             )}
 

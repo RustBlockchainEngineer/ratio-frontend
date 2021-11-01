@@ -72,7 +72,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             options={filter_options}
             onFilterChange={onFilterChange}
             filterValue={filter_data}
-            placeholder="Search all valuts by token"
+            placeholder="Search all vaults by token"
             isMulti
           />
           <Switch

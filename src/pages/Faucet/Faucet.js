@@ -16,7 +16,7 @@ import mediaIcon from '../../assets/images/MEDIA.svg';
 
 const options1 = [
   { value: 'STEP-USDC', label: 'STEP-USDC-LP', icon: [stepIcon, usdcIcon] },
-  { value: 'RAY-SOL', label: 'RAY-SOL-LP', icon: [rayIcon, solIcon] },
+  { value: 'SOL-RAY', label: 'SOL-RAY-LP', icon: [solIcon, rayIcon] },
   { value: 'RAY-EHT', label: 'RAY-EHT-LP', icon: [rayIcon, ethIcon] },
   { value: 'RAY-SRM', label: 'RAY-SRM-LP', icon: [rayIcon, srmIcon] },
   { value: 'RAY-USDC', label: 'RAY-USDC-LP', icon: [rayIcon, usdcIcon] },
