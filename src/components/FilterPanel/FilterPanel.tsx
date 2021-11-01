@@ -1,12 +1,12 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import classNames from 'classnames';
 import Select from 'react-select';
 import Switch from 'react-switch';
 import FilterSelect from '../FilterSelect';
-import { actionTypes } from '../../features/dashboard';
+import { actionTypes, selectors } from '../../features/dashboard';
 
 import title from '../../assets/images/tile.svg';
 import list from '../../assets/images/list.svg';
@@ -51,10 +51,10 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const [compareVaults, setCompareVaults] = React.useState(false);
 
-  const [filterSelected, setFilterSelected] = React.useState([]);
+  const filter_data = useSelector(selectors.getFilterData);
 
   const onFilterChange = (values: any) => {
-    setFilterSelected(values);
+    dispatch({ type: actionTypes.SET_FILTER_DATA, payload: values });
   };
 
   const handleCompareVaults = () => {
@@ -71,7 +71,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
           <FilterSelect
             options={filter_options}
             onFilterChange={onFilterChange}
-            filterValue={filterSelected}
+            filterValue={filter_data}
             placeholder="Search all valuts by token"
             isMulti
           />

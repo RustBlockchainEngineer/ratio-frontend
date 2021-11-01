@@ -25,6 +25,7 @@ const AvailableVaults = () => {
   const [viewType, setViewType] = useState('tile');
   const { connected } = useWallet();
   const compareValutsList = useSelector(selectors.getCompareVaultsList);
+  const filter_data = useSelector(selectors.getFilterData);
 
   const onViewType = (type: string) => {
     setViewType(type);
@@ -32,9 +33,22 @@ const AvailableVaults = () => {
 
   const { isLoading, data } = useFetch<any>('https://144.126.208.158/index.php/api/rate');
 
-  function factorialOf(d: any) {
+  const filterData = (array1: any, array2: any) => {
+    if (array2.length === 0) {
+      return array1;
+    }
+    return array1.filter((item1: any) => {
+      const item1Str = JSON.stringify(item1);
+      return array2.find((item2: any) => {
+        console.log(item2.label);
+        return item1Str.indexOf(item2.label) > -1;
+      });
+    });
+  };
+
+  function factorialOf(d: any, filter_data: any) {
     if (d !== undefined) {
-      const p = Object.keys(d).map((key, index) => {
+      const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
         return {
           id: index,
           icons: [rayIcon, ethIcon],
@@ -51,7 +65,10 @@ const AvailableVaults = () => {
     return [];
   }
 
-  const factorial = React.useMemo(() => factorialOf(factorialData), [factorialData, connected]);
+  const factorial = React.useMemo(
+    () => factorialOf(factorialData, filter_data),
+    [factorialData, connected, filter_data]
+  );
 
   const renderModalButton = (row: any, connect: boolean) => {
     if (connect) {
@@ -176,7 +193,6 @@ const AvailableVaults = () => {
 
   const showContent = (vtype: string) => {
     const onCompareVault = (data: PairType, status: boolean) => {
-      console.log(data, status);
       if (status) {
         dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: [...compareValutsList, data] });
       } else {
@@ -186,7 +202,7 @@ const AvailableVaults = () => {
     };
 
     if (vtype === 'tile') {
-      return factorial.map((item) => {
+      return factorial.map((item: any) => {
         return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
       });
     } else {
