@@ -6,10 +6,11 @@ type NavbarItemProps = {
   name: string;
   active: boolean;
   navIndex: string;
+  collapseFlag: boolean;
   onItemClick: (navIndex: string) => void;
 };
 
-const NavbarItem = ({ icon, name, active, navIndex, onItemClick }: NavbarItemProps) => {
+const NavbarItem = ({ icon, name, active, navIndex, collapseFlag, onItemClick }: NavbarItemProps) => {
   return (
     <div
       className={classNames('navbarItem d-flex align-items-center px-5 py-4', active ? 'navbarItem--active' : '')}
@@ -18,7 +19,7 @@ const NavbarItem = ({ icon, name, active, navIndex, onItemClick }: NavbarItemPro
       aria-hidden="true"
     >
       <img src={icon} alt="icon" />
-      <p className="ml-3">{name}</p>
+      {!collapseFlag && <p className="ml-3">{name}</p>}
     </div>
   );
 };

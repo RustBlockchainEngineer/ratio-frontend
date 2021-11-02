@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 type ButtonProps = {
-  children: string;
+  children: React.ReactChild;
   className: string;
   onClick?: () => void;
   disabled?: boolean;

@@ -58,7 +58,7 @@ const Faucet = () => {
           <label>Choose which LP you wish to mint</label>
           <CustomSelect options={options1} />
           <label className="mt-4">Choose the amount you would like to mint</label>
-          <CustomInput appendStr="Max" appendValueStr="(100)" onTextChange={getInputValue} />
+          <CustomInput appendStr="Max" appendValueStr="100" onTextChange={getInputValue} />
           {submitState && (
             <div className="submitted">You&rsquo;ve successfully minted {amount} Ray-Sol Testnet tokens</div>
           )}

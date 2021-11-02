@@ -7,19 +7,24 @@ import NavbarItem from './NavbarItem';
 import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
+import collapseLogo from '../../assets/images/image-logo.svg';
 import availableVaultsIcon from '../../assets/images/available-vaults-icon.svg';
 import instaBuyIcon from '../../assets/images/insta-buy-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg';
+import { RiMenuFoldLine } from 'react-icons/ri';
+import { IoWalletOutline } from 'react-icons/io5';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
   clickMenuItem: () => void;
+  setCollapseFlag: () => void;
   open: boolean;
   darkMode: boolean;
+  collapseFlag: boolean;
 };
 
-const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode }: NavbarProps) => {
+const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }: NavbarProps) => {
   const isDefault = useMediaQuery({ minWidth: 768 });
   const location = useLocation();
   const history = useHistory();
@@ -37,8 +42,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode }: NavbarProps
   };
 
   return (
-    <div className={classNames('navbar-vertical', { closed: open })}>
-      {isDefault && <img src={darkMode ? darkLogo : logo} alt="logo" />}
+    <div className={classNames('navbar-vertical', { 'navbar-vertical--collapse': collapseFlag }, { closed: open })}>
+      {isDefault && <img src={collapseFlag ? collapseLogo : darkMode ? darkLogo : logo} alt="logo" />}
       <div className="mt-md-5">
         <NavbarItem
           icon={availableVaultsIcon}
@@ -46,6 +51,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode }: NavbarProps
           active={navIndex === '/dashboard/available-vaults'}
           navIndex="/dashboard/available-vaults"
           onItemClick={onItemClick}
+          collapseFlag={collapseFlag}
         />
         <NavbarItem
           icon={activeVaultsIcon}
@@ -53,6 +59,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode }: NavbarProps
           active={navIndex === '/dashboard/my-active-vaults'}
           navIndex="/dashboard/my-active-vaults"
           onItemClick={onItemClick}
+          collapseFlag={collapseFlag}
         />
         {/* <NavbarItem
           icon={archivedVaultsIcon}
@@ -71,26 +78,35 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode }: NavbarProps
       </div>
       <div>
         {connected ? (
-          <div className="navbar-vertical__connectedBox">
-            <hr />
-            <div className="navbar-vertical__item">
-              <h6>Active Vaults</h6>
-              <div>0</div>
+          !collapseFlag ? (
+            <div className="navbar-vertical__connectedBox">
+              <hr />
+              <div className="navbar-vertical__item">
+                <h6>Active Vaults</h6>
+                <div>0</div>
+              </div>
+              <div className="navbar-vertical__item">
+                <h6>Total Vault Value</h6>
+                <div>0</div>
+              </div>
+              <div className="navbar-vertical__item">
+                <h6>USDr Minted</h6>
+                <div>0</div>
+              </div>
             </div>
-            <div className="navbar-vertical__item">
-              <h6>Total Vault Value</h6>
-              <div>0</div>
-            </div>
-            <div className="navbar-vertical__item">
-              <h6>USDr Minted</h6>
-              <div>0</div>
-            </div>
-          </div>
+          ) : null
         ) : (
-          <Button onClick={connected ? onClickWalletBtn : connect} className="button--fill walletBtn">
-            Connect Wallet
+          <Button
+            onClick={connected ? onClickWalletBtn : connect}
+            className={classNames('button--fill walletBtn', { 'walletBtn--collapse': collapseFlag })}
+          >
+            {!collapseFlag ? <div>Connect Wallet</div> : <IoWalletOutline size={30} />}
           </Button>
         )}
+      </div>
+      <div className="navbar-vertical__collapsemenu" onClick={setCollapseFlag}>
+        <RiMenuFoldLine size={25} color="#4c646f" />
+        {!collapseFlag && <p>Collapse Menu</p>}
       </div>
     </div>
   );

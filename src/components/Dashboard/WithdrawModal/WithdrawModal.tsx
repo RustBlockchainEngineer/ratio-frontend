@@ -49,7 +49,7 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much would you like to withdraw?</label>
-            <CustomInput appendStr="Max" appendValueStr="(12.54)" tokenStr={`${data.title}-LP`} />
+            <CustomInput appendStr="Max" appendValueStr="12.54" tokenStr={`${data.title}-LP`} />
             <Button className="button--fill bottomBtn" onClick={() => setShow(false)}>
               Withdraw Assets
             </Button>

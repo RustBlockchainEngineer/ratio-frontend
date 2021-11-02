@@ -43,7 +43,7 @@ const GenerateModal = ({ data }: GenerateModalProps) => {
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much would you like to mint?</label>
-            <CustomInput appendStr="Max" appendValueStr="(32.34)" tokenStr="USDr" />
+            <CustomInput appendStr="Max" appendValueStr="32.34" tokenStr="USDr" />
             <p className="dashboardModal__modal__body-red">
               There will be a 2% stability fee associated with this transaction.
             </p>

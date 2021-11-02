@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
@@ -23,6 +24,7 @@ const Layer = () => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [collapseFlag, setCollapseFlag] = React.useState(false);
   const dispatch = useDispatch();
 
   const onClickWalletBtn = () => {
@@ -33,9 +35,13 @@ const Layer = () => {
     setMenuOpen(!menuOpen);
   };
 
+  const onCollapseMenu = () => {
+    setCollapseFlag(!collapseFlag);
+  };
+
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
-      <div className="layer_container">
+      <div className={classNames('layer_container', { 'layer_container--collapse': collapseFlag })}>
         <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
 
         <Navbar
@@ -43,6 +49,8 @@ const Layer = () => {
           onClickWalletBtn={onClickWalletBtn}
           clickMenuItem={clickMenuTrigger}
           open={menuOpen}
+          collapseFlag={collapseFlag}
+          setCollapseFlag={onCollapseMenu}
         />
 
         {(isDefault || !menuOpen) && (

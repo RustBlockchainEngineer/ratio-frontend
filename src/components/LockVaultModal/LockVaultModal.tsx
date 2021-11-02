@@ -52,7 +52,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             <label className="lockvaultmodal__label2">
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
-            <CustomInput appendStr="Max" appendValueStr="(1000)" tokenStr={`${data.title}-LP`} />
+            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title}-LP`} />
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -91,7 +91,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             <label className="lockvaultmodal__label2">
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
-            <CustomInput appendStr="Max" appendValueStr="(1000)" tokenStr={`${data.title}-LP`} />
+            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title}-LP`} />
             <Button className="button--fill lockBtn" onClick={() => history.push('/dashboard/vaultdashboard')}>
               Lock Assets & Mint
             </Button>
