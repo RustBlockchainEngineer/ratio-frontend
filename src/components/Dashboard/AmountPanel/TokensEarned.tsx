@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Table } from 'react-bootstrap';
+import Button from '../../Button';
 import RAY from '../../../assets/images/RAY.svg';
 import SOL from '../../../assets/images/SOL.svg';
 
@@ -46,6 +47,9 @@ const TokensEarned = () => {
           </tr>
         </tbody>
       </Table>
+      <div className="px-4">
+        <Button className="button--fill generate btn-block">Harvest</Button>
+      </div>
     </div>
   );
 };

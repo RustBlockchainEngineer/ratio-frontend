@@ -80,11 +80,11 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
           ) : (
             <div className="tokenpaircard__btnBox d-flex">
-              <div className="col">
+              {/* <div className="col">
                 <Link to="/insta-buy-lp">
                   <Button className="button--gradientBorder insta-buy-lp">Insta-buy LP</Button>
                 </Link>
-              </div>
+              </div> */}
               <div className="col">
                 {connected ? (
                   renderModalButton()

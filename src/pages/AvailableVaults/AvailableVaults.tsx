@@ -132,14 +132,14 @@ const AvailableVaults = () => {
       dataField: '',
       text: '',
       headerStyle: {
-        width: '25%',
+        width: '15%',
       },
       formatter: (cell: any, row: any, rowIndex: any, { walletConnected }: any) => {
         return (
           <div className="activepaircard__btnBox d-flex">
-            <div className="col">
+            {/* <div className="col">
               <Button className="button--gradientBorder lp-button">Insta-buy LP</Button>
-            </div>
+            </div> */}
             <div className="col">
               {walletConnected ? (
                 renderModalButton(row, walletConnected)

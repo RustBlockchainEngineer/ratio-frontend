@@ -24,7 +24,7 @@ const DisclaimerModal = ({ data }: LockVaultModalProps) => {
   return (
     <>
       <Button className="button--fill generate" onClick={() => setShow(!show)}>
-        Generate USDr
+        Mint USDr
       </Button>
 
       <Modal
