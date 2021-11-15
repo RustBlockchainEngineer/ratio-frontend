@@ -1,0 +1,56 @@
+.compareCard {
+    border: 1px solid rgba(var(--secondary-border), 0.2);
+    border-radius: 8px;
+    h3 {
+        font-family: 'Poppins-SemiBold';
+        font-size: 16px;
+        padding: 0.8rem 1.2rem;
+        color: var(--unnamed-color-002332);
+    }
+    &__list {
+        padding-left: 1.2rem;
+        padding-right: 1.2rem;
+        padding-top: 0.7rem;
+        padding-bottom: 0.7rem;
+        border-top: 1px solid rgba(var(--secondary-border), 0.2);
+        h5 {
+            font-family: 'Poppins-SemiBold';
+            font-size: 16px;
+            color: var(--unnamed-color-3c4760);
+            margin-bottom: 0px;
+        }
+        h6 {
+            font-family: 'Poppins-Medium';
+            font-size: 14px;
+            color: var(--unnamed-color-3c4760);
+            margin-left: 10px;
+            margin-bottom: 0px;
+        }
+        &--odd {
+            background-color: var(--unnamed-color-f8f9f9);
+        }
+        &--icon1 {
+            width: 28px;
+            margin-left: 10px;
+        }
+        &--icon2 {
+        margin-left: -5px;
+        width: 28px;
+        }
+        &__platform {
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            p {
+                font-family: 'Poppins-Medium';
+                font-size: 12px;
+                color: var(--unnamed-color-3c4760);
+            }
+            img {
+                margin-right: 5px;
+                width: 22px
+            }
+        }
+    }
+}

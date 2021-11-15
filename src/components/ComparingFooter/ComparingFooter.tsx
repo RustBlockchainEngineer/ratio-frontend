@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { PairType } from '../../models/UInterface';
 import Button from '../Button';
 
@@ -7,6 +8,11 @@ interface ComparingFooterProps {
 }
 
 const ComparingFooter = ({ list }: ComparingFooterProps) => {
+  const history = useHistory();
+  const onCompare = () => {
+    history.push('/dashboard/comparevaults');
+  };
+
   return (
     <div className="comparingFooter">
       <div className="d-flex align-items-center">
@@ -28,7 +34,9 @@ const ComparingFooter = ({ list }: ComparingFooterProps) => {
       </div>
       <div>
         <Button className="button--danger danger-button">Cancel</Button>
-        <Button className="button--fill compare-button">Compare</Button>
+        <Button className="button--fill compare-button" onClick={onCompare}>
+          Compare
+        </Button>
       </div>
     </div>
   );
