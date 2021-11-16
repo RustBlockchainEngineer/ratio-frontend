@@ -16,7 +16,6 @@ import LockVaultModal from '../../components/LockVaultModal';
 import DisclaimerModal from '../../components/DisclaimerModal';
 import ComparingFooter from '../../components/ComparingFooter';
 
-import factorialData from '../../constants/factorial.json';
 import rayIcon from '../../assets/images/RAY.svg';
 import ethIcon from '../../assets/images/ETH.svg';
 
@@ -31,7 +30,7 @@ const AvailableVaults = () => {
     setViewType(type);
   };
 
-  const { isLoading, data } = useFetch<any>('https://144.126.208.158/index.php/api/rate');
+  const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/rate');
 
   const filterData = (array1: any, array2: any) => {
     if (array2.length === 0) {
@@ -65,10 +64,7 @@ const AvailableVaults = () => {
     return [];
   }
 
-  const factorial = React.useMemo(
-    () => factorialOf(factorialData, filter_data),
-    [factorialData, connected, filter_data]
-  );
+  const factorial = React.useMemo(() => factorialOf(data, filter_data), [data, connected, filter_data]);
 
   const renderModalButton = (row: any, connect: boolean) => {
     if (connect) {
