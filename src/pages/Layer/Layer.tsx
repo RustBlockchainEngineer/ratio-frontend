@@ -17,7 +17,23 @@ import CompareVaults from '../CompareVaults';
 
 import { actionTypes } from '../../features/wallet';
 
+import { getTokenBySymbol } from '../../utils/tokens';
+import { getTokenIcon } from '../../utils/utils';
+import { WRAPPED_SOL_MINT } from '../../utils/ids';
+import { useConnectionConfig } from '../../contexts/connection';
+
 // const isMobile = useMediaQuery({ maxWidth: 767 })
+
+const tokens = [
+  'So11111111111111111111111111111111111111112',
+  'StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT',
+  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
+  '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
+  'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
+  '8HGyAAB1yoM1ttS7pXjHMa3dukTFGQggnFFH3hJZgzQh',
+  'ETAtLmCmsoiEEKfNrHKJ2kYy3MoABhU6NQvpSfij5tDs',
+];
 
 const Layer = () => {
   const theme = React.useContext(ThemeContext);
@@ -26,6 +42,9 @@ const Layer = () => {
   const isDefault = useMediaQuery({ minWidth: 768 });
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [collapseFlag, setCollapseFlag] = React.useState(false);
+
+  const { tokenMap } = useConnectionConfig();
+
   const dispatch = useDispatch();
 
   const onClickWalletBtn = () => {

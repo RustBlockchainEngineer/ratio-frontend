@@ -1,6 +1,8 @@
 export type PairType = {
   id: number;
   icons: Array<string>;
+  icon1?: string;
+  icon2?: string;
   title: string;
   tvl: string;
   risk: number;

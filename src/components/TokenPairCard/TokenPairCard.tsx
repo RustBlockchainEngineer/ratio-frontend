@@ -36,8 +36,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
           <div className="tokenpaircard__header">
             <div className="d-flex">
               <div>
-                <img src={data.icons[0]} alt={data.icons[0].toString()} />
-                <img src={data.icons[1]} alt={data.icons[1].toString()} className="tokenpaircard__header-icon" />
+                <img src={data.icon1} alt={'Token1'} />
+                <img src={data.icon2} alt={'Token2'} className="tokenpaircard__header-icon" />
               </div>
               <div className="tokenpaircard__titleBox">
                 <h6>{data.title}</h6>

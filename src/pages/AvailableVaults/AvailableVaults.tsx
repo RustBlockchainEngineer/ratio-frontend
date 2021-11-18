@@ -16,6 +16,9 @@ import LockVaultModal from '../../components/LockVaultModal';
 import DisclaimerModal from '../../components/DisclaimerModal';
 import ComparingFooter from '../../components/ComparingFooter';
 
+import { getTokenBySymbol } from '../../utils/tokens';
+import { getCoinPicUrl } from '../../utils/helper';
+
 import rayIcon from '../../assets/images/RAY.svg';
 import ethIcon from '../../assets/images/ETH.svg';
 
@@ -39,7 +42,6 @@ const AvailableVaults = () => {
     return array1.filter((item1: any) => {
       const item1Str = JSON.stringify(item1);
       return array2.find((item2: any) => {
-        console.log(item2.label);
         return item1Str.indexOf(item2.label) > -1;
       });
     });
@@ -48,9 +50,13 @@ const AvailableVaults = () => {
   function factorialOf(d: any, filter_data: any) {
     if (d !== undefined) {
       const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
+        const tokens = key.split('-');
+
         return {
           id: index,
           icons: [rayIcon, ethIcon],
+          icon1: getCoinPicUrl(getTokenBySymbol(tokens[0])?.mintAddress), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
+          icon2: `https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[1])?.mintAddress}.png`,
           title: key,
           tvl: '$20,818,044.40',
           apr: 125,
