@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import idl from './ratio-lending-idl.json';
 
 import { AccountLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
