@@ -5,6 +5,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useWallet } from '../../contexts/wallet';
 import { PairType } from '../../models/UInterface';
 import { selectors, actionTypes } from '../../features/dashboard';
+import { walletSelectors } from '../../features/wallet';
 
 import classNames from 'classnames';
 import useFetch from 'react-fetch-hook';
@@ -22,16 +23,41 @@ import { getCoinPicUrl } from '../../utils/helper';
 import rayIcon from '../../assets/images/RAY.svg';
 import ethIcon from '../../assets/images/ETH.svg';
 
+type whitelistProps = {
+  id: number;
+  address: any;
+  created_at: string;
+  updated_at: string;
+  name: string;
+};
+
 const AvailableVaults = () => {
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
-  const { connected } = useWallet();
   const compareValutsList = useSelector(selectors.getCompareVaultsList);
+  const whitelist_data = useSelector(walletSelectors.getWhiteListData);
   const filter_data = useSelector(selectors.getFilterData);
+
+  const [enable, setEnable] = React.useState(false);
+  const { connected, publicKey } = useWallet();
 
   const onViewType = (type: string) => {
     setViewType(type);
   };
+
+  React.useEffect(() => {
+    if (connected) {
+      const filtered = whitelist_data.filter((item: whitelistProps) => {
+        return item.address === publicKey?.toString();
+      });
+      if (filtered?.length > 0) {
+        setEnable(true);
+      } else {
+        setEnable(false);
+        alert('Please add your address to whitelist.');
+      }
+    }
+  }, [connected, publicKey]);
 
   const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/rate');
 
@@ -193,7 +219,7 @@ const AvailableVaults = () => {
     ),
   };
 
-  const showContent = (vtype: string) => {
+  const showContent = (vtype: string, enable: boolean) => {
     const onCompareVault = (data: PairType, status: boolean) => {
       if (status) {
         dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: [...compareValutsList, data] });
@@ -205,7 +231,7 @@ const AvailableVaults = () => {
 
     if (vtype === 'tile') {
       return factorial.map((item: any) => {
-        return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+        return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} enable={enable} />;
       });
     } else {
       return (
@@ -234,7 +260,7 @@ const AvailableVaults = () => {
             </div>
           </div>
         ) : (
-          showContent(viewType)
+          showContent(viewType, enable)
         )}
       </div>
       {compareValutsList.length > 0 && <ComparingFooter list={compareValutsList} />}
