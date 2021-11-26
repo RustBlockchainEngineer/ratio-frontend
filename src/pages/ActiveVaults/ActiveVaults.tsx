@@ -11,6 +11,9 @@ import stepIcon from '../../assets/images/STEP.svg';
 import usdcIcon from '../../assets/images/USDC.svg';
 import rayIcon from '../../assets/images/RAY.svg';
 import solIcon from '../../assets/images/SOL.svg';
+import ethIcon from '../../assets/images/ETH.svg';
+import srmIcon from '../../assets/images/SRM.svg'
+import mediaIcon from '../../assets/images/MEDIA.svg'
 
 const tokenPairs = [
   {
@@ -23,6 +26,7 @@ const tokenPairs = [
     owed: '$1,200',
     mint: '$600',
     price: '$3,000',
+    warning: false,
   },
   {
     id: 1,
@@ -35,6 +39,54 @@ const tokenPairs = [
     mint: '$600',
     price: '$3,000',
     warning: true,
+  },
+  {
+    id: 2,
+    icons: [rayIcon, ethIcon],
+    title: 'RAY-ETH',
+    tvl: '$38,954,120.69',
+    risk: 47,
+    apr: 125,
+    owed: '$1,200',
+    mint: '$600',
+    price: '$3,000',
+    warning: false,
+  },
+  {
+    id: 3,
+    icons: [rayIcon, srmIcon],
+    title: 'RAY-SRM',
+    tvl: '$36,886,437.47',
+    risk: 47,
+    apr: 125,
+    owed: '$1,200',
+    mint: '$600',
+    price: '$3,000',
+    warning: false,
+  },
+  {
+    id: 4,
+    icons: [rayIcon, usdcIcon],
+    title: 'RAY-USDC',
+    tvl: '$34,697,467.58',
+    risk: 92,
+    apr: 125,
+    owed: '$1,200',
+    mint: '$600',
+    price: '$3,000',
+    warning: false,
+  },
+  {
+    id: 5,
+    icons: [mediaIcon, usdcIcon],
+    title: 'MEDIA-USDC',
+    tvl: '$20,818,044.40',
+    risk: 47,
+    apr: 125,
+    owed: '$1,200',
+    mint: '$600',
+    price: '$3,000',
+    warning: false,
   },
 ];
 
