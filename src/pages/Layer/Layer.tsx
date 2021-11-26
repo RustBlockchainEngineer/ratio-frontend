@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+import useFetch from 'react-fetch-hook';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import MobileMenuTrigger from '../../components/MobileMenuTrigger';
 import Navbar from '../../components/Navbar';
@@ -45,6 +46,14 @@ const Layer = () => {
 
   const { tokenMap } = useConnectionConfig();
 
+  const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/whitelist');
+
+  React.useEffect(() => {
+    if (data?.length > 0) {
+      dispatch({ type: actionTypes.SET_WHITELIST, payload: data });
+    }
+  }, [data]);
+
   const dispatch = useDispatch();
 
   const onClickWalletBtn = () => {
@@ -61,36 +70,38 @@ const Layer = () => {
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
-      <div className={classNames('layer_container', { 'layer_container--collapse': collapseFlag })}>
-        <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
+      {!isLoading && (
+        <div className={classNames('layer_container', { 'layer_container--collapse': collapseFlag })}>
+          <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
 
-        <Navbar
-          darkMode={darkMode}
-          onClickWalletBtn={onClickWalletBtn}
-          clickMenuItem={clickMenuTrigger}
-          open={menuOpen}
-          collapseFlag={collapseFlag}
-          setCollapseFlag={onCollapseMenu}
-        />
+          <Navbar
+            darkMode={darkMode}
+            onClickWalletBtn={onClickWalletBtn}
+            clickMenuItem={clickMenuTrigger}
+            open={menuOpen}
+            collapseFlag={collapseFlag}
+            setCollapseFlag={onCollapseMenu}
+          />
 
-        {(isDefault || !menuOpen) && (
-          <div>
-            <Switch>
-              <Route path="/dashboard/available-vaults" component={AvailableVaults} exact />
-              <Route path="/dashboard/my-active-vaults" component={ActiveVaults} exact />
-              <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
-              <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
-              <Route path="/dashboard/vaultdashboard" component={VaultDashboard} exact />
-              <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
-              <Route exact path="/dashboard">
-                <Redirect to="/dashboard/available-vaults" />
-              </Route>
-            </Switch>
-            <Footer darkMode={darkMode} />
-          </div>
-        )}
-        {isMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
-      </div>
+          {(isDefault || !menuOpen) && (
+            <div>
+              <Switch>
+                <Route path="/dashboard/available-vaults" component={AvailableVaults} exact />
+                <Route path="/dashboard/my-active-vaults" component={ActiveVaults} exact />
+                <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
+                <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
+                <Route path="/dashboard/vaultdashboard" component={VaultDashboard} exact />
+                <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
+                <Route exact path="/dashboard">
+                  <Redirect to="/dashboard/available-vaults" />
+                </Route>
+              </Switch>
+              <Footer darkMode={darkMode} />
+            </div>
+          )}
+          {isMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
+        </div>
+      )}
     </div>
   );
 };

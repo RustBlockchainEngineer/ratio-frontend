@@ -12,5 +12,6 @@ export type PairType = {
 
 export interface TokenPairCardProps {
   data: PairType;
+  enable: boolean;
   onCompareVault: (data: PairType, status: boolean) => void;
 }

@@ -5,7 +5,6 @@ import { getRiskLevel } from '../../libs/helper';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
-import { useWallet } from '../../contexts/wallet';
 import LockVaultModal from '../LockVaultModal';
 import DisclaimerModal from '../DisclaimerModal';
 import Button from '../Button';
@@ -13,12 +12,11 @@ import highRisk from '../../assets/images/highrisk.svg';
 import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 
-const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
+const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => {
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
-  const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
-  const { connected } = useWallet();
 
+  const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
   const renderModalButton = () => {
     if (data.risk >= 200 && data.risk < 250) return <DisclaimerModal data={data} />;
     return <LockVaultModal data={data} />;
@@ -86,7 +84,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 </Link>
               </div> */}
               <div className="col">
-                {connected ? (
+                {enable ? (
                   renderModalButton()
                 ) : (
                   <OverlayTrigger
