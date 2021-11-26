@@ -37,10 +37,12 @@
   "dependencies": {
     "@ledgerhq/hw-transport": "^6.3.0",
     "@ledgerhq/hw-transport-webusb": "^6.3.0",
+    "@project-serum/common": "0.0.1-beta.3",
     "@project-serum/serum": "^0.13.55",
     "@project-serum/sol-wallet-adapter": "^0.2.5",
     "@solana/spl-token": "^0.1.6",
     "@solana/spl-token-registry": "^0.2.212",
+    "@solana/wallet-adapter-base": "^0.7.0",
     "@solana/web3.js": "^1.22.0",
     "@types/bootstrap": "^4.6.0",
     "@types/enzyme": "^3.10.4",
