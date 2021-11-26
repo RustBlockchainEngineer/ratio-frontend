@@ -20,7 +20,7 @@ import ComparingFooter from '../../components/ComparingFooter';
 import { getTokenBySymbol } from '../../utils/tokens';
 import { getCoinPicUrl } from '../../utils/helper';
 
-import rayIcon from '../../assets/images/RAY.svg';
+import usdrIcon from '../../assets/images/USDr.png';
 import ethIcon from '../../assets/images/ETH.svg';
 
 type whitelistProps = {
@@ -80,9 +80,11 @@ const AvailableVaults = () => {
 
         return {
           id: index,
-          icons: [rayIcon, ethIcon],
-          icon1: getCoinPicUrl(getTokenBySymbol(tokens[0])?.mintAddress), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
-          icon2: `https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[1])?.mintAddress}.png`,
+          icon1: `https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`, //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
+          icon2:
+            tokens[1] === 'USDR'
+              ? usdrIcon
+              : `https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[1])?.mintAddress}.png`,
           title: key,
           tvl: '$20,818,044.40',
           apr: 125,
