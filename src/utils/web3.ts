@@ -1,6 +1,6 @@
-import { ACCOUNT_LAYOUT } from '@project-serum/common/dist/lib/token'
-import { initializeAccount } from '@project-serum/serum/lib/token-instructions'
-import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { ACCOUNT_LAYOUT } from '@project-serum/common/dist/lib/token';
+import { initializeAccount } from '@project-serum/serum/lib/token-instructions';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import {
   Keypair,
   Commitment,
@@ -8,10 +8,10 @@ import {
   PublicKey,
   Transaction,
   TransactionSignature,
-  SystemProgram
-} from '@solana/web3.js'
+  SystemProgram,
+} from '@solana/web3.js';
 
-export const commitment: Commitment = 'confirmed'
+export const commitment: Commitment = 'confirmed';
 
 // transaction
 export async function signTransaction(
@@ -20,12 +20,12 @@ export async function signTransaction(
   transaction: Transaction,
   signers: Array<Keypair> = []
 ) {
-  transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash
-  transaction.setSigners(wallet.publicKey, ...signers.map((s) => s.publicKey))
+  transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+  transaction.setSigners(wallet.publicKey, ...signers.map((s) => s.publicKey));
   if (signers.length > 0) {
-    transaction.partialSign(...signers)
+    transaction.partialSign(...signers);
   }
-  return await wallet.signTransaction(transaction)
+  return await wallet.signTransaction(transaction);
 }
 
 async function covertToProgramWalletTransaction(
@@ -34,13 +34,13 @@ async function covertToProgramWalletTransaction(
   transaction: Transaction,
   signers: Array<Keypair> = []
 ) {
-  transaction.recentBlockhash = (await connection.getRecentBlockhash(commitment)).blockhash
-  transaction.feePayer = wallet.publicKey
+  transaction.recentBlockhash = (await connection.getRecentBlockhash(commitment)).blockhash;
+  transaction.feePayer = wallet.publicKey;
   if (signers.length > 0) {
-    transaction = await wallet.convertToProgramWalletTransaction(transaction)
-    transaction.partialSign(...signers)
+    transaction = await wallet.convertToProgramWalletTransaction(transaction);
+    transaction.partialSign(...signers);
   }
-  return transaction
+  return transaction;
 }
 
 export async function sendTransaction(
@@ -50,33 +50,33 @@ export async function sendTransaction(
   signers: Array<Keypair> = []
 ) {
   if (wallet.isProgramWallet) {
-    const programWalletTransaction = await covertToProgramWalletTransaction(connection, wallet, transaction, signers)
-    return await wallet.signAndSendTransaction(programWalletTransaction)
+    const programWalletTransaction = await covertToProgramWalletTransaction(connection, wallet, transaction, signers);
+    return await wallet.signAndSendTransaction(programWalletTransaction);
   } else {
-    const signedTransaction = await signTransaction(connection, wallet, transaction, signers)
-    return await sendSignedTransaction(connection, signedTransaction)
+    const signedTransaction = await signTransaction(connection, wallet, transaction, signers);
+    return await sendSignedTransaction(connection, signedTransaction);
   }
 }
 
 export async function sendSignedTransaction(connection: Connection, signedTransaction: Transaction): Promise<string> {
-  const rawTransaction = signedTransaction.serialize()
+  const rawTransaction = signedTransaction.serialize();
 
   const txid: TransactionSignature = await connection.sendRawTransaction(rawTransaction, {
     skipPreflight: true,
-    preflightCommitment: commitment
-  })
+    preflightCommitment: commitment,
+  });
 
-  return txid
+  return txid;
 }
 
 export function mergeTransactions(transactions: (Transaction | undefined)[]) {
-  const transaction = new Transaction()
+  const transaction = new Transaction();
   transactions
     .filter((t): t is Transaction => t !== undefined)
     .forEach((t) => {
-      transaction.add(t)
-    })
-  return transaction
+      transaction.add(t);
+    });
+  return transaction;
 }
 
 export async function getFilteredTokenAccountsByOwner(
@@ -88,36 +88,36 @@ export async function getFilteredTokenAccountsByOwner(
   const resp = await connection._rpcRequest('getTokenAccountsByOwner', [
     programId.toBase58(),
     {
-      mint: mint.toBase58()
+      mint: mint.toBase58(),
     },
     {
-      encoding: 'jsonParsed'
-    }
-  ])
+      encoding: 'jsonParsed',
+    },
+  ]);
   if (resp.error) {
-    throw new Error(resp.error.message)
+    throw new Error(resp.error.message);
   }
-  return resp.result
+  return resp.result;
 }
 
-export async function getOneFilteredTokenAccountsByOwner(  connection: Connection,
+export async function getOneFilteredTokenAccountsByOwner(
+  connection: Connection,
   owner: PublicKey,
   mint: PublicKey
 ): Promise<string> {
-  let tokenAccountList_t = await getFilteredTokenAccountsByOwner(connection, owner, mint)
-  
+  const tokenAccountList_t = await getFilteredTokenAccountsByOwner(connection, owner, mint);
+
   const tokenAccountList: any = tokenAccountList_t.value.map((item: any) => {
-      return item.pubkey
-  })
-  let tokenAccount
+    return item.pubkey;
+  });
+  let tokenAccount;
   for (const item of tokenAccountList) {
     if (item !== null) {
-      tokenAccount = item
+      tokenAccount = item;
     }
   }
-  return tokenAccount
+  return tokenAccount;
 }
-
 
 export async function createTokenAccountIfNotExist(
   connection: Connection,
@@ -129,10 +129,10 @@ export async function createTokenAccountIfNotExist(
   transaction: Transaction,
   signer: Array<Keypair>
 ) {
-  let publicKey
+  let publicKey;
 
   if (account) {
-    publicKey = new PublicKey(account)
+    publicKey = new PublicKey(account);
   } else {
     publicKey = await createProgramAccountIfNotExist(
       connection,
@@ -143,18 +143,18 @@ export async function createTokenAccountIfNotExist(
       ACCOUNT_LAYOUT,
       transaction,
       signer
-    )
+    );
 
     transaction.add(
       initializeAccount({
         account: publicKey,
         mint: new PublicKey(mintAddress),
-        owner
+        owner,
       })
-    )
+    );
   }
 
-  return publicKey
+  return publicKey;
 }
 
 export async function createProgramAccountIfNotExist(
@@ -168,13 +168,13 @@ export async function createProgramAccountIfNotExist(
   transaction: Transaction,
   signer: Array<Keypair>
 ) {
-  let publicKey
+  let publicKey;
 
   if (account) {
-    publicKey = new PublicKey(account)
+    publicKey = new PublicKey(account);
   } else {
-    const newAccount = new Keypair()
-    publicKey = newAccount.publicKey
+    const newAccount = new Keypair();
+    publicKey = newAccount.publicKey;
 
     transaction.add(
       SystemProgram.createAccount({
@@ -182,32 +182,32 @@ export async function createProgramAccountIfNotExist(
         newAccountPubkey: publicKey,
         lamports: lamports ?? (await connection.getMinimumBalanceForRentExemption(layout.span)),
         space: layout.span,
-        programId
+        programId,
       })
-    )
+    );
 
-    signer.push(newAccount)
+    signer.push(newAccount);
   }
 
-  return publicKey
+  return publicKey;
 }
 
-export async function checkWalletATA(connection:Connection,walletPubkey:PublicKey,mint:string){
-  let parsedTokenAccounts = await connection.getParsedTokenAccountsByOwner(walletPubkey,
+export async function checkWalletATA(connection: Connection, walletPubkey: PublicKey, mint: string) {
+  const parsedTokenAccounts = await connection.getParsedTokenAccountsByOwner(
+    walletPubkey,
     {
-      programId: TOKEN_PROGRAM_ID
+      programId: TOKEN_PROGRAM_ID,
     },
     'confirmed'
   );
-  let result:any = null;
+  let result: any = null;
   parsedTokenAccounts.value.forEach(async (tokenAccountInfo) => {
-    const tokenAccountPubkey = tokenAccountInfo.pubkey
-    const parsedInfo = tokenAccountInfo.account.data.parsed.info
-    const mintAddress = parsedInfo.mint
-    if(mintAddress === mint){
+    const tokenAccountPubkey = tokenAccountInfo.pubkey;
+    const parsedInfo = tokenAccountInfo.account.data.parsed.info;
+    const mintAddress = parsedInfo.mint;
+    if (mintAddress === mint) {
       result = tokenAccountPubkey.toBase58();
     }
   });
   return result;
 }
-

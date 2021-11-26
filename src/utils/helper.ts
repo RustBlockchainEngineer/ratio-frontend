@@ -61,7 +61,6 @@ export const getCoinPicUrl = (mintAddress: string | undefined) => {
   } else {
     token = Object.values(TOKENS).find((item) => item.mintAddress === mintAddress);
   }
-  console.log(token);
   if (token) {
     coinName = token.symbol.toLowerCase();
     // coinPicUrl = `https://sdk.raydium.io/icons/${mintAddress}.png`;

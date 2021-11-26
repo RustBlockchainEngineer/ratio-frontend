@@ -1,1 +1,2 @@
 export const CONNECTED_WALLET = 'CONNECTED_WALLET';
+export const SET_WHITELIST = 'SET_WHITELIST';
