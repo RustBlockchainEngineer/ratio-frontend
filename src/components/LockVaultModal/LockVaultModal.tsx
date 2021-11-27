@@ -41,7 +41,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             </div>
             <h3>Lock {data.title}-LP into vault</h3>
             <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
-            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title} LP`} />
+            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title} LP`} readOnly />
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -79,7 +79,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
         <Modal.Footer>
           <div className="lockvaultmodal__footer">
             <label className="lockvaultmodal__label1 mb-2">How much USDr would you like to generate?</label>
-            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`USDr`} />
+            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`USDr`} readOnly />
             <Button className="button--fill lockBtn" onClick={() => history.push('/dashboard/vaultdashboard')}>
               Lock Assets & Mint
             </Button>
