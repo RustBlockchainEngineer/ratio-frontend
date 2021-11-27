@@ -84,18 +84,18 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
 
   return (
     <>
-      {/* {!isCreated ? (
+      {!isCreated ? (
         <Button
           className="button--fill generate"
           onClick={() => createTokenVault(connection, wallet, new PublicKey(data.mint))}
         >
           Create Vault
         </Button>
-      ) : ( */}
-      <Button className="button--fill generate" onClick={() => setShow(!show)}>
-        Mint USDr
-      </Button>
-      {/* )} */}
+      ) : (
+        <Button className="button--fill generate" onClick={() => setShow(!show)}>
+          Mint USDr
+        </Button>
+      )}
 
       <Modal
         show={show}
