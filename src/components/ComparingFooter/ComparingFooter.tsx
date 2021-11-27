@@ -21,8 +21,8 @@ const ComparingFooter = ({ list }: ComparingFooterProps) => {
           return (
             <div className="comparingFooter__vaults" key={index}>
               <div>
-                <img src={item.icons[0]} alt="icon" className="comparingFooter__vaults--icon1" />
-                <img src={item.icons[1]} alt="icon" className="comparingFooter__vaults--icon2" />
+                {/* <img src={item.icons[0]} alt="icon" className="comparingFooter__vaults--icon1" />
+                <img src={item.icons[1]} alt="icon" className="comparingFooter__vaults--icon2" /> */}
               </div>
               <div>
                 <h5>{item.title}</h5>
