@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+import ComingSoon from '../../components/ComingSoon';
 import RiskLevel from '../../components/Dashboard/RiskLevel';
 import SpeedoMetor from '../../components/Dashboard/SpeedoMeter';
 import VaultDebt from '../../components/Dashboard/VaultDebt';
@@ -16,7 +17,7 @@ import usdrIcon from '../../assets/images/USDr.png';
 
 const priceCardData = [
   {
-    title: 'Liquidation Price',
+    title: 'Liquidation threshold',
     titleIcon: true,
     mainValue: '$90.00 USD',
     mainUnit: '(RAY/USD)',
@@ -87,10 +88,12 @@ const VaultDashboard = () => {
       <div className="vaultdashboard__body row">
         <div className="col col-md-8">
           <div className="vaultdashboard__bodyleft row">
-            {priceCardData.map((item) => {
+            {priceCardData.map((item, index) => {
               return (
                 <div className="col col-md-6 col-sm-12">
-                  <PriceCard key={item.title} data={item} />
+                  <ComingSoon enable={index === 1}>
+                    <PriceCard key={item.title} data={item} comingsoon={index === 0} />
+                  </ComingSoon>
                 </div>
               );
             })}
