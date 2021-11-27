@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import LockVaultModal from '../LockVaultModal';
 import Button from '../Button';
+import { useConnection } from '../../contexts/connection';
+import { createTokenVault, getTokenVaultByMint } from '../../utils/ratio-lending';
+import { useWallet } from '../../contexts/wallet';
+import { PublicKey } from '@solana/web3.js';
 
 type PairType = {
   id: number;
+  mint: string;
   icons: Array<string>;
   title: string;
   tvl: string;
@@ -20,12 +25,35 @@ type LockVaultModalProps = {
 
 const DisclaimerModal = ({ data }: LockVaultModalProps) => {
   const [show, setShow] = React.useState(false);
+  const connection = useConnection();
+  const { wallet } = useWallet();
+  const [vault, setVault] = React.useState({});
+  const [isCreated, setCreated] = React.useState({});
+  useEffect(() => {
+    getTokenVaultByMint(connection, data.mint).then((res) => {
+      setVault(res);
+      if (res) {
+        setCreated(true);
+      } else {
+        setCreated(false);
+      }
+    });
+  });
 
   return (
     <>
-      <Button className="button--fill generate" onClick={() => setShow(!show)}>
-        Mint USDr
-      </Button>
+      {!isCreated ? (
+        <Button
+          className="button--fill generate"
+          onClick={() => createTokenVault(connection, wallet, new PublicKey(data.mint))}
+        >
+          Create Vault
+        </Button>
+      ) : (
+        <Button className="button--fill generate" onClick={() => setShow(!show)}>
+          Mint USDr
+        </Button>
+      )}
 
       <Modal
         show={show}

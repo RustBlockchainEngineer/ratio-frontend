@@ -1,10 +1,16 @@
-import React from 'react';
+import { PublicKey } from '@solana/web3.js';
+import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
+import { useConnection } from '../../../contexts/connection';
+import { useWallet } from '../../../contexts/wallet';
+import { depositCollateral, getTokenVaultByMint } from '../../../utils/ratio-lending';
+import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 
 type PairType = {
+  mint: string;
   icons: Array<string>;
   title: string;
 };
@@ -15,6 +21,44 @@ type DepositModalProps = {
 
 const DepositModal = ({ data }: DepositModalProps) => {
   const [show, setShow] = React.useState(false);
+  const connection = useConnection();
+  const { wallet } = useWallet();
+  const [vault, setVault] = React.useState({});
+  const [isCreated, setCreated] = React.useState({});
+  const [userCollAccount, setUserCollAccount] = React.useState('');
+
+  useEffect(() => {
+    getTokenVaultByMint(connection, data.mint).then((res) => {
+      setVault(res);
+      if (res) {
+        setCreated(true);
+      } else {
+        setCreated(false);
+      }
+    });
+  }, [connection]);
+
+  useEffect(() => {
+    if (wallet?.publicKey) {
+      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(data.mint)).then((res) => {
+        setUserCollAccount(res);
+      });
+    }
+  }, []);
+
+  const deposit = () => {
+    console.log(userCollAccount);
+    if (userCollAccount !== '') {
+      depositCollateral(connection, wallet, 10 * 1000000, userCollAccount, new PublicKey(data.mint))
+        .then(() => {})
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          setShow(false);
+        });
+    }
+  };
   return (
     <div className="dashboardModal">
       <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
@@ -45,7 +89,7 @@ const DepositModal = ({ data }: DepositModalProps) => {
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much USDr would you like to generate?</label>
             <CustomInput appendStr="Max" tokenStr={`${data.title}-LP`} />
-            <Button className="button--fill bottomBtn" onClick={() => setShow(false)}>
+            <Button className="button--fill bottomBtn" onClick={() => deposit()}>
               Deposit & Lock Assets
             </Button>
           </div>

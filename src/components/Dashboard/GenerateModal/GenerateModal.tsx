@@ -1,10 +1,16 @@
-import React from 'react';
+import { PublicKey } from '@solana/web3.js';
+import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
+import { useConnection } from '../../../contexts/connection';
+import { useWallet } from '../../../contexts/wallet';
+import { borrowUSDr, getTokenVaultByMint } from '../../../utils/ratio-lending';
+import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 
 type PairType = {
+  mint: string;
   icons: Array<string>;
   usdrValue: string;
 };
@@ -15,6 +21,44 @@ type GenerateModalProps = {
 
 const GenerateModal = ({ data }: GenerateModalProps) => {
   const [show, setShow] = React.useState(false);
+  const connection = useConnection();
+  const { wallet } = useWallet();
+  const [vault, setVault] = React.useState({});
+  const [isCreated, setCreated] = React.useState({});
+  const [userCollAccount, setUserCollAccount] = React.useState('');
+
+  useEffect(() => {
+    getTokenVaultByMint(connection, data.mint).then((res) => {
+      setVault(res);
+      if (res) {
+        setCreated(true);
+      } else {
+        setCreated(false);
+      }
+    });
+  }, [connection]);
+
+  useEffect(() => {
+    if (wallet?.publicKey) {
+      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(data.mint)).then((res) => {
+        setUserCollAccount(res);
+      });
+    }
+  }, [connection, wallet]);
+
+  const borrow = () => {
+    if (userCollAccount !== '') {
+      borrowUSDr(connection, wallet, 10 * 1000000, new PublicKey(data.mint))
+        .then(() => {})
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          setShow(!show);
+        });
+    }
+  };
+
   return (
     <div className="dashboardModal">
       <Button className="gradientBtn" onClick={() => setShow(!show)}>
@@ -47,7 +91,7 @@ const GenerateModal = ({ data }: GenerateModalProps) => {
             <p className="dashboardModal__modal__body-red">
               There will be a 2% stability fee associated with this transaction.
             </p>
-            <Button className="button--fill bottomBtn" onClick={() => setShow(false)}>
+            <Button className="button--fill bottomBtn" onClick={() => borrow()}>
               Pay USDr Debt
             </Button>
           </div>

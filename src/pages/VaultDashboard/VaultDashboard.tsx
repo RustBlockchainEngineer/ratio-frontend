@@ -34,14 +34,16 @@ const priceCardData = [
 const modalCardData = [
   {
     title: 'Tokens Locked',
+    mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
     tokens: [rayIcon, solIcon],
-    tokenNames: 'RAY-SOL-LP',
+    tokenNames: 'USDC-USDr-LP',
     tokenValue: '20.36',
     type: 'deposit',
-    withdrawValue: '0.1RAY-SOL-LP',
+    withdrawValue: '0.1USDC-USDr-LP',
   },
   {
     title: 'Outstanding USDr Debt',
+    mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
     tokens: [usdrIcon],
     tokenNames: 'USDr',
     tokenValue: '52.28',

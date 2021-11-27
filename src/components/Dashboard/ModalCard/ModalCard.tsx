@@ -8,25 +8,33 @@ import usdrIcon from '../../../assets/images/USDr.png';
 import rayIcon from '../../../assets/images/RAY.svg';
 import solIcon from '../../../assets/images/SOL.svg';
 
-const depositData = { icons: [rayIcon, solIcon], title: 'RAY-SOL' };
+const depositData = {
+  mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
+  icons: [rayIcon, solIcon],
+  title: 'USDC-USDr',
+};
 const paybackData = {
+  mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
   icons: [usdrIcon],
-  title: 'RAY-SOL',
+  title: 'USDC-USDr',
   usdrValue: '$7.45',
 };
 const withdrawData = {
+  mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
   icons: [rayIcon, solIcon],
-  title: 'RAY-SOL',
+  title: 'USDC-USDr',
   value: '12.54',
 };
 
 const generateData = {
+  mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
   icons: [usdrIcon],
   usdrValue: '32.34',
 };
 
 interface ModalcardInterface {
   title: string;
+  mint: string;
   tokens: Array<string>;
   tokenNames: string;
   tokenValue: string;

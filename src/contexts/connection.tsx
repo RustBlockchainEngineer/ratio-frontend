@@ -33,7 +33,7 @@ export const ENDPOINTS = [
   },
 ];
 
-const DEFAULT = ENDPOINTS[0].endpoint;
+const DEFAULT = ENDPOINTS[2];
 const DEFAULT_SLIPPAGE = 0.25;
 
 interface ConnectionConfig {
@@ -49,26 +49,26 @@ interface ConnectionConfig {
 }
 
 const ConnectionContext = React.createContext<ConnectionConfig>({
-  endpoint: DEFAULT,
+  endpoint: DEFAULT.endpoint,
   setEndpoint: () => {},
   slippage: DEFAULT_SLIPPAGE,
   setSlippage: (val: number) => {},
-  connection: new Connection(DEFAULT, 'recent'),
-  sendConnection: new Connection(DEFAULT, 'recent'),
+  connection: new Connection(DEFAULT.endpoint, 'recent'),
+  sendConnection: new Connection(DEFAULT.endpoint, 'recent'),
   env: ENDPOINTS[0].name,
   tokens: [],
   tokenMap: new Map<string, TokenInfo>(),
 });
 
 export function ConnectionProvider({ children = undefined as any }) {
-  const [endpoint, setEndpoint] = useLocalStorageState('connectionEndpts', ENDPOINTS[0].endpoint);
+  const [endpoint, setEndpoint] = useLocalStorageState('connectionEndpts', DEFAULT.endpoint);
 
   const [slippage, setSlippage] = useLocalStorageState('slippage', DEFAULT_SLIPPAGE.toString());
 
   const connection = useMemo(() => new Connection(endpoint, 'recent'), [endpoint]);
   const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [endpoint]);
 
-  const chain = ENDPOINTS.find((end) => end.endpoint === endpoint) || ENDPOINTS[0];
+  const chain = ENDPOINTS.find((end) => end.endpoint === endpoint) || DEFAULT;
   const env = chain.name;
 
   const [tokens, setTokens] = useState<TokenInfo[]>([]);

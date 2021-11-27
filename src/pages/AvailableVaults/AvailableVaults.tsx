@@ -80,6 +80,7 @@ const AvailableVaults = () => {
 
         return {
           id: index,
+          mint: d[key].mint,
           icons: [rayIcon, ethIcon],
           icon1: getCoinPicUrl(getTokenBySymbol(tokens[0])?.mintAddress), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
           icon2: `https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[1])?.mintAddress}.png`,

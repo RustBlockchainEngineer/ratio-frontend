@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import CustomDropDownInput from '../../CustomDropDownInput';
+import { useConnection } from '../../../contexts/connection';
+import { useWallet } from '../../../contexts/wallet';
+import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
+import { PublicKey } from '@solana/web3.js';
+import { repayUSDr } from '../../../utils/ratio-lending';
 
 type PairType = {
   icons: Array<string>;
@@ -17,6 +22,36 @@ type PaybackModalProps = {
 
 const PaybackModal = ({ data }: PaybackModalProps) => {
   const [show, setShow] = React.useState(false);
+  const connection = useConnection();
+  const { wallet } = useWallet();
+  const [vault, setVault] = React.useState({});
+  const [isCreated, setCreated] = React.useState({});
+  const [userCollAccount, setUserCollAccount] = React.useState('');
+  useEffect(() => {
+    if (wallet?.publicKey) {
+      getOneFilteredTokenAccountsByOwner(
+        connection,
+        wallet?.publicKey,
+        new PublicKey('ECe1Hak68wLS44NEwBVNtZDMxap1bX3jPCoAnDLFWDHz')
+      ).then((res) => {
+        setUserCollAccount(res);
+      });
+    }
+  }, [connection, wallet]);
+
+  const repay = () => {
+    if (userCollAccount !== '') {
+      repayUSDr(connection, wallet, 10 * 1000000, new PublicKey('ECe1Hak68wLS44NEwBVNtZDMxap1bX3jPCoAnDLFWDHz'))
+        .then(() => {})
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          setShow(false);
+        });
+    }
+  };
+
   return (
     <div className="dashboardModal">
       <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
@@ -49,7 +84,7 @@ const PaybackModal = ({ data }: PaybackModalProps) => {
             <CustomInput appendStr="Max" tokenStr="USDr" />
             <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput />
-            <Button className="button--fill bottomBtn" onClick={() => setShow(false)}>
+            <Button className="button--fill bottomBtn" onClick={() => repay()}>
               Pay Back Debt
             </Button>
           </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
@@ -7,9 +7,15 @@ import CustomInput from '../CustomInput';
 
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
+import { borrowUSDr, createTokenVault, depositCollateral, getTokenVaultByMint } from '../../utils/ratio-lending';
+import { useConnection } from '../../contexts/connection';
+import { PublicKey } from '@solana/web3.js';
+import { useWallet } from '../../contexts/wallet';
+import { getOneFilteredTokenAccountsByOwner } from '../../utils/web3';
 
 type PairType = {
   id: number;
+  mint: string;
   icons: Array<string>;
   title: string;
   tvl: string;
@@ -25,12 +31,71 @@ type LockVaultModalProps = {
 const LockVaultModal = ({ data }: LockVaultModalProps) => {
   const history = useHistory();
   const [show, setShow] = React.useState(false);
+  const connection = useConnection();
+  const { wallet } = useWallet();
+  const [vault, setVault] = React.useState({});
+  const [isCreated, setCreated] = React.useState({});
+  const [userCollAccount, setUserCollAccount] = React.useState('');
+
+  useEffect(() => {
+    getTokenVaultByMint(connection, data.mint).then((res) => {
+      setVault(res);
+      if (res) {
+        setCreated(true);
+      } else {
+        setCreated(false);
+      }
+    });
+  }, [connection]);
+
+  useEffect(() => {
+    if (wallet?.publicKey) {
+      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(data.mint)).then((res) => {
+        setUserCollAccount(res);
+      });
+    }
+  }, [connection, wallet]);
+
+  const deposit = () => {
+    if (userCollAccount !== '') {
+      depositCollateral(connection, wallet, 10 * 1000000, userCollAccount, new PublicKey(data.mint))
+        .then(() => {})
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          history.push('/dashboard/vaultdashboard');
+        });
+    }
+  };
+
+  const borrow = () => {
+    if (userCollAccount !== '') {
+      borrowUSDr(connection, wallet, 10 * 1000000, new PublicKey(data.mint))
+        .then(() => {})
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          history.push('/dashboard/vaultdashboard');
+        });
+    }
+  };
 
   return (
     <>
+      {/* {!isCreated ? (
+        <Button
+          className="button--fill generate"
+          onClick={() => createTokenVault(connection, wallet, new PublicKey(data.mint))}
+        >
+          Create Vault
+        </Button>
+      ) : ( */}
       <Button className="button--fill generate" onClick={() => setShow(!show)}>
         Mint USDr
       </Button>
+      {/* )} */}
 
       <Modal
         show={show}
@@ -91,9 +156,12 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             <label className="lockvaultmodal__label2">
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
-            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title}-LP`} />
-            <Button className="button--fill lockBtn" onClick={() => history.push('/dashboard/vaultdashboard')}>
-              Lock Assets & Mint
+            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`USDr`} />
+            <Button className="button--fill lockBtn" onClick={() => deposit()}>
+              Lock Assets
+            </Button>
+            <Button className="button--fill lockBtn" onClick={() => borrow()}>
+              Borrow USDr
             </Button>
           </div>
         </Modal.Footer>

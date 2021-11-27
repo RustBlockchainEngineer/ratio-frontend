@@ -1,15 +1,50 @@
-import React from 'react';
+import { PublicKey } from '@solana/web3.js';
+import React, { useEffect } from 'react';
+import { useConnection } from '../../../contexts/connection';
+import { useWallet } from '../../../contexts/wallet';
+import { repayUSDr } from '../../../utils/ratio-lending';
+import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 
 import Button from '../../Button';
 
 const VaultDebt = () => {
+  const connection = useConnection();
+  const { wallet } = useWallet();
+  const [vault, setVault] = React.useState({});
+  const [isCreated, setCreated] = React.useState({});
+  const [userCollAccount, setUserCollAccount] = React.useState('');
+  useEffect(() => {
+    if (wallet?.publicKey) {
+      getOneFilteredTokenAccountsByOwner(
+        connection,
+        wallet?.publicKey,
+        new PublicKey('ECe1Hak68wLS44NEwBVNtZDMxap1bX3jPCoAnDLFWDHz')
+      ).then((res) => {
+        setUserCollAccount(res);
+      });
+    }
+  }, [connection, wallet]);
+
+  const repay = () => {
+    if (userCollAccount !== '') {
+      repayUSDr(connection, wallet, 10 * 1000000, new PublicKey('ECe1Hak68wLS44NEwBVNtZDMxap1bX3jPCoAnDLFWDHz'))
+        .then(() => {})
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {});
+    }
+  };
+
   return (
     <div className="vaultdebt">
       <h4>Vault Debt</h4>
       <p>
         You Owe <strong>$7.45 USDr</strong>
       </p>
-      <Button className="button--fill paybackusdr">Pay Back USDr</Button>
+      <Button className="button--fill paybackusdr" onClick={() => repay()}>
+        Pay Back USDr
+      </Button>
     </div>
   );
 };

@@ -122,7 +122,8 @@ export const cache = {
     const address = typeof id === 'string' ? id : id?.toBase58();
     const deserialize = parser || keyToAccountParser.get(address);
     if (!deserialize) {
-      throw new Error('Deserializer needs to be registered or passed as a parameter');
+      return;
+      // throw new Error('Deserializer needs to be registered or passed as a parameter');
     }
 
     cache.registerParser(id, deserialize);
