@@ -198,7 +198,7 @@ export async function createTokenVault(connection: Connection, wallet: any, mint
   );
   const globalState = await program.account.globalState.fetch(globalStateKey);
   console.log('Global State', globalState);
-  console.log('Global State', globalState.superOwner.toString());
+  console.log('Super Owner', globalState.superOwner.toString());
 
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
