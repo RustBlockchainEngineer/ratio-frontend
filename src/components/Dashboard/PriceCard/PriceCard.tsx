@@ -1,5 +1,5 @@
 import React from 'react';
-
+import ComingSoon from '../../ComingSoon';
 import risklevel from '../../../assets/images/risklevel.svg';
 
 interface PricecardInterface {
@@ -14,21 +14,24 @@ interface PricecardInterface {
 
 type PriceCardProps = {
   data: PricecardInterface;
+  comingsoon?: boolean;
 };
 
-const PriceCard = ({ data }: PriceCardProps) => {
+const PriceCard = ({ data, comingsoon }: PriceCardProps) => {
   return (
     <div className="pricecard">
-      <div className="pricecard__header">
-        <div className="pricecard__title">
-          <p>{data.title}</p>
-          {data.titleIcon && <img src={risklevel} alt="risklevel" />}
+      <ComingSoon enable={comingsoon}>
+        <div className="pricecard__header">
+          <div className="pricecard__title">
+            <p>{data.title}</p>
+            {data.titleIcon && <img src={risklevel} alt="risklevel" />}
+          </div>
+          <div className="pricecard__value">
+            <h3>{data.mainValue}</h3>
+            {data.mainUnit && <p>{data.mainUnit}</p>}
+          </div>
         </div>
-        <div className="pricecard__value">
-          <h3>{data.mainValue}</h3>
-          {data.mainUnit && <p>{data.mainUnit}</p>}
-        </div>
-      </div>
+      </ComingSoon>
       <div className="pricecard__body">
         {data.currentPrice && (
           <div>
