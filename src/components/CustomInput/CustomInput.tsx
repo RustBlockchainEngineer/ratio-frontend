@@ -37,7 +37,7 @@ const CustomInput = ({ appendStr, tokenStr, appendValueStr, className, onTextCha
       {appendStr !== '' && (
         <InputGroup.Append onClick={setMaxValue}>
           <InputGroup.Text id="customInput">
-            {appendStr} <i>{appendValueStr && `(${appendValueStr})`}</i>
+            {appendStr} {appendValueStr && `(${appendValueStr})`}
           </InputGroup.Text>
         </InputGroup.Append>
       )}

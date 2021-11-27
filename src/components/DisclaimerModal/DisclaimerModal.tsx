@@ -4,15 +4,7 @@ import { IoMdClose } from 'react-icons/io';
 import LockVaultModal from '../LockVaultModal';
 import Button from '../Button';
 
-type PairType = {
-  id: number;
-  icons: Array<string>;
-  title: string;
-  tvl: string;
-  risk: number;
-  apr: number;
-  details: string;
-};
+import { PairType } from '../../models/UInterface';
 
 type LockVaultModalProps = {
   data: PairType;
