@@ -194,7 +194,8 @@ export function useWallet() {
     select,
     publicKey: wallet?.publicKey,
     connect() {
-      wallet ? wallet.connect() : select();
+      // wallet ? wallet.connect() :
+      select();
     },
     disconnect() {
       wallet?.disconnect();
