@@ -216,7 +216,13 @@ export async function createTokenVault(connection: Connection, wallet: any, mint
   //   console.log('This token vault was already created!');
   //   return 'already created';
   // } catch (e) {}
-
+  console.log(
+    "payer", wallet.publicKey.toString(), "\n",
+    "tokenVaultKey", tokenVaultKey.toString(), "\n",
+    "globalStateKey", globalStateKey.toString(), "\n",
+    "mintCollKey", mintCollKey.toString(), "\n",
+    "tokenCollKey", tokenCollKey.toString(), "\n",
+  )
   try {
     await program.rpc.createTokenVault(tokenVaultNonce, globalStateNonce, tokenCollNonce, {
       accounts: {
