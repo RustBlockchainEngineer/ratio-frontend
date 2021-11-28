@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { repayUSDr } from '../../../utils/ratio-lending';
+import { repayUSDr, USDC_USDR_LP_MINT_KEY } from '../../../utils/ratio-lending';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 
 import Button from '../../Button';
@@ -15,19 +15,17 @@ const VaultDebt = () => {
   const [userCollAccount, setUserCollAccount] = React.useState('');
   useEffect(() => {
     if (wallet?.publicKey) {
-      getOneFilteredTokenAccountsByOwner(
-        connection,
-        wallet?.publicKey,
-        new PublicKey('ECe1Hak68wLS44NEwBVNtZDMxap1bX3jPCoAnDLFWDHz')
-      ).then((res) => {
-        setUserCollAccount(res);
-      });
+      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(USDC_USDR_LP_MINT_KEY)).then(
+        (res) => {
+          setUserCollAccount(res);
+        }
+      );
     }
   }, [connection, wallet]);
 
   const repay = () => {
     if (userCollAccount !== '') {
-      repayUSDr(connection, wallet, 10 * 1000000, new PublicKey('ECe1Hak68wLS44NEwBVNtZDMxap1bX3jPCoAnDLFWDHz'))
+      repayUSDr(connection, wallet, 10 * 1000000, new PublicKey(USDC_USDR_LP_MINT_KEY))
         .then(() => {})
         .catch((e) => {
           console.log(e);

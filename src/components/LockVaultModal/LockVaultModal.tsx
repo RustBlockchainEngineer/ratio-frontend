@@ -58,7 +58,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
 
   const deposit = () => {
     if (userCollAccount !== '') {
-      depositCollateral(connection, wallet, 10 * 1000000, userCollAccount, new PublicKey(data.mint))
+      depositCollateral(connection, wallet, 10 * 1000000000, userCollAccount, new PublicKey(data.mint))
         .then(() => {})
         .catch((e) => {
           console.log(e);

@@ -50,7 +50,7 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
 
   const withdraw = () => {
     if (userCollAccount !== '') {
-      withdrawCollateral(connection, wallet, 10 * 1000000, userCollAccount, new PublicKey(data.mint))
+      withdrawCollateral(connection, wallet, 1 * 1000000000, userCollAccount, new PublicKey(data.mint))
         .then(() => {})
         .catch((e) => {
           console.log(e);

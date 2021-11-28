@@ -19,7 +19,7 @@ import { closeAccount } from '@project-serum/serum/lib/token-instructions';
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
-export const LP1_MINT_KEY = new PublicKey('6LVzyv6jnPTjWHmZni6rMScVfUf6GAZeNoxQz9PNyccX');
+export const USDC_USDR_LP_MINT_KEY = new PublicKey('6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i');
 
 export const GLOBAL_STATE_TAG = 'golbal-state-seed';
 export const TOKEN_VAULT_TAG = 'token-vault-seed';
