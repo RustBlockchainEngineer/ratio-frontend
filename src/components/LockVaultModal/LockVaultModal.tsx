@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
+
 import Button from '../Button';
 import CustomInput from '../CustomInput';
 import { PairType } from '../../models/UInterface';
@@ -9,11 +11,20 @@ import ComingSoon from '../ComingSoon';
 
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
-import { borrowUSDr, createTokenVault, depositCollateral, getTokenVaultByMint } from '../../utils/ratio-lending';
+import {
+  createTokenVault,
+  lockAndMint,
+  getTokenVaultByMint,
+  getUserState,
+  USDR_MINT_KEY,
+} from '../../utils/ratio-lending';
+
 import { useConnection } from '../../contexts/connection';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../contexts/wallet';
 import { getOneFilteredTokenAccountsByOwner } from '../../utils/web3';
+import { useMint } from '../../contexts/accounts';
+import { TokenAmount } from '../../utils/safe-math';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -26,7 +37,27 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   const { wallet } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
+  const [userState, setUserState] = React.useState({});
+  const [mintTime, setMintTime] = React.useState('');
+
+  const collMint = useMint(data.mint);
+  const usdrMint = useMint(USDR_MINT_KEY);
+
   const [userCollAccount, setUserCollAccount] = React.useState('');
+
+  useEffect(() => {
+    if (wallet && wallet.publicKey) {
+      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
+        setUserState(res);
+        if (res) {
+          const endDateOfLock = res.lastMintTime.toNumber() + 3600;
+          const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM/DD/YYYY HH:MM:SS');
+
+          setMintTime(unlockDateString);
+        }
+      });
+    }
+  });
 
   useEffect(() => {
     getTokenVaultByMint(connection, data.mint).then((res) => {
@@ -47,22 +78,16 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
     }
   }, [connection, wallet]);
 
-  const deposit = () => {
+  const depositAndBorrow = () => {
     if (userCollAccount !== '') {
-      depositCollateral(connection, wallet, 10 * 1000000000, userCollAccount, new PublicKey(data.mint))
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          history.push('/dashboard/vaultdashboard' + '?mint=' + data.mint);
-        });
-    }
-  };
-
-  const borrow = () => {
-    if (userCollAccount !== '') {
-      borrowUSDr(connection, wallet, 10 * 1000000, new PublicKey(data.mint))
+      lockAndMint(
+        connection,
+        wallet,
+        10 * Math.pow(10, collMint?.decimals as number),
+        10 * Math.pow(10, usdrMint?.decimals as number),
+        userCollAccount,
+        new PublicKey(data.mint)
+      )
         .then(() => {})
         .catch((e) => {
           console.log(e);
@@ -142,16 +167,17 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
         </Modal.Body>
         <Modal.Footer>
           <div className="lockvaultmodal__footer">
+            <label className="lockvaultmodal__label2">
+              Available to mint: <strong>{mintTime}</strong>
+            </label>
+
             <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label>
             <label className="lockvaultmodal__label2">
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
             <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`USDr`} />
-            <Button className="button--fill lockBtn" onClick={() => deposit()}>
-              Lock Assets
-            </Button>
-            <Button className="button--fill lockBtn" onClick={() => borrow()}>
-              Borrow USDr
+            <Button className="button--fill lockBtn" onClick={() => depositAndBorrow()}>
+              Lock Assets & Mint USDr
             </Button>
           </div>
         </Modal.Footer>
