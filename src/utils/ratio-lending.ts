@@ -20,7 +20,7 @@ import { closeAccount } from '@project-serum/serum/lib/token-instructions';
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
 export const USDC_USDR_LP_MINT_KEY = new PublicKey('6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i');
-
+export const USDR_MINT_KEY = 'GHY2oA1hsLn8qYFZDz9GFy4hSUwtdVfkcSkhKHYr7XKd';
 export const GLOBAL_STATE_TAG = 'golbal-state-seed';
 export const TOKEN_VAULT_TAG = 'token-vault-seed';
 export const USER_TROVE_TAG = 'user-trove-seed';
@@ -99,6 +99,27 @@ export async function createGlobalState(connection: Connection, wallet: any) {
   }
 
   return 'created global state';
+}
+
+export async function getUserState(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: PublicKey = WSOL_MINT_KEY
+) {
+  const program = getProgramInstance(connection, wallet);
+  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    program.programId
+  );
+  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    program.programId
+  );
+  try {
+    return await program.account.userTrove.fetch(userTroveKey);
+  } catch (e) {
+    return null;
+  }
 }
 
 export async function borrowUSDr(

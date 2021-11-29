@@ -55,7 +55,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
           console.log(e);
         })
         .finally(() => {
-          history.push('/dashboard/vaultdashboard');
+          history.push('/dashboard/vaultdashboard' + '?mint=' + data.mint);
         });
     }
   };
@@ -68,7 +68,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
           console.log(e);
         })
         .finally(() => {
-          history.push('/dashboard/vaultdashboard');
+          history.push('/dashboard/vaultdashboard' + '?mint=' + data.mint);
         });
     }
   };
