@@ -17,10 +17,10 @@ import LockVaultModal from '../../components/LockVaultModal';
 import DisclaimerModal from '../../components/DisclaimerModal';
 import ComparingFooter from '../../components/ComparingFooter';
 
+import { getCoinPicSymbol } from '../../utils/helper';
 import { getTokenBySymbol } from '../../utils/tokens';
-import { getCoinPicUrl } from '../../utils/helper';
 
-import rayIcon from '../../assets/images/RAY.svg';
+import usdrIcon from '../../assets/images/USDr.png';
 import ethIcon from '../../assets/images/ETH.svg';
 
 type whitelistProps = {
@@ -81,9 +81,9 @@ const AvailableVaults = () => {
         return {
           id: index,
           mint: d[key].mint,
-          icons: [rayIcon, ethIcon],
-          icon1: getCoinPicUrl(getTokenBySymbol(tokens[0])?.mintAddress), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
-          icon2: `https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[1])?.mintAddress}.png`,
+          icons: [getCoinPicSymbol(tokens[0]), getCoinPicSymbol(tokens[1])],
+          icon1: getCoinPicSymbol(tokens[0]), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
+          icon2: getCoinPicSymbol(tokens[1]),
           title: key,
           tvl: '$20,818,044.40',
           apr: 125,

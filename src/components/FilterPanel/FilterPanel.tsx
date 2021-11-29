@@ -75,7 +75,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             placeholder="Search all vaults by token"
             isMulti
           />
-          <Switch
+          {/* <Switch
             onChange={handleCompareVaults}
             checked={compareVaults}
             className="mt-2 ml-3"
@@ -85,7 +85,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             offColor="#DBE0E2"
             handleDiameter={18}
             width={48}
-          />
+          /> */}
         </div>
         <div className="d-md-flex align-items-center">
           <p className="mr-2 filterpanel__sortby">Sort by: </p>
