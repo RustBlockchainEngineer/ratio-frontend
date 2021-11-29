@@ -54,7 +54,7 @@ const VaultDashboard = () => {
   const [modalCardData, setModalCardData] = useState([
     {
       title: 'Tokens Locked',
-      mint: vault_mint,
+      mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
       tokens: [rayIcon, solIcon],
       tokenNames: 'USDC-USDr-LP',
       tokenValue: '20.36',
@@ -63,7 +63,7 @@ const VaultDashboard = () => {
     },
     {
       title: 'Outstanding USDr Debt',
-      mint: vault_mint,
+      mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
       tokens: [usdrIcon],
       tokenNames: 'USDr',
       tokenValue: '52.28',
@@ -81,14 +81,15 @@ const VaultDashboard = () => {
   });
 
   useEffect(() => {
-    if (userState) {
+    if (userState && vault_mint) {
       const newData = [...modalCardData];
-      newData[0].tokenValue = new TokenAmount(userState.lockedCollBalance, collMint?.decimals).fixed();
+      newData[0].tokenValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
       newData[0].tokenValue = '' + Math.ceil(parseFloat(newData[0].tokenValue) * 100) / 100;
+      newData[0].mint = vault_mint;
 
-      newData[1].tokenValue = new TokenAmount(userState.debt, usdrMint?.decimals).fixed();
+      newData[1].tokenValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
       newData[1].tokenValue = '' + Math.ceil(parseFloat(newData[1].tokenValue) * 100) / 100;
-
+      newData[1].mint = vault_mint;
       setModalCardData(newData);
     }
   }, [userState, wallet, usdrMint]);
