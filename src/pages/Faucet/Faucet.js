@@ -6,7 +6,9 @@ import CustomInput from '../../components/CustomInput';
 import CustomSelect from '../../components/CustomSelect';
 import Button from '../../components/Button';
 
-import stepIcon from '../../assets/images/STEP.svg';
+import { getTokenBySymbol } from '../../utils/tokens';
+
+import usdrIcon from '../../assets/images/USDr.png';
 import usdcIcon from '../../assets/images/USDC.svg';
 import rayIcon from '../../assets/images/RAY.svg';
 import solIcon from '../../assets/images/SOL.svg';
@@ -15,12 +17,35 @@ import srmIcon from '../../assets/images/SRM.svg';
 import mediaIcon from '../../assets/images/MEDIA.svg';
 
 const options1 = [
-  { value: 'STEP-USDC', label: 'STEP-USDC-LP', icon: [stepIcon, usdcIcon] },
-  { value: 'SOL-RAY', label: 'SOL-RAY-LP', icon: [solIcon, rayIcon] },
-  { value: 'RAY-EHT', label: 'RAY-EHT-LP', icon: [rayIcon, ethIcon] },
-  { value: 'RAY-SRM', label: 'RAY-SRM-LP', icon: [rayIcon, srmIcon] },
-  { value: 'RAY-USDC', label: 'RAY-USDC-LP', icon: [rayIcon, usdcIcon] },
-  { value: 'MEDIA-USDC', label: 'MEDIA-USDC-LP', icon: [mediaIcon, usdcIcon] },
+  {
+    value: 'USDC-USDR',
+    label: 'USDC-USDR-LP',
+    icon: [`https://sdk.raydium.io/icons/${getTokenBySymbol('USDC')?.mintAddress}.png`, usdrIcon],
+  },
+  {
+    value: 'ETH-SOL',
+    label: 'ETH-SOL-LP',
+    icon: [
+      `https://sdk.raydium.io/icons/${getTokenBySymbol('ETH')?.mintAddress}.png`,
+      `https://sdk.raydium.io/icons/${getTokenBySymbol('SOL')?.mintAddress}.png`,
+    ],
+  },
+  {
+    value: 'ATLAS-RAY',
+    label: 'ATLAS-RAY-LP',
+    icon: [
+      `https://sdk.raydium.io/icons/${getTokenBySymbol('ATLAS')?.mintAddress}.png`,
+      `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
+    ],
+  },
+  {
+    value: 'SAMO-RAY',
+    label: 'SAMO-RAY-LP',
+    icon: [
+      `https://sdk.raydium.io/icons/${getTokenBySymbol('SAMO')?.mintAddress}.png`,
+      `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
+    ],
+  },
 ];
 
 const Faucet = () => {

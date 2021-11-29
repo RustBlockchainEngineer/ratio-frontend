@@ -21,8 +21,8 @@ const CompareCard = ({ label, list, type }: CompareCardProps) => {
               <div className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
                   <h5>{index + 1}</h5>
-                  <img src={vault.icons[0]} alt="icon" className="compareCard__list--icon1" />
-                  <img src={vault.icons[1]} alt="icon" className="compareCard__list--icon2" />
+                  {/* <img src={vault.icons[0]} alt="icon" className="compareCard__list--icon1" />
+                  <img src={vault.icons[1]} alt="icon" className="compareCard__list--icon2" /> */}
                   <h6>{vault.title}</h6>
                 </div>
                 {type === 'TVL' && <h5>{vault.tvl}</h5>}

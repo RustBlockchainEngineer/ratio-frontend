@@ -10,6 +10,9 @@
 import { NATIVE_SOL, TOKENS } from './tokens';
 
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { getTokenBySymbol } from './tokens';
+
+import usdrIcon from '../assets/images/USDr.png';
 
 const SPREADSHEET_ID = process.env.REACT_APP_SPREADSHEET_ID;
 // const SHEET_ID = process.env.REACT_APP_SHEET_ID;
@@ -69,6 +72,14 @@ export const getCoinPicUrl = (mintAddress: string | undefined) => {
     coinPicUrl = `https://sdk.raydium.io/icons/${mintAddress}.png`;
   }
   return coinPicUrl;
+};
+
+export const getCoinPicSymbol = (symbol: string) => {
+  if (symbol === 'USDR') {
+    return usdrIcon;
+  } else {
+    return `https://sdk.raydium.io/icons/${getTokenBySymbol(symbol)?.mintAddress}.png`;
+  }
 };
 
 export const getSpreadsheet = async (offset: any, limit: any, callback: any) => {

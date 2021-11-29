@@ -60,7 +60,7 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
                 </OverlayTrigger> */}
               </div>
               <div className="d-flex justify-content-end align-items-center mt-1">
-                {getRiskLevel(data.risk) === 'EXTREME' && <img src={highRisk} alt="highRisk" />}
+                {getRiskLevel(data.risk) === 'EXTREME' && <img src={highRisk} alt="highRisk" className="highRisk" />}
                 <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
               </div>
             </div>

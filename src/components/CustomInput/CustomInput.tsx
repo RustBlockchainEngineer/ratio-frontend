@@ -7,10 +7,11 @@ type CustomInputProps = {
   tokenStr: string;
   appendValueStr?: string;
   className?: string;
+  readOnly?: boolean;
   onTextChange?: (value: string) => void;
 };
 
-const CustomInput = ({ appendStr, tokenStr, appendValueStr, className, onTextChange }: CustomInputProps) => {
+const CustomInput = ({ appendStr, tokenStr, appendValueStr, className, onTextChange, readOnly }: CustomInputProps) => {
   const [value, setValue] = React.useState('0');
 
   const handleChange = (e: any) => {
@@ -32,12 +33,13 @@ const CustomInput = ({ appendStr, tokenStr, appendValueStr, className, onTextCha
         value={value}
         onChange={handleChange}
         className={classNames(appendStr === '' && 'onlytext')}
+        readOnly={readOnly}
       />
       <p className={classNames('tokenName', appendStr === '' && 'tokenName--onlytext')}>{tokenStr}</p>
       {appendStr !== '' && (
         <InputGroup.Append onClick={setMaxValue}>
           <InputGroup.Text id="customInput">
-            {appendStr} <i>{appendValueStr && `(${appendValueStr})`}</i>
+            {appendStr} {appendValueStr && `(${appendValueStr})`}
           </InputGroup.Text>
         </InputGroup.Append>
       )}

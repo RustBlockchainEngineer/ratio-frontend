@@ -8,16 +8,7 @@ import { createTokenVault, getTokenVaultByMint } from '../../utils/ratio-lending
 import { useWallet } from '../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
 
-type PairType = {
-  id: number;
-  mint: string;
-  icons: Array<string>;
-  title: string;
-  tvl: string;
-  risk: number;
-  apr: number;
-  details: string;
-};
+import { PairType } from '../../models/UInterface';
 
 type LockVaultModalProps = {
   data: PairType;
