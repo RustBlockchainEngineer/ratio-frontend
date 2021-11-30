@@ -38,7 +38,7 @@ const defaultPrograms ={
 }
 
 // This command makes an Lottery
-export function getProgramInstance(
+function getProgramInstance(
   connection: Connection,
   wallet: any,
 ) {

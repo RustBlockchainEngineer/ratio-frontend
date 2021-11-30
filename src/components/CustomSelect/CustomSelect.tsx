@@ -10,9 +10,10 @@ interface Option {
 
 type CustomSelectProps = {
   options: Array<Option>;
+  onChange?: (value: any) => void;
 };
 
-const CustomSelect = ({ options }: CustomSelectProps) => {
+const CustomSelect = ({ options, onChange }: CustomSelectProps) => {
   const CustomOption = (props: any) => {
     const { children, innerProps, data } = props;
     return (
@@ -43,6 +44,7 @@ const CustomSelect = ({ options }: CustomSelectProps) => {
         classNamePrefix="react-select"
         options={options}
         isSearchable={false}
+        onChange={onChange}
       />
     </div>
   );

@@ -15,7 +15,16 @@ import solIcon from '../../assets/images/SOL.svg';
 import ethIcon from '../../assets/images/ETH.svg';
 import srmIcon from '../../assets/images/SRM.svg';
 import mediaIcon from '../../assets/images/MEDIA.svg';
-
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
+import {
+  createFaucetState,
+  faucetUsdcUsdrLp,
+  faucetEthSolLp,
+  faucetAtlasRayLp,
+  faucetSamoRayLp,
+  isFaucetStateCreated,
+} from '../../utils/ratio-faucet';
 const options1 = [
   {
     value: 'USDC-USDR',
@@ -49,11 +58,20 @@ const options1 = [
 ];
 
 const Faucet = () => {
+  const connection = useConnection();
+  const wallet = useWallet().wallet;
   const history = useHistory();
-
   const [amount, setAmount] = React.useState(0);
+  const [option, setOption] = React.useState(options1[0]);
 
   const [submitState, setSubmitState] = React.useState(false);
+  const [isCreated, setIsCreated] = React.useState(false);
+
+  React.useEffect(async () => {
+    if (wallet.connected) {
+      setIsCreated(await isFaucetStateCreated(connection, wallet));
+    }
+  }, [wallet]);
 
   const onCancel = () => {
     history.push('/dashboard');
@@ -67,8 +85,26 @@ const Faucet = () => {
     }
   };
 
-  const onSubmit = () => {
-    setSubmitState(true);
+  const onCreateFaucet = async () => {
+    await createFaucetState(connection, wallet);
+    setIsCreated(await isFaucetStateCreated(connection, wallet));
+  };
+
+  const onSubmit = async () => {
+    if (option.value === 'USDC-USDR') {
+      await faucetUsdcUsdrLp(connection, wallet);
+    } else if (option.value === 'ETH-SOL') {
+      await faucetEthSolLp(connection, wallet);
+    } else if (option.value === 'ATLAS-RAY') {
+      await faucetAtlasRayLp(connection, wallet);
+    } else if (option.value === 'SAMO-RAY') {
+      await faucetSamoRayLp(connection, wallet);
+    }
+  };
+
+  const onChangeLp = (value) => {
+    setOption(value);
+    console.log(value);
   };
 
   return (
@@ -81,12 +117,12 @@ const Faucet = () => {
             release.
           </h6>
           <label>Choose which LP you wish to mint</label>
-          <CustomSelect options={options1} />
-          <label className="mt-4">Choose the amount you would like to mint</label>
+          <CustomSelect options={options1} onChange={onChangeLp} />
+          {/* <label className="mt-4">Choose the amount you would like to mint</label>
           <CustomInput appendStr="Max" appendValueStr="100" onTextChange={getInputValue} />
           {submitState && (
             <div className="submitted">You&rsquo;ve successfully minted {amount} Ray-Sol Testnet tokens</div>
-          )}
+          )} */}
         </div>
         <div className="faucet__card__footer">
           {submitState && (
@@ -101,12 +137,12 @@ const Faucet = () => {
                   Cancel
                 </Button>
               </div>
-              <div className="col pr-1" onClick={onSubmit}>
+              <div className="col pr-1" onClick={isCreated ? onSubmit : onCreateFaucet}>
                 <Button
-                  className={classNames('swaptokensBtn', amount === 0 ? 'button--disabled' : 'button--fill')}
-                  disabled={amount === 0}
+                  className={classNames('swaptokensBtn', amount === -1 ? 'button--disabled' : 'button--fill')}
+                  disabled={amount === -1}
                 >
-                  Submit
+                  {isCreated ? 'Faucet' : 'Create Faucet'}
                 </Button>
               </div>
             </>
