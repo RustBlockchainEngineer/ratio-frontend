@@ -50,14 +50,14 @@ const VaultDashboard = () => {
   const usdrMint = useMint(USDR_MINT_KEY);
   const collMint = useMint(vault_mint as string);
 
-  const [userState, setUserState] = useState({});
+  const [userState, setUserState] = useState(null);
   const [modalCardData, setModalCardData] = useState([
     {
       title: 'Tokens Locked',
       mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
       tokens: [rayIcon, solIcon],
       tokenNames: 'USDC-USDr-LP',
-      tokenValue: '20.36',
+      tokenValue: '0',
       type: 'deposit',
       withdrawValue: '0.1USDC-USDr-LP',
     },
@@ -66,7 +66,7 @@ const VaultDashboard = () => {
       mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
       tokens: [usdrIcon],
       tokenNames: 'USDr',
-      tokenValue: '52.28',
+      tokenValue: '0',
       type: 'payback',
       GenerateValue: '32.28USDr',
     },
