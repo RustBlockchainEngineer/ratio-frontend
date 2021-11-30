@@ -210,7 +210,7 @@ const AvailableVaults = () => {
           </div>
           <div className="text-right">
             Rewards earned:
-            <p>$2,700</p>
+            <p>$0</p>
           </div>
         </div>
         {/* <div className="mt-3 w-25">
