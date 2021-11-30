@@ -59,7 +59,7 @@ const VaultDashboard = () => {
       tokenNames: 'USDC-USDr-LP',
       tokenValue: '0',
       type: 'deposit',
-      withdrawValue: '0.1USDC-USDr-LP',
+      withdrawValue: '0 USDC-USDr-LP',
     },
     {
       title: 'Outstanding USDr Debt',
@@ -68,7 +68,7 @@ const VaultDashboard = () => {
       tokenNames: 'USDr',
       tokenValue: '0',
       type: 'payback',
-      GenerateValue: '32.28USDr',
+      GenerateValue: '0 USDr',
     },
   ]);
 
