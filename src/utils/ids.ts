@@ -7,7 +7,7 @@ export const LENDING_PROGRAM_ID = new PublicKey('TokenLending1111111111111111111
 
 export const SWAP_PROGRAM_ID = new PublicKey('SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8');
 
-export const FAUCET_PROGRAM_ID = new PublicKey('CFqAjMxzq236ECU3zqw9xQmwVCzbHdQRGYGMLXig3Bbg');
+export const FAUCET_PROGRAM_ID = new PublicKey('6qoqAB1dsRck2opC9FdvsFRVZ48yUWfEFTPZuHBZTQf');
 
 export const PROGRAM_IDS = [
   {

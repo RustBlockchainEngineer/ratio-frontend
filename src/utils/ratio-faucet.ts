@@ -21,6 +21,11 @@ const LP_ETH_SOL_TAG = 'lp-eth-sol-seed';
 const LP_ATLAS_RAY_TAG = 'lp-atlas-ray-seed';
 const LP_SAMO_RAY_TAG = 'lp-samo-ray-seed';
 
+const USER_USDC_USDR_TAG = 'user-usdc-usdr-seed';
+const USER_ETH_SOL_TAG = 'user-eth-sol-seed';
+const USER_ATLAS_RAY_TAG = 'user-atlas-ray-seed';
+const USER_SAMO_RAY_TAG = 'user-samo-ray-seed';
+
 // This command makes an Lottery
 function getProgramInstance(connection: Connection, wallet: any) {
   // if (!wallet.publicKey) throw new WalletNotConnectedError();
@@ -139,27 +144,24 @@ export async function faucetUsdcUsdrLp(connection: Connection, wallet: any) {
     [Buffer.from(LP_USDC_USDR_TAG)],
     program.programId
   );
-
-  const paramUserKey = await checkWalletATA(connection, wallet.publicKey, lpMintKey.toBase58());
+  const [userLpKey, userLpKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_USDC_USDR_TAG), wallet.publicKey.toBuffer(), lpMintKey.toBuffer()],
+    program.programId
+  );
 
   const transaction = new Transaction();
   const signers: Keypair[] = [];
 
-  const userTokenKey = await createAssociatedTokenAccountIfNotExist(
-    paramUserKey,
-    wallet.publicKey,
-    lpMintKey.toBase58(),
-    transaction
-  );
-
   console.log('lpMintKeyc', lpMintKey.toString());
-  const mintInstruction = await program.instruction.faucetUsdcUsdrLp(globalStateNonce, lpMintKeyNonce, {
+  const mintInstruction = await program.instruction.faucetUsdcUsdrLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
     accounts: {
       owner: wallet.publicKey,
       faucetState: globalStateKey,
       mintLp: lpMintKey,
-      userTokenLp: userTokenKey,
+      userTokenLp: userLpKey,
+      systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
+      rent: SYSVAR_RENT_PUBKEY,
     },
   });
   transaction.add(mintInstruction);
@@ -182,27 +184,24 @@ export async function faucetEthSolLp(connection: Connection, wallet: any) {
     [Buffer.from(LP_ETH_SOL_TAG)],
     program.programId
   );
-
-  const paramUserKey = await checkWalletATA(connection, wallet.publicKey, lpMintKey.toBase58());
+  const [userLpKey, userLpKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_ETH_SOL_TAG), wallet.publicKey.toBuffer(), lpMintKey.toBuffer()],
+    program.programId
+  );
 
   const transaction = new Transaction();
   const signers: Keypair[] = [];
 
-  const userTokenKey = await createAssociatedTokenAccountIfNotExist(
-    paramUserKey,
-    wallet.publicKey,
-    lpMintKey.toBase58(),
-    transaction
-  );
-
   console.log('lpMintKeyc', lpMintKey.toString());
-  const mintInstruction = await program.instruction.faucetEthSolLp(globalStateNonce, lpMintKeyNonce, {
+  const mintInstruction = await program.instruction.faucetEthSolLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
     accounts: {
       owner: wallet.publicKey,
       faucetState: globalStateKey,
       mintLp: lpMintKey,
-      userTokenLp: userTokenKey,
+      userTokenLp: userLpKey,
+      systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
+      rent: SYSVAR_RENT_PUBKEY,
     },
   });
   transaction.add(mintInstruction);
@@ -226,26 +225,24 @@ export async function faucetAtlasRayLp(connection: Connection, wallet: any) {
     program.programId
   );
 
-  const paramUserKey = await checkWalletATA(connection, wallet.publicKey, lpMintKey.toBase58());
-
   const transaction = new Transaction();
   const signers: Keypair[] = [];
 
-  const userTokenKey = await createAssociatedTokenAccountIfNotExist(
-    paramUserKey,
-    wallet.publicKey,
-    lpMintKey.toBase58(),
-    transaction
+  const [userLpKey, userLpKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_ATLAS_RAY_TAG), wallet.publicKey.toBuffer(), lpMintKey.toBuffer()],
+    program.programId
   );
 
   console.log('lpMintKeyc', lpMintKey.toString());
-  const mintInstruction = await program.instruction.faucetAtlasRayLp(globalStateNonce, lpMintKeyNonce, {
+  const mintInstruction = await program.instruction.faucetAtlasRayLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
     accounts: {
       owner: wallet.publicKey,
       faucetState: globalStateKey,
       mintLp: lpMintKey,
-      userTokenLp: userTokenKey,
+      userTokenLp: userLpKey,
+      systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
+      rent: SYSVAR_RENT_PUBKEY,
     },
   });
   transaction.add(mintInstruction);
@@ -269,26 +266,24 @@ export async function faucetSamoRayLp(connection: Connection, wallet: any) {
     program.programId
   );
 
-  const paramUserKey = await checkWalletATA(connection, wallet.publicKey, lpMintKey.toBase58());
-
   const transaction = new Transaction();
   const signers: Keypair[] = [];
 
-  const userTokenKey = await createAssociatedTokenAccountIfNotExist(
-    paramUserKey,
-    wallet.publicKey,
-    lpMintKey.toBase58(),
-    transaction
+  const [userLpKey, userLpKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_SAMO_RAY_TAG), wallet.publicKey.toBuffer(), lpMintKey.toBuffer()],
+    program.programId
   );
 
   console.log('lpMintKeyc', lpMintKey.toString());
-  const mintInstruction = await program.instruction.faucetSamoRayLp(globalStateNonce, lpMintKeyNonce, {
+  const mintInstruction = await program.instruction.faucetSamoRayLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
     accounts: {
       owner: wallet.publicKey,
       faucetState: globalStateKey,
       mintLp: lpMintKey,
-      userTokenLp: userTokenKey,
+      userTokenLp: userLpKey,
+      systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
+      rent: SYSVAR_RENT_PUBKEY,
     },
   });
   transaction.add(mintInstruction);
