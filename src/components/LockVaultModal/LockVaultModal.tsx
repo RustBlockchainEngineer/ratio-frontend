@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
@@ -23,7 +23,7 @@ import { useConnection } from '../../contexts/connection';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../contexts/wallet';
 import { getOneFilteredTokenAccountsByOwner } from '../../utils/web3';
-import { useMint } from '../../contexts/accounts';
+import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 
 type LockVaultModalProps = {
@@ -43,7 +43,8 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   const collMint = useMint(data.mint);
   const usdrMint = useMint(USDR_MINT_KEY);
 
-  const [userCollAccount, setUserCollAccount] = React.useState('');
+  const collAccount = useAccountByMint(data.mint);
+  const [collAmount, setCollAmount] = useState(0);
 
   useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -56,6 +57,10 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
           setMintTime(unlockDateString);
         }
       });
+      if (collAccount) {
+        const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
+        setCollAmount(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
+      }
     }
   });
 
@@ -70,22 +75,14 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
     });
   }, [connection]);
 
-  useEffect(() => {
-    if (wallet?.publicKey) {
-      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(data.mint)).then((res) => {
-        setUserCollAccount(res);
-      });
-    }
-  }, [connection, wallet]);
-
   const depositAndBorrow = () => {
-    if (userCollAccount !== '') {
+    if (collAccount && collAmount > 0) {
       lockAndMint(
         connection,
         wallet,
         10 * Math.pow(10, collMint?.decimals as number),
         10 * Math.pow(10, usdrMint?.decimals as number),
-        userCollAccount,
+        collAccount.pubkey.toString(),
         new PublicKey(data.mint)
       )
         .then(() => {})
