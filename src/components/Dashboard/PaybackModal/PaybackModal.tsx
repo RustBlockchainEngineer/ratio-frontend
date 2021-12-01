@@ -8,7 +8,8 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import { PublicKey } from '@solana/web3.js';
-import { repayUSDr, USDC_USDR_LP_MINT_KEY } from '../../../utils/ratio-lending';
+import { repayUSDr, USDC_USDR_LP_MINT_KEY, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { useMint } from '../../../contexts/accounts';
 
 type PairType = {
   icons: Array<string>;
@@ -24,8 +25,7 @@ const PaybackModal = ({ data }: PaybackModalProps) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
-  const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
+  const usdrMint = useMint(USDR_MINT_KEY);
   const [userCollAccount, setUserCollAccount] = React.useState('');
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -38,8 +38,8 @@ const PaybackModal = ({ data }: PaybackModalProps) => {
   }, [connection, wallet]);
 
   const repay = () => {
-    if (userCollAccount !== '') {
-      repayUSDr(connection, wallet, 10 * 1000000, new PublicKey(USDC_USDR_LP_MINT_KEY))
+    if (userCollAccount !== '' && usdrMint) {
+      repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint.decimals), new PublicKey(USDC_USDR_LP_MINT_KEY))
         .then(() => {})
         .catch((e) => {
           console.log(e);
