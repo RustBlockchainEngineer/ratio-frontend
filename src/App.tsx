@@ -7,6 +7,7 @@ import { MarketProvider } from './contexts/market';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Layer from './pages/Layer';
 import Faucet from './pages/Faucet';
+import AdminPanel from './pages/AdminPanel';
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
                   <Switch>
                     <Route path="/dashboard" component={Layer} />
                     <Route path="/faucet" exact component={Faucet} />
+                    <Route path="/adminpanel" exact component={AdminPanel} />
                     <Route exact path="/">
                       <Redirect to="/dashboard" />
                     </Route>

@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import { InputGroup, FormControl } from 'react-bootstrap';
 
 type CustomInputProps = {
-  appendStr: string;
-  tokenStr: string;
+  appendStr?: string;
+  tokenStr?: string;
   appendValueStr?: string;
   className?: string;
   readOnly?: boolean;
