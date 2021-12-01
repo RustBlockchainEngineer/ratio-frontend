@@ -21,7 +21,7 @@ import { STABLE_POOL_PROGRAM_ID } from './ids';
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
 export const USDC_USDR_LP_MINT_KEY = new PublicKey('6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i');
-
+export const USDR_MINT_KEY = 'GHY2oA1hsLn8qYFZDz9GFy4hSUwtdVfkcSkhKHYr7XKd';
 export const GLOBAL_STATE_TAG = 'golbal-state-seed';
 export const TOKEN_VAULT_TAG = 'token-vault-seed';
 export const USER_TROVE_TAG = 'user-trove-seed';
@@ -100,6 +100,27 @@ export async function createGlobalState(connection: Connection, wallet: any) {
   }
 
   return 'created global state';
+}
+
+export async function getUserState(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: PublicKey = WSOL_MINT_KEY
+) {
+  const program = getProgramInstance(connection, wallet);
+  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    program.programId
+  );
+  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    program.programId
+  );
+  try {
+    return await program.account.userTrove.fetch(userTroveKey);
+  } catch (e) {
+    return null;
+  }
 }
 
 export async function borrowUSDr(
@@ -316,7 +337,7 @@ export async function depositCollateral(
     userCollAddress,
     wallet.publicKey,
     mintCollKey.toBase58(),
-    accountRentExempt + amount,
+    accountRentExempt,
     transaction,
     signers
   );
@@ -372,6 +393,139 @@ export async function depositCollateral(
 
   return 'User deposited ' + amount / Math.pow(10, 9) + ' SOL, transaction id = ' + tx;
 }
+
+
+export async function lockAndMint(
+  connection: Connection,
+  wallet: any,
+  amountDeposit: number,
+  amountMint: number,
+  userCollAddress: string | null = null,
+  mintCollKey: PublicKey = WSOL_MINT_KEY
+) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+
+  const program = getProgramInstance(connection, wallet);
+
+  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    program.programId
+  );
+  const globalState = await program.account.globalState.fetch(globalStateKey);
+
+  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    program.programId
+  );
+  const [tokenCollKey, tokenCollNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TOKEN_VAULT_POOL_TAG), tokenVaultKey.toBuffer()],
+    program.programId
+  );
+  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    program.programId
+  );
+
+  const [mintUsdKey, mintUsdNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USD_MINT_TAG)],
+    program.programId
+  );
+
+
+  const transaction = new Transaction();
+  const signers: Keypair[] = [];
+
+  let userCollKey = null;
+
+  const accountRentExempt = await connection.getMinimumBalanceForRentExemption(AccountLayout.span);
+
+  userCollKey = await createTokenAccountIfNotExist(
+    program.provider.connection,
+    userCollAddress,
+    wallet.publicKey,
+    mintCollKey.toBase58(),
+    accountRentExempt,
+    transaction,
+    signers
+  );
+
+  try {
+    const userTrove = await program.account.userTrove.fetch(userTroveKey);
+  } catch {
+    const tx = await program.instruction.createUserTrove(userTroveNonce, tokenVaultNonce, {
+      accounts: {
+        troveOwner: wallet.publicKey,
+        userTrove: userTroveKey,
+        tokenVault: tokenVaultKey,
+        mintColl: mintCollKey,
+        ...defaultPrograms
+  
+      },
+    });
+    transaction.add(tx);
+  }
+
+  const depositInstruction = await program.instruction.depositCollateral(
+    new anchor.BN(amountDeposit),
+    tokenVaultNonce,
+    userTroveNonce,
+    tokenCollNonce,
+    {
+      accounts: {
+        owner: wallet.publicKey,
+        userTrove: userTroveKey,
+        tokenVault: tokenVaultKey,
+        poolTokenColl: tokenCollKey,
+        userTokenColl: userCollKey,
+        mintColl: mintCollKey,
+        ...defaultPrograms
+
+      },
+    }
+  );
+  transaction.add(depositInstruction);
+
+  const paramUserUsdTokenKey = await checkWalletATA(connection, wallet.publicKey, globalState.mintUsd.toBase58());
+
+  const userUsdTokenKey = await createAssociatedTokenAccountIfNotExist(
+    paramUserUsdTokenKey, 
+    wallet.publicKey, 
+    globalState.mintUsd.toBase58(), 
+    transaction
+  );
+
+  console.log(userUsdTokenKey.toString())
+
+  const borrowInstruction = await program.instruction.borrowUsd(
+    new anchor.BN(amountMint),
+    tokenVaultNonce,
+    userTroveNonce,
+    globalStateNonce,
+    mintUsdNonce,
+    {
+      accounts: {
+        owner: wallet.publicKey,
+        tokenVault: tokenVaultKey,
+        userTrove: userTroveKey,
+        globalState: globalStateKey,
+        mintUsd: mintUsdKey,
+        userTokenUsd: userUsdTokenKey,
+        mintColl: mintCollKey,
+        ...defaultPrograms
+
+      },
+    }
+  );
+  transaction.add(borrowInstruction);
+
+
+  const tx = await sendTransaction(connection, wallet, transaction, signers);
+
+}
+
+
+
+
 
 export async function repayUSDr(
   connection: Connection,

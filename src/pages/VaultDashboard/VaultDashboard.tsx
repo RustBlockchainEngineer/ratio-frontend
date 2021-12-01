@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+import { useLocation } from 'react-router-dom';
+
 import ComingSoon from '../../components/ComingSoon';
 import RiskLevel from '../../components/Dashboard/RiskLevel';
 import SpeedoMetor from '../../components/Dashboard/SpeedoMeter';
@@ -14,6 +16,12 @@ import share from '../../assets/images/share.svg';
 import rayIcon from '../../assets/images/RAY.svg';
 import solIcon from '../../assets/images/SOL.svg';
 import usdrIcon from '../../assets/images/USDr.png';
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
+import { getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
+import { PublicKey } from '@solana/web3.js';
+import { useMint } from '../../contexts/accounts';
+import { TokenAmount } from '../../utils/safe-math';
 
 const priceCardData = [
   {
@@ -32,28 +40,60 @@ const priceCardData = [
   },
 ];
 
-const modalCardData = [
-  {
-    title: 'Tokens Locked',
-    mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
-    tokens: [rayIcon, solIcon],
-    tokenNames: 'USDC-USDr-LP',
-    tokenValue: '20.36',
-    type: 'deposit',
-    withdrawValue: '0.1USDC-USDr-LP',
-  },
-  {
-    title: 'Outstanding USDr Debt',
-    mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
-    tokens: [usdrIcon],
-    tokenNames: 'USDr',
-    tokenValue: '52.28',
-    type: 'payback',
-    GenerateValue: '32.28USDr',
-  },
-];
-
 const VaultDashboard = () => {
+  const search = useLocation().search;
+  const vault_mint = new URLSearchParams(search).get('mint');
+
+  const connection = useConnection();
+  const { wallet } = useWallet();
+
+  const usdrMint = useMint(USDR_MINT_KEY);
+  const collMint = useMint(vault_mint as string);
+
+  const [userState, setUserState] = useState(null);
+  const [modalCardData, setModalCardData] = useState([
+    {
+      title: 'Tokens Locked',
+      mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
+      tokens: [rayIcon, solIcon],
+      tokenNames: 'USDC-USDr-LP',
+      tokenValue: '0',
+      type: 'deposit',
+      withdrawValue: '0 USDC-USDr-LP',
+    },
+    {
+      title: 'Outstanding USDr Debt',
+      mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
+      tokens: [usdrIcon],
+      tokenNames: 'USDr',
+      tokenValue: '0',
+      type: 'payback',
+      GenerateValue: '0 USDr',
+    },
+  ]);
+
+  useEffect(() => {
+    if (vault_mint && wallet && wallet.publicKey) {
+      getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {
+        setUserState(res);
+      });
+    }
+  });
+
+  useEffect(() => {
+    if (userState && vault_mint) {
+      const newData = [...modalCardData];
+      newData[0].tokenValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
+      newData[0].tokenValue = '' + Math.ceil(parseFloat(newData[0].tokenValue) * 100) / 100;
+      newData[0].mint = vault_mint;
+
+      newData[1].tokenValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
+      newData[1].tokenValue = '' + Math.ceil(parseFloat(newData[1].tokenValue) * 100) / 100;
+      newData[1].mint = vault_mint;
+      setModalCardData(newData);
+    }
+  }, [userState, wallet, usdrMint]);
+
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
   return (
@@ -112,7 +152,7 @@ const VaultDashboard = () => {
           </div>
         </div>
         <div className="col col-md-4 vaultdashboard__bodyright">
-          <AmountPanel />
+          <AmountPanel vault_mint={vault_mint} />
         </div>
       </div>
     </div>
