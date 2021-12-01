@@ -22,6 +22,8 @@ import { getTokenBySymbol } from '../../utils/tokens';
 
 import usdrIcon from '../../assets/images/USDr.png';
 import ethIcon from '../../assets/images/ETH.svg';
+import { getFaucetState } from '../../utils/ratio-faucet';
+import { useConnection } from '../../contexts/connection';
 
 type whitelistProps = {
   id: number;
@@ -32,6 +34,8 @@ type whitelistProps = {
 };
 
 const AvailableVaults = () => {
+  const connection = useConnection();
+  const wallet = useWallet().wallet;
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
   const compareValutsList = useSelector(selectors.getCompareVaultsList);
@@ -40,6 +44,8 @@ const AvailableVaults = () => {
 
   const [enable, setEnable] = React.useState(false);
   const { connected, publicKey } = useWallet();
+
+  const [faucetState, setFaucetState] = React.useState(null as any);
 
   const onViewType = (type: string) => {
     setViewType(type);
@@ -57,9 +63,22 @@ const AvailableVaults = () => {
         alert('Please add your address to whitelist.');
       }
     }
+    if (connected) {
+      getFaucetState(connection, wallet).then((result) => {
+        setFaucetState(result);
+      });
+    }
   }, [connected, publicKey]);
 
   const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/rate');
+
+  // if (faucetState && data) {
+  //   data['USDC-USDR'] = faucetState.mintUsdcUsdrLp.toBase58();
+  //   data['ETH-SOL'] = faucetState.mintEthSolLp.toBase58();
+  //   data['ATLAS-RAY'] = faucetState.mintAtlasRayLp.toBase58();
+  //   data['SAMO-RAY'] = faucetState.mintSamoRayLp.toBase58();
+  //   console.log()
+  // }
 
   const filterData = (array1: any, array2: any) => {
     if (array2.length === 0) {

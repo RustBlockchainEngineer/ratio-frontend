@@ -58,6 +58,23 @@ export async function isFaucetStateCreated(connection: Connection, wallet: any) 
   }
   return false;
 }
+
+export async function getFaucetState(connection: Connection, wallet: any) {
+  try {
+    const program = getProgramInstance(connection, wallet);
+    const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from(FAUCET_TAG)],
+      program.programId
+    );
+    const globalState = await program.account.faucet.fetch(globalStateKey);
+    if (globalState) {
+      return globalState;
+    }
+  } catch (e) {
+    console.log('faucet was not created');
+  }
+  return null;
+}
 // This command makes an Lottery
 export async function createFaucetState(connection: Connection, wallet: any) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();

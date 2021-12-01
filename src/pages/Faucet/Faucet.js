@@ -25,53 +25,24 @@ import {
   faucetSamoRayLp,
   isFaucetStateCreated,
 } from '../../utils/ratio-faucet';
-const options1 = [
-  {
-    value: 'USDC-USDR',
-    label: 'USDC-USDR-LP',
-    icon: [`https://sdk.raydium.io/icons/${getTokenBySymbol('USDC')?.mintAddress}.png`, usdrIcon],
-  },
-  {
-    value: 'ETH-SOL',
-    label: 'ETH-SOL-LP',
-    icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('ETH')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('SOL')?.mintAddress}.png`,
-    ],
-  },
-  {
-    value: 'ATLAS-RAY',
-    label: 'ATLAS-RAY-LP',
-    icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('ATLAS')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
-    ],
-  },
-  {
-    value: 'SAMO-RAY',
-    label: 'SAMO-RAY-LP',
-    icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('SAMO')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
-    ],
-  },
-];
+import { TOKEN_VAULT_OPTIONS } from '../../utils/ratio-lending';
 
 const Faucet = () => {
   const connection = useConnection();
-  const wallet = useWallet().wallet;
+  const gWallet = useWallet();
+  const wallet = gWallet.wallet;
   const history = useHistory();
   const [amount, setAmount] = React.useState(0);
-  const [option, setOption] = React.useState(options1[0]);
+  const [option, setOption] = React.useState(TOKEN_VAULT_OPTIONS[0]);
 
   const [submitState, setSubmitState] = React.useState(false);
   const [isCreated, setIsCreated] = React.useState(false);
 
   React.useEffect(async () => {
-    if (wallet.connected) {
+    if (gWallet.connected) {
       setIsCreated(await isFaucetStateCreated(connection, wallet));
     }
-  }, [wallet]);
+  }, [gWallet]);
 
   const onCancel = () => {
     history.push('/dashboard');
@@ -117,7 +88,7 @@ const Faucet = () => {
             release.
           </h6>
           <label>Choose which LP you wish to mint</label>
-          <CustomSelect options={options1} onChange={onChangeLp} />
+          <CustomSelect options={TOKEN_VAULT_OPTIONS} onChange={onChangeLp} />
           {/* <label className="mt-4">Choose the amount you would like to mint</label>
           <CustomInput appendStr="Max" appendValueStr="100" onTextChange={getInputValue} />
           {submitState && (
