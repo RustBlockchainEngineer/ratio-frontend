@@ -23,7 +23,8 @@ export const ENDPOINTS = [
   },
   {
     name: 'devnet' as ENV,
-    endpoint: clusterApiUrl('devnet'),
+    // endpoint: clusterApiUrl('devnet'),
+    endppoint: 'https://psytrbhymqlkfrhudd.dev.genesysgo.net:8899/',
     chainID: ChainID.Devnet,
   },
   {
