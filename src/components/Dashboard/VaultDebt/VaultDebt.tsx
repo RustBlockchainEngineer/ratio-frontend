@@ -36,8 +36,8 @@ const VaultDebt = () => {
   });
 
   const repay = () => {
-    if (userCollAccount !== '') {
-      repayUSDr(connection, wallet, 10 * 1000000, new PublicKey(USDC_USDR_LP_MINT_KEY))
+    if (userCollAccount !== '' && usdrMint) {
+      repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint?.decimals), new PublicKey(USDC_USDR_LP_MINT_KEY))
         .then(() => {})
         .catch((e) => {
           console.log(e);

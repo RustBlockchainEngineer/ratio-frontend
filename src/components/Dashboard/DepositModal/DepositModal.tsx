@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
+import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { depositCollateral, getTokenVaultByMint } from '../../../utils/ratio-lending';
@@ -26,7 +27,7 @@ const DepositModal = ({ data }: DepositModalProps) => {
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
   const [userCollAccount, setUserCollAccount] = React.useState('');
-
+  const collMint = useMint(data.mint);
   useEffect(() => {
     getTokenVaultByMint(connection, data.mint).then((res) => {
       setVault(res);
@@ -44,12 +45,17 @@ const DepositModal = ({ data }: DepositModalProps) => {
         setUserCollAccount(res);
       });
     }
-  }, []);
+  }, [wallet?.publicKey]);
 
   const deposit = () => {
-    console.log(userCollAccount);
-    if (userCollAccount !== '') {
-      depositCollateral(connection, wallet, 10 * 1000000000, userCollAccount, new PublicKey(data.mint))
+    if (userCollAccount !== '' && collMint) {
+      depositCollateral(
+        connection,
+        wallet,
+        10 * Math.pow(10, collMint?.decimals),
+        userCollAccount,
+        new PublicKey(data.mint)
+      )
         .then(() => {})
         .catch((e) => {
           console.log(e);
