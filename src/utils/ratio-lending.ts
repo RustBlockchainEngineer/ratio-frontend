@@ -14,8 +14,9 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { checkWalletATA, createAssociatedTokenAccountIfNotExist, createTokenAccountIfNotExist, sendTransaction } from './web3';
+import { createTokenAccountIfNotExist, sendTransaction } from './web3';
 import { closeAccount } from '@project-serum/serum/lib/token-instructions';
+import { STABLE_POOL_PROGRAM_ID } from './ids';
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
@@ -25,9 +26,9 @@ export const GLOBAL_STATE_TAG = 'golbal-state-seed';
 export const TOKEN_VAULT_TAG = 'token-vault-seed';
 export const USER_TROVE_TAG = 'user-trove-seed';
 export const USD_MINT_TAG = 'usd-mint';
+export const USER_USD_TOKEN_TAG = 'usd-token';
 export const TOKEN_VAULT_POOL_TAG = 'token-vault-pool';
 
-export const STABLE_POOL_PROGRAM_ID = new PublicKey('2zVfJtu8N6Cd5UkCLcSRUcLD1afdVpAuqik6s9sL5vS6');
 export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
 const defaultPrograms ={
@@ -129,20 +130,14 @@ export async function borrowUSDr(
     program.programId
   );
 
-  const globalState = await program.account.globalState.fetch(globalStateKey);
-  const paramUserUsdTokenKey = await checkWalletATA(connection, wallet.publicKey, globalState.mintUsd.toBase58());
-
   const transaction = new Transaction();
   const signers: Keypair[] = [];
 
-  const userUsdTokenKey = await createAssociatedTokenAccountIfNotExist(
-    paramUserUsdTokenKey, 
-    wallet.publicKey, 
-    globalState.mintUsd.toBase58(), 
-    transaction
+  const [userUsdKey, userUsdKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_USD_TOKEN_TAG), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
+    program.programId
   );
-
-  console.log(userUsdTokenKey.toString())
+  console.log(userUsdKey.toString())
 
   const borrowInstruction = await program.instruction.borrowUsd(
     new anchor.BN(amount),
@@ -150,6 +145,7 @@ export async function borrowUSDr(
     userTroveNonce,
     globalStateNonce,
     mintUsdNonce,
+    userUsdKeyNonce,
     {
       accounts: {
         owner: wallet.publicKey,
@@ -157,7 +153,7 @@ export async function borrowUSDr(
         userTrove: userTroveKey,
         globalState: globalStateKey,
         mintUsd: mintUsdKey,
-        userTokenUsd: userUsdTokenKey,
+        userTokenUsd: userUsdKey,
         mintColl: mintCollKey,
         ...defaultPrograms
 
@@ -405,22 +401,13 @@ export async function repayUSDr(
     program.programId
   );
 
-  const globalState = await program.account.globalState.fetch(globalStateKey);
-
-  const paramUserUsdTokenKey = await checkWalletATA(connection, wallet.publicKey, globalState.mintUsd.toBase58());
-
   const transaction = new Transaction();
   const instructions: TransactionInstruction[] = [];
   const signers: Keypair[] = [];
 
-  const userUsdTokenKey = await createTokenAccountIfNotExist(
-    connection,
-    paramUserUsdTokenKey,
-    wallet.publicKey,
-    globalState.mintUsd.toBase58(),
-    null,
-    transaction,
-    signers
+  const [userUsdKey, userUsdKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_USD_TOKEN_TAG), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
+    program.programId
   );
 
   const repayInstruction = await program.instruction.repayUsd(
@@ -429,6 +416,7 @@ export async function repayUSDr(
     userTroveNonce,
     globalStateNonce,
     mintUsdNonce,
+    userUsdKeyNonce,
     {
       accounts: {
         owner: wallet.publicKey,
@@ -436,7 +424,7 @@ export async function repayUSDr(
         userTrove: userTroveKey,
         globalState: globalStateKey,
         mintUsd: mintUsdKey,
-        userTokenUsd: userUsdTokenKey,
+        userTokenUsd: userUsdKey,
         mintColl: mintCollKey,
         ...defaultPrograms
 
