@@ -90,7 +90,7 @@ const Layer = () => {
                 <Route path="/dashboard/my-active-vaults" component={ActiveVaults} exact />
                 <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
                 <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
-                <Route path="/dashboard/vaultdashboard" component={VaultDashboard} exact />
+                <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
                 <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
                 <Route exact path="/dashboard">
                   <Redirect to="/dashboard/available-vaults" />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { useLocation } from 'react-router-dom';
 
@@ -41,11 +41,13 @@ const priceCardData = [
 ];
 
 const VaultDashboard = () => {
+  const history = useHistory();
   const search = useLocation().search;
-  const vault_mint = new URLSearchParams(search).get('mint');
+  // const vault_mint = new URLSearchParams(search).get('mint');
+  const { mint: vault_mint } = useParams<{ mint?: string }>();
 
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
 
   const usdrMint = useMint(USDR_MINT_KEY);
   const collMint = useMint(vault_mint as string);
@@ -93,6 +95,12 @@ const VaultDashboard = () => {
       setModalCardData(newData);
     }
   }, [userState, wallet, usdrMint]);
+
+  useEffect(() => {
+    if (!connected) {
+      history.push('/dashboard');
+    }
+  }, [connected]);
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });

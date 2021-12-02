@@ -90,7 +90,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
           console.log(e);
         })
         .finally(() => {
-          history.push('/dashboard/vaultdashboard' + '?mint=' + data.mint);
+          history.push(`/dashboard/vaultdashboard/${data.mint}`);
         });
     }
   };
