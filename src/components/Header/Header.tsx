@@ -1,7 +1,9 @@
 import React from 'react';
+import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { FaCheck } from 'react-icons/fa';
+import { IoMdCloseCircle } from 'react-icons/io';
 import Button from '../Button';
 import SwitchButton from '../SwitchButton';
 import { shortenAddress } from '../../utils/utils';
@@ -17,6 +19,7 @@ type HeaderProps = {
 const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
   const history = useHistory();
   const { connected, connect, wallet } = useWallet();
+  const [hover, setHover] = React.useState(false);
   // const { onClick, children, disabled, allowWalletChange, ...rest } = props
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -29,11 +32,16 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
       </button>
       <SwitchButton />
       {connected ? (
-        <div className="header__connected">
-          <div className="header__checked">
-            <FaCheck />
+        <div
+          className="header__connected"
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          onClick={() => wallet?.disconnect()}
+        >
+          <div className={classNames({ header__checked: !hover, header__closed: hover })}>
+            {hover ? <IoMdCloseCircle /> : <FaCheck />}
           </div>
-          <h6>{shortenAddress(`${wallet?.publicKey}`)}</h6>
+          {hover ? <h6>Disconnect</h6> : <h6>{shortenAddress(`${wallet?.publicKey}`)}</h6>}
         </div>
       ) : (
         <Button

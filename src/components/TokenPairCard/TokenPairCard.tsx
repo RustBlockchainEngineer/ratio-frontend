@@ -38,7 +38,9 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
                 <img src={data.icon2} alt={'Token2'} className="tokenpaircard__header-icon" />
               </div>
               <div className="tokenpaircard__titleBox">
-                <h6>{data.title}</h6>
+                <Link to={`/dashboard/vaultdashboard/${data.mint}`}>
+                  <h6>{data.title}</h6>
+                </Link>
                 <p>{data.tvl}</p>
               </div>
             </div>
@@ -120,7 +122,7 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
                   </div>
                   <div className="text-right">
                     Rewards earned:
-                    <p>$2,700</p>
+                    <p>$0</p>
                   </div>
                 </div>
                 {/* <div className="mt-3">
