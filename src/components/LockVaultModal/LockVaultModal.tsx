@@ -80,7 +80,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
       lockAndMint(
         connection,
         wallet,
-        10 * Math.pow(10, collMint?.decimals as number),
+        0.429 * Math.pow(10, collMint?.decimals as number),
         10 * Math.pow(10, usdrMint?.decimals as number),
         collAccount.pubkey.toString(),
         new PublicKey(data.mint)

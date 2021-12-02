@@ -22,7 +22,6 @@ import usdrIcon from '../assets/images/USDr.png';
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
-export const USDC_USDR_LP_MINT_KEY = new PublicKey('6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i');
 export const USDR_MINT_KEY = 'GHY2oA1hsLn8qYFZDz9GFy4hSUwtdVfkcSkhKHYr7XKd';
 export const GLOBAL_STATE_TAG = 'golbal-state-seed';
 export const TOKEN_VAULT_TAG = 'token-vault-seed';
@@ -357,8 +356,6 @@ export async function depositCollateral(
     [Buffer.from(GLOBAL_STATE_TAG)],
     program.programId
   );
-  const globalState = await program.account.globalState.fetch(globalStateKey);
-
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
     program.programId
@@ -390,7 +387,7 @@ export async function depositCollateral(
   );
 
   try {
-    const userTrove = await program.account.userTrove.fetch(userTroveKey);
+    await program.account.userTrove.fetch(userTroveKey);
   } catch {
     const tx = await program.instruction.createUserTrove(userTroveNonce, tokenVaultNonce, {
       accounts: {
@@ -423,6 +420,7 @@ export async function depositCollateral(
       },
     }
   );
+  
   transaction.add(depositInstruction);
 
   if (mintCollKey.toBase58() === WSOL_MINT_KEY.toBase58()) {
@@ -566,6 +564,21 @@ export async function lockAndMint(
 }
 
 
+
+export async function getUsdrMintKey(
+  connection: Connection,
+  wallet: any,
+) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+
+  const program = getProgramInstance(connection, wallet);
+
+  const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USD_MINT_TAG)],
+    program.programId
+  );
+  return mintUsdKey.toBase58();
+}
 
 
 

@@ -52,7 +52,7 @@ const DepositModal = ({ data }: DepositModalProps) => {
       depositCollateral(
         connection,
         wallet,
-        10 * Math.pow(10, collMint?.decimals),
+        0.429 * Math.pow(10, collMint?.decimals),
         userCollAccount,
         new PublicKey(data.mint)
       )

@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { repayUSDr, USDC_USDR_LP_MINT_KEY, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { getFaucetState } from '../../../utils/ratio-faucet';
+import { getUsdrMintKey, repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 
@@ -12,21 +13,21 @@ import Button from '../../Button';
 const VaultDebt = () => {
   const connection = useConnection();
   const { wallet } = useWallet();
+  const [mintAddress, setMintAddress] = useState('');
+  const usdrMint = useMint(mintAddress);
+  const usdrAccount = useAccountByMint(mintAddress);
 
-  const usdrAccount = useAccountByMint(USDR_MINT_KEY);
-  const usdrMint = useMint(USDR_MINT_KEY);
+  useEffect(() => {
+    getUsdrMintKey(connection, wallet).then((result) => {
+      setMintAddress(result);
+    });
+  });
   const [usdrAmount, setUSDrAmount] = useState(0);
 
-  const [userCollAccount, setUserCollAccount] = React.useState('');
-  useEffect(() => {
-    if (wallet?.publicKey) {
-      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(USDC_USDR_LP_MINT_KEY)).then(
-        (res) => {
-          setUserCollAccount(res);
-        }
-      );
-    }
-  }, [connection, wallet]);
+  const [usdcUsdrMintKey, setUsdcUsdrMintKey] = React.useState('');
+  getFaucetState(connection, wallet).then((result) => {
+    setUsdcUsdrMintKey(result.mintUsdcUsdrLp.toBase58());
+  });
 
   useEffect(() => {
     if (usdrAccount) {
@@ -36,8 +37,8 @@ const VaultDebt = () => {
   });
 
   const repay = () => {
-    if (userCollAccount !== '' && usdrMint) {
-      repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint?.decimals), new PublicKey(USDC_USDR_LP_MINT_KEY))
+    if (usdrMint) {
+      repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint?.decimals), new PublicKey(usdcUsdrMintKey))
         .then(() => {})
         .catch((e) => {
           console.log(e);
