@@ -22,6 +22,8 @@ import { getTokenBySymbol } from '../../utils/tokens';
 
 import usdrIcon from '../../assets/images/USDr.png';
 import ethIcon from '../../assets/images/ETH.svg';
+import { getFaucetState } from '../../utils/ratio-faucet';
+import { useConnection } from '../../contexts/connection';
 
 type whitelistProps = {
   id: number;
@@ -32,6 +34,8 @@ type whitelistProps = {
 };
 
 const AvailableVaults = () => {
+  const connection = useConnection();
+  const wallet = useWallet().wallet;
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
   const compareValutsList = useSelector(selectors.getCompareVaultsList);
@@ -40,6 +44,8 @@ const AvailableVaults = () => {
 
   const [enable, setEnable] = React.useState(false);
   const { connected, publicKey } = useWallet();
+
+  const [faucetState, setFaucetState] = React.useState(null as any);
 
   const onViewType = (type: string) => {
     setViewType(type);
@@ -57,9 +63,26 @@ const AvailableVaults = () => {
         alert('Please add your address to whitelist.');
       }
     }
+    if (connected) {
+      getFaucetState(connection, wallet).then((result) => {
+        setFaucetState(result);
+      });
+    }
   }, [connected, publicKey]);
 
+  // change this line with below addresses and risk level
   const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/rate');
+
+  if (faucetState && data) {
+    data['USDC-USDR'].mint = faucetState.mintUsdcUsdrLp.toBase58();
+    data['USDC-USDR'].riskLevel = 0;
+    data['ETH-SOL'].mint = faucetState.mintEthSolLp.toBase58();
+    data['ETH-SOL'].riskLevel = 1;
+    data['ATLAS-RAY'].mint = faucetState.mintAtlasRayLp.toBase58();
+    data['ATLAS-RAY'].riskLevel = 2;
+    data['SAMO-RAY'].mint = faucetState.mintSamoRayLp.toBase58();
+    data['SAMO-RAY'].riskLevel = 3;
+  }
 
   const filterData = (array1: any, array2: any) => {
     if (array2.length === 0) {
@@ -90,6 +113,7 @@ const AvailableVaults = () => {
           details:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
           risk: d[key].c,
+          riskLevel: d[key].riskLevel,
         };
       });
       return p;

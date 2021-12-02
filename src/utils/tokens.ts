@@ -2084,9 +2084,6 @@ function addTokensSolana() {
         })
         .then(function (myJson) {
           addTokensSolanaFunc(myJson.tokens);
-        })
-        .catch(() => {
-          console.log("Can't get token list");
         });
     });
 }

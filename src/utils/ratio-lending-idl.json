@@ -62,7 +62,7 @@
         },
         {
           "name": "globalState",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -102,6 +102,10 @@
         },
         {
           "name": "tokenCollNonce",
+          "type": "u8"
+        },
+        {
+          "name": "riskLevel",
           "type": "u8"
         }
       ]
@@ -302,16 +306,26 @@
         },
         {
           "name": "userTokenUsd",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "mintColl",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         },
         {
           "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
           "isMut": false,
           "isSigner": false
         },
@@ -340,6 +354,10 @@
         },
         {
           "name": "mintUsdNonce",
+          "type": "u8"
+        },
+        {
+          "name": "userUsdTokenNonce",
           "type": "u8"
         }
       ]
@@ -408,6 +426,10 @@
         {
           "name": "mintUsdNonce",
           "type": "u8"
+        },
+        {
+          "name": "userUsdTokenNonce",
+          "type": "u8"
         }
       ]
     }
@@ -449,6 +471,10 @@
           {
             "name": "totalDebt",
             "type": "u64"
+          },
+          {
+            "name": "riskLevel",
+            "type": "u8"
           }
         ]
       }
@@ -469,6 +495,73 @@
           {
             "name": "lastMintTime",
             "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "AccountType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Unknown"
+          },
+          {
+            "name": "Mapping"
+          },
+          {
+            "name": "Product"
+          },
+          {
+            "name": "Price"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PriceStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Unknown"
+          },
+          {
+            "name": "Trading"
+          },
+          {
+            "name": "Halted"
+          },
+          {
+            "name": "Auction"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CorpAction",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "NoCorpAct"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PriceType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Unknown"
+          },
+          {
+            "name": "Price"
           }
         ]
       }
@@ -519,9 +612,11 @@
       "code": 308,
       "name": "InvalidAccountInput",
       "msg": "InvalidAccountInput"
+    },
+    {
+      "code": 309,
+      "name": "InvalidCluster",
+      "msg": "This function works on devnet only"
     }
-  ],
-  "metadata": {
-    "address": "9CvnMPcTfbao7xp6cGtfJZH9dwVjHBvmXX4jRatnznkQ"
-  }
+  ]
 }

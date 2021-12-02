@@ -80,7 +80,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
       lockAndMint(
         connection,
         wallet,
-        10 * Math.pow(10, collMint?.decimals as number),
+        0.429 * Math.pow(10, collMint?.decimals as number),
         10 * Math.pow(10, usdrMint?.decimals as number),
         collAccount.pubkey.toString(),
         new PublicKey(data.mint)
@@ -97,7 +97,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
 
   return (
     <>
-      {!isCreated ? (
+      {/* {!isCreated ? (
         <Button
           className="button--fill generate"
           onClick={() => createTokenVault(connection, wallet, new PublicKey(data.mint))}
@@ -108,8 +108,11 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
         <Button className="button--fill generate" onClick={() => setShow(!show)}>
           Mint USDr
         </Button>
-      )}
+      )} */}
 
+      <Button className="button--fill generate" onClick={() => setShow(!show)}>
+        Mint USDr
+      </Button>
       <Modal
         show={show}
         onHide={() => setShow(false)}
@@ -127,7 +130,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             </div>
             <h3>Lock {data.title}-LP into vault</h3>
             <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
-            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title} LP`} readOnly />
+            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title} LP`} />
           </div>
         </Modal.Header>
         <Modal.Body>
