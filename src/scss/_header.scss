@@ -18,7 +18,9 @@
   // min-height: 85px;
 
   &__connected {
+    cursor: pointer;
     display: flex;
+    min-width: 180px;
     align-items: center;
     padding: 12px 22px;
     border: 1px solid var(--unnamed-color-f9fbfe);
@@ -54,6 +56,18 @@
     background-color: rgba(#07b127, 0.2);
     border-radius: 100%;
   }
+
+  &__closed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: red;
+    width: 27px;
+    height: 27px;
+    background-color: rgba(red, 0.2);
+    border-radius: 100%;
+  }
+
 
   .walletBtn {
     font-family: 'Poppins-Medium';

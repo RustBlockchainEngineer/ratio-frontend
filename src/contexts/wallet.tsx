@@ -71,7 +71,7 @@ const WalletContext = React.createContext<{
 export function WalletProvider({ children = null as any }) {
   const { endpoint } = useConnectionConfig();
 
-  const [autoConnect, setAutoConnect] = useState(false);
+  const [autoConnect, setAutoConnect] = useLocalStorageState('autoConnect');
   const [providerUrl, setProviderUrl] = useLocalStorageState('walletProvider');
 
   const provider = useMemo(() => WALLET_PROVIDERS.find(({ url }) => url === providerUrl), [providerUrl]);
@@ -93,6 +93,7 @@ export function WalletProvider({ children = null as any }) {
         if (wallet.publicKey) {
           setConnected(true);
           const walletPublicKey = wallet.publicKey.toBase58();
+          console.log(walletPublicKey);
           const keyToDisplay =
             walletPublicKey.length > 20
               ? `${walletPublicKey.substring(0, 7)}.....${walletPublicKey.substring(
@@ -126,6 +127,7 @@ export function WalletProvider({ children = null as any }) {
   }, [wallet]);
 
   useEffect(() => {
+    console.log(autoConnect);
     if (wallet && autoConnect) {
       wallet.connect();
       setAutoConnect(false);

@@ -38,10 +38,10 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
                 <img src={data.icon2} alt={'Token2'} className="tokenpaircard__header-icon" />
               </div>
               <div className="tokenpaircard__titleBox">
-                <a href={'/dashboard/vaultdashboard' + '?mint=' + data.mint}>
+                <Link to={`/dashboard/vaultdashboard/${data.mint}`}>
                   <h6>{data.title}</h6>
-                  <p>{data.tvl}</p>
-                </a>
+                </Link>
+                <p>{data.tvl}</p>
               </div>
             </div>
             <div className="tokenpaircard__riskBox">
