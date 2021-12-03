@@ -123,7 +123,7 @@ export async function createAssociatedTokenAccountIfNotExist(
 
   const mint = new PublicKey(mintAddress)
 
-  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner, true)
+  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner)
 
   if ((!publicKey || !ata.equals(publicKey)) && !atas.includes(ata.toBase58())) {
     transaction.add(
