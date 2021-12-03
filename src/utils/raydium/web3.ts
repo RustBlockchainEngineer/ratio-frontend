@@ -155,7 +155,7 @@ export async function createAtaSolIfNotExistAndWrap(
     publicKey = new PublicKey(account)
   }
   const mint = new PublicKey(TOKENS.WSOL.mintAddress)
-  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner, true)
+  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner)
   if (!publicKey) {
     const rent = await Token.getMinBalanceRentForExemptAccount(connection)
     transaction.add(
