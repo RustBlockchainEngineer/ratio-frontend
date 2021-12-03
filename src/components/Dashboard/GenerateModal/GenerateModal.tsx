@@ -23,23 +23,26 @@ type GenerateModalProps = {
 const GenerateModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
   const usdrMint = useMint(data.usdrMint);
 
   useEffect(() => {
-    getTokenVaultByMint(connection, data.mint).then((res) => {
-      setVault(res);
-      if (res) {
-        setCreated(true);
-      } else {
-        setCreated(false);
-      }
-    });
+    if (connected) {
+      getTokenVaultByMint(connection, data.mint).then((res) => {
+        setVault(res);
+        if (res) {
+          setCreated(true);
+        } else {
+          setCreated(false);
+        }
+      });
+    }
   }, [connection]);
 
   const borrow = () => {
+    console.log(data.usdrMint);
     if (usdrMint) {
       borrowUSDr(connection, wallet, 10 * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
         .then(() => {})

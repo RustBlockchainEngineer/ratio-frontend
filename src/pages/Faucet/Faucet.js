@@ -65,7 +65,6 @@ const Faucet = () => {
 
   const onChangeLp = (value) => {
     setOption(value);
-    console.log(value);
   };
 
   return (

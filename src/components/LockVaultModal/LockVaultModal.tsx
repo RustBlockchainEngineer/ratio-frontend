@@ -30,11 +30,11 @@ type LockVaultModalProps = {
   data: PairType;
 };
 
-const LockVaultModal = ({ data }: LockVaultModalProps) => {
+const LockVaultModal = ({ data }: any) => {
   const history = useHistory();
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
   const [userState, setUserState] = React.useState({});
@@ -65,22 +65,38 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   });
 
   useEffect(() => {
-    getTokenVaultByMint(connection, data.mint).then((res) => {
-      setVault(res);
-      if (res) {
-        setCreated(true);
-      } else {
-        setCreated(false);
-      }
-    });
+    if (connected) {
+      getTokenVaultByMint(connection, data.mint).then((res) => {
+        setVault(res);
+        if (res) {
+          setCreated(true);
+        } else {
+          setCreated(false);
+        }
+      });
+    }
   }, [connection]);
 
   const depositAndBorrow = () => {
+    console.log('data.min', data.mint);
+    console.log('collAccount', collAccount);
+    console.log('collAmount', collAmount);
+    console.log('data.riskLevel', data.riskLevel);
     if (collAccount && collAmount > 0) {
+      let tenWorthOfLp = 0;
+      if (data.riskLevel === 0) {
+        tenWorthOfLp = 0.143;
+      } else if (data.riskLevel === 1) {
+        tenWorthOfLp = 0.00261;
+      } else if (data.riskLevel === 2) {
+        tenWorthOfLp = 0.317;
+      } else if (data.riskLevel === 3) {
+        tenWorthOfLp = 3.278;
+      }
       lockAndMint(
         connection,
         wallet,
-        0.429 * Math.pow(10, collMint?.decimals as number),
+        tenWorthOfLp * Math.pow(10, collMint?.decimals as number),
         10 * Math.pow(10, usdrMint?.decimals as number),
         collAccount.pubkey.toString(),
         new PublicKey(data.mint)
