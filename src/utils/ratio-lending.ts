@@ -566,10 +566,14 @@ export async function lockAndMint(
   console.log('txid', tx);
 }
 
-export async function getUsdrMintKey(connection: Connection, wallet: any) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
 
-  const program = getProgramInstance(connection, wallet);
+
+export async function getUsdrMintKey(
+  connection: Connection,
+  wallet: any,
+) {
+
+  const program = getProgramInstance(connection, null);
 
   const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(USD_MINT_TAG)], program.programId);
   return mintUsdKey.toBase58();

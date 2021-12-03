@@ -22,6 +22,11 @@ import { getUserState, USDR_MINT_KEY, TOKEN_VAULT_OPTIONS } from '../../utils/ra
 import { PublicKey } from '@solana/web3.js';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
+import { useRaydiumPools } from '../../contexts/pools';
+import { cloneDeep, values } from 'lodash';
+import BN from 'bn.js';
+import { getUSDrAmount } from '../../utils/risk';
+import { usePrice } from '../../contexts/price';
 
 const priceCardData = [
   {
@@ -51,8 +56,10 @@ const VaultDashboard = () => {
 
   const usdrMint = useMint(USDR_MINT_KEY);
   const collMint = useMint(vault_mint as string);
+  const tokenPrice = usePrice(vault_mint as string);
 
   const [userState, setUserState] = useState(null);
+  const [riskLevel, setRiskLevel] = useState(0.0);
   const [vaultName, setVaultName] = useState('');
 
   const [modalCardData, setModalCardData] = useState([
@@ -82,7 +89,7 @@ const VaultDashboard = () => {
         setUserState(res);
       });
     }
-  });
+  }, [vault_mint, wallet]);
 
   useEffect(() => {
     if (userState && vault_mint) {
@@ -94,9 +101,13 @@ const VaultDashboard = () => {
       newData[1].tokenValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
       newData[1].tokenValue = '' + Math.ceil(parseFloat(newData[1].tokenValue) * 100) / 100;
       newData[1].mint = vault_mint;
+
+      newData[1].GenerateValue =
+        Math.ceil(getUSDrAmount(riskLevel, tokenPrice * Number(newData[0].tokenValue)) * 100) / 100 + ' USDr';
+      console.log(tokenPrice);
       setModalCardData(newData);
     }
-  }, [userState, wallet, usdrMint]);
+  }, [userState, wallet, usdrMint, tokenPrice]);
 
   useEffect(() => {
     if (!connected) {

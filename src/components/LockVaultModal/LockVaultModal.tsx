@@ -25,6 +25,8 @@ import { useWallet } from '../../contexts/wallet';
 import { getOneFilteredTokenAccountsByOwner } from '../../utils/web3';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
+import { usePrice } from '../../contexts/price';
+import { getUSDrAmount } from '../../utils/risk';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -35,16 +37,29 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
+
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
   const [userState, setUserState] = React.useState({});
   const [mintTime, setMintTime] = React.useState('');
 
+  const [lpAmount, setLPAmount] = React.useState(0);
+  const [usdrAmount, setUSDrAmount] = React.useState(0);
+  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
+  const tokenPrice = usePrice(data.mint);
+
   const collMint = useMint(data.mint);
   const usdrMint = useMint(USDR_MINT_KEY);
 
   const collAccount = useAccountByMint(data.mint);
-  const [collAmount, setCollAmount] = useState(0);
+  const [collBalance, setCollBalance] = useState(0);
+
+  const [disableDeposit, setDisableDeposit] = useState(false);
+
+  useEffect(() => {
+    const maxAmount = Math.ceil(getUSDrAmount(data.risk, tokenPrice * lpAmount) * 1000) / 1000;
+    setMaxUSDrAmount(maxAmount);
+  }, [tokenPrice, lpAmount]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -59,7 +74,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
       });
       if (collAccount) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-        setCollAmount(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
+        setCollBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
       }
     }
   });
@@ -75,13 +90,17 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
     });
   }, [connection]);
 
+  useEffect(() => {
+    setDisableDeposit(!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount));
+  }, [collBalance, lpAmount, usdrAmount, maxUSDrAmount]);
+
   const depositAndBorrow = () => {
-    if (collAccount && collAmount > 0) {
+    if (collAccount) {
       lockAndMint(
         connection,
         wallet,
-        0.429 * Math.pow(10, collMint?.decimals as number),
-        10 * Math.pow(10, usdrMint?.decimals as number),
+        lpAmount * Math.pow(10, collMint?.decimals as number),
+        usdrAmount * Math.pow(10, usdrMint?.decimals as number),
         collAccount.pubkey.toString(),
         new PublicKey(data.mint)
       )
@@ -117,7 +136,12 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             </div>
             <h3>Lock {data.title}-LP into vault</h3>
             <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
-            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title} LP`} />
+            <CustomInput
+              appendStr="Max"
+              appendValueStr={'' + collBalance}
+              tokenStr={`${data.title} LP`}
+              onTextChange={(value) => setLPAmount(Number(value))}
+            />
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -162,8 +186,13 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             <label className="lockvaultmodal__label2">
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
-            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`USDr`} />
-            <Button className="button--fill lockBtn" onClick={() => depositAndBorrow()}>
+            <CustomInput
+              appendStr="Max"
+              appendValueStr={'' + maxUSDrAmount}
+              tokenStr={`USDr`}
+              onTextChange={(value) => setUSDrAmount(Number(value))}
+            />
+            <Button className="button--fill lockBtn" onClick={() => depositAndBorrow()} disabled={disableDeposit}>
               Lock Assets & Mint USDr
             </Button>
           </div>
