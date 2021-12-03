@@ -10,6 +10,7 @@ import Faucet from './pages/Faucet';
 import AdminPanel from './pages/AdminPanel';
 import { AuthProvider } from './contexts/auth';
 import { RaydiumPoolProvider } from './contexts/pools';
+import { PriceProvider } from './contexts/price';
 
 const App: React.FC = () => {
   return (
@@ -18,22 +19,24 @@ const App: React.FC = () => {
         <AuthProvider>
           <AccountsProvider>
             <RaydiumPoolProvider>
-              <MarketProvider>
-                <ThemeProvider>
-                  <Router>
-                    <div>
-                      <Switch>
-                        <Route path="/dashboard" component={Layer} />
-                        <Route path="/faucet" exact component={Faucet} />
-                        <Route path="/adminpanel" exact component={AdminPanel} />
-                        <Route exact path="/">
-                          <Redirect to="/dashboard" />
-                        </Route>
-                      </Switch>
-                    </div>
-                  </Router>
-                </ThemeProvider>
-              </MarketProvider>
+              <PriceProvider>
+                <MarketProvider>
+                  <ThemeProvider>
+                    <Router>
+                      <div>
+                        <Switch>
+                          <Route path="/dashboard" component={Layer} />
+                          <Route path="/faucet" exact component={Faucet} />
+                          <Route path="/adminpanel" exact component={AdminPanel} />
+                          <Route exact path="/">
+                            <Redirect to="/dashboard" />
+                          </Route>
+                        </Switch>
+                      </div>
+                    </Router>
+                  </ThemeProvider>
+                </MarketProvider>
+              </PriceProvider>
             </RaydiumPoolProvider>
           </AccountsProvider>
         </AuthProvider>

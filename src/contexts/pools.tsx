@@ -31,6 +31,6 @@ export function RaydiumPoolProvider({ children = undefined as any }) {
   );
 }
 
-export function useGetRaydiumPools() {
+export function useRaydiumPools() {
   return useContext(PoolsContext)?.pools;
 }

@@ -13,10 +13,6 @@ const AuthContext = React.createContext<AuthConfig>({
 export function AuthProvider({ children = undefined as any }) {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
-  useEffect(() => {
-    console.log('check loggedin', loggedIn);
-  }, [loggedIn]);
-
   return (
     <AuthContext.Provider
       value={{
