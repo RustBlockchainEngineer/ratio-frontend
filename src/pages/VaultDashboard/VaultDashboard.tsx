@@ -22,6 +22,10 @@ import { getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
+import { useGetRaydiumPools } from '../../contexts/pools';
+import { cloneDeep, values } from 'lodash';
+import BN from 'bn.js';
+import { getPriceWithTokenAddress } from '../../utils/prices';
 
 const priceCardData = [
   {
@@ -51,8 +55,20 @@ const VaultDashboard = () => {
 
   const usdrMint = useMint(USDR_MINT_KEY);
   const collMint = useMint(vault_mint as string);
+  const rayPools = useGetRaydiumPools();
+
+  const [coin, setCoin] = useState(null);
+  const [coinPrice, setCoinPrice] = useState(0);
+
+  const [pc, setPc] = useState(null);
+  const [pcPrice, setPcPrice] = useState(0);
+
+  const [lpSupply, setLpSupply] = useState(0);
+  const [lpTokenPrice, setLpTokenPrice] = useState(0);
 
   const [userState, setUserState] = useState(null);
+  const [riskLevel, setRiskLevel] = useState(0.0);
+
   const [modalCardData, setModalCardData] = useState([
     {
       title: 'Tokens Locked',
@@ -80,7 +96,40 @@ const VaultDashboard = () => {
         setUserState(res);
       });
     }
-  });
+  }, [vault_mint, wallet]);
+
+  useEffect(() => {
+    if (rayPools) {
+      const poolInfo = rayPools['HwzkXyX8B45LsaHXwY8su92NoRBS5GQC32HzjQRDqPnr'];
+      setCoin((poolInfo as any).coin);
+      setPc((poolInfo as any).pc);
+      setLpSupply(Number((poolInfo as any).lp.totalSupply.fixed()));
+    }
+  }, [rayPools, vault_mint]);
+
+  useEffect(() => {
+    if (coin) {
+      getPriceWithTokenAddress((coin as any).mintAddress).then((price: number) => {
+        setCoinPrice(price);
+      });
+    }
+  }, [coin]);
+
+  useEffect(() => {
+    if (pc) {
+      getPriceWithTokenAddress((pc as any).mintAddress).then((price: number) => {
+        setPcPrice(price);
+      });
+    }
+  }, [pc]);
+
+  useEffect(() => {
+    if (coin && pc && lpSupply) {
+      const price =
+        (coinPrice * Number((coin as any).balance.fixed()) + pcPrice * Number((pc as any).balance.fixed())) / lpSupply;
+      setLpTokenPrice(price);
+    }
+  }, [coin, coinPrice, pc, pcPrice, lpSupply]);
 
   useEffect(() => {
     if (userState && vault_mint) {
@@ -92,9 +141,24 @@ const VaultDashboard = () => {
       newData[1].tokenValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
       newData[1].tokenValue = '' + Math.ceil(parseFloat(newData[1].tokenValue) * 100) / 100;
       newData[1].mint = vault_mint;
+
+      const lpTokenVolume = lpTokenPrice * Number(newData[0].tokenValue);
+      let maxUSDr = 0;
+      if (riskLevel < 8) {
+        maxUSDr = lpTokenVolume * 95.238095238;
+      } else if (riskLevel < 12) {
+        maxUSDr = lpTokenVolume * 69;
+      } else if (riskLevel < 25) {
+        maxUSDr = lpTokenVolume * 50;
+      } else {
+        maxUSDr = lpTokenVolume * 40;
+      }
+      newData[1].GenerateValue = Math.ceil(maxUSDr) / 100 + ' USDr';
+      console.log(newData[0].tokenValue, lpTokenPrice, newData[1].GenerateValue);
+      console.log(newData[0].tokenValue);
       setModalCardData(newData);
     }
-  }, [userState, wallet, usdrMint]);
+  }, [userState, wallet, usdrMint, lpTokenPrice]);
 
   useEffect(() => {
     if (!connected) {
