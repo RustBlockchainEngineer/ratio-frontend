@@ -98,7 +98,6 @@ const AvailableVaults = () => {
   };
 
   function factorialOf(d: any, filter_data: any) {
-    console.log(d);
     if (d !== undefined) {
       const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
         const tokens = key.split('-');

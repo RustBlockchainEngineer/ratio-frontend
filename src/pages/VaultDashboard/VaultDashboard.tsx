@@ -102,8 +102,9 @@ const VaultDashboard = () => {
       newData[1].tokenValue = '' + Math.ceil(parseFloat(newData[1].tokenValue) * 100) / 100;
       newData[1].mint = vault_mint;
 
-      newData[1].GenerateValue =
-        Math.ceil(getUSDrAmount(riskLevel, tokenPrice * Number(newData[0].tokenValue)) * 100) / 100 + ' USDr';
+      const maxAmount = getUSDrAmount(riskLevel, tokenPrice * Number(newData[0].tokenValue));
+
+      newData[1].GenerateValue = Math.ceil((maxAmount - Number(newData[1].tokenValue)) * 100) / 100 + ' USDr';
       console.log(tokenPrice);
       setModalCardData(newData);
     }

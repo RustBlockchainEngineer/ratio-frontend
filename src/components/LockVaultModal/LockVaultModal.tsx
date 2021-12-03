@@ -83,7 +83,6 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
       });
       if (collAccount) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-        console.log(tokenAmount);
         setCollBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
       }
     }
