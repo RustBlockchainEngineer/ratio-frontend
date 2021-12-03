@@ -1,20 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
-
-import CustomInput from '../../components/CustomInput';
 import CustomSelect from '../../components/CustomSelect';
 import Button from '../../components/Button';
 
-import { getTokenBySymbol } from '../../utils/tokens';
-
-import usdrIcon from '../../assets/images/USDr.png';
-import usdcIcon from '../../assets/images/USDC.svg';
-import rayIcon from '../../assets/images/RAY.svg';
-import solIcon from '../../assets/images/SOL.svg';
-import ethIcon from '../../assets/images/ETH.svg';
-import srmIcon from '../../assets/images/SRM.svg';
-import mediaIcon from '../../assets/images/MEDIA.svg';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import {
@@ -31,6 +20,7 @@ const Faucet = () => {
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
+  const connect = gWallet.connect;
   const history = useHistory();
   const [amount, setAmount] = React.useState(0);
   const [option, setOption] = React.useState(TOKEN_VAULT_OPTIONS[0]);
@@ -108,12 +98,12 @@ const Faucet = () => {
                   Cancel
                 </Button>
               </div>
-              <div className="col pr-1" onClick={isCreated ? onSubmit : onCreateFaucet}>
+              <div className="col pr-1" onClick={!gWallet.connected ? connect : isCreated ? onSubmit : onCreateFaucet}>
                 <Button
                   className={classNames('swaptokensBtn', amount === -1 ? 'button--disabled' : 'button--fill')}
                   disabled={amount === -1}
                 >
-                  {isCreated ? 'Faucet' : 'Create Faucet'}
+                  {!gWallet.connected ? 'Connect Wallet' : isCreated ? 'Faucet' : 'Create Faucet'}
                 </Button>
               </div>
             </>

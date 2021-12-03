@@ -18,7 +18,7 @@ import solIcon from '../../assets/images/SOL.svg';
 import usdrIcon from '../../assets/images/USDr.png';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import { getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
+import { getUserState, USDR_MINT_KEY, TOKEN_VAULT_OPTIONS } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
@@ -53,6 +53,8 @@ const VaultDashboard = () => {
   const collMint = useMint(vault_mint as string);
 
   const [userState, setUserState] = useState(null);
+  const [vaultName, setVaultName] = useState('');
+
   const [modalCardData, setModalCardData] = useState([
     {
       title: 'Tokens Locked',
@@ -99,6 +101,11 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (!connected) {
       history.push('/dashboard');
+    } else {
+      const result = TOKEN_VAULT_OPTIONS.find((item) => item.mintAddress === vault_mint);
+      if (result) {
+        setVaultName(result.label);
+      }
     }
   }, [connected]);
 
@@ -109,7 +116,7 @@ const VaultDashboard = () => {
       <div className="vaultdashboard__header">
         <div className="vaultdashboard__header_titleBox">
           <div>
-            <h3>RAY-SOL-LP Vault #2024</h3>
+            <h3>{vaultName} Vault #2024</h3>
             {isMobile && (
               <Link to="/">
                 View on Solana Beach

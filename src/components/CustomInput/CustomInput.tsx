@@ -15,8 +15,11 @@ const CustomInput = ({ appendStr, tokenStr, appendValueStr, className, onTextCha
   const [value, setValue] = React.useState('0');
 
   const handleChange = (e: any) => {
-    setValue(e.target.value.replace(/\D/, ''));
-    onTextChange && onTextChange(e.target.value.replace(/\D/, ''));
+    const re = /^[+-]?\d*(?:[.,]\d*)?$/;
+    if (e.target.value === '' || re.test(e.target.value)) {
+      setValue(e.target.value);
+      onTextChange && onTextChange(e.target.value);
+    }
   };
 
   const setMaxValue = () => {
