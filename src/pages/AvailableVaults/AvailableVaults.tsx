@@ -24,6 +24,7 @@ import usdrIcon from '../../assets/images/USDr.png';
 import ethIcon from '../../assets/images/ETH.svg';
 import { getFaucetState } from '../../utils/ratio-faucet';
 import { useConnection } from '../../contexts/connection';
+import { toast } from 'react-toastify';
 
 type whitelistProps = {
   id: number;
@@ -97,6 +98,7 @@ const AvailableVaults = () => {
   };
 
   function factorialOf(d: any, filter_data: any) {
+    console.log(d);
     if (d !== undefined) {
       const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
         const tokens = key.split('-');

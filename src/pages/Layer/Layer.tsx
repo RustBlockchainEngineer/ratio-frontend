@@ -22,6 +22,8 @@ import { getTokenBySymbol } from '../../utils/tokens';
 import { getTokenIcon } from '../../utils/utils';
 import { WRAPPED_SOL_MINT } from '../../utils/ids';
 import { useConnectionConfig } from '../../contexts/connection';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // const isMobile = useMediaQuery({ maxWidth: 767 })
 
@@ -70,6 +72,17 @@ const Layer = () => {
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable={false}
+        pauseOnHover
+      />
       {!isLoading && (
         <div className={classNames('layer_container', { 'layer_container--collapse': collapseFlag })}>
           <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
