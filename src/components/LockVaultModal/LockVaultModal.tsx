@@ -91,7 +91,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   }, [connection]);
 
   useEffect(() => {
-    setDisableDeposit(!(collBalance >= lpAmount && lpAmount > 0 && usdrAmount > 0 && maxUSDrAmount >= usdrAmount));
+    setDisableDeposit(!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount));
   }, [collBalance, lpAmount, usdrAmount, maxUSDrAmount]);
 
   const depositAndBorrow = () => {
