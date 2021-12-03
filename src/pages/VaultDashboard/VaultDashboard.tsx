@@ -26,6 +26,7 @@ import { useGetRaydiumPools } from '../../contexts/pools';
 import { cloneDeep, values } from 'lodash';
 import BN from 'bn.js';
 import { getPriceWithTokenAddress } from '../../utils/prices';
+import { getUSDrAmount } from '../../utils/risk';
 
 const priceCardData = [
   {
@@ -143,17 +144,7 @@ const VaultDashboard = () => {
       newData[1].mint = vault_mint;
 
       const lpTokenVolume = lpTokenPrice * Number(newData[0].tokenValue);
-      let maxUSDr = 0;
-      if (riskLevel < 8) {
-        maxUSDr = lpTokenVolume * 95.238095238;
-      } else if (riskLevel < 12) {
-        maxUSDr = lpTokenVolume * 69;
-      } else if (riskLevel < 25) {
-        maxUSDr = lpTokenVolume * 50;
-      } else {
-        maxUSDr = lpTokenVolume * 40;
-      }
-      newData[1].GenerateValue = Math.ceil(maxUSDr) / 100 + ' USDr';
+      newData[1].GenerateValue = Math.ceil(getUSDrAmount(riskLevel, lpTokenVolume) * 100) / 100 + ' USDr';
       console.log(newData[0].tokenValue, lpTokenPrice, newData[1].GenerateValue);
       console.log(newData[0].tokenValue);
       setModalCardData(newData);
