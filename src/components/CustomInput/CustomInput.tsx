@@ -21,7 +21,7 @@ const CustomInput = ({
   onTextChange,
   readOnly,
 }: CustomInputProps) => {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState(initValue);
 
   const handleChange = (e: any) => {
     const re = /^[+-]?\d*(?:[.,]\d*)?$/;
@@ -32,6 +32,7 @@ const CustomInput = ({
   };
 
   const setMaxValue = () => {
+    console.log('Setting max Value', appendValueStr);
     setValue(appendValueStr ? appendValueStr : '1000');
     onTextChange && onTextChange(appendValueStr ? appendValueStr : '1000');
   };
@@ -42,7 +43,7 @@ const CustomInput = ({
         placeholder=""
         aria-label=""
         aria-describedby="customInput"
-        value={initValue}
+        value={value}
         onChange={handleChange}
         className={classNames(appendStr === '' && 'onlytext')}
         readOnly={readOnly}
