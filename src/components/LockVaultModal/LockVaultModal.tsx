@@ -27,6 +27,7 @@ import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
+import { toast } from 'react-toastify';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -47,7 +48,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   const [usdrAmount, setUSDrAmount] = React.useState(0);
   const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
   const tokenPrice = usePrice(data.mint);
-
+  const [initCollAmount, setInitCollAmount] = React.useState(0);
   const collMint = useMint(data.mint);
   const usdrMint = useMint(USDR_MINT_KEY);
 
@@ -57,9 +58,18 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   const [disableDeposit, setDisableDeposit] = useState(false);
 
   useEffect(() => {
-    const maxAmount = Math.ceil(getUSDrAmount(data.risk, tokenPrice * lpAmount) * 1000) / 1000;
+    const maxAmount = Math.ceil(getUSDrAmount(data.riskPercentage, tokenPrice * lpAmount) * 1000) / 1000;
     setMaxUSDrAmount(maxAmount);
   }, [tokenPrice, lpAmount]);
+
+  useEffect(() => {
+    if (tokenPrice) {
+      const initLPAmount = Math.ceil((10 / tokenPrice) * 1000) / 1000;
+      console.log('Risk', data.riskPercentage);
+      setMaxUSDrAmount(Math.ceil(getUSDrAmount(data.riskPercentage, tokenPrice * initLPAmount) * 1000) / 1000);
+      setInitCollAmount(initLPAmount);
+    }
+  }, [tokenPrice]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -77,7 +87,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
         setCollBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
       }
     }
-  });
+  }, [wallet, collAccount, connection, collMint]);
 
   useEffect(() => {
     getTokenVaultByMint(connection, data.mint).then((res) => {
@@ -90,11 +100,15 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
     });
   }, [connection]);
 
-  useEffect(() => {
-    setDisableDeposit(!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount));
-  }, [collBalance, lpAmount, usdrAmount, maxUSDrAmount]);
+  // useEffect(() => {
+  //   setDisableDeposit(!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount));
+  // }, [collBalance, lpAmount, usdrAmount, maxUSDrAmount]);
 
   const depositAndBorrow = () => {
+    if (!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount)) {
+      toast('Amount is invalid to lock & mint!');
+      return;
+    }
     if (collAccount) {
       lockAndMint(
         connection,
@@ -138,6 +152,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
             <CustomInput
               appendStr="Max"
+              initValue={'' + initCollAmount}
               appendValueStr={'' + collBalance}
               tokenStr={`${data.title} LP`}
               onTextChange={(value) => setLPAmount(Number(value))}

@@ -9,6 +9,7 @@ export type PairType = {
   risk: number;
   apr: number;
   details: string;
+  riskPercentage: number;
 };
 
 export interface TokenPairCardProps {
