@@ -27,6 +27,7 @@ import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
+import { toast } from 'react-toastify';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -99,11 +100,15 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
     });
   }, [connection]);
 
-  useEffect(() => {
-    setDisableDeposit(!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount));
-  }, [collBalance, lpAmount, usdrAmount, maxUSDrAmount]);
+  // useEffect(() => {
+  //   setDisableDeposit(!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount));
+  // }, [collBalance, lpAmount, usdrAmount, maxUSDrAmount]);
 
   const depositAndBorrow = () => {
+    if (!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount)) {
+      toast('Amount is invalid to lock & mint!');
+      return;
+    }
     if (collAccount) {
       lockAndMint(
         connection,
