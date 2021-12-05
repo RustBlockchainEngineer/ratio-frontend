@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { useLocation } from 'react-router-dom';
@@ -27,6 +28,9 @@ import { cloneDeep, values } from 'lodash';
 import BN from 'bn.js';
 import { getUSDrAmount } from '../../utils/risk';
 import { usePrice } from '../../contexts/price';
+import { getRiskLevel } from '../../libs/helper';
+
+import { selectors } from '../../features/dashboard';
 
 const priceCardData = [
   {
@@ -61,6 +65,8 @@ const VaultDashboard = () => {
   const [userState, setUserState] = useState(null);
   const [riskLevel, setRiskLevel] = useState(0.0);
   const [vaultName, setVaultName] = useState('');
+  const [VaultData, setVaultData] = useState<any>({});
+  const availableVaults = useSelector(selectors.getAvailableVaults);
 
   const [modalCardData, setModalCardData] = useState([
     {
@@ -114,9 +120,10 @@ const VaultDashboard = () => {
     if (!connected) {
       history.push('/dashboard');
     } else {
-      const result = TOKEN_VAULT_OPTIONS.find((item) => item.mintAddress === vault_mint);
+      // const filterValues = filterObject(availableVaults, 'mint', vault_mint);
+      const result: any = availableVaults.find((item: any) => item.mint === vault_mint);
       if (result) {
-        setVaultName(result.label);
+        setVaultData(result);
       }
     }
   }, [connected]);
@@ -128,14 +135,14 @@ const VaultDashboard = () => {
       <div className="vaultdashboard__header">
         <div className="vaultdashboard__header_titleBox">
           <div>
-            <h3>{vaultName} Vault #2024</h3>
+            <h3>{VaultData.title} Vault #2024</h3>
             {isMobile && (
               <Link to="/">
                 View on Solana Beach
                 <img src={share} alt="share" />
               </Link>
             )}
-            <RiskLevel level="HIGH" />
+            <RiskLevel level={getRiskLevel(VaultData.risk)} />
           </div>
           {isDefault && (
             <div className="text-right mt-4">
@@ -147,7 +154,7 @@ const VaultDashboard = () => {
         </div>
         <div className="vaultdashboard__header_rightBox">
           <div className="vaultdashboard__header_speedometerBox">
-            <SpeedoMetor />
+            <SpeedoMetor risk={VaultData.risk} />
           </div>
           <div className="vaultdashboard__header_vaultdebtBox">
             <VaultDebt />
