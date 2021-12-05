@@ -26,6 +26,13 @@
       margin-left: 4px;
     }
   }
+  &-EXTREME {
+    border: 1px solid #ff3131;
+    background-color: rgba(#ff3131, 0.1);
+    p {
+      color: #ff3131;
+    }
+  }
   &-HIGH {
     border: 1px solid #ff3131;
     background-color: rgba(#ff3131, 0.1);

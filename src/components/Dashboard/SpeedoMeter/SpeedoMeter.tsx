@@ -1,10 +1,13 @@
 import React from 'react';
 import GaugeChart from 'react-gauge-chart';
 
-const SpeedoMeter = () => {
-  // const chartStyle = {
-  //   width: '100%',
-  // }
+type SpeedoMeterProps = {
+  risk: number;
+};
+
+const SpeedoMeter = ({ risk }: SpeedoMeterProps) => {
+  const riskLevel = React.useMemo(() => risk / 250, [risk]);
+  console.log(riskLevel);
   return (
     <div className="speedometer">
       <p>Vault Health</p>
@@ -13,7 +16,7 @@ const SpeedoMeter = () => {
         nrOfLevels={18}
         arcPadding={0.1}
         cornerRadius={4}
-        percent={0.7}
+        percent={riskLevel}
         hideText
         textColor="#FF0000"
         colors={['#FF3131', '#05B12C']}

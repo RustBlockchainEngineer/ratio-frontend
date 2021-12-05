@@ -35,7 +35,7 @@ const Faucet = () => {
   }, [gWallet]);
 
   const onCancel = () => {
-    history.push('/dashboard');
+    history.goBack();
   };
 
   const getInputValue = (value) => {
