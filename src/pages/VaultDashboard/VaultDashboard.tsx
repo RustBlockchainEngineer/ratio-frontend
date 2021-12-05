@@ -19,18 +19,14 @@ import solIcon from '../../assets/images/SOL.svg';
 import usdrIcon from '../../assets/images/USDr.png';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import { getUserState, USDR_MINT_KEY, TOKEN_VAULT_OPTIONS } from '../../utils/ratio-lending';
+import { getUserState, USDR_MINT_KEY, TOKEN_VAULT_OPTIONS, getUsdrMintKey } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
-import { useRaydiumPools } from '../../contexts/pools';
-import { cloneDeep, values } from 'lodash';
-import BN from 'bn.js';
-import { getUSDrAmount } from '../../utils/risk';
+import { getFaucetState } from '../../utils/ratio-faucet';
 import { usePrice } from '../../contexts/price';
-import { getRiskLevel } from '../../libs/helper';
-
 import { selectors } from '../../features/dashboard';
+import { getRiskLevel } from '../../libs/helper';
 
 const priceCardData = [
   {
@@ -54,11 +50,11 @@ const VaultDashboard = () => {
   const search = useLocation().search;
   // const vault_mint = new URLSearchParams(search).get('mint');
   const { mint: vault_mint } = useParams<{ mint?: string }>();
-
   const connection = useConnection();
   const { wallet, connected } = useWallet();
 
-  const usdrMint = useMint(USDR_MINT_KEY);
+  const [usdrMintAddress, setUsdrMintAddress] = useState('');
+  const usdrMint = useMint(usdrMintAddress);
   const collMint = useMint(vault_mint as string);
   const tokenPrice = usePrice(vault_mint as string);
 
@@ -71,21 +67,24 @@ const VaultDashboard = () => {
   const [modalCardData, setModalCardData] = useState([
     {
       title: 'Tokens Locked',
-      mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
+      mint: vault_mint,
       tokens: [rayIcon, solIcon],
       tokenNames: 'USDC-USDr-LP',
       tokenValue: '0',
       type: 'deposit',
       withdrawValue: '0 USDC-USDr-LP',
+      riskLevel: 0,
+      usdrMint: usdrMintAddress,
     },
     {
       title: 'Outstanding USDr Debt',
-      mint: '6La9ryWrDPByZViuQCizmo6aW98cK8DSL7angqmTFf9i',
+      mint: vault_mint,
       tokens: [usdrIcon],
       tokenNames: 'USDr',
       tokenValue: '0',
       type: 'payback',
       GenerateValue: '0 USDr',
+      usdrMint: usdrMintAddress,
     },
   ]);
 
@@ -98,23 +97,52 @@ const VaultDashboard = () => {
   }, [vault_mint, wallet]);
 
   useEffect(() => {
-    if (userState && vault_mint) {
-      const newData = [...modalCardData];
-      newData[0].tokenValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
-      newData[0].tokenValue = '' + Math.ceil(parseFloat(newData[0].tokenValue) * 100) / 100;
-      newData[0].mint = vault_mint;
+    if (connected) {
+      getUsdrMintKey(connection, wallet).then((result) => {
+        setUsdrMintAddress(result);
+        const newData = [...modalCardData];
+        newData[0].usdrMint = result;
+        newData[1].usdrMint = result;
 
-      newData[1].tokenValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
-      newData[1].tokenValue = '' + Math.ceil(parseFloat(newData[1].tokenValue) * 100) / 100;
-      newData[1].mint = vault_mint;
-
-      const maxAmount = getUSDrAmount(riskLevel, tokenPrice * Number(newData[0].tokenValue));
-
-      newData[1].GenerateValue = Math.ceil((maxAmount - Number(newData[1].tokenValue)) * 100) / 100 + ' USDr';
-      console.log(tokenPrice);
-      setModalCardData(newData);
+        setModalCardData(newData);
+      });
     }
-  }, [userState, wallet, usdrMint, tokenPrice]);
+    if (userState && vault_mint && connected) {
+      getUsdrMintKey(connection, wallet).then((result) => {
+        setUsdrMintAddress(result);
+        const newData = [...modalCardData];
+        newData[0].usdrMint = result;
+        newData[1].usdrMint = result;
+
+        setModalCardData(newData);
+      });
+
+      getFaucetState(connection, wallet).then((result) => {
+        let riskLevel = 0;
+        if (vault_mint === result.mintUsdcUsdrLp.toBase58()) {
+          riskLevel = 0;
+        } else if (vault_mint === result.mintEthSolLp.toBase58()) {
+          riskLevel = 1;
+        } else if (vault_mint === result.mintAtlasRayLp.toBase58()) {
+          riskLevel = 2;
+        } else if (vault_mint === result.mintSamoRayLp.toBase58()) {
+          riskLevel = 3;
+        }
+        const newData = [...modalCardData];
+        newData[0].tokenValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
+        newData[0].tokenValue = '' + Math.ceil(parseFloat(newData[0].tokenValue) * 100) / 100;
+        newData[0].mint = vault_mint;
+        newData[0].riskLevel = riskLevel;
+
+        newData[1].tokenValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
+        newData[1].tokenValue = '' + Math.ceil(parseFloat(newData[1].tokenValue) * 100) / 100;
+        newData[1].mint = vault_mint;
+        newData[1].riskLevel = riskLevel;
+
+        setModalCardData(newData);
+      });
+    }
+  }, [userState, wallet]);
 
   useEffect(() => {
     if (!connected) {
@@ -166,17 +194,17 @@ const VaultDashboard = () => {
           <div className="vaultdashboard__bodyleft row">
             {priceCardData.map((item, index) => {
               return (
-                <div className="col col-md-6 col-sm-12">
+                <div key={item.title} className="col col-md-6 col-sm-12">
                   <ComingSoon enable={index === 1}>
-                    <PriceCard key={item.title} data={item} comingsoon={index === 0} />
+                    <PriceCard data={item} comingsoon={index === 0} />
                   </ComingSoon>
                 </div>
               );
             })}
-            {modalCardData.map((item) => {
+            {modalCardData.map((item, index) => {
               return (
-                <div className="col col-md-6 col-sm-12">
-                  <ModalCard key={item.title} data={item} />
+                <div key={item.title} className="col col-md-6 col-sm-12">
+                  <ModalCard data={item} />
                 </div>
               );
             })}

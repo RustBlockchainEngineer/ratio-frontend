@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
+import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { getTokenVaultByMint, withdrawCollateral } from '../../../utils/ratio-lending';
@@ -20,7 +21,7 @@ type WithdrawModalProps = {
   data: PairType;
 };
 
-const WithdrawModal = ({ data }: WithdrawModalProps) => {
+const WithdrawModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
 
   const connection = useConnection();
@@ -28,6 +29,7 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
   const [userCollAccount, setUserCollAccount] = React.useState('');
+  const collMint = useMint(data.mint);
 
   useEffect(() => {
     getTokenVaultByMint(connection, data.mint).then((res) => {
@@ -49,8 +51,25 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
   });
 
   const withdraw = () => {
-    if (userCollAccount !== '') {
-      withdrawCollateral(connection, wallet, 1 * 1000000000, userCollAccount, new PublicKey(data.mint))
+    let tenWorthOfLp = 0;
+    if (data.riskLevel === 0) {
+      tenWorthOfLp = 0.143;
+    } else if (data.riskLevel === 1) {
+      tenWorthOfLp = 0.00261;
+    } else if (data.riskLevel === 2) {
+      tenWorthOfLp = 0.317;
+    } else if (data.riskLevel === 3) {
+      tenWorthOfLp = 3.278;
+    }
+
+    if (userCollAccount !== '' && collMint) {
+      withdrawCollateral(
+        connection,
+        wallet,
+        tenWorthOfLp * Math.pow(10, collMint?.decimals),
+        userCollAccount,
+        new PublicKey(data.mint)
+      )
         .then(() => {})
         .catch((e) => {
           console.log(e);

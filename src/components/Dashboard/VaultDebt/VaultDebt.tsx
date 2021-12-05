@@ -12,22 +12,23 @@ import Button from '../../Button';
 
 const VaultDebt = () => {
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
   const [mintAddress, setMintAddress] = useState('');
   const usdrMint = useMint(mintAddress);
   const usdrAccount = useAccountByMint(mintAddress);
+  const [usdcUsdrMintKey, setUsdcUsdrMintKey] = React.useState('');
 
   useEffect(() => {
-    getUsdrMintKey(connection, wallet).then((result) => {
-      setMintAddress(result);
-    });
+    if (connected) {
+      getUsdrMintKey(connection, wallet).then((result) => {
+        setMintAddress(result);
+      });
+      getFaucetState(connection, wallet).then((result) => {
+        setUsdcUsdrMintKey(result.mintUsdcUsdrLp.toBase58());
+      });
+    }
   });
   const [usdrAmount, setUSDrAmount] = useState(0);
-
-  const [usdcUsdrMintKey, setUsdcUsdrMintKey] = React.useState('');
-  getFaucetState(connection, wallet).then((result) => {
-    setUsdcUsdrMintKey(result.mintUsdcUsdrLp.toBase58());
-  });
 
   useEffect(() => {
     if (usdrAccount) {

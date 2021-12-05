@@ -35,12 +35,11 @@ type LockVaultModalProps = {
   data: PairType;
 };
 
-const LockVaultModal = ({ data }: LockVaultModalProps) => {
+const LockVaultModal = ({ data }: any) => {
   const history = useHistory();
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
-  const { wallet } = useWallet();
-
+  const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
   const [userState, setUserState] = React.useState({});
@@ -96,14 +95,16 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   }, [wallet, collAccount, connection, collMint]);
 
   useEffect(() => {
-    getTokenVaultByMint(connection, data.mint).then((res) => {
-      setVault(res);
-      if (res) {
-        setCreated(true);
-      } else {
-        setCreated(false);
-      }
-    });
+    if (connected) {
+      getTokenVaultByMint(connection, data.mint).then((res) => {
+        setVault(res);
+        if (res) {
+          setCreated(true);
+        } else {
+          setCreated(false);
+        }
+      });
+    }
   }, [connection]);
 
   // useEffect(() => {
@@ -111,16 +112,22 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   // }, [collBalance, lpAmount, usdrAmount, maxUSDrAmount]);
 
   const depositAndBorrow = () => {
-    if (!(collBalance >= lpAmount && lpAmount > 0 && maxUSDrAmount >= usdrAmount)) {
-      toast('Amount is invalid to lock & mint!');
-      return;
-    }
     if (collAccount) {
+      let tenWorthOfLp = 0;
+      if (data.riskLevel === 0) {
+        tenWorthOfLp = 0.143;
+      } else if (data.riskLevel === 1) {
+        tenWorthOfLp = 0.00261;
+      } else if (data.riskLevel === 2) {
+        tenWorthOfLp = 0.317;
+      } else if (data.riskLevel === 3) {
+        tenWorthOfLp = 3.278;
+      }
       lockAndMint(
         connection,
         wallet,
-        lpAmount * Math.pow(10, collMint?.decimals as number),
-        usdrAmount * Math.pow(10, usdrMint?.decimals as number),
+        tenWorthOfLp * Math.pow(10, collMint?.decimals as number),
+        10 * Math.pow(10, usdrMint?.decimals as number),
         collAccount.pubkey.toString(),
         new PublicKey(data.mint)
       )
