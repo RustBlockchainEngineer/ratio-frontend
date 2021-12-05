@@ -24,6 +24,9 @@ import { PublicKey } from '@solana/web3.js';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { getFaucetState } from '../../utils/ratio-faucet';
+import { usePrice } from '../../contexts/price';
+import { selectors } from '../../features/dashboard';
+import { getRiskLevel } from '../../libs/helper';
 
 const priceCardData = [
   {

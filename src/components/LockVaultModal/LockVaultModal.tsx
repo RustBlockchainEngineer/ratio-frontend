@@ -112,11 +112,7 @@ const LockVaultModal = ({ data }: any) => {
   // }, [collBalance, lpAmount, usdrAmount, maxUSDrAmount]);
 
   const depositAndBorrow = () => {
-    console.log('data.min', data.mint);
-    console.log('collAccount', collAccount);
-    console.log('collAmount', collAmount);
-    console.log('data.riskLevel', data.riskLevel);
-    if (collAccount && collAmount > 0) {
+    if (collAccount) {
       let tenWorthOfLp = 0;
       if (data.riskLevel === 0) {
         tenWorthOfLp = 0.143;
