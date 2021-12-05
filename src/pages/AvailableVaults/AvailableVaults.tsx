@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { getRiskLevel } from '../../libs/helper';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -25,6 +26,7 @@ import ethIcon from '../../assets/images/ETH.svg';
 import { getFaucetState } from '../../utils/ratio-faucet';
 import { useConnection } from '../../contexts/connection';
 import { toast } from 'react-toastify';
+import { SET_AVAILABLE_VAULT } from '../../features/dashboard/actionTypes';
 
 type whitelistProps = {
   id: number;
@@ -47,6 +49,8 @@ const AvailableVaults = () => {
   const { connected, publicKey } = useWallet();
 
   const [faucetState, setFaucetState] = React.useState(null as any);
+  const [data, setData] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onViewType = (type: string) => {
     setViewType(type);
@@ -65,25 +69,49 @@ const AvailableVaults = () => {
       }
     }
     if (connected) {
+      setIsLoading(true);
       getFaucetState(connection, wallet).then((result) => {
         setFaucetState(result);
+        setIsLoading(false);
       });
     }
   }, [connected, publicKey]);
 
-  // change this line with below addresses and risk level
-  const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/rate');
+  const getData = async (faucetState: any) => {
+    setIsLoading(true);
+    const d = await axios.get('https://api.ratio.finance/api/rate');
+    if (faucetState) {
+      d.data['USDC-USDR'].mint = faucetState.mintUsdcUsdrLp.toBase58();
+      d.data['USDC-USDR'].riskLevel = 0;
+      d.data['ETH-SOL'].mint = faucetState.mintEthSolLp.toBase58();
+      d.data['ETH-SOL'].riskLevel = 1;
+      d.data['ATLAS-RAY'].mint = faucetState.mintAtlasRayLp.toBase58();
+      d.data['ATLAS-RAY'].riskLevel = 2;
+      d.data['SAMO-RAY'].mint = faucetState.mintSamoRayLp.toBase58();
+      d.data['SAMO-RAY'].riskLevel = 3;
+    }
 
-  if (faucetState && data) {
-    data['USDC-USDR'].mint = faucetState.mintUsdcUsdrLp.toBase58();
-    data['USDC-USDR'].riskLevel = 0;
-    data['ETH-SOL'].mint = faucetState.mintEthSolLp.toBase58();
-    data['ETH-SOL'].riskLevel = 1;
-    data['ATLAS-RAY'].mint = faucetState.mintAtlasRayLp.toBase58();
-    data['ATLAS-RAY'].riskLevel = 2;
-    data['SAMO-RAY'].mint = faucetState.mintSamoRayLp.toBase58();
-    data['SAMO-RAY'].riskLevel = 3;
-  }
+    setData(d.data);
+    setIsLoading(false);
+  };
+
+  React.useEffect(() => {
+    getData(faucetState);
+  }, [faucetState]);
+
+  // change this line with below addresses and risk level
+  // const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/rate');
+
+  // if (faucetState && data) {
+  //   data['USDC-USDR'].mint = faucetState.mintUsdcUsdrLp.toBase58();
+  //   data['USDC-USDR'].riskLevel = 0;
+  //   data['ETH-SOL'].mint = faucetState.mintEthSolLp.toBase58();
+  //   data['ETH-SOL'].riskLevel = 1;
+  //   data['ATLAS-RAY'].mint = faucetState.mintAtlasRayLp.toBase58();
+  //   data['ATLAS-RAY'].riskLevel = 2;
+  //   data['SAMO-RAY'].mint = faucetState.mintSamoRayLp.toBase58();
+  //   data['SAMO-RAY'].riskLevel = 3;
+  // }
 
   const filterData = (array1: any, array2: any) => {
     if (array2.length === 0) {
@@ -98,7 +126,6 @@ const AvailableVaults = () => {
   };
 
   function factorialOf(d: any, filter_data: any) {
-    console.log(d);
     if (d !== undefined) {
       const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
         const tokens = key.split('-');
@@ -118,6 +145,7 @@ const AvailableVaults = () => {
           riskLevel: d[key].riskLevel,
         };
       });
+      dispatch({ type: actionTypes.SET_AVAILABLE_VAULT, payload: p });
       return p;
     }
     return [];

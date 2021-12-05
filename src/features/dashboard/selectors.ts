@@ -5,3 +5,5 @@ export const getCompareVaultsStatus = (state: SystemState) => state.dashboard.co
 export const getCompareVaultsList = (state: SystemState) => state.dashboard.compare_vaults_list;
 
 export const getFilterData = (state: SystemState) => state.dashboard.filter_data;
+
+export const getAvailableVaults = (state: SystemState) => state.dashboard.available_vaults;
