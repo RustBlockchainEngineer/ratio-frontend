@@ -17,6 +17,8 @@ import {
   getTokenVaultByMint,
   getUserState,
   USDR_MINT_KEY,
+  depositCollateral,
+  borrowUSDr,
 } from '../../utils/ratio-lending';
 
 import { useConnection } from '../../contexts/connection';
@@ -58,15 +60,19 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
   const [disableDeposit, setDisableDeposit] = useState(false);
 
   useEffect(() => {
-    const maxAmount = Math.ceil(getUSDrAmount(data.riskPercentage, tokenPrice * lpAmount) * 1000) / 1000;
-    setMaxUSDrAmount(maxAmount);
-  }, [tokenPrice, lpAmount]);
+    if (userState) {
+      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, usdrMint?.decimals);
+      const totalUSDr = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
+      const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
+      setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
+    }
+  }, [tokenPrice, userState]);
 
   useEffect(() => {
     if (tokenPrice) {
       const initLPAmount = Math.ceil((10 / tokenPrice) * 1000) / 1000;
       console.log('Risk', data.riskPercentage);
-      setMaxUSDrAmount(Math.ceil(getUSDrAmount(data.riskPercentage, tokenPrice * initLPAmount) * 1000) / 1000);
+      // setMaxUSDrAmount(Math.ceil(getUSDrAmount(data.riskPercentage, tokenPrice * initLPAmount) * 1000) / 1000);
       setInitCollAmount(initLPAmount);
     }
   }, [tokenPrice]);
@@ -128,6 +134,44 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
     }
   };
 
+  const depositLP = () => {
+    if (!(collBalance >= lpAmount && lpAmount > 0)) {
+      toast('Amount is invalid to lock LP token!');
+      return;
+    }
+    if (collAccount) {
+      depositCollateral(
+        connection,
+        wallet,
+        lpAmount * Math.pow(10, collMint?.decimals as number),
+        collAccount.pubkey.toString(),
+        new PublicKey(data.mint)
+      )
+        .then(() => {})
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          // history.push(`/dashboard/vaultdashboard/${data.mint}`);
+        });
+    }
+  };
+
+  const mintUSDr = () => {
+    if (!(maxUSDrAmount >= usdrAmount)) {
+      toast('Amount is invalid to mint USDR!');
+      return;
+    }
+    borrowUSDr(connection, wallet, usdrAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
+      .then(() => {})
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        // history.push(`/dashboard/vaultdashboard/${data.mint}`);
+      });
+  };
+
   return (
     <>
       <Button className="button--fill generate" onClick={() => setShow(!show)}>
@@ -142,7 +186,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
         className="lockvaultmodal"
       >
         <Modal.Header>
-          <div className="lockvaultmodal__header">
+          <div className="lockvaultmodal__footer">
             <IoMdClose size={32} className="lockvaultmodal__header-close" onClick={() => setShow(false)} />
             <div>
               <img src={data.icons[0]} alt={data.icons[0].toString()} className="lockvaultmodal__header-icon1" />
@@ -157,6 +201,9 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
               tokenStr={`${data.title} LP`}
               onTextChange={(value) => setLPAmount(Number(value))}
             />
+            <Button className="button--fill lockBtn" onClick={() => depositLP()} disabled={disableDeposit}>
+              Lock Assets
+            </Button>
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -207,8 +254,8 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
               tokenStr={`USDr`}
               onTextChange={(value) => setUSDrAmount(Number(value))}
             />
-            <Button className="button--fill lockBtn" onClick={() => depositAndBorrow()} disabled={disableDeposit}>
-              Lock Assets & Mint USDr
+            <Button className="button--fill lockBtn" onClick={() => mintUSDr()} disabled={disableDeposit}>
+              Mint USDr
             </Button>
           </div>
         </Modal.Footer>
