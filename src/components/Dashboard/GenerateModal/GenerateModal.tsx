@@ -88,7 +88,7 @@ const GenerateModal = ({ data }: any) => {
               There will be a 2% stability fee associated with this transaction.
             </p>
             <Button className="button--fill bottomBtn" onClick={() => borrow()}>
-              Pay USDr Debt
+              Mint USDr
             </Button>
           </div>
         </Modal.Body>
