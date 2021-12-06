@@ -69,10 +69,10 @@ const VaultDashboard = () => {
       title: 'Tokens Locked',
       mint: vault_mint,
       tokens: [rayIcon, solIcon],
-      tokenNames: 'USDC-USDr-LP',
+      tokenNames: 'USDC-USDr LP',
       tokenValue: '0',
       type: 'deposit',
-      withdrawValue: '0 USDC-USDr-LP',
+      withdrawValue: '0 USDC-USDr LP',
       riskLevel: 0,
       usdrMint: usdrMintAddress,
     },
@@ -203,7 +203,7 @@ const VaultDashboard = () => {
             })}
             {modalCardData.map((item, index) => {
               return (
-                <div key={item.title} className="col col-md-6 col-sm-12">
+                <div key={item.title} className="col col-lg-6 col-sm-12">
                   <ModalCard data={item} />
                 </div>
               );
