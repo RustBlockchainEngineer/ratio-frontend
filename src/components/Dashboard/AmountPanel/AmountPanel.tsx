@@ -10,13 +10,13 @@ const AmountPanel = ({ vault_mint }: any) => {
   return (
     <div className="amountPanel">
       <WalletBalances vault_mint={vault_mint} />
-      <ComingSoon enable>
+      {/* <ComingSoon enable>
         <div>
           <TokensEarned />
           <LossCalculator />
           <SystemInfo />
         </div>
-      </ComingSoon>
+      </ComingSoon> */}
     </div>
   );
 };

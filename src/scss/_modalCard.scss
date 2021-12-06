@@ -54,6 +54,7 @@
   &__footer {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     border-top: 1px solid var(--unnamed-color-f9fbfe);
     background-color: var(--unnamed-color-f8f9f9);
     border-bottom-left-radius: 16px;
@@ -67,6 +68,12 @@
     p {
       font-family: 'Poppins-SemiBold';
       color: var(--unnamed-color-4c646f);
+    }
+    h6 {
+      font-family: 'Poppins-SemiBold';
+      font-size: 18px;
+      color: #0f6eff;
+      margin-bottom: 0px;
     }
   }
 }

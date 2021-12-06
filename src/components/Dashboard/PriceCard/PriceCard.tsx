@@ -20,19 +20,17 @@ type PriceCardProps = {
 const PriceCard = ({ data, comingsoon }: PriceCardProps) => {
   return (
     <div className="pricecard">
-      <ComingSoon enable={comingsoon}>
-        <div className="pricecard__header">
-          <div className="pricecard__title">
-            <p>{data.title}</p>
-            {data.titleIcon && <img src={risklevel} alt="risklevel" />}
-          </div>
-          <div className="pricecard__value">
-            <h3>{data.mainValue}</h3>
-            {data.mainUnit && <p>{data.mainUnit}</p>}
-          </div>
+      {/* <div className="pricecard__header">
+        <div className="pricecard__title">
+          <p>{data.title}</p>
+          {data.titleIcon && <img src={risklevel} alt="risklevel" />}
         </div>
-      </ComingSoon>
-      <div className="pricecard__body">
+        <div className="pricecard__value">
+          <h3>{data.mainValue}</h3>
+          {data.mainUnit && <p>{data.mainUnit}</p>}
+        </div>
+      </div> */}
+      <div className="pricecard__header">
         {data.currentPrice && (
           <div>
             <label>Current Price Information</label>

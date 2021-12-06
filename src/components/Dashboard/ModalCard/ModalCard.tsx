@@ -75,7 +75,7 @@ const ModalCard = ({ data }: any) => {
             </div>
             <div className="modalCard__header_tokenName">
               <p>{data.tokenNames}</p>
-              <h6>{data.tokenValue}</h6>
+              {/* <h6>{data.tokenValue}</h6> */}
             </div>
           </div>
           <div>
@@ -85,8 +85,8 @@ const ModalCard = ({ data }: any) => {
         </div>
         <div className="modalCard__footer">
           <div>
-            {data.type === 'deposit' ? <label>Able to Mint</label> : <label>Able to generate</label>}
-            {data.type === 'deposit' ? <p>{data.withdrawValue}</p> : <p>{data.GenerateValue}</p>}
+            {data.type === 'payback' && <label>Able to generate</label>}
+            {data.type === 'deposit' ? <h6>{data.tokenValue}</h6> : <p>{data.GenerateValue}</p>}
           </div>
           <div>
             {data.type === 'deposit' && <WithdrawModal data={withdrawData} />}

@@ -36,13 +36,13 @@ const priceCardData = [
     mainUnit: '(RAY/USD)',
     currentPrice: '$300.00 USD',
   },
-  {
-    title: 'Collateralization Ratio',
-    titleIcon: false,
-    mainValue: '295.85%',
-    minimumRatio: '295.85%',
-    stabilityFee: '4%',
-  },
+  // {
+  //   title: 'Collateralization Ratio',
+  //   titleIcon: false,
+  //   mainValue: '295.85%',
+  //   minimumRatio: '295.85%',
+  //   stabilityFee: '4%',
+  // },
 ];
 
 const VaultDashboard = () => {
@@ -172,18 +172,18 @@ const VaultDashboard = () => {
             )}
             <RiskLevel level={getRiskLevel(VaultData.risk)} />
           </div>
-          {isDefault && (
+          {/* {isDefault && (
             <div className="text-right mt-4">
               <img src={share} alt="share" />
               <Link to="/">View on</Link>
               <Link to="/">Solana Beach</Link>
             </div>
-          )}
+          )} */}
         </div>
         <div className="vaultdashboard__header_rightBox">
-          <div className="vaultdashboard__header_speedometerBox">
+          {/* <div className="vaultdashboard__header_speedometerBox">
             <SpeedoMetor risk={VaultData.risk} />
-          </div>
+          </div> */}
           <div className="vaultdashboard__header_vaultdebtBox">
             <VaultDebt />
           </div>
@@ -194,7 +194,7 @@ const VaultDashboard = () => {
           <div className="vaultdashboard__bodyleft row">
             {priceCardData.map((item, index) => {
               return (
-                <div key={item.title} className="col col-md-6 col-sm-12">
+                <div key={item.title} className="col col-md-12 col-sm-12">
                   <ComingSoon enable={index === 1}>
                     <PriceCard data={item} comingsoon={index === 0} />
                   </ComingSoon>
@@ -209,9 +209,9 @@ const VaultDashboard = () => {
               );
             })}
           </div>
-          <div className="vaultdashboard__bodyleft row pt-0">
+          {/* <div className="vaultdashboard__bodyleft row pt-0">
             <VaultHistoryTable />
-          </div>
+          </div> */}
         </div>
         <div className="col col-md-4 vaultdashboard__bodyright">
           <AmountPanel vault_mint={vault_mint} />
