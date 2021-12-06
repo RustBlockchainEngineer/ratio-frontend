@@ -92,26 +92,6 @@ const AdminPanel = () => {
         <form className="form-bg mt-4">
           <div>
             <CustomSelect options={TOKEN_VAULT_OPTIONS} onChange={onChangeLp} />
-            {/* <div className="mb-3">
-              <label className="form-label">Risk Level</label>
-              <input
-                type="number"
-                value={riskLevel}
-                onChange={(e) => setRiskLevel(e.target.valueAsNumber)}
-                className="form-control"
-                placeholder="Risk level"
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">LP token mint address</label>
-              <input
-                type="text"
-                value={mintAddress}
-                onChange={(e) => setMintAddress(e.target.value)}
-                className="form-control"
-                placeholder="LP token mint address"
-              />
-            </div> */}
           </div>
           <Button className="button--fill mt-4" disabled={!mintAddress} onClick={onCreateTokenVault}>
             Create LP Token

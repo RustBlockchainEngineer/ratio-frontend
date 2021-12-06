@@ -87,7 +87,11 @@ const VaultDashboard = () => {
   const [vaultName, setVaultName] = useState('');
   const [VaultData, setVaultData] = useState<any>({});
   const availableVaults = useSelector(selectors.getAvailableVaults);
-
+  const [vauldDebtData, setVaultDebtData] = useState({
+    mint: vault_mint,
+    usdrMint: usdrMintAddress,
+    riskLevel: 0,
+  });
   const [modalCardData, setModalCardData] = useState([
     {
       title: 'Tokens Locked',
@@ -128,22 +132,16 @@ const VaultDashboard = () => {
       getUsdrMintKey(connection, wallet).then((result) => {
         setUsdrMintAddress(result);
         const newData = [...modalCardData];
+        const newVaultData = vauldDebtData;
         newData[0].usdrMint = result;
         newData[1].usdrMint = result;
+        newVaultData.usdrMint = result;
 
         setModalCardData(newData);
+        setVaultDebtData(newVaultData);
       });
     }
     if (userState && vault_mint && connected) {
-      getUsdrMintKey(connection, wallet).then((result) => {
-        setUsdrMintAddress(result);
-        const newData = [...modalCardData];
-        newData[0].usdrMint = result;
-        newData[1].usdrMint = result;
-
-        setModalCardData(newData);
-      });
-
       getFaucetState(connection, wallet).then((result) => {
         let riskLevel = 0;
         if (vault_mint === result.mintUsdcUsdrLp.toBase58()) {
@@ -156,6 +154,7 @@ const VaultDashboard = () => {
           riskLevel = 3;
         }
         const newData = [...modalCardData];
+        const newVaultData = vauldDebtData;
         newData[0].tokenValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
         newData[0].tokenValue = '' + Math.ceil(parseFloat(newData[0].tokenValue) * 100) / 100;
         newData[0].mint = vault_mint;
@@ -166,7 +165,11 @@ const VaultDashboard = () => {
         newData[1].mint = vault_mint;
         newData[1].riskLevel = riskLevel;
 
+        newVaultData.mint = vault_mint;
+        newVaultData.riskLevel = riskLevel;
+
         setModalCardData(newData);
+        setVaultDebtData(newVaultData);
       });
     }
     return () => {
@@ -229,7 +232,7 @@ const VaultDashboard = () => {
             <SpeedoMetor risk={VaultData.risk} />
           </div> */}
           <div className="vaultdashboard__header_vaultdebtBox">
-            <VaultDebt />
+            <VaultDebt data={vauldDebtData} />
           </div>
         </div>
       </div>
