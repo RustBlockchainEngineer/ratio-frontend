@@ -4,11 +4,16 @@ import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
+import { usePrice } from '../../../contexts/price';
 import { useWallet } from '../../../contexts/wallet';
-import { borrowUSDr, getTokenVaultByMint } from '../../../utils/ratio-lending';
+import { borrowUSDr, getTokenVaultByMint, getUserState } from '../../../utils/ratio-lending';
+import { getUSDrAmount } from '../../../utils/risk';
+import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
+import moment from 'moment';
+import { toast } from 'react-toastify';
 
 type PairType = {
   mint: string;
@@ -26,7 +31,13 @@ const GenerateModal = ({ data }: any) => {
   const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
+  const [userState, setUserState] = React.useState({});
+  const [mintTime, setMintTime] = React.useState('');
+  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
+
+  const collMint = useMint(data.mint);
   const usdrMint = useMint(data.usdrMint);
+  const tokenPrice = usePrice(data.mint);
 
   useEffect(() => {
     if (connected) {
@@ -39,12 +50,57 @@ const GenerateModal = ({ data }: any) => {
         }
       });
     }
+    return () => {
+      setCreated(false);
+    };
   }, [connection]);
 
+  useEffect(() => {
+    if (userState) {
+      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, usdrMint?.decimals);
+      const totalUSDr = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
+      const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
+      setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
+    }
+    return () => {
+      setMaxUSDrAmount(0);
+    };
+  }, [tokenPrice, userState]);
+
+  useEffect(() => {
+    if (wallet && wallet.publicKey) {
+      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
+        setUserState(res);
+        if (res) {
+          const endDateOfLock = res.lastMintTime.toNumber() + 3600;
+          const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM/DD/YYYY HH:MM:SS');
+
+          setMintTime(unlockDateString);
+        }
+      });
+    }
+    return () => {
+      setMintTime('');
+    };
+  }, [wallet, connection, collMint]);
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
+
   const borrow = () => {
-    console.log(data.usdrMint);
+    console.log(data.usdrMint, maxUSDrAmount);
+    if (maxUSDrAmount < 0) {
+      return toast('Amount is invalid to mint USDr!');
+    }
     if (usdrMint) {
-      borrowUSDr(connection, wallet, 10 * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+      borrowUSDr(connection, wallet, maxUSDrAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
         .then(() => {})
         .catch((e) => {
           console.log(e);

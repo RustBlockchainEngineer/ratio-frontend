@@ -24,9 +24,15 @@ const VaultDebt = () => {
         setMintAddress(result);
       });
       getFaucetState(connection, wallet).then((result) => {
-        setUsdcUsdrMintKey(result.mintUsdcUsdrLp.toBase58());
+        if (result) {
+          setUsdcUsdrMintKey(result.mintUsdcUsdrLp.toBase58());
+        }
       });
     }
+    return () => {
+      setMintAddress('');
+      setUsdcUsdrMintKey('');
+    };
   });
   const [usdrAmount, setUSDrAmount] = useState(0);
 
@@ -35,7 +41,20 @@ const VaultDebt = () => {
       const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', usdrMint?.decimals);
       setUSDrAmount(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
     }
+    return () => {
+      setUSDrAmount(0);
+    };
   });
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
 
   const repay = () => {
     if (usdrMint) {
