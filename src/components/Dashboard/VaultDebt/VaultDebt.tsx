@@ -3,37 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { getFaucetState } from '../../../utils/ratio-faucet';
-import { getUsdrMintKey, repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { repayUSDr } from '../../../utils/ratio-lending';
 import { TokenAmount } from '../../../utils/safe-math';
-import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 
 import Button from '../../Button';
 
-const VaultDebt = () => {
+const VaultDebt = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [mintAddress, setMintAddress] = useState('');
-  const usdrMint = useMint(mintAddress);
-  const usdrAccount = useAccountByMint(mintAddress);
-  const [usdcUsdrMintKey, setUsdcUsdrMintKey] = React.useState('');
-
-  useEffect(() => {
-    if (connected) {
-      getUsdrMintKey(connection, wallet).then((result) => {
-        setMintAddress(result);
-      });
-      getFaucetState(connection, wallet).then((result) => {
-        if (result) {
-          setUsdcUsdrMintKey(result.mintUsdcUsdrLp.toBase58());
-        }
-      });
-    }
-    return () => {
-      setMintAddress('');
-      setUsdcUsdrMintKey('');
-    };
-  });
+  const usdrMint = useMint(data.usdrMint);
+  const usdrAccount = useAccountByMint(data.usdrMint);
   const [usdrAmount, setUSDrAmount] = useState(0);
 
   useEffect(() => {
@@ -58,7 +37,7 @@ const VaultDebt = () => {
 
   const repay = () => {
     if (usdrMint) {
-      repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint?.decimals), new PublicKey(usdcUsdrMintKey))
+      repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint?.decimals), new PublicKey(data.mint))
         .then(() => {})
         .catch((e) => {
           console.log(e);

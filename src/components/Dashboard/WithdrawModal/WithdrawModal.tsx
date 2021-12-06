@@ -25,7 +25,7 @@ const WithdrawModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
 
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
   const [userCollAccount, setUserCollAccount] = React.useState('');
@@ -54,7 +54,7 @@ const WithdrawModal = ({ data }: any) => {
     return () => {
       return setUserCollAccount('');
     };
-  });
+  }, [connected]);
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {

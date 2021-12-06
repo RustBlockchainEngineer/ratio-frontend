@@ -99,20 +99,6 @@ const AvailableVaults = () => {
     getData(faucetState);
   }, [faucetState]);
 
-  // change this line with below addresses and risk level
-  // const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/rate');
-
-  // if (faucetState && data) {
-  //   data['USDC-USDR'].mint = faucetState.mintUsdcUsdrLp.toBase58();
-  //   data['USDC-USDR'].riskLevel = 0;
-  //   data['ETH-SOL'].mint = faucetState.mintEthSolLp.toBase58();
-  //   data['ETH-SOL'].riskLevel = 1;
-  //   data['ATLAS-RAY'].mint = faucetState.mintAtlasRayLp.toBase58();
-  //   data['ATLAS-RAY'].riskLevel = 2;
-  //   data['SAMO-RAY'].mint = faucetState.mintSamoRayLp.toBase58();
-  //   data['SAMO-RAY'].riskLevel = 3;
-  // }
-
   const filterData = (array1: any, array2: any) => {
     if (array2.length === 0) {
       return array1;
