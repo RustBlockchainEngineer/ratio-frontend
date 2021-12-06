@@ -27,6 +27,16 @@ const PaybackModal = ({ data }: any) => {
   const { wallet } = useWallet();
   const usdrMint = useMint(data.usdrMint);
 
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
+
   const repay = () => {
     if (usdrMint) {
       repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))

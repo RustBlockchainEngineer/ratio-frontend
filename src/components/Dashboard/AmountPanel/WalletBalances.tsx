@@ -31,8 +31,21 @@ const WalletBalances = ({ vault_mint }: any) => {
       const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', usdrMint?.decimals);
       setUSDrAmount(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
     }
+    return () => {
+      setCollAmount(0);
+      setUSDrAmount(0);
+    };
   });
 
+  const [didMount, setDidMount] = useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
   return (
     <div>
       <h4>Wallet Balances</h4>

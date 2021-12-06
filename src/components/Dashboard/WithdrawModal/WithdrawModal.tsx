@@ -40,6 +40,9 @@ const WithdrawModal = ({ data }: any) => {
         setCreated(false);
       }
     });
+    return () => {
+      return setCreated(false);
+    };
   }, [connection]);
 
   useEffect(() => {
@@ -48,7 +51,20 @@ const WithdrawModal = ({ data }: any) => {
         setUserCollAccount(res);
       });
     }
+    return () => {
+      return setUserCollAccount('');
+    };
   });
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
 
   const withdraw = () => {
     let tenWorthOfLp = 0;

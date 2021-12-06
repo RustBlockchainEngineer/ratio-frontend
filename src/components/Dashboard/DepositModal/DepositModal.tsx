@@ -39,6 +39,10 @@ const DepositModal = ({ data }: any) => {
         }
       });
     }
+
+    return () => {
+      setCreated(false);
+    };
   }, [connection]);
 
   useEffect(() => {
@@ -47,7 +51,20 @@ const DepositModal = ({ data }: any) => {
         setUserCollAccount(res);
       });
     }
+    return () => {
+      setUserCollAccount('');
+    };
   }, [wallet?.publicKey]);
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
 
   const deposit = () => {
     let tenWorthOfLp = 0;

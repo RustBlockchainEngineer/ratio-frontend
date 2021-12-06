@@ -31,8 +31,19 @@ const DisclaimerModal = ({ data }: LockVaultModalProps) => {
         }
       });
     }
+    return () => {
+      setCreated(false);
+    };
   });
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
 
+  if (!didMount) {
+    return null;
+  }
   return (
     <>
       {/* {!isCreated ? (

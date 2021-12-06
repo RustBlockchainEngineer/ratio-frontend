@@ -45,6 +45,30 @@ const priceCardData = [
   // },
 ];
 
+const defaultModalCardData = [
+  {
+    title: 'Tokens Locked',
+    mint: '??',
+    tokens: [rayIcon, solIcon],
+    tokenNames: 'USDC-USDr LP',
+    tokenValue: '0',
+    type: 'deposit',
+    withdrawValue: '0 USDC-USDr LP',
+    riskLevel: 0,
+    usdrMint: '??',
+  },
+  {
+    title: 'Outstanding USDr Debt',
+    mint: '??',
+    tokens: [usdrIcon],
+    tokenNames: 'USDr',
+    tokenValue: '0',
+    type: 'payback',
+    GenerateValue: '0 USDr',
+    usdrMint: '??',
+  },
+];
+
 const VaultDashboard = () => {
   const history = useHistory();
   const search = useLocation().search;
@@ -94,6 +118,9 @@ const VaultDashboard = () => {
         setUserState(res);
       });
     }
+    return () => {
+      setUserState(null);
+    };
   }, [vault_mint, wallet]);
 
   useEffect(() => {
@@ -142,6 +169,9 @@ const VaultDashboard = () => {
         setModalCardData(newData);
       });
     }
+    return () => {
+      setUserState(defaultModalCardData as any);
+    };
   }, [userState, wallet]);
 
   useEffect(() => {
@@ -154,10 +184,24 @@ const VaultDashboard = () => {
         setVaultData(result);
       }
     }
+    return () => {
+      setVaultData(null);
+    };
   }, [connected]);
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
+
   return (
     <div className="vaultdashboard">
       <div className="vaultdashboard__header">
@@ -201,13 +245,17 @@ const VaultDashboard = () => {
                 </div>
               );
             })}
-            {modalCardData.map((item, index) => {
-              return (
-                <div key={item.title} className="col col-lg-6 col-sm-12">
-                  <ModalCard data={item} />
-                </div>
-              );
-            })}
+            {modalCardData.length ? (
+              modalCardData.map((item, index) => {
+                return (
+                  <div key={item.title} className="col col-lg-6 col-sm-12">
+                    <ModalCard data={item} />
+                  </div>
+                );
+              })
+            ) : (
+              <div></div>
+            )}
           </div>
           {/* <div className="vaultdashboard__bodyleft row pt-0">
             <VaultHistoryTable />
