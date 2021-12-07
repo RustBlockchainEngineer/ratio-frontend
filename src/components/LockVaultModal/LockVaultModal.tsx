@@ -60,27 +60,27 @@ const LockVaultModal = ({ data }: any) => {
   const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
   useEffect(() => {
-    if (userState && tokenPrice) {
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, usdrMint?.decimals);
-      const totalUSDr = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
-      const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
+    if (userState && tokenPrice && collMint && usdrMint) {
+      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
+      const availableAmount = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
+
+      const maxAmount = availableAmount - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
       setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
     }
     return () => {
       setMaxUSDrAmount(0);
     };
-  }, [tokenPrice, userState]);
+  }, [tokenPrice, userState, usdrMint, collMint]);
 
   useEffect(() => {
     if (tokenPrice) {
       const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
-      console.log(initLPAmount, lpWalletBalance);
       setMaxLockAmount(Math.min(initLPAmount, lpWalletBalance));
     }
     return () => {
       setMaxLockAmount(0);
     };
-  }, [tokenPrice]);
+  }, [tokenPrice, lpWalletBalance]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -93,7 +93,7 @@ const LockVaultModal = ({ data }: any) => {
           setMintTime(unlockDateString);
         }
       });
-      if (collAccount) {
+      if (collAccount && collMint) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
         setLpWalletBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
       }

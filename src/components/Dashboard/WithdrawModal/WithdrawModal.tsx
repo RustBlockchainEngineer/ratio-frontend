@@ -27,25 +27,10 @@ const WithdrawModal = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
   const [userCollAccount, setUserCollAccount] = React.useState('');
   const collMint = useMint(data.mint);
 
-  const [withdrawAmount, setWithdrawAmount] = React.useState(Number(data.value));
-
-  useEffect(() => {
-    getTokenVaultByMint(connection, data.mint).then((res) => {
-      setVault(res);
-      if (res) {
-        setCreated(true);
-      } else {
-        setCreated(false);
-      }
-    });
-    return () => {
-      return setCreated(false);
-    };
-  }, [connection]);
+  const [withdrawAmount, setWithdrawAmount] = React.useState(0);
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -123,7 +108,7 @@ const WithdrawModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to withdraw?</label>
             <CustomInput
               appendStr="Max"
-              initValue={`${data.value}`}
+              initValue={'0'}
               appendValueStr={`${data.value}`}
               tokenStr={`${data.title}`}
               onTextChange={(value) => setWithdrawAmount(Number(value))}

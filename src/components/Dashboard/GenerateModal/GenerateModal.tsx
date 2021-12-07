@@ -30,27 +30,10 @@ const GenerateModal = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
   const [mintTime, setMintTime] = React.useState('');
 
   const usdrMint = useMint(data.usdrMint);
-  const [borrowAmount, setBorrowAmount] = React.useState(Number(data.usdrValue));
-
-  useEffect(() => {
-    if (connected && data.mint) {
-      getTokenVaultByMint(connection, data.mint).then((res) => {
-        setVault(res);
-        if (res) {
-          setCreated(true);
-        } else {
-          setCreated(false);
-        }
-      });
-    }
-    return () => {
-      setCreated(false);
-    };
-  }, [connection]);
+  const [borrowAmount, setBorrowAmount] = React.useState(0);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && data.mint) {
@@ -125,7 +108,7 @@ const GenerateModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to mint?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'' + data.usdrValue}
+              initValue={'0'}
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
               onTextChange={(value) => setBorrowAmount(Number(value))}

@@ -29,9 +29,10 @@ const DepositModal = ({ data }: any) => {
   const collMint = useMint(data.mint);
 
   const collAccount = useAccountByMint(data.mint);
-  const [depositAmount, setDepositAmount] = React.useState(Number(data.vaule));
+  const [depositAmount, setDepositAmount] = React.useState(0);
 
   const [didMount, setDidMount] = React.useState(false);
+
   useEffect(() => {
     setDidMount(true);
     return () => setDidMount(false);
@@ -43,7 +44,7 @@ const DepositModal = ({ data }: any) => {
 
   const deposit = () => {
     console.log('Depositing', depositAmount);
-    if (depositAmount && collAccount && collMint) {
+    if (depositAmount && collAccount && collMint && connected) {
       depositCollateral(
         connection,
         wallet,
@@ -91,7 +92,7 @@ const DepositModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much USDr would you like to generate?</label>
             <CustomInput
               appendStr="Max"
-              initValue={data.value}
+              initValue={'0'}
               appendValueStr={data.value}
               tokenStr={`${data.title}`}
               onTextChange={(value) => setDepositAmount(Number(value))}
