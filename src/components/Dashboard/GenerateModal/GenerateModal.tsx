@@ -33,12 +33,11 @@ const GenerateModal = ({ data }: any) => {
   const [isCreated, setCreated] = React.useState({});
   const [mintTime, setMintTime] = React.useState('');
 
-  const collMint = useMint(data.mint);
   const usdrMint = useMint(data.usdrMint);
   const [borrowAmount, setBorrowAmount] = React.useState(Number(data.usdrValue));
 
   useEffect(() => {
-    if (connected) {
+    if (connected && data.mint) {
       getTokenVaultByMint(connection, data.mint).then((res) => {
         setVault(res);
         if (res) {
@@ -54,7 +53,7 @@ const GenerateModal = ({ data }: any) => {
   }, [connection]);
 
   useEffect(() => {
-    if (wallet && wallet.publicKey) {
+    if (wallet && wallet.publicKey && data.mint) {
       getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
         if (res) {
           const endDateOfLock = res.lastMintTime.toNumber() + 3600;
@@ -67,7 +66,7 @@ const GenerateModal = ({ data }: any) => {
     return () => {
       setMintTime('');
     };
-  }, [wallet, connection, collMint]);
+  }, [wallet, connection]);
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {

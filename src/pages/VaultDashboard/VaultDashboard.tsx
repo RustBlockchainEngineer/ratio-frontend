@@ -94,7 +94,6 @@ const VaultDashboard = () => {
     riskLevel: 0,
     usdrValue: 0,
   });
-  console.log('VaultDashboard', vault_mint);
   const [modalCardData, setModalCardData] = useState([
     {
       title: 'Tokens Locked',
@@ -190,6 +189,7 @@ const VaultDashboard = () => {
         newData[0].tokenValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
         console.log('Locked', newData[0].tokenValue, collMint?.decimals);
         newData[0].tokenValue = '' + Math.ceil(parseFloat(newData[0].tokenValue) * 100) / 100;
+        newData[0].withdrawValue = '' + Math.ceil(parseFloat(newData[0].tokenValue) * 100) / 100;
         newData[0].mint = vault_mint;
         newData[0].riskLevel = riskLevel;
         newData[1].tokenValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();

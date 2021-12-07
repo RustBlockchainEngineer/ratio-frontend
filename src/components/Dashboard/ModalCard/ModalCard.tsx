@@ -48,7 +48,7 @@ const ModalCard = ({ data }: any) => {
     mint: data.mint,
     icons: [rayIcon, solIcon],
     title: data.tokenNames,
-    value: data.tokenValue,
+    value: data.withdrawValue,
     usdrMint: data.usdrMint,
     riskLevel: data.riskLevel,
   };
