@@ -11,6 +11,7 @@ import { getFaucetState } from '../../../utils/ratio-faucet';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { getUsdrMintKey } from '../../../utils/ratio-lending';
+import { PublicKey } from '@solana/web3.js';
 
 interface ModalcardInterface {
   title: string;
@@ -31,23 +32,23 @@ const ModalCard = ({ data }: any) => {
   const depositData = {
     mint: data.mint,
     icons: [rayIcon, solIcon],
-    title: 'USDC-USDr',
+    title: data.tokenNames,
     usdrMint: data.usdrMint,
     riskLevel: data.riskLevel,
   };
   const paybackData = {
     mint: data.mint,
     icons: [usdrIcon],
-    title: 'USDC-USDr',
-    usdrValue: '$7.45',
+    title: data.tokenNames,
+    usdrValue: data.tokenValue,
     usdrMint: data.usdrMint,
     riskLevel: data.riskLevel,
   };
   const withdrawData = {
     mint: data.mint,
     icons: [rayIcon, solIcon],
-    title: 'USDC-USDr',
-    value: '12.54',
+    title: data.tokenNames,
+    value: data.tokenValue,
     usdrMint: data.usdrMint,
     riskLevel: data.riskLevel,
   };
@@ -55,8 +56,8 @@ const ModalCard = ({ data }: any) => {
   const generateData = {
     mint: data.mint,
     icons: [usdrIcon],
-    title: 'USDC-USDr',
-    usdrValue: '32.34',
+    title: data.tokenNames,
+    usdrValue: data.GenerateValue,
     usdrMint: data.usdrMint,
     riskLevel: data.riskLevel,
   };
@@ -85,7 +86,7 @@ const ModalCard = ({ data }: any) => {
         </div>
         <div className="modalCard__footer">
           <div>
-            {data.type === 'payback' && <label>Able to generate</label>}
+            {data.type === 'payback' && <label>Able to generate USDr</label>}
             {data.type === 'deposit' ? (
               <div>
                 <p>{data.tokenNames}</p>

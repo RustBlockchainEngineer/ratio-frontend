@@ -90,7 +90,7 @@ export const cache = {
       id = pubKey;
     }
 
-    const address = id.toBase58();
+    const address = id.toString();
 
     const account = genericCache.get(address);
     if (account) {
@@ -452,7 +452,6 @@ export function useMint(key?: string | PublicKey) {
     if (!id) {
       return;
     }
-
     cache
       .query(connection, id, MintParser)
       .then((acc) => setMint(acc.info as any))

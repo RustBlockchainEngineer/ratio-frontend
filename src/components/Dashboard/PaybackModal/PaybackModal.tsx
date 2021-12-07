@@ -27,6 +27,8 @@ const PaybackModal = ({ data }: any) => {
   const { wallet } = useWallet();
   const usdrMint = useMint(data.usdrMint);
 
+  const [paybackAmount, setPayBackAmount] = React.useState(Number(data.usdrValue));
+
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
@@ -38,8 +40,9 @@ const PaybackModal = ({ data }: any) => {
   }
 
   const repay = () => {
-    if (usdrMint) {
-      repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+    console.log('PayBack', paybackAmount);
+    if (usdrMint && paybackAmount) {
+      repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
         .then(() => {})
         .catch((e) => {
           console.log(e);
@@ -71,15 +74,22 @@ const PaybackModal = ({ data }: any) => {
             </div>
             <h4>Pay back USDr debt</h4>
             <h5>
-              You owe <span className="dashboardModal__modal__header-red">$7.45 USDr</span>. Pay back some or all of
-              your debt below.
+              You owe &nbsp;
+              <span className="dashboardModal__modal__header-red">${data.usdrValue} USDr </span>. Pay back some or all
+              of your debt below.
             </h5>
           </div>
         </Modal.Header>
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much would you like to pay back?</label>
-            <CustomInput appendStr="Max" tokenStr="USDr" />
+            <CustomInput
+              appendStr="Max"
+              initValue={'' + data.usdrValue}
+              appendValueStr={'' + data.usdrValue}
+              tokenStr={`USDr`}
+              onTextChange={(value) => setPayBackAmount(Number(value))}
+            />
             <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput />
             <Button className="button--fill bottomBtn" onClick={() => repay()}>

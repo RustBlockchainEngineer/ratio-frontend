@@ -1,11 +1,13 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
-import { useMint } from '../../../contexts/accounts';
+import { useAccountByMint, useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
+import { usePrice } from '../../../contexts/price';
 import { useWallet } from '../../../contexts/wallet';
-import { depositCollateral, getTokenVaultByMint } from '../../../utils/ratio-lending';
+import { depositCollateral, getTokenVaultByMint, getUserState } from '../../../utils/ratio-lending';
+import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
@@ -26,8 +28,38 @@ const DepositModal = ({ data }: any) => {
   const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
-  const [userCollAccount, setUserCollAccount] = React.useState('');
   const collMint = useMint(data.mint);
+  const tokenPrice = usePrice(data.mint);
+
+  const collAccount = useAccountByMint(data.mint);
+  const [lpWalletBalance, setLpWalletBalance] = useState(0);
+  const [maxLPAmount, setMaxLockAmount] = React.useState(0);
+  const [depositAmount, setDepositAmount] = React.useState(0);
+
+  useEffect(() => {
+    if (wallet && wallet.publicKey) {
+      if (collAccount) {
+        const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
+        setLpWalletBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
+      }
+    }
+    return () => {
+      setLpWalletBalance(0);
+    };
+  }, [wallet, collAccount, connection, collMint]);
+
+  useEffect(() => {
+    if (tokenPrice) {
+      const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
+      console.log(initLPAmount, lpWalletBalance);
+      setMaxLockAmount(Math.min(initLPAmount, lpWalletBalance));
+      setDepositAmount(Math.min(initLPAmount, lpWalletBalance));
+    }
+    return () => {
+      setMaxLockAmount(0);
+    };
+  }, [tokenPrice]);
+
   useEffect(() => {
     if (connected) {
       getTokenVaultByMint(connection, data.mint).then((res) => {
@@ -45,17 +77,6 @@ const DepositModal = ({ data }: any) => {
     };
   }, [connection]);
 
-  useEffect(() => {
-    if (wallet?.publicKey) {
-      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(data.mint)).then((res) => {
-        setUserCollAccount(res);
-      });
-    }
-    return () => {
-      setUserCollAccount('');
-    };
-  }, [wallet?.publicKey]);
-
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
@@ -67,22 +88,13 @@ const DepositModal = ({ data }: any) => {
   }
 
   const deposit = () => {
-    let tenWorthOfLp = 0;
-    if (data.riskLevel === 0) {
-      tenWorthOfLp = 0.143;
-    } else if (data.riskLevel === 1) {
-      tenWorthOfLp = 0.00261;
-    } else if (data.riskLevel === 2) {
-      tenWorthOfLp = 0.317;
-    } else if (data.riskLevel === 3) {
-      tenWorthOfLp = 3.278;
-    }
-    if (userCollAccount !== '' && collMint) {
+    console.log('Depositing', depositAmount);
+    if (depositAmount && collAccount && collMint) {
       depositCollateral(
         connection,
         wallet,
-        tenWorthOfLp * Math.pow(10, collMint?.decimals),
-        userCollAccount,
+        depositAmount * Math.pow(10, collMint?.decimals),
+        collAccount.pubkey.toString(),
         new PublicKey(data.mint)
       )
         .then(() => {})
@@ -116,14 +128,20 @@ const DepositModal = ({ data }: any) => {
             </div>
             <h4>Deposit assets into vault</h4>
             <h5>
-              Deposit more <strong>{data.title}-LP</strong> into your vault
+              Deposit more <strong>{data.title}</strong> into your vault
             </h5>
           </div>
         </Modal.Header>
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much USDr would you like to generate?</label>
-            <CustomInput appendStr="Max" tokenStr={`${data.title}-LP`} />
+            <CustomInput
+              appendStr="Max"
+              initValue={'' + maxLPAmount}
+              appendValueStr={'' + maxLPAmount}
+              tokenStr={`${data.title}`}
+              onTextChange={(value) => setDepositAmount(Number(value))}
+            />
             <Button className="button--fill bottomBtn" onClick={() => deposit()}>
               Deposit & Lock Assets
             </Button>
