@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { MINTADDRESS } from '../../constants';
 import { getRiskLevel } from '../../libs/helper';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useWallet } from '../../contexts/wallet';
@@ -19,13 +21,12 @@ import DisclaimerModal from '../../components/DisclaimerModal';
 import ComparingFooter from '../../components/ComparingFooter';
 
 import { getCoinPicSymbol } from '../../utils/helper';
-import { getTokenBySymbol } from '../../utils/tokens';
 
 import usdrIcon from '../../assets/images/USDr.png';
 import ethIcon from '../../assets/images/ETH.svg';
 import { getFaucetState } from '../../utils/ratio-faucet';
 import { useConnection } from '../../contexts/connection';
-import { toast } from 'react-toastify';
+
 import { SET_AVAILABLE_VAULT } from '../../features/dashboard/actionTypes';
 
 type whitelistProps = {
@@ -37,8 +38,6 @@ type whitelistProps = {
 };
 
 const AvailableVaults = () => {
-  const connection = useConnection();
-  const wallet = useWallet().wallet;
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
   const compareValutsList = useSelector(selectors.getCompareVaultsList);
@@ -48,13 +47,23 @@ const AvailableVaults = () => {
   const [enable, setEnable] = React.useState(false);
   const { connected, publicKey } = useWallet();
 
-  const [faucetState, setFaucetState] = React.useState(null as any);
   const [data, setData] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const onViewType = (type: string) => {
     setViewType(type);
   };
+
+  const getData = async () => {
+    setIsLoading(true);
+    const d = await axios.get('https://api.ratio.finance/api/rate');
+    setData(d.data);
+    setIsLoading(false);
+  };
+
+  React.useEffect(() => {
+    getData();
+  }, []);
 
   React.useEffect(() => {
     if (connected) {
@@ -65,39 +74,10 @@ const AvailableVaults = () => {
         setEnable(true);
       } else {
         setEnable(false);
-        alert('Please add your address to whitelist.');
+        toast('Please add your address to whitelist.');
       }
     }
-    if (connected) {
-      setIsLoading(true);
-      getFaucetState(connection, wallet).then((result) => {
-        setFaucetState(result);
-        setIsLoading(false);
-      });
-    }
   }, [connected, publicKey]);
-
-  const getData = async (faucetState: any) => {
-    setIsLoading(true);
-    const d = await axios.get('https://api.ratio.finance/api/rate');
-    if (faucetState) {
-      d.data['USDC-USDR'].mint = faucetState.mintUsdcUsdrLp.toBase58();
-      d.data['USDC-USDR'].riskLevel = 0;
-      d.data['ETH-SOL'].mint = faucetState.mintEthSolLp.toBase58();
-      d.data['ETH-SOL'].riskLevel = 1;
-      d.data['ATLAS-RAY'].mint = faucetState.mintAtlasRayLp.toBase58();
-      d.data['ATLAS-RAY'].riskLevel = 2;
-      d.data['SAMO-RAY'].mint = faucetState.mintSamoRayLp.toBase58();
-      d.data['SAMO-RAY'].riskLevel = 3;
-    }
-
-    setData(d.data);
-    setIsLoading(false);
-  };
-
-  React.useEffect(() => {
-    getData(faucetState);
-  }, [faucetState]);
 
   const filterData = (array1: any, array2: any) => {
     if (array2.length === 0) {
@@ -115,10 +95,9 @@ const AvailableVaults = () => {
     if (d !== undefined) {
       const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
         const tokens = key.split('-');
-
         return {
           id: index,
-          mint: d[key].mint,
+          mint: MINTADDRESS[key],
           icons: [getCoinPicSymbol(tokens[0]), getCoinPicSymbol(tokens[1])],
           icon1: getCoinPicSymbol(tokens[0]), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
           icon2: getCoinPicSymbol(tokens[1]),

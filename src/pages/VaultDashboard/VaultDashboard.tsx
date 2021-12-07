@@ -4,6 +4,8 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { useLocation } from 'react-router-dom';
 
+import { MINTADDRESS } from '../../constants';
+
 import ComingSoon from '../../components/ComingSoon';
 import RiskLevel from '../../components/Dashboard/RiskLevel';
 import SpeedoMetor from '../../components/Dashboard/SpeedoMeter';
@@ -71,139 +73,80 @@ const defaultModalCardData = [
 
 const VaultDashboard = () => {
   const history = useHistory();
-  const search = useLocation().search;
-  // const vault_mint = new URLSearchParams(search).get('mint');
   const { mint: vault_mint } = useParams<{ mint?: string }>();
   const connection = useConnection();
   const { wallet, connected } = useWallet();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [usdrMintAddress, setUsdrMintAddress] = useState('');
-  const usdrMint = useMint(usdrMintAddress);
   const collMint = useMint(vault_mint as string);
   const tokenPrice = usePrice(vault_mint as string);
 
   const [userState, setUserState] = useState(null);
-  const [riskLevel, setRiskLevel] = useState(0.0);
-  const [vaultName, setVaultName] = useState('');
   const [VaultData, setVaultData] = useState<any>({});
+  const [lpTokenValue, setLPTokenValue] = useState('0');
   const availableVaults = useSelector(selectors.getAvailableVaults);
   const [vauldDebtData, setVaultDebtData] = useState({
     mint: vault_mint,
-    usdrMint: usdrMintAddress,
+    usdrMint: MINTADDRESS['USDR'],
     riskLevel: 0,
   });
-  const [modalCardData, setModalCardData] = useState([
-    {
-      title: 'Tokens Locked',
-      mint: vault_mint,
-      tokens: [rayIcon, solIcon],
-      tokenNames: 'USDC-USDr LP',
-      tokenValue: '0',
-      type: 'deposit',
-      withdrawValue: '0 USDC-USDr LP',
-      riskLevel: 0,
-      usdrMint: usdrMintAddress,
-    },
-    {
-      title: 'Outstanding USDr Debt',
-      mint: vault_mint,
-      tokens: [usdrIcon],
-      tokenNames: 'USDr',
-      tokenValue: '0',
-      type: 'payback',
-      GenerateValue: '0 USDr',
-      usdrMint: usdrMintAddress,
-    },
-  ]);
-
-  useEffect(() => {
-    if (vault_mint && wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {
-        setUserState(res);
-      });
-    }
-    return () => {
-      setUserState(null);
-    };
-  }, [vault_mint, wallet]);
-
-  useEffect(() => {
-    if (connected) {
-      getUsdrMintKey(connection, wallet).then((result) => {
-        setUsdrMintAddress(result);
-        const newData = [...modalCardData];
-        const newVaultData = vauldDebtData;
-        newData[0].usdrMint = result;
-        newData[1].usdrMint = result;
-        newVaultData.usdrMint = result;
-
-        setModalCardData(newData);
-        setVaultDebtData(newVaultData);
-      });
-    }
-    if (userState && vault_mint && connected) {
-      getFaucetState(connection, wallet).then((result) => {
-        let riskLevel = 0;
-        if (vault_mint === result.mintUsdcUsdrLp.toBase58()) {
-          riskLevel = 0;
-        } else if (vault_mint === result.mintEthSolLp.toBase58()) {
-          riskLevel = 1;
-        } else if (vault_mint === result.mintAtlasRayLp.toBase58()) {
-          riskLevel = 2;
-        } else if (vault_mint === result.mintSamoRayLp.toBase58()) {
-          riskLevel = 3;
-        }
-        const newData = [...modalCardData];
-        const newVaultData = vauldDebtData;
-        newData[0].tokenValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
-        newData[0].tokenValue = '' + Math.ceil(parseFloat(newData[0].tokenValue) * 100) / 100;
-        newData[0].mint = vault_mint;
-        newData[0].riskLevel = riskLevel;
-
-        newData[1].tokenValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
-        newData[1].tokenValue = '' + Math.ceil(parseFloat(newData[1].tokenValue) * 100) / 100;
-        newData[1].mint = vault_mint;
-        newData[1].riskLevel = riskLevel;
-
-        newVaultData.mint = vault_mint;
-        newVaultData.riskLevel = riskLevel;
-
-        setModalCardData(newData);
-        setVaultDebtData(newVaultData);
-      });
-    }
-    return () => {
-      setUserState(defaultModalCardData as any);
-    };
-  }, [userState, wallet]);
 
   useEffect(() => {
     if (!connected) {
       history.push('/dashboard');
-    } else {
-      // const filterValues = filterObject(availableVaults, 'mint', vault_mint);
-      const result: any = availableVaults.find((item: any) => item.mint === vault_mint);
-      if (result) {
-        setVaultData(result);
-      }
+    } else if (vault_mint) {
+      setIsLoading(true);
+      getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {
+        if (res) {
+          let tv: string = new TokenAmount((res as any).lockedCollBalance, collMint ? collMint.decimals : 9).fixed();
+          tv = '' + Math.ceil(parseFloat(tv) * 100) / 100;
+          setLPTokenValue(tv);
+          setIsLoading(false);
+        }
+      });
     }
-    return () => {
-      setVaultData(null);
-    };
-  }, [connected]);
+  }, [connected, vault_mint, wallet]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const result: any = availableVaults.find((item: any) => item.mint === vault_mint);
+    if (result) {
+      setVaultData(result);
+      setIsLoading(false);
+    }
+  }, []);
+
+  const getRiskLevelNumber = () => {
+    switch (vault_mint) {
+      case MINTADDRESS['USDC-USDR']:
+        return 0;
+        break;
+      case MINTADDRESS['ETH-SOL']:
+        return 1;
+        break;
+      case MINTADDRESS['ATLAS-RAY']:
+        return 2;
+        break;
+      case MINTADDRESS['SAMO-RAY']:
+        return 3;
+        break;
+
+      default:
+        break;
+    }
+  };
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
 
-  const [didMount, setDidMount] = React.useState(false);
-  useEffect(() => {
-    setDidMount(true);
-    return () => setDidMount(false);
-  }, []);
-
-  if (!didMount) {
-    return null;
-  }
+  if (isLoading)
+    return (
+      <div className="col availablevaults__loading">
+        <div className="spinner-border text-info" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
 
   return (
     <div className="vaultdashboard">
@@ -248,17 +191,30 @@ const VaultDashboard = () => {
                 </div>
               );
             })}
-            {modalCardData.length ? (
-              modalCardData.map((item, index) => {
-                return (
-                  <div key={item.title} className="col col-lg-6 col-sm-12">
-                    <ModalCard data={item} />
-                  </div>
-                );
-              })
-            ) : (
-              <div></div>
-            )}
+            <div className="col col-lg-6 col-sm-12">
+              <ModalCard
+                // data={item}
+                mintAddress={vault_mint}
+                title="Tokens Locked"
+                icons={VaultData.icons}
+                tokenName={VaultData.title}
+                tokenValue={lpTokenValue}
+                type="deposit"
+                riskLevel={getRiskLevelNumber()}
+              />
+            </div>
+            <div className="col col-lg-6 col-sm-12">
+              <ModalCard
+                // data={item}
+                mintAddress={vault_mint}
+                title="Outstanding USDr Debt"
+                icons={[usdrIcon]}
+                tokenName={VaultData.title}
+                tokenValue={'0'}
+                type="payback"
+                riskLevel={getRiskLevelNumber()}
+              />
+            </div>
           </div>
           {/* <div className="vaultdashboard__bodyleft row pt-0">
             <VaultHistoryTable />

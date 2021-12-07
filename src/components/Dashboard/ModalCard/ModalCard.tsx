@@ -4,6 +4,8 @@ import PaybackModal from '../PaybackModal';
 import WithdrawModal from '../WithdrawModal';
 import GenerateModal from '../GenerateModal';
 
+import { MINTADDRESS } from '../../../constants';
+
 import usdrIcon from '../../../assets/images/USDr.png';
 import rayIcon from '../../../assets/images/RAY.svg';
 import solIcon from '../../../assets/images/SOL.svg';
@@ -27,51 +29,49 @@ type ModalCardProps = {
   data: ModalcardInterface;
 };
 
-const ModalCard = ({ data }: any) => {
+const ModalCard = ({ mintAddress, title, icons, tokenName, tokenValue, type, generateValue, riskLevel }: any) => {
   const depositData = {
-    mint: data.mint,
-    icons: [rayIcon, solIcon],
-    title: 'USDC-USDr',
-    usdrMint: data.usdrMint,
-    riskLevel: data.riskLevel,
+    mint: mintAddress,
+    icons: icons,
+    title: title,
+    usdrMint: MINTADDRESS['USDR'],
+    riskLevel: riskLevel,
   };
   const paybackData = {
-    mint: data.mint,
+    mint: mintAddress,
     icons: [usdrIcon],
-    title: 'USDC-USDr',
+    title: title,
     usdrValue: '$7.45',
-    usdrMint: data.usdrMint,
-    riskLevel: data.riskLevel,
+    usdrMint: MINTADDRESS['USDR'],
+    riskLevel: riskLevel,
   };
   const withdrawData = {
-    mint: data.mint,
-    icons: [rayIcon, solIcon],
-    title: 'USDC-USDr',
+    mint: mintAddress,
+    icons: icons,
+    title: title,
     value: '12.54',
-    usdrMint: data.usdrMint,
-    riskLevel: data.riskLevel,
+    usdrMint: MINTADDRESS['USDR'],
+    riskLevel: riskLevel,
   };
 
   const generateData = {
-    mint: data.mint,
+    mint: mintAddress,
     icons: [usdrIcon],
-    title: 'USDC-USDr',
+    title: title,
     usdrValue: '32.34',
-    usdrMint: data.usdrMint,
-    riskLevel: data.riskLevel,
+    usdrMint: MINTADDRESS['USDR'],
+    riskLevel: riskLevel,
   };
 
   return (
     <div className="modalCard">
-      <p className="modalCard__title mb-2">{data.title}</p>
+      <p className="modalCard__title mb-2">{title}</p>
       <div className="modalCard__cardbody">
         <div className="modalCard__header">
           <div className="d-flex align-items-center">
             <div>
-              <img src={data.tokens[0]} alt={data.tokens[0].toString()} />
-              {data.tokens[1] && (
-                <img src={data.tokens[1]} alt={data.tokens[1].toString()} className="modalCard__header-icon" />
-              )}
+              {icons && <img src={icons[0]} alt={icons[0].toString()} />}
+              {icons && icons[1] && <img src={icons[1]} alt={icons[1].toString()} className="modalCard__header-icon" />}
             </div>
             <div className="modalCard__header_tokenName">
               {/* <p>{data.tokenNames}</p> */}
@@ -79,25 +79,28 @@ const ModalCard = ({ data }: any) => {
             </div>
           </div>
           <div>
-            {data.type === 'deposit' && <DepositModal data={depositData} />}
-            {data.type === 'payback' && <PaybackModal data={paybackData} />}
+            {type === 'deposit' && <DepositModal data={depositData} />}
+            {type === 'payback' && <PaybackModal data={paybackData} />}
           </div>
         </div>
         <div className="modalCard__footer">
           <div>
-            {data.type === 'payback' && <label>Able to generate</label>}
-            {data.type === 'deposit' ? (
+            {type === 'payback' && (
               <div>
-                <p>{data.tokenNames}</p>
-                <h6>{data.tokenValue}</h6>
+                <label>Able to generate</label>
+                <p>{tokenValue} USDr</p>
               </div>
-            ) : (
-              <p>{data.GenerateValue}</p>
+            )}
+            {type === 'deposit' && (
+              <div>
+                <p>{tokenName}</p>
+                <h6>{tokenValue}</h6>
+              </div>
             )}
           </div>
           <div>
-            {data.type === 'deposit' && <WithdrawModal data={withdrawData} />}
-            {data.type === 'payback' && <GenerateModal data={generateData} />}
+            {type === 'deposit' && <WithdrawModal data={withdrawData} />}
+            {type === 'payback' && <GenerateModal data={generateData} />}
           </div>
         </div>
       </div>
