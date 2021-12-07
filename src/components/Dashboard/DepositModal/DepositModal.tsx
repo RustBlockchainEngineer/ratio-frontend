@@ -26,56 +26,10 @@ const DepositModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
   const collMint = useMint(data.mint);
-  const tokenPrice = usePrice(data.mint);
 
   const collAccount = useAccountByMint(data.mint);
-  const [lpWalletBalance, setLpWalletBalance] = useState(0);
-  const [maxLPAmount, setMaxLockAmount] = React.useState(0);
-  const [depositAmount, setDepositAmount] = React.useState(0);
-
-  useEffect(() => {
-    if (wallet && wallet.publicKey) {
-      if (collAccount) {
-        const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-        setLpWalletBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
-      }
-    }
-    return () => {
-      setLpWalletBalance(0);
-    };
-  }, [wallet, collAccount, connection, collMint]);
-
-  useEffect(() => {
-    if (tokenPrice) {
-      const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
-      console.log(initLPAmount, lpWalletBalance);
-      setMaxLockAmount(Math.min(initLPAmount, lpWalletBalance));
-      setDepositAmount(Math.min(initLPAmount, lpWalletBalance));
-    }
-    return () => {
-      setMaxLockAmount(0);
-    };
-  }, [tokenPrice]);
-
-  useEffect(() => {
-    if (connected) {
-      getTokenVaultByMint(connection, data.mint).then((res) => {
-        setVault(res);
-        if (res) {
-          setCreated(true);
-        } else {
-          setCreated(false);
-        }
-      });
-    }
-
-    return () => {
-      setCreated(false);
-    };
-  }, [connection]);
+  const [depositAmount, setDepositAmount] = React.useState(Number(data.vaule));
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -137,8 +91,8 @@ const DepositModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much USDr would you like to generate?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'' + maxLPAmount}
-              appendValueStr={'' + maxLPAmount}
+              initValue={data.value}
+              appendValueStr={data.value}
               tokenStr={`${data.title}`}
               onTextChange={(value) => setDepositAmount(Number(value))}
             />

@@ -31,8 +31,11 @@
     display: flex;
     justify-content: space-between;
     img {
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      border: 1px solid rgba(#4c646f, 0.4);
+      border-radius: 100%; 
+      padding: 2px;
+      background-color: white;
     }
     &-icon {
       margin-left: -10px;
