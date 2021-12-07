@@ -210,7 +210,7 @@ const VaultDashboard = () => {
       <div className="vaultdashboard__header">
         <div className="vaultdashboard__header_titleBox">
           <div>
-            <h3>{VaultData.title} Vault #2024</h3>
+            <h3>{VaultData.title} Vault</h3>
             {isMobile && (
               <Link to="/">
                 View on Solana Beach
