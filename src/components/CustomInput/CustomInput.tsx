@@ -21,7 +21,7 @@ const CustomInput = ({
   onTextChange,
   readOnly,
 }: CustomInputProps) => {
-  const [value, setValue] = React.useState(initValue);
+  const [value, setValue] = React.useState(initValue ? initValue : '0');
 
   const handleChange = (e: any) => {
     const re = /^[+-]?\d*(?:[.,]\d*)?$/;

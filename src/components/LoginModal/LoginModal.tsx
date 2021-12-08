@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { Form, Modal } from 'react-bootstrap';
 import Button from '../Button';
-import { useSetLoggedIn } from '../../contexts/auth';
+import { useLoggedIn } from '../../contexts/auth';
 
 const LoginModal = () => {
   const [password, setPassword] = React.useState<string>('');
   const [show, setShow] = React.useState<boolean>(true);
-  const setLoggedIn = useSetLoggedIn();
+  const { setLoggedIn } = useLoggedIn();
 
   const validatePassword = () => {
     if (password === 'ratio') {

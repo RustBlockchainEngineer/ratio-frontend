@@ -24,6 +24,7 @@ import { closeAccount } from '@project-serum/serum/lib/token-instructions';
 import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
+import { sleep } from './utils';
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
@@ -169,6 +170,23 @@ export async function getUserState(connection: Connection, wallet: any, mintColl
     return null;
   }
 }
+
+export async function getUpdatedUserState(connection: any, wallet: any, mint: string, originState: any)
+{
+  let res = null;
+  do {
+    sleep(300);
+    res = await getUserState(connection, wallet, new PublicKey(mint));
+  } while (
+    !res ||
+    originState && 
+    res.lockedCollBalance.toString() === originState.lockedCollBalance.toString() &&
+    res.debt.toString() === (originState as any).debt.toString()
+  );
+  
+  return res;
+}
+
 
 export async function borrowUSDr(
   connection: Connection,
