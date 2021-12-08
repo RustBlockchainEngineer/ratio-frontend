@@ -24,6 +24,7 @@ type WithdrawModalProps = {
 };
 
 const WithdrawModal = ({ data }: any) => {
+  console.log('Withdraw Modal', data);
   const [show, setShow] = React.useState(false);
 
   const connection = useConnection();
@@ -84,7 +85,7 @@ const WithdrawModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="gradientBtn" onClick={() => setShow(!show)}>
+      <Button className="gradientBtn" disabled={Number(data.usdrValue) !== 0} onClick={() => setShow(!show)}>
         Withdraw
       </Button>
       <Modal

@@ -53,30 +53,6 @@ const priceCardData = [
   // },
 ];
 
-const defaultModalCardData = [
-  {
-    title: 'Tokens Locked',
-    mint: '',
-    tokens: [rayIcon, solIcon],
-    tokenNames: 'USDC-USDr LP',
-    tokenValue: '0',
-    type: 'deposit',
-    withdrawValue: '0 USDC-USDr LP',
-    riskLevel: 0,
-    usdrMint: '',
-  },
-  {
-    title: 'Outstanding USDr Debt',
-    mint: '',
-    tokens: [usdrIcon],
-    tokenNames: 'USDC-USDr LP',
-    tokenValue: '0',
-    type: 'payback',
-    GenerateValue: '0 USDr',
-    usdrMint: '',
-  },
-];
-
 const VaultDashboard = () => {
   const history = useHistory();
   const { mint: vault_mint } = useParams<{ mint?: string }>();
@@ -157,7 +133,7 @@ const VaultDashboard = () => {
       const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
       console.log('generate', maxAmount);
 
-      setGenerateValue('' + Math.ceil(maxAmount * 1000) / 1000);
+      setGenerateValue('' + Math.ceil(Math.max(maxAmount, 0) * 1000) / 1000);
     }
     return () => {
       setGenerateValue('0');
@@ -292,6 +268,7 @@ const VaultDashboard = () => {
                 tokenName={VaultData.title}
                 depositValue={depositValue}
                 withdrawValue={withdrawValue}
+                debtValue={debtValue}
                 type="deposit_withdraw"
                 riskLevel={getRiskLevelNumber()}
               />
