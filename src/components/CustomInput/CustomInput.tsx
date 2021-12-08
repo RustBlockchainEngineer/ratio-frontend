@@ -3,20 +3,32 @@ import classNames from 'classnames';
 import { InputGroup, FormControl } from 'react-bootstrap';
 
 type CustomInputProps = {
-  appendStr: string;
-  tokenStr: string;
+  appendStr?: string;
+  tokenStr?: string;
+  initValue?: string;
   appendValueStr?: string;
   className?: string;
   readOnly?: boolean;
   onTextChange?: (value: string) => void;
 };
 
-const CustomInput = ({ appendStr, tokenStr, appendValueStr, className, onTextChange, readOnly }: CustomInputProps) => {
-  const [value, setValue] = React.useState('0');
+const CustomInput = ({
+  appendStr,
+  tokenStr,
+  initValue,
+  appendValueStr,
+  className,
+  onTextChange,
+  readOnly,
+}: CustomInputProps) => {
+  const [value, setValue] = React.useState(initValue ? initValue : '0');
 
   const handleChange = (e: any) => {
-    setValue(e.target.value.replace(/\D/, ''));
-    onTextChange && onTextChange(e.target.value.replace(/\D/, ''));
+    const re = /^[+-]?\d*(?:[.,]\d*)?$/;
+    if (e.target.value === '' || re.test(e.target.value)) {
+      setValue(e.target.value);
+      onTextChange && onTextChange(e.target.value);
+    }
   };
 
   const setMaxValue = () => {

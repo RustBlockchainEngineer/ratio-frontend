@@ -8,7 +8,10 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import { PublicKey } from '@solana/web3.js';
-import { repayUSDr, USDC_USDR_LP_MINT_KEY } from '../../../utils/ratio-lending';
+import { getUsdrMintKey, repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { useMint } from '../../../contexts/accounts';
+import { useUpdateState } from '../../../contexts/auth';
+import { toast } from 'react-toastify';
 
 type PairType = {
   icons: Array<string>;
@@ -20,34 +23,43 @@ type PaybackModalProps = {
   data: PairType;
 };
 
-const PaybackModal = ({ data }: PaybackModalProps) => {
+const PaybackModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
-  const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
-  const [userCollAccount, setUserCollAccount] = React.useState('');
+  const usdrMint = useMint(data.usdrMint);
+
+  const [paybackAmount, setPayBackAmount] = React.useState(Number(data.usdrValue));
+  const { setUpdateStateFlag } = useUpdateState();
+
+  const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
-    if (wallet?.publicKey) {
-      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(USDC_USDR_LP_MINT_KEY)).then(
-        (res) => {
-          setUserCollAccount(res);
-        }
-      );
-    }
-  }, [connection, wallet]);
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
 
   const repay = () => {
-    if (userCollAccount !== '') {
-      repayUSDr(connection, wallet, 10 * 1000000, new PublicKey(USDC_USDR_LP_MINT_KEY))
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          setShow(false);
-        });
+    console.log('PayBack', paybackAmount);
+    if (!(paybackAmount && data.usdrValue >= paybackAmount)) {
+      return toast('Insufficient funds to payback!');
     }
+    if (!usdrMint) {
+      return toast('Invalid USDr Mint address to payback!');
+    }
+    repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+      .then(() => {
+        setUpdateStateFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setShow(false);
+      });
   };
 
   return (
@@ -71,15 +83,22 @@ const PaybackModal = ({ data }: PaybackModalProps) => {
             </div>
             <h4>Pay back USDr debt</h4>
             <h5>
-              You owe <span className="dashboardModal__modal__header-red">$7.45 USDr</span>. Pay back some or all of
-              your debt below.
+              You owe &nbsp;
+              <span className="dashboardModal__modal__header-red">${data.usdrValue} USDr </span>. Pay back some or all
+              of your debt below.
             </h5>
           </div>
         </Modal.Header>
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much would you like to pay back?</label>
-            <CustomInput appendStr="Max" tokenStr="USDr" />
+            <CustomInput
+              appendStr="Max"
+              initValue={'' + data.usdrValue}
+              appendValueStr={'' + data.usdrValue}
+              tokenStr={`USDr`}
+              onTextChange={(value) => setPayBackAmount(Number(value))}
+            />
             <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput />
             <Button className="button--fill bottomBtn" onClick={() => repay()}>

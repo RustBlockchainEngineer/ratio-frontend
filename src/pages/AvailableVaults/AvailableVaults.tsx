@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { MINTADDRESS } from '../../constants';
 import { getRiskLevel } from '../../libs/helper';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useWallet } from '../../contexts/wallet';
@@ -18,10 +21,13 @@ import DisclaimerModal from '../../components/DisclaimerModal';
 import ComparingFooter from '../../components/ComparingFooter';
 
 import { getCoinPicSymbol } from '../../utils/helper';
-import { getTokenBySymbol } from '../../utils/tokens';
 
 import usdrIcon from '../../assets/images/USDr.png';
 import ethIcon from '../../assets/images/ETH.svg';
+import { getFaucetState } from '../../utils/ratio-faucet';
+import { useConnection } from '../../contexts/connection';
+
+import { SET_AVAILABLE_VAULT } from '../../features/dashboard/actionTypes';
 
 type whitelistProps = {
   id: number;
@@ -41,9 +47,23 @@ const AvailableVaults = () => {
   const [enable, setEnable] = React.useState(false);
   const { connected, publicKey } = useWallet();
 
+  const [data, setData] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const onViewType = (type: string) => {
     setViewType(type);
   };
+
+  const getData = async () => {
+    setIsLoading(true);
+    const d = await axios.get('https://api.ratio.finance/api/rate');
+    setData(d.data);
+    setIsLoading(false);
+  };
+
+  React.useEffect(() => {
+    getData();
+  }, []);
 
   React.useEffect(() => {
     if (connected) {
@@ -54,12 +74,10 @@ const AvailableVaults = () => {
         setEnable(true);
       } else {
         setEnable(false);
-        alert('Please add your address to whitelist.');
+        toast('Please add your address to whitelist.');
       }
     }
   }, [connected, publicKey]);
-
-  const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/rate');
 
   const filterData = (array1: any, array2: any) => {
     if (array2.length === 0) {
@@ -77,10 +95,9 @@ const AvailableVaults = () => {
     if (d !== undefined) {
       const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
         const tokens = key.split('-');
-
         return {
           id: index,
-          mint: d[key].mint,
+          mint: MINTADDRESS[key],
           icons: [getCoinPicSymbol(tokens[0]), getCoinPicSymbol(tokens[1])],
           icon1: getCoinPicSymbol(tokens[0]), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
           icon2: getCoinPicSymbol(tokens[1]),
@@ -90,8 +107,11 @@ const AvailableVaults = () => {
           details:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
           risk: d[key].c,
+          riskPercentage: d[key].r,
+          riskLevel: d[key].riskLevel,
         };
       });
+      dispatch({ type: actionTypes.SET_AVAILABLE_VAULT, payload: p });
       return p;
     }
     return [];
@@ -210,7 +230,7 @@ const AvailableVaults = () => {
           </div>
           <div className="text-right">
             Rewards earned:
-            <p>$2,700</p>
+            <p>$0</p>
           </div>
         </div>
         {/* <div className="mt-3 w-25">
@@ -249,6 +269,16 @@ const AvailableVaults = () => {
       );
     }
   };
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
 
   return (
     <div className="availablevaults">

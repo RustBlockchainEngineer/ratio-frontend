@@ -1,10 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getRiskLevel } from '../../libs/helper';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
+import { useWallet } from '../../contexts/wallet';
 import LockVaultModal from '../LockVaultModal';
 import DisclaimerModal from '../DisclaimerModal';
 import Button from '../Button';
@@ -13,8 +15,10 @@ import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 
 const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => {
+  const history = useHistory();
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
+  const { connected } = useWallet();
 
   const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
   const renderModalButton = () => {
@@ -25,6 +29,14 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
   const handleChangeComparison = (e: any) => {
     setChecked(e.target.checked);
     onCompareVault(data, e.target.checked);
+  };
+
+  const showDashboard = () => {
+    if (!connected) {
+      toast('Please connect your wallet!');
+    } else {
+      history.push(`/dashboard/vaultdashboard/${data.mint}`);
+    }
   };
 
   return (
@@ -38,7 +50,9 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
                 <img src={data.icon2} alt={'Token2'} className="tokenpaircard__header-icon" />
               </div>
               <div className="tokenpaircard__titleBox">
-                <h6>{data.title}</h6>
+                <div onClick={showDashboard}>
+                  <h6>{data.title}</h6>
+                </div>
                 <p>{data.tvl}</p>
               </div>
             </div>
@@ -120,7 +134,7 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
                   </div>
                   <div className="text-right">
                     Rewards earned:
-                    <p>$2,700</p>
+                    <p>$0</p>
                   </div>
                 </div>
                 {/* <div className="mt-3">

@@ -5,10 +5,10 @@
     border-radius: 4px;
     border-right: 0px;
     color: #3c4760;
-    padding-right: 145px;
     background-color: white;
     &:focus {
       border: 1px solid rgba(#4c646f, 0.2) !important;
+      border-right: 0px !important;
       box-shadow: none !important;
       background-color: transparent;
     }
@@ -20,11 +20,14 @@
     // font-weight: bold;
   }
   .tokenName {
-    position: absolute;
-    right: 123px;
-    top: 15px;
+    position: relative;
+    right: 0px;
+    padding-right: 10px;
+    padding-top: 12px;
     color: rgba(#3c4760, 0.7);
     font-size: 16px;
+    border-top: 1px solid rgba(#4c646f, 0.2);
+    border-bottom: 1px solid rgba(#4c646f, 0.2);
     &--onlytext {
       right: 15px;
     }

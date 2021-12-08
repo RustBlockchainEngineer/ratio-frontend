@@ -1,44 +1,54 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useAccountByMint, useMint } from '../../../contexts/accounts';
+import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { repayUSDr, USDC_USDR_LP_MINT_KEY } from '../../../utils/ratio-lending';
-import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
+import { repayUSDr } from '../../../utils/ratio-lending';
+import { TokenAmount } from '../../../utils/safe-math';
 
 import Button from '../../Button';
 
-const VaultDebt = () => {
+const VaultDebt = ({ data }: any) => {
   const connection = useConnection();
-  const { wallet } = useWallet();
-  const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
-  const [userCollAccount, setUserCollAccount] = React.useState('');
+  const { wallet, connected } = useWallet();
+  const usdrMint = useMint(data.usdrMint);
+
+  const [didMount, setDidMount] = React.useState(false);
+  const { setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
-    if (wallet?.publicKey) {
-      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(USDC_USDR_LP_MINT_KEY)).then(
-        (res) => {
-          setUserCollAccount(res);
-        }
-      );
-    }
-  }, [connection, wallet]);
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
 
   const repay = () => {
-    if (userCollAccount !== '') {
-      repayUSDr(connection, wallet, 10 * 1000000, new PublicKey(USDC_USDR_LP_MINT_KEY))
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {});
+    console.log('Paying back at all', data.usdrValue);
+    if (!data.usdrValue) {
+      return toast('Insufficient funds to payback!');
     }
+    if (!usdrMint) {
+      return toast('Invalid USDr Mint address to payback!');
+    }
+    repayUSDr(connection, wallet, Number(data.usdrValue) * Math.pow(10, usdrMint?.decimals), new PublicKey(data.mint))
+      .then(() => {
+        setUpdateStateFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {});
   };
 
   return (
     <div className="vaultdebt">
       <h4>Vault Debt</h4>
       <p>
-        You Owe <strong>$7.45 USDr</strong>
+        You Owe <strong>$ {Math.ceil(Number(data.usdrValue) * 100) / 100} USDr</strong>
       </p>
       <Button className="button--fill paybackusdr" onClick={() => repay()}>
         Pay Back USDr

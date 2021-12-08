@@ -71,7 +71,7 @@ const WalletContext = React.createContext<{
 export function WalletProvider({ children = null as any }) {
   const { endpoint } = useConnectionConfig();
 
-  const [autoConnect, setAutoConnect] = useState(false);
+  const [autoConnect, setAutoConnect] = useLocalStorageState('autoConnect');
   const [providerUrl, setProviderUrl] = useLocalStorageState('walletProvider');
 
   const provider = useMemo(() => WALLET_PROVIDERS.find(({ url }) => url === providerUrl), [providerUrl]);
@@ -160,7 +160,7 @@ export function WalletProvider({ children = null as any }) {
           <p className="walletProviderModal__header">Connect to a wallet</p>
         </Modal.Header>
         <Modal.Body>
-          {WALLET_PROVIDERS.map((provider) => {
+          {WALLET_PROVIDERS.map((provider, index) => {
             const onClick = function () {
               setProviderUrl(provider.url);
               setAutoConnect(true);
@@ -168,7 +168,7 @@ export function WalletProvider({ children = null as any }) {
             };
 
             return (
-              <Button size="lg" onClick={onClick} className="walletProviderModal__button d-block">
+              <Button size="lg" onClick={onClick} className="walletProviderModal__button d-block" key={index}>
                 <img alt={`${provider.name}`} width={20} height={20} src={provider.icon} style={{ marginRight: 8 }} />
                 {provider.name}
               </Button>

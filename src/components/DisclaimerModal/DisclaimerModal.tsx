@@ -17,34 +17,51 @@ type LockVaultModalProps = {
 const DisclaimerModal = ({ data }: LockVaultModalProps) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
   useEffect(() => {
-    getTokenVaultByMint(connection, data.mint).then((res) => {
-      setVault(res);
-      if (res) {
-        setCreated(true);
-      } else {
-        setCreated(false);
-      }
-    });
+    if (connected) {
+      getTokenVaultByMint(connection, data.mint).then((res) => {
+        setVault(res);
+        if (res) {
+          setCreated(true);
+        } else {
+          setCreated(false);
+        }
+      });
+    }
+    return () => {
+      setCreated(false);
+    };
   });
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
 
+  if (!didMount) {
+    return null;
+  }
   return (
     <>
-      {!isCreated ? (
+      {/* {!isCreated ? (
         <Button
           className="button--fill generate"
           onClick={() => createTokenVault(connection, wallet, new PublicKey(data.mint))}
         >
-          Create Vault
+          Create Vaults
         </Button>
       ) : (
         <Button className="button--fill generate" onClick={() => setShow(!show)}>
           Mint USDr
         </Button>
-      )}
+      )} */}
+
+      <Button className="button--fill generate" onClick={() => setShow(!show)}>
+        Mint USDr
+      </Button>
 
       <Modal
         show={show}

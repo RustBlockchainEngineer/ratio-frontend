@@ -2,6 +2,9 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
+import { toast } from 'react-toastify';
+import { useMint } from '../../../contexts/accounts';
+import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { getTokenVaultByMint, withdrawCollateral } from '../../../utils/ratio-lending';
@@ -20,25 +23,17 @@ type WithdrawModalProps = {
   data: PairType;
 };
 
-const WithdrawModal = ({ data }: WithdrawModalProps) => {
+const WithdrawModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
 
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
   const [userCollAccount, setUserCollAccount] = React.useState('');
+  const collMint = useMint(data.mint);
 
-  useEffect(() => {
-    getTokenVaultByMint(connection, data.mint).then((res) => {
-      setVault(res);
-      if (res) {
-        setCreated(true);
-      } else {
-        setCreated(false);
-      }
-    });
-  }, [connection]);
+  const [withdrawAmount, setWithdrawAmount] = React.useState(0);
+  const { setUpdateStateFlag } = useUpdateState();
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -46,19 +41,45 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
         setUserCollAccount(res);
       });
     }
-  });
+    return () => {
+      return setUserCollAccount('');
+    };
+  }, [connected]);
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
 
   const withdraw = () => {
-    if (userCollAccount !== '') {
-      withdrawCollateral(connection, wallet, 1 * 1000000000, userCollAccount, new PublicKey(data.mint))
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          setShow(false);
-        });
+    console.log('Withdrawing', withdrawAmount);
+    if (!(withdrawAmount && data.value >= withdrawAmount)) {
+      return toast('Insufficient funds to withdraw!');
     }
+    if (!(userCollAccount !== '' && collMint)) {
+      return toast('Invalid  User Collateral account to withdraw!');
+    }
+    withdrawCollateral(
+      connection,
+      wallet,
+      withdrawAmount * Math.pow(10, collMint?.decimals),
+      userCollAccount,
+      new PublicKey(data.mint)
+    )
+      .then(() => {
+        setUpdateStateFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setShow(false);
+      });
   };
 
   return (
@@ -85,7 +106,7 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
             <h5>
               Withdraw up to{' '}
               <strong>
-                {data.value} {data.title}-LP
+                {data.value} {data.title}
               </strong>{' '}
               tokens from your vault.
             </h5>
@@ -94,7 +115,13 @@ const WithdrawModal = ({ data }: WithdrawModalProps) => {
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much would you like to withdraw?</label>
-            <CustomInput appendStr="Max" appendValueStr="12.54" tokenStr={`${data.title}-LP`} />
+            <CustomInput
+              appendStr="Max"
+              initValue={'0'}
+              appendValueStr={`${data.value}`}
+              tokenStr={`${data.title}`}
+              onTextChange={(value) => setWithdrawAmount(Number(value))}
+            />
             <Button className="button--fill bottomBtn" onClick={() => withdraw()}>
               Withdraw Assets
             </Button>

@@ -53,14 +53,14 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
           onItemClick={onItemClick}
           collapseFlag={collapseFlag}
         />
-        <NavbarItem
+        {/* <NavbarItem
           icon={activeVaultsIcon}
           name="My Active Vaults"
           active={navIndex === '/dashboard/my-active-vaults'}
           navIndex="/dashboard/my-active-vaults"
           onItemClick={onItemClick}
           collapseFlag={collapseFlag}
-        />
+        /> */}
         {/* <NavbarItem
           icon={archivedVaultsIcon}
           name="My Archived Vaults"

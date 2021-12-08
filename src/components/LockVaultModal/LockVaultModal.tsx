@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
+
 import Button from '../Button';
 import CustomInput from '../CustomInput';
 import { PairType } from '../../models/UInterface';
@@ -9,85 +11,185 @@ import ComingSoon from '../ComingSoon';
 
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
-import { borrowUSDr, createTokenVault, depositCollateral, getTokenVaultByMint } from '../../utils/ratio-lending';
+import {
+  createTokenVault,
+  lockAndMint,
+  getTokenVaultByMint,
+  getUserState,
+  USDR_MINT_KEY,
+  depositCollateral,
+  borrowUSDr,
+  getUpdatedUserState,
+} from '../../utils/ratio-lending';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
 import { useConnection } from '../../contexts/connection';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../contexts/wallet';
 import { getOneFilteredTokenAccountsByOwner } from '../../utils/web3';
+import { useAccountByMint, useMint } from '../../contexts/accounts';
+import { TokenAmount } from '../../utils/safe-math';
+import { usePrice } from '../../contexts/price';
+import { getUSDrAmount } from '../../utils/risk';
+import { toast } from 'react-toastify';
+import { sleep } from '../../utils/utils';
+import { useUpdateState } from '../../contexts/auth';
 
 type LockVaultModalProps = {
   data: PairType;
 };
 
-const LockVaultModal = ({ data }: LockVaultModalProps) => {
+const LockVaultModal = ({ data }: any) => {
   const history = useHistory();
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
-  const [userCollAccount, setUserCollAccount] = React.useState('');
+  const [userState, setUserState] = React.useState(null);
+  const [mintTime, setMintTime] = React.useState('');
+
+  const tokenPrice = usePrice(data.mint);
+  const collMint = useMint(data.mint);
+  const usdrMint = useMint(USDR_MINT_KEY);
+  const collAccount = useAccountByMint(data.mint);
+
+  const [lockAmount, setLockAmount] = React.useState(0);
+
+  const [borrowAmount, setBorrowAmount] = React.useState(0);
+  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
+
+  const [maxLPAmount, setMaxLockAmount] = React.useState(0);
+  const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
   useEffect(() => {
-    getTokenVaultByMint(connection, data.mint).then((res) => {
-      setVault(res);
-      if (res) {
-        setCreated(true);
-      } else {
-        setCreated(false);
+    if (userState && tokenPrice && collMint && usdrMint) {
+      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
+      const availableAmount = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
+
+      const maxAmount = availableAmount - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
+      setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
+    }
+    if (userState) {
+      const endDateOfLock = (userState as any).lastMintTime.toNumber() + 3600;
+      const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM / DD /YYYY HH : MM : SS');
+
+      setMintTime(unlockDateString);
+    }
+    return () => {
+      setMaxUSDrAmount(0);
+    };
+  }, [tokenPrice, userState, usdrMint, collMint]);
+
+  useEffect(() => {
+    if (tokenPrice) {
+      const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
+      setMaxLockAmount(Math.min(initLPAmount, lpWalletBalance));
+    }
+    return () => {
+      setMaxLockAmount(0);
+    };
+  }, [tokenPrice, lpWalletBalance]);
+
+  useEffect(() => {
+    if (wallet && wallet.publicKey) {
+      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
+        setUserState(res);
+      });
+      if (collAccount && collMint) {
+        const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
+        setLpWalletBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
       }
-    });
-  }, [connection]);
+    }
+    return () => {
+      setLpWalletBalance(0);
+    };
+  }, [wallet, collAccount, connection, collMint]);
 
   useEffect(() => {
-    if (wallet?.publicKey) {
-      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(data.mint)).then((res) => {
-        setUserCollAccount(res);
+    if (connected) {
+      getTokenVaultByMint(connection, data.mint).then((res) => {
+        setVault(res);
+        if (res) {
+          setCreated(true);
+        } else {
+          setCreated(false);
+        }
       });
     }
-  }, [connection, wallet]);
+    return () => {
+      setCreated(false);
+    };
+  }, [connection]);
 
-  const deposit = () => {
-    if (userCollAccount !== '') {
-      depositCollateral(connection, wallet, 10 * 1000000000, userCollAccount, new PublicKey(data.mint))
-        .then(() => {})
+  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  useEffect(() => {
+    if (updateStateFlag) {
+      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
+        setUserState(res);
+        setUpdateStateFlag(false);
+      });
+    }
+  }, [updateStateFlag]);
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
+
+  const depositLP = () => {
+    if (!(lpWalletBalance >= lockAmount && lockAmount > 0)) {
+      toast('Insufficient funds!');
+      return;
+    }
+    if (collAccount) {
+      depositCollateral(
+        connection,
+        wallet,
+        lockAmount * Math.pow(10, collMint?.decimals as number),
+        collAccount.pubkey.toString(),
+        new PublicKey(data.mint)
+      )
+        .then(() => {
+          setUpdateStateFlag(true);
+        })
         .catch((e) => {
           console.log(e);
         })
         .finally(() => {
-          history.push('/dashboard/vaultdashboard');
+          // history.push(`/dashboard/vaultdashboard/${data.mint}`);
         });
     }
   };
 
-  const borrow = () => {
-    if (userCollAccount !== '') {
-      borrowUSDr(connection, wallet, 10 * 1000000, new PublicKey(data.mint))
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          history.push('/dashboard/vaultdashboard');
-        });
+  const mintUSDr = () => {
+    if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {
+      toast('Amount is invalid to mint USDr!');
+      return;
     }
+
+    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
+      .then(() => {
+        setUpdateStateFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        // history.push(`/dashboard/vaultdashboard/${data.mint}`);
+      });
   };
 
   return (
     <>
-      {!isCreated ? (
-        <Button
-          className="button--fill generate"
-          onClick={() => createTokenVault(connection, wallet, new PublicKey(data.mint))}
-        >
-          Create Vault
-        </Button>
-      ) : (
-        <Button className="button--fill generate" onClick={() => setShow(!show)}>
-          Mint USDr
-        </Button>
-      )}
-
+      <Button className="button--fill generate" onClick={() => setShow(!show)}>
+        Mint USDr
+      </Button>
       <Modal
         show={show}
         onHide={() => setShow(false)}
@@ -97,7 +199,7 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
         className="lockvaultmodal"
       >
         <Modal.Header>
-          <div className="lockvaultmodal__header">
+          <div className="lockvaultmodal__footer">
             <IoMdClose size={32} className="lockvaultmodal__header-close" onClick={() => setShow(false)} />
             <div>
               <img src={data.icons[0]} alt={data.icons[0].toString()} className="lockvaultmodal__header-icon1" />
@@ -105,7 +207,16 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
             </div>
             <h3>Lock {data.title}-LP into vault</h3>
             <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
-            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`${data.title} LP`} readOnly />
+            <CustomInput
+              appendStr="Max"
+              initValue={'0'}
+              appendValueStr={'' + maxLPAmount}
+              tokenStr={`${data.title} LP`}
+              onTextChange={(value) => setLockAmount(Number(value))}
+            />
+            <Button className="button--fill lockBtn" onClick={() => depositLP()}>
+              Lock Assets
+            </Button>
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -142,16 +253,22 @@ const LockVaultModal = ({ data }: LockVaultModalProps) => {
         </Modal.Body>
         <Modal.Footer>
           <div className="lockvaultmodal__footer">
+            <label className="lockvaultmodal__label2">
+              Available to mint after <strong>{mintTime}</strong>
+            </label>
+
             <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label>
             <label className="lockvaultmodal__label2">
               Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
             </label>
-            <CustomInput appendStr="Max" appendValueStr="1000" tokenStr={`USDr`} />
-            <Button className="button--fill lockBtn" onClick={() => deposit()}>
-              Lock Assets
-            </Button>
-            <Button className="button--fill lockBtn" onClick={() => borrow()}>
-              Borrow USDr
+            <CustomInput
+              appendStr="Max"
+              appendValueStr={'' + maxUSDrAmount}
+              tokenStr={`USDr`}
+              onTextChange={(value) => setBorrowAmount(Number(value))}
+            />
+            <Button className="button--fill lockBtn" onClick={() => mintUSDr()}>
+              Mint USDr
             </Button>
           </div>
         </Modal.Footer>

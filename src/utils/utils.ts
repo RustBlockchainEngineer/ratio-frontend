@@ -17,6 +17,9 @@ export const formatPriceNumber = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 8,
 });
+export function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
 
 export function useLocalStorageState(key: string, defaultState?: string) {
   const [state, setState] = useState(() => {

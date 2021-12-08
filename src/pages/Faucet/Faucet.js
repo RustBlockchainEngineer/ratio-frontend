@@ -1,62 +1,41 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
-
-import CustomInput from '../../components/CustomInput';
 import CustomSelect from '../../components/CustomSelect';
 import Button from '../../components/Button';
 
-import { getTokenBySymbol } from '../../utils/tokens';
-
-import usdrIcon from '../../assets/images/USDr.png';
-import usdcIcon from '../../assets/images/USDC.svg';
-import rayIcon from '../../assets/images/RAY.svg';
-import solIcon from '../../assets/images/SOL.svg';
-import ethIcon from '../../assets/images/ETH.svg';
-import srmIcon from '../../assets/images/SRM.svg';
-import mediaIcon from '../../assets/images/MEDIA.svg';
-
-const options1 = [
-  {
-    value: 'USDC-USDR',
-    label: 'USDC-USDR-LP',
-    icon: [`https://sdk.raydium.io/icons/${getTokenBySymbol('USDC')?.mintAddress}.png`, usdrIcon],
-  },
-  {
-    value: 'ETH-SOL',
-    label: 'ETH-SOL-LP',
-    icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('ETH')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('SOL')?.mintAddress}.png`,
-    ],
-  },
-  {
-    value: 'ATLAS-RAY',
-    label: 'ATLAS-RAY-LP',
-    icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('ATLAS')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
-    ],
-  },
-  {
-    value: 'SAMO-RAY',
-    label: 'SAMO-RAY-LP',
-    icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('SAMO')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
-    ],
-  },
-];
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
+import {
+  createFaucetState,
+  faucetUsdcUsdrLp,
+  faucetEthSolLp,
+  faucetAtlasRayLp,
+  faucetSamoRayLp,
+  isFaucetStateCreated,
+} from '../../utils/ratio-faucet';
+import { TOKEN_VAULT_OPTIONS } from '../../utils/ratio-lending';
 
 const Faucet = () => {
+  const connection = useConnection();
+  const gWallet = useWallet();
+  const wallet = gWallet.wallet;
+  const connect = gWallet.connect;
   const history = useHistory();
-
   const [amount, setAmount] = React.useState(0);
+  const [option, setOption] = React.useState(TOKEN_VAULT_OPTIONS[0]);
 
   const [submitState, setSubmitState] = React.useState(false);
+  const [isCreated, setIsCreated] = React.useState(false);
+
+  React.useEffect(async () => {
+    if (gWallet.connected) {
+      setIsCreated(await isFaucetStateCreated(connection, wallet));
+    }
+  }, [gWallet]);
 
   const onCancel = () => {
-    history.push('/dashboard');
+    history.goBack();
   };
 
   const getInputValue = (value) => {
@@ -67,8 +46,25 @@ const Faucet = () => {
     }
   };
 
-  const onSubmit = () => {
-    setSubmitState(true);
+  const onCreateFaucet = async () => {
+    await createFaucetState(connection, wallet);
+    setIsCreated(await isFaucetStateCreated(connection, wallet));
+  };
+
+  const onSubmit = async () => {
+    if (option.value === 'USDC-USDR') {
+      await faucetUsdcUsdrLp(connection, wallet);
+    } else if (option.value === 'ETH-SOL') {
+      await faucetEthSolLp(connection, wallet);
+    } else if (option.value === 'ATLAS-RAY') {
+      await faucetAtlasRayLp(connection, wallet);
+    } else if (option.value === 'SAMO-RAY') {
+      await faucetSamoRayLp(connection, wallet);
+    }
+  };
+
+  const onChangeLp = (value) => {
+    setOption(value);
   };
 
   return (
@@ -81,12 +77,12 @@ const Faucet = () => {
             release.
           </h6>
           <label>Choose which LP you wish to mint</label>
-          <CustomSelect options={options1} />
-          <label className="mt-4">Choose the amount you would like to mint</label>
+          <CustomSelect options={TOKEN_VAULT_OPTIONS} onChange={onChangeLp} />
+          {/* <label className="mt-4">Choose the amount you would like to mint</label>
           <CustomInput appendStr="Max" appendValueStr="100" onTextChange={getInputValue} />
           {submitState && (
             <div className="submitted">You&rsquo;ve successfully minted {amount} Ray-Sol Testnet tokens</div>
-          )}
+          )} */}
         </div>
         <div className="faucet__card__footer">
           {submitState && (
@@ -101,12 +97,12 @@ const Faucet = () => {
                   Cancel
                 </Button>
               </div>
-              <div className="col pr-1" onClick={onSubmit}>
+              <div className="col pr-1" onClick={!gWallet.connected ? connect : isCreated ? onSubmit : onCreateFaucet}>
                 <Button
-                  className={classNames('swaptokensBtn', amount === 0 ? 'button--disabled' : 'button--fill')}
-                  disabled={amount === 0}
+                  className={classNames('swaptokensBtn', amount === -1 ? 'button--disabled' : 'button--fill')}
+                  disabled={amount === -1}
                 >
-                  Submit
+                  {!gWallet.connected ? 'Connect Wallet' : isCreated ? 'Faucet' : 'Create Faucet'}
                 </Button>
               </div>
             </>

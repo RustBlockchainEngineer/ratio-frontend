@@ -18,7 +18,9 @@
   // min-height: 85px;
 
   &__connected {
+    cursor: pointer;
     display: flex;
+    min-width: 180px;
     align-items: center;
     padding: 12px 22px;
     border: 1px solid var(--unnamed-color-f9fbfe);
@@ -55,6 +57,18 @@
     border-radius: 100%;
   }
 
+  &__closed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: red;
+    width: 27px;
+    height: 27px;
+    background-color: rgba(red, 0.2);
+    border-radius: 100%;
+  }
+
+
   .walletBtn {
     font-family: 'Poppins-Medium';
     font-size: 14px;
@@ -83,7 +97,6 @@
     padding-left: 20px;
     padding-right: 20px;
     border-radius: 6px;
-    text-transform: uppercase;
     margin-right: 15px;
     font-size: 14px;
     height: 40px;
