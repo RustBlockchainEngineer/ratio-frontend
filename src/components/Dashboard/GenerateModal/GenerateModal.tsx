@@ -30,50 +30,17 @@ const GenerateModal = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
-  const [userState, setUserState] = React.useState({});
   const [mintTime, setMintTime] = React.useState('');
-  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
 
-  const collMint = useMint(data.mint);
   const usdrMint = useMint(data.usdrMint);
-  const tokenPrice = usePrice(data.mint);
+  const [borrowAmount, setBorrowAmount] = React.useState(0);
 
   useEffect(() => {
-    if (connected) {
-      getTokenVaultByMint(connection, data.mint).then((res) => {
-        setVault(res);
-        if (res) {
-          setCreated(true);
-        } else {
-          setCreated(false);
-        }
-      });
-    }
-    return () => {
-      setCreated(false);
-    };
-  }, [connection]);
-
-  useEffect(() => {
-    if (userState) {
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, usdrMint?.decimals);
-      const totalUSDr = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
-      const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
-      setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
-    }
-    return () => {
-      setMaxUSDrAmount(0);
-    };
-  }, [tokenPrice, userState]);
-
-  useEffect(() => {
-    if (wallet && wallet.publicKey) {
+    if (wallet && wallet.publicKey && data.mint) {
       getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        setUserState(res);
         if (res) {
           const endDateOfLock = res.lastMintTime.toNumber() + 3600;
-          const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM/DD/YYYY HH:MM:SS');
+          const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM / DD /YYYY HH : MM : SS');
 
           setMintTime(unlockDateString);
         }
@@ -82,7 +49,7 @@ const GenerateModal = ({ data }: any) => {
     return () => {
       setMintTime('');
     };
-  }, [wallet, connection, collMint]);
+  }, [wallet, connection]);
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -95,12 +62,12 @@ const GenerateModal = ({ data }: any) => {
   }
 
   const borrow = () => {
-    console.log(data.usdrMint, maxUSDrAmount);
-    if (maxUSDrAmount < 0) {
+    console.log('Borrowing USDr', borrowAmount);
+    if (borrowAmount < 0 || borrowAmount > data.usdrValue) {
       return toast('Amount is invalid to mint USDr!');
     }
     if (usdrMint) {
-      borrowUSDr(connection, wallet, maxUSDrAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+      borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
         .then(() => {})
         .catch((e) => {
           console.log(e);
@@ -139,7 +106,16 @@ const GenerateModal = ({ data }: any) => {
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much would you like to mint?</label>
-            <CustomInput appendStr="Max" appendValueStr="32.34" tokenStr="USDr" />
+            <CustomInput
+              appendStr="Max"
+              initValue={'0'}
+              appendValueStr={'' + data.usdrValue}
+              tokenStr={`USDr`}
+              onTextChange={(value) => setBorrowAmount(Number(value))}
+            />
+            <label className="lockvaultmodal__label2">
+              Available to mint after <strong>{mintTime}</strong>
+            </label>
             <p className="dashboardModal__modal__body-red">
               There will be a 2% stability fee associated with this transaction.
             </p>

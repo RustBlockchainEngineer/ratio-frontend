@@ -32,7 +32,6 @@ const CustomInput = ({
   };
 
   const setMaxValue = () => {
-    console.log('Setting max Value', appendValueStr);
     setValue(appendValueStr ? appendValueStr : '1000');
     onTextChange && onTextChange(appendValueStr ? appendValueStr : '1000');
   };

@@ -13,6 +13,7 @@ import { getFaucetState } from '../../../utils/ratio-faucet';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { getUsdrMintKey } from '../../../utils/ratio-lending';
+import { PublicKey } from '@solana/web3.js';
 
 interface ModalcardInterface {
   title: string;
@@ -25,31 +26,43 @@ interface ModalcardInterface {
   GenerateValue?: string;
 }
 
-type ModalCardProps = {
-  data: ModalcardInterface;
-};
+const ModalCard = ({
+  mintAddress,
+  title,
+  icons,
+  tokenName,
+  type,
 
-const ModalCard = ({ mintAddress, title, icons, tokenName, tokenValue, type, generateValue, riskLevel }: any) => {
+  depositValue,
+  withdrawValue,
+  generateValue,
+  debtValue,
+
+  riskLevel,
+}: any) => {
   const depositData = {
     mint: mintAddress,
-    icons: icons,
-    title: title,
+    icons: [rayIcon, solIcon],
+    title: tokenName,
+    value: depositValue,
     usdrMint: MINTADDRESS['USDR'],
     riskLevel: riskLevel,
   };
+
+  const withdrawData = {
+    mint: mintAddress,
+    icons: [rayIcon, solIcon],
+    title: tokenName,
+    value: withdrawValue,
+    usdrMint: MINTADDRESS['USDR'],
+    riskLevel: riskLevel,
+  };
+
   const paybackData = {
     mint: mintAddress,
     icons: [usdrIcon],
-    title: title,
-    usdrValue: '$7.45',
-    usdrMint: MINTADDRESS['USDR'],
-    riskLevel: riskLevel,
-  };
-  const withdrawData = {
-    mint: mintAddress,
-    icons: icons,
-    title: title,
-    value: '12.54',
+    title: tokenName,
+    usdrValue: debtValue,
     usdrMint: MINTADDRESS['USDR'],
     riskLevel: riskLevel,
   };
@@ -57,12 +70,11 @@ const ModalCard = ({ mintAddress, title, icons, tokenName, tokenValue, type, gen
   const generateData = {
     mint: mintAddress,
     icons: [usdrIcon],
-    title: title,
-    usdrValue: '32.34',
-    usdrMint: MINTADDRESS['USDR'],
+    title: tokenName,
+    usdrValue: generateValue,
+    usdrMint: tokenName,
     riskLevel: riskLevel,
   };
-
   return (
     <div className="modalCard">
       <p className="modalCard__title mb-2">{title}</p>
@@ -79,28 +91,28 @@ const ModalCard = ({ mintAddress, title, icons, tokenName, tokenValue, type, gen
             </div>
           </div>
           <div>
-            {type === 'deposit' && <DepositModal data={depositData} />}
-            {type === 'payback' && <PaybackModal data={paybackData} />}
+            {type === 'deposit_withdraw' && <DepositModal data={depositData} />}
+            {type === 'borrow_payback' && <PaybackModal data={paybackData} />}
           </div>
         </div>
         <div className="modalCard__footer">
           <div>
-            {type === 'payback' && (
+            {type === 'borrow_payback' && (
               <div>
                 <label>Able to generate</label>
-                <p>{tokenValue} USDr</p>
+                <p>{generateValue} USDr</p>
               </div>
             )}
-            {type === 'deposit' && (
+            {type === 'deposit_withdraw' && (
               <div>
                 <p>{tokenName}</p>
-                <h6>{tokenValue}</h6>
+                <h6>{withdrawValue}</h6>
               </div>
             )}
           </div>
           <div>
-            {type === 'deposit' && <WithdrawModal data={withdrawData} />}
-            {type === 'payback' && <GenerateModal data={generateData} />}
+            {type === 'deposit_withdraw' && <WithdrawModal data={withdrawData} />}
+            {type === 'borrow_payback' && <GenerateModal data={generateData} />}
           </div>
         </div>
       </div>

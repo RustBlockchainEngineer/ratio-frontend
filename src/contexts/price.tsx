@@ -43,6 +43,7 @@ export function PriceProvider({ children = undefined as any }) {
 }
 
 export const usePrice = (mint: string) => {
+  return Number(process.env.REACT_APP_LP_TOKEN_PRICE);
   const prices = useContext(PriceContext)?.prices;
   const setPrices = useContext(PriceContext)?.setPrices;
   const [price, setPrice] = useState<number>(0);

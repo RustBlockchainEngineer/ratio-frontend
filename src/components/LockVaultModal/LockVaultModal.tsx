@@ -20,7 +20,8 @@ import {
   depositCollateral,
   borrowUSDr,
 } from '../../utils/ratio-lending';
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
 import { useConnection } from '../../contexts/connection';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../contexts/wallet';
@@ -45,39 +46,41 @@ const LockVaultModal = ({ data }: any) => {
   const [userState, setUserState] = React.useState({});
   const [mintTime, setMintTime] = React.useState('');
 
-  const [lpAmount, setLPAmount] = React.useState(0);
-  const [usdrAmount, setUSDrAmount] = React.useState(0);
-  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
   const tokenPrice = usePrice(data.mint);
-  const [initCollAmount, setInitCollAmount] = React.useState(0);
   const collMint = useMint(data.mint);
   const usdrMint = useMint(USDR_MINT_KEY);
-
   const collAccount = useAccountByMint(data.mint);
-  const [lpWalletBalance, setCollBalance] = useState(0);
+
+  const [lockAmount, setLockAmount] = React.useState(0);
+
+  const [borrowAmount, setBorrowAmount] = React.useState(0);
+  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
+
+  const [maxLPAmount, setMaxLockAmount] = React.useState(0);
+  const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
   useEffect(() => {
-    if (userState) {
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, usdrMint?.decimals);
-      const totalUSDr = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
-      const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
+    if (userState && tokenPrice && collMint && usdrMint) {
+      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
+      const availableAmount = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
+
+      const maxAmount = availableAmount - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
       setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
     }
     return () => {
       setMaxUSDrAmount(0);
     };
-  }, [tokenPrice, userState]);
+  }, [tokenPrice, userState, usdrMint, collMint]);
 
   useEffect(() => {
     if (tokenPrice) {
-      const initLPAmount = Math.ceil((10 / tokenPrice) * 1000) / 1000;
-      // setMaxUSDrAmount(Math.ceil(getUSDrAmount(data.riskPercentage, tokenPrice * initLPAmount) * 1000) / 1000);
-      setInitCollAmount(initLPAmount);
+      const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
+      setMaxLockAmount(Math.min(initLPAmount, lpWalletBalance));
     }
     return () => {
-      setInitCollAmount(0);
+      setMaxLockAmount(0);
     };
-  }, [tokenPrice]);
+  }, [tokenPrice, lpWalletBalance]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -85,19 +88,19 @@ const LockVaultModal = ({ data }: any) => {
         setUserState(res);
         if (res) {
           const endDateOfLock = res.lastMintTime.toNumber() + 3600;
-          const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM/DD/YYYY HH:MM:SS');
+          const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM / DD /YYYY HH : MM : SS');
 
           setMintTime(unlockDateString);
         }
       });
-      if (collAccount) {
+      if (collAccount && collMint) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-        setCollBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
+        setLpWalletBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
       }
     }
     return () => {
       setMintTime('');
-      setCollBalance(0);
+      setLpWalletBalance(0);
     };
   }, [wallet, collAccount, connection, collMint]);
 
@@ -158,7 +161,7 @@ const LockVaultModal = ({ data }: any) => {
   };
 
   const depositLP = () => {
-    if (!(lpWalletBalance >= lpAmount && lpAmount > 0)) {
+    if (!(lpWalletBalance >= lockAmount && lockAmount > 0)) {
       toast('Insufficient funds!');
       return;
     }
@@ -166,7 +169,7 @@ const LockVaultModal = ({ data }: any) => {
       depositCollateral(
         connection,
         wallet,
-        lpAmount * Math.pow(10, collMint?.decimals as number),
+        lockAmount * Math.pow(10, collMint?.decimals as number),
         collAccount.pubkey.toString(),
         new PublicKey(data.mint)
       )
@@ -181,11 +184,11 @@ const LockVaultModal = ({ data }: any) => {
   };
 
   const mintUSDr = () => {
-    // if (!(maxUSDrAmount >= usdrAmount)) {
+    // if (!(maxUSDrAmount >= borrowAmount)) {
     //   toast('Amount is invalid to mint USDr!');
     //   return;
     // }
-    borrowUSDr(connection, wallet, usdrAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
+    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
       .then(() => {})
       .catch((e) => {
         console.log(e);
@@ -219,10 +222,10 @@ const LockVaultModal = ({ data }: any) => {
             <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'' + initCollAmount}
-              appendValueStr={'' + lpWalletBalance}
+              initValue={'0'}
+              appendValueStr={'' + maxLPAmount}
               tokenStr={`${data.title} LP`}
-              onTextChange={(value) => setLPAmount(Number(value))}
+              onTextChange={(value) => setLockAmount(Number(value))}
             />
             <Button className="button--fill lockBtn" onClick={() => depositLP()}>
               Lock Assets
@@ -264,7 +267,7 @@ const LockVaultModal = ({ data }: any) => {
         <Modal.Footer>
           <div className="lockvaultmodal__footer">
             <label className="lockvaultmodal__label2">
-              Available to mint: <strong>{mintTime}</strong>
+              Available to mint after <strong>{mintTime}</strong>
             </label>
 
             <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label>
@@ -275,7 +278,7 @@ const LockVaultModal = ({ data }: any) => {
               appendStr="Max"
               appendValueStr={'' + maxUSDrAmount}
               tokenStr={`USDr`}
-              onTextChange={(value) => setUSDrAmount(Number(value))}
+              onTextChange={(value) => setBorrowAmount(Number(value))}
             />
             <Button className="button--fill lockBtn" onClick={() => mintUSDr()}>
               Mint USDr

@@ -27,23 +27,10 @@ const WithdrawModal = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
   const [userCollAccount, setUserCollAccount] = React.useState('');
   const collMint = useMint(data.mint);
 
-  useEffect(() => {
-    getTokenVaultByMint(connection, data.mint).then((res) => {
-      setVault(res);
-      if (res) {
-        setCreated(true);
-      } else {
-        setCreated(false);
-      }
-    });
-    return () => {
-      return setCreated(false);
-    };
-  }, [connection]);
+  const [withdrawAmount, setWithdrawAmount] = React.useState(0);
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -67,22 +54,12 @@ const WithdrawModal = ({ data }: any) => {
   }
 
   const withdraw = () => {
-    let tenWorthOfLp = 0;
-    if (data.riskLevel === 0) {
-      tenWorthOfLp = 0.143;
-    } else if (data.riskLevel === 1) {
-      tenWorthOfLp = 0.00261;
-    } else if (data.riskLevel === 2) {
-      tenWorthOfLp = 0.317;
-    } else if (data.riskLevel === 3) {
-      tenWorthOfLp = 3.278;
-    }
-
-    if (userCollAccount !== '' && collMint) {
+    console.log('Withdrawing', withdrawAmount);
+    if (withdrawAmount && userCollAccount !== '' && collMint) {
       withdrawCollateral(
         connection,
         wallet,
-        tenWorthOfLp * Math.pow(10, collMint?.decimals),
+        withdrawAmount * Math.pow(10, collMint?.decimals),
         userCollAccount,
         new PublicKey(data.mint)
       )
@@ -120,7 +97,7 @@ const WithdrawModal = ({ data }: any) => {
             <h5>
               Withdraw up to{' '}
               <strong>
-                {data.value} {data.title}-LP
+                {data.value} {data.title}
               </strong>{' '}
               tokens from your vault.
             </h5>
@@ -129,7 +106,13 @@ const WithdrawModal = ({ data }: any) => {
         <Modal.Body>
           <div className="dashboardModal__modal__body">
             <label className="dashboardModal__modal__label">How much would you like to withdraw?</label>
-            <CustomInput appendStr="Max" appendValueStr="12.54" tokenStr={`${data.title}-LP`} />
+            <CustomInput
+              appendStr="Max"
+              initValue={'0'}
+              appendValueStr={`${data.value}`}
+              tokenStr={`${data.title}`}
+              onTextChange={(value) => setWithdrawAmount(Number(value))}
+            />
             <Button className="button--fill bottomBtn" onClick={() => withdraw()}>
               Withdraw Assets
             </Button>

@@ -12,18 +12,6 @@ const VaultDebt = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const usdrMint = useMint(data.usdrMint);
-  const usdrAccount = useAccountByMint(data.usdrMint);
-  const [usdrAmount, setUSDrAmount] = useState(0);
-
-  useEffect(() => {
-    if (usdrAccount) {
-      const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', usdrMint?.decimals);
-      setUSDrAmount(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
-    }
-    return () => {
-      setUSDrAmount(0);
-    };
-  });
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -36,8 +24,9 @@ const VaultDebt = ({ data }: any) => {
   }
 
   const repay = () => {
+    console.log('Paying back at all', data.usdrValue);
     if (usdrMint) {
-      repayUSDr(connection, wallet, 10 * Math.pow(10, usdrMint?.decimals), new PublicKey(data.mint))
+      repayUSDr(connection, wallet, Number(data.usdrValue) * Math.pow(10, usdrMint?.decimals), new PublicKey(data.mint))
         .then(() => {})
         .catch((e) => {
           console.log(e);
@@ -50,7 +39,7 @@ const VaultDebt = ({ data }: any) => {
     <div className="vaultdebt">
       <h4>Vault Debt</h4>
       <p>
-        You Owe <strong>$ {usdrAmount} USDr</strong>
+        You Owe <strong>$ {Math.ceil(Number(data.usdrValue) * 100) / 100} USDr</strong>
       </p>
       <Button className="button--fill paybackusdr" onClick={() => repay()}>
         Pay Back USDr
