@@ -14,6 +14,7 @@ import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import { useUpdateState } from '../../../contexts/auth';
 
 type PairType = {
   mint: string;
@@ -34,6 +35,7 @@ const GenerateModal = ({ data }: any) => {
 
   const usdrMint = useMint(data.usdrMint);
   const [borrowAmount, setBorrowAmount] = React.useState(0);
+  const { setUpdateStateFlag } = useUpdateState();
 
   useEffect(() => {
     if (wallet && wallet.publicKey && data.mint) {
@@ -64,18 +66,22 @@ const GenerateModal = ({ data }: any) => {
   const borrow = () => {
     console.log('Borrowing USDr', borrowAmount);
     if (borrowAmount < 0 || borrowAmount > data.usdrValue) {
-      return toast('Amount is invalid to mint USDr!');
+      return toast('Amount is invalid to generate USDr!');
     }
-    if (usdrMint) {
-      borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          setShow(!show);
-        });
+    if (!usdrMint) {
+      return toast('Invalid USDr Mint address to generate!');
     }
+    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+      .then(() => {
+        console.log('Success Generate');
+        setUpdateStateFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setShow(!show);
+      });
   };
 
   return (

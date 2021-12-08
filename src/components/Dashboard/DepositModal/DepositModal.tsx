@@ -2,7 +2,9 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
+import { toast } from 'react-toastify';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
+import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { usePrice } from '../../../contexts/price';
 import { useWallet } from '../../../contexts/wallet';
@@ -32,6 +34,7 @@ const DepositModal = ({ data }: any) => {
   const [depositAmount, setDepositAmount] = React.useState(0);
 
   const [didMount, setDidMount] = React.useState(false);
+  const { setUpdateStateFlag } = useUpdateState();
 
   useEffect(() => {
     setDidMount(true);
@@ -44,22 +47,28 @@ const DepositModal = ({ data }: any) => {
 
   const deposit = () => {
     console.log('Depositing', depositAmount);
-    if (depositAmount && collAccount && collMint && connected) {
-      depositCollateral(
-        connection,
-        wallet,
-        depositAmount * Math.pow(10, collMint?.decimals),
-        collAccount.pubkey.toString(),
-        new PublicKey(data.mint)
-      )
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          setShow(false);
-        });
+    if (!(depositAmount && data.value > depositAmount)) {
+      return toast('Insufficient funds to deposit!');
     }
+    if (!(collAccount && collMint && connected)) {
+      return toast('Invalid  User Collateral account to deposit!');
+    }
+    depositCollateral(
+      connection,
+      wallet,
+      depositAmount * Math.pow(10, collMint?.decimals),
+      collAccount.pubkey.toString(),
+      new PublicKey(data.mint)
+    )
+      .then(() => {
+        setUpdateStateFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setShow(false);
+      });
   };
   return (
     <div className="dashboardModal">

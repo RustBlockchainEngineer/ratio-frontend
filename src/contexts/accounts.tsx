@@ -455,7 +455,7 @@ export function useMint(key?: string | PublicKey) {
     cache
       .query(connection, id, MintParser)
       .then((acc) => setMint(acc.info as any))
-      .catch(); // .catch((err) => console.log(err));
+      .catch((err) => console.log(`${err}`.slice(0, 30)));
 
     const dispose = cache.emitter.onCache((e) => {
       const event = e;

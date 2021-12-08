@@ -2,7 +2,9 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
+import { toast } from 'react-toastify';
 import { useMint } from '../../../contexts/accounts';
+import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { getTokenVaultByMint, withdrawCollateral } from '../../../utils/ratio-lending';
@@ -31,6 +33,7 @@ const WithdrawModal = ({ data }: any) => {
   const collMint = useMint(data.mint);
 
   const [withdrawAmount, setWithdrawAmount] = React.useState(0);
+  const { setUpdateStateFlag } = useUpdateState();
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -55,22 +58,28 @@ const WithdrawModal = ({ data }: any) => {
 
   const withdraw = () => {
     console.log('Withdrawing', withdrawAmount);
-    if (withdrawAmount && userCollAccount !== '' && collMint) {
-      withdrawCollateral(
-        connection,
-        wallet,
-        withdrawAmount * Math.pow(10, collMint?.decimals),
-        userCollAccount,
-        new PublicKey(data.mint)
-      )
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          setShow(false);
-        });
+    if (!(withdrawAmount && data.value > withdrawAmount)) {
+      return toast('Insufficient funds to withdraw!');
     }
+    if (!(userCollAccount !== '' && collMint)) {
+      return toast('Invalid  User Collateral account to withdraw!');
+    }
+    withdrawCollateral(
+      connection,
+      wallet,
+      withdrawAmount * Math.pow(10, collMint?.decimals),
+      userCollAccount,
+      new PublicKey(data.mint)
+    )
+      .then(() => {
+        setUpdateStateFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setShow(false);
+      });
   };
 
   return (

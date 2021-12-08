@@ -72,7 +72,7 @@ const ModalCard = ({
     icons: [usdrIcon],
     title: tokenName,
     usdrValue: generateValue,
-    usdrMint: tokenName,
+    usdrMint: MINTADDRESS['USDR'],
     riskLevel: riskLevel,
   };
   return (

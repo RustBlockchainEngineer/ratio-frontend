@@ -10,6 +10,8 @@ import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import { PublicKey } from '@solana/web3.js';
 import { getUsdrMintKey, repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { useMint } from '../../../contexts/accounts';
+import { useUpdateState } from '../../../contexts/auth';
+import { toast } from 'react-toastify';
 
 type PairType = {
   icons: Array<string>;
@@ -28,6 +30,7 @@ const PaybackModal = ({ data }: any) => {
   const usdrMint = useMint(data.usdrMint);
 
   const [paybackAmount, setPayBackAmount] = React.useState(Number(data.usdrValue));
+  const { setUpdateStateFlag } = useUpdateState();
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -41,16 +44,22 @@ const PaybackModal = ({ data }: any) => {
 
   const repay = () => {
     console.log('PayBack', paybackAmount);
-    if (usdrMint && paybackAmount) {
-      repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          setShow(false);
-        });
+    if (!(paybackAmount && data.usdrValue > paybackAmount)) {
+      return toast('Insufficient funds to payback!');
     }
+    if (!usdrMint) {
+      return toast('Invalid USDr Mint address to payback!');
+    }
+    repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+      .then(() => {
+        setUpdateStateFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setShow(false);
+      });
   };
 
   return (

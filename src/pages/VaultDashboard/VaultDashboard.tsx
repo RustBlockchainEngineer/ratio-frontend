@@ -21,7 +21,11 @@ import solIcon from '../../assets/images/SOL.svg';
 import usdrIcon from '../../assets/images/USDr.png';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import { getUserState, USDR_MINT_KEY, TOKEN_VAULT_OPTIONS, getUsdrMintKey } from '../../utils/ratio-lending';
+import {
+  getUserState,
+  // USDR_MINT_KEY, TOKEN_VAULT_OPTIONS, getUsdrMintKey,
+  getUpdatedUserState,
+} from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
@@ -30,6 +34,7 @@ import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
 import { getRiskLevel } from '../../libs/helper';
 import { getUSDrAmount } from '../../utils/risk';
+import { useUpdateState } from '../../contexts/auth';
 
 const priceCardData = [
   {
@@ -192,6 +197,16 @@ const VaultDashboard = () => {
       setIsLoading(false);
     }
   }, []);
+
+  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  useEffect(() => {
+    if (updateStateFlag) {
+      getUpdatedUserState(connection, wallet, vault_mint as string, userState).then((res) => {
+        setUserState(res);
+        setUpdateStateFlag(false);
+      });
+    }
+  }, [updateStateFlag]);
 
   const getRiskLevelNumber = () => {
     switch (vault_mint) {

@@ -19,6 +19,7 @@ import {
   USDR_MINT_KEY,
   depositCollateral,
   borrowUSDr,
+  getUpdatedUserState,
 } from '../../utils/ratio-lending';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -31,6 +32,8 @@ import { TokenAmount } from '../../utils/safe-math';
 import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
+import { sleep } from '../../utils/utils';
+import { useUpdateState } from '../../contexts/auth';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -43,7 +46,7 @@ const LockVaultModal = ({ data }: any) => {
   const { wallet, connected } = useWallet();
   const [vault, setVault] = React.useState({});
   const [isCreated, setCreated] = React.useState({});
-  const [userState, setUserState] = React.useState({});
+  const [userState, setUserState] = React.useState(null);
   const [mintTime, setMintTime] = React.useState('');
 
   const tokenPrice = usePrice(data.mint);
@@ -67,6 +70,12 @@ const LockVaultModal = ({ data }: any) => {
       const maxAmount = availableAmount - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
       setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
     }
+    if (userState) {
+      const endDateOfLock = (userState as any).lastMintTime.toNumber() + 3600;
+      const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM / DD /YYYY HH : MM : SS');
+
+      setMintTime(unlockDateString);
+    }
     return () => {
       setMaxUSDrAmount(0);
     };
@@ -86,12 +95,6 @@ const LockVaultModal = ({ data }: any) => {
     if (wallet && wallet.publicKey) {
       getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
         setUserState(res);
-        if (res) {
-          const endDateOfLock = res.lastMintTime.toNumber() + 3600;
-          const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM / DD /YYYY HH : MM : SS');
-
-          setMintTime(unlockDateString);
-        }
       });
       if (collAccount && collMint) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
@@ -99,7 +102,6 @@ const LockVaultModal = ({ data }: any) => {
       }
     }
     return () => {
-      setMintTime('');
       setLpWalletBalance(0);
     };
   }, [wallet, collAccount, connection, collMint]);
@@ -120,6 +122,16 @@ const LockVaultModal = ({ data }: any) => {
     };
   }, [connection]);
 
+  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  useEffect(() => {
+    if (updateStateFlag) {
+      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
+        setUserState(res);
+        setUpdateStateFlag(false);
+      });
+    }
+  }, [updateStateFlag]);
+
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
@@ -130,42 +142,14 @@ const LockVaultModal = ({ data }: any) => {
     return null;
   }
 
-  const depositAndBorrow = () => {
-    if (collAccount) {
-      let tenWorthOfLp = 0;
-      if (data.riskLevel === 0) {
-        tenWorthOfLp = 0.143;
-      } else if (data.riskLevel === 1) {
-        tenWorthOfLp = 0.00261;
-      } else if (data.riskLevel === 2) {
-        tenWorthOfLp = 0.317;
-      } else if (data.riskLevel === 3) {
-        tenWorthOfLp = 3.278;
-      }
-      lockAndMint(
-        connection,
-        wallet,
-        tenWorthOfLp * Math.pow(10, collMint?.decimals as number),
-        10 * Math.pow(10, usdrMint?.decimals as number),
-        collAccount.pubkey.toString(),
-        new PublicKey(data.mint)
-      )
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          history.push(`/dashboard/vaultdashboard/${data.mint}`);
-        });
-    }
-  };
-
   const depositLP = () => {
     if (!(lpWalletBalance >= lockAmount && lockAmount > 0)) {
       toast('Insufficient funds!');
       return;
     }
     if (collAccount) {
+      console.log('Current User Locked', (userState as any).lockedCollBalance.toString());
+
       depositCollateral(
         connection,
         wallet,
@@ -173,7 +157,9 @@ const LockVaultModal = ({ data }: any) => {
         collAccount.pubkey.toString(),
         new PublicKey(data.mint)
       )
-        .then(() => {})
+        .then(() => {
+          setUpdateStateFlag(true);
+        })
         .catch((e) => {
           console.log(e);
         })
@@ -184,12 +170,15 @@ const LockVaultModal = ({ data }: any) => {
   };
 
   const mintUSDr = () => {
-    // if (!(maxUSDrAmount >= borrowAmount)) {
-    //   toast('Amount is invalid to mint USDr!');
-    //   return;
-    // }
+    if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {
+      toast('Amount is invalid to mint USDr!');
+      return;
+    }
+
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
-      .then(() => {})
+      .then(() => {
+        setUpdateStateFlag(true);
+      })
       .catch((e) => {
         console.log(e);
       })
