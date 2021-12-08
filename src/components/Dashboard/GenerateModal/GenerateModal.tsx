@@ -65,7 +65,7 @@ const GenerateModal = ({ data }: any) => {
 
   const borrow = () => {
     console.log('Borrowing USDr', borrowAmount);
-    if (borrowAmount < 0 || borrowAmount > data.usdrValue) {
+    if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
       return toast('Amount is invalid to generate USDr!');
     }
     if (!usdrMint) {

@@ -58,7 +58,7 @@ const WithdrawModal = ({ data }: any) => {
 
   const withdraw = () => {
     console.log('Withdrawing', withdrawAmount);
-    if (!(withdrawAmount && data.value > withdrawAmount)) {
+    if (!(withdrawAmount && data.value >= withdrawAmount)) {
       return toast('Insufficient funds to withdraw!');
     }
     if (!(userCollAccount !== '' && collMint)) {

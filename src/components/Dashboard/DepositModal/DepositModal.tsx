@@ -46,8 +46,9 @@ const DepositModal = ({ data }: any) => {
   }
 
   const deposit = () => {
-    console.log('Depositing', depositAmount);
-    if (!(depositAmount && data.value > depositAmount)) {
+    console.log('Depositing', depositAmount, data.value);
+    console.log(data.mint);
+    if (!(depositAmount && data.value >= depositAmount)) {
       return toast('Insufficient funds to deposit!');
     }
     if (!(collAccount && collMint && connected)) {

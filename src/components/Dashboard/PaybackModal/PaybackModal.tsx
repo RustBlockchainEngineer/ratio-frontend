@@ -44,7 +44,7 @@ const PaybackModal = ({ data }: any) => {
 
   const repay = () => {
     console.log('PayBack', paybackAmount);
-    if (!(paybackAmount && data.usdrValue > paybackAmount)) {
+    if (!(paybackAmount && data.usdrValue >= paybackAmount)) {
       return toast('Insufficient funds to payback!');
     }
     if (!usdrMint) {
