@@ -179,6 +179,7 @@ export async function getUpdatedUserState(connection: any, wallet: any, mint: st
     res = await getUserState(connection, wallet, new PublicKey(mint));
   } while (
     !res ||
+    originState && 
     res.lockedCollBalance.toString() === originState.lockedCollBalance.toString() &&
     res.debt.toString() === (originState as any).debt.toString()
   );

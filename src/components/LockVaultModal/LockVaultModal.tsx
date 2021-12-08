@@ -148,8 +148,6 @@ const LockVaultModal = ({ data }: any) => {
       return;
     }
     if (collAccount) {
-      console.log('Current User Locked', (userState as any).lockedCollBalance.toString());
-
       depositCollateral(
         connection,
         wallet,
