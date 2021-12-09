@@ -121,7 +121,7 @@ const AvailableVaults = () => {
 
   const renderModalButton = (row: any, connect: boolean) => {
     if (connect) {
-      if (row.risk >= 200 && row.risk < 250) return <DisclaimerModal data={row} />;
+      if (row.risk === 250) return <DisclaimerModal data={row} />;
       return <LockVaultModal data={row} />;
     }
   };
@@ -190,20 +190,16 @@ const AvailableVaults = () => {
               <Button className="button--gradientBorder lp-button">Insta-buy LP</Button>
             </div> */}
             <div className="col">
-              {walletConnected ? (
-                renderModalButton(row, walletConnected)
-              ) : (
-                <OverlayTrigger
-                  placement="top"
-                  trigger="click"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
-                >
-                  <div>
-                    <Button className="button--disabled generate">Mint USDr</Button>
-                  </div>
-                </OverlayTrigger>
-              )}
+              <OverlayTrigger
+                placement="top"
+                trigger="click"
+                delay={{ show: 250, hide: 400 }}
+                overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
+              >
+                <div>
+                  <Button className="button--disabled generate">Mint USDr</Button>
+                </div>
+              </OverlayTrigger>
             </div>
           </div>
         );
