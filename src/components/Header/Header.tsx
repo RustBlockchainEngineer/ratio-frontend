@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
@@ -23,6 +23,12 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
   // const { onClick, children, disabled, allowWalletChange, ...rest } = props
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
+
+  useEffect(() => {
+    if (connected) {
+      setHover(false);
+    }
+  }, [connected]);
 
   return (
     <div className="header d-flex">
