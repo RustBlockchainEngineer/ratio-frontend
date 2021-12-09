@@ -143,11 +143,11 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (userState && vault_mint && connected) {
       const tmpWithdrawValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
-      setWithdrawValue('' + Math.ceil(parseFloat(tmpWithdrawValue) * 100) / 100);
+      setWithdrawValue(parseFloat(tmpWithdrawValue).toFixed(2));
       console.log('locked', tmpWithdrawValue);
 
       const tmpDebtValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
-      setDebtValue('' + Math.ceil(parseFloat(tmpDebtValue) * 100) / 100);
+      setDebtValue(parseFloat(tmpDebtValue).toFixed(2));
       console.log('debt', tmpDebtValue);
 
       setVaultDebtData({
@@ -258,7 +258,7 @@ const VaultDashboard = () => {
               return (
                 <div key={item.title} className="col col-md-12 col-sm-12">
                   <ComingSoon enable={index === 1}>
-                    <PriceCard data={item} comingsoon={index === 0} />
+                    <PriceCard data={{ currentPrice: '$' + tokenPrice.toFixed(2) }} comingsoon={false} />
                   </ComingSoon>
                 </div>
               );

@@ -3,9 +3,9 @@ import ComingSoon from '../../ComingSoon';
 import risklevel from '../../../assets/images/risklevel.svg';
 
 interface PricecardInterface {
-  title: string;
-  titleIcon: boolean;
-  mainValue: string;
+  title?: string;
+  titleIcon?: boolean;
+  mainValue?: string;
   mainUnit?: string;
   currentPrice?: string;
   minimumRatio?: string;
