@@ -24,7 +24,6 @@ type WithdrawModalProps = {
 };
 
 const WithdrawModal = ({ data }: any) => {
-  console.log('Withdraw Modal', data);
   const [show, setShow] = React.useState(false);
 
   const connection = useConnection();
