@@ -102,7 +102,7 @@ const Faucet = () => {
                   className={classNames('swaptokensBtn', amount === -1 ? 'button--disabled' : 'button--fill')}
                   disabled={amount === -1}
                 >
-                  {!gWallet.connected ? 'Connect Wallet' : isCreated ? 'Faucet' : 'Create Faucet'}
+                  {!gWallet.connected ? 'Connect Wallet' : isCreated ? 'Mint' : 'Create Faucet'}
                 </Button>
               </div>
             </>
