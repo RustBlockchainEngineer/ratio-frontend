@@ -156,6 +156,9 @@ const VaultDashboard = () => {
         usdrValue: Number(tmpDebtValue),
       });
     }
+    if (!connected) {
+      history.push(`/dashboard/available-vaults`);
+    }
     return () => {
       setVaultDebtData({
         mint: vault_mint,

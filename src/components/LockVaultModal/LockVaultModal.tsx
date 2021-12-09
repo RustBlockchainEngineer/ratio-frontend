@@ -116,11 +116,13 @@ const LockVaultModal = ({ data }: any) => {
           setCreated(false);
         }
       });
+    } else {
+      setShow(false);
     }
     return () => {
       setCreated(false);
     };
-  }, [connection]);
+  }, [connection, connected]);
 
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
@@ -187,7 +189,7 @@ const LockVaultModal = ({ data }: any) => {
 
   return (
     <>
-      <Button className="button--fill generate" onClick={() => setShow(!show)}>
+      <Button className="button--fill generate" disabled={!connected} onClick={() => setShow(!show)}>
         Mint USDr
       </Button>
       <Modal
