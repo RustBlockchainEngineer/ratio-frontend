@@ -54,10 +54,10 @@ const ModalCard = ({
     icons: [rayIcon, solIcon],
     title: tokenName,
     value: withdrawValue,
+    usdrValue: debtValue,
     usdrMint: MINTADDRESS['USDR'],
     riskLevel: riskLevel,
   };
-
   const paybackData = {
     mint: mintAddress,
     icons: [usdrIcon],

@@ -68,7 +68,7 @@ const LockVaultModal = ({ data }: any) => {
       const availableAmount = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
 
       const maxAmount = availableAmount - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
-      setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
+      setMaxUSDrAmount(Math.ceil(Math.max(maxAmount, 0) * 1000) / 1000);
     }
     if (userState) {
       const endDateOfLock = (userState as any).lastMintTime.toNumber() + 3600;
