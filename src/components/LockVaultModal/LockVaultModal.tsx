@@ -126,7 +126,7 @@ const LockVaultModal = ({ data }: any) => {
 
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
-    if (updateStateFlag) {
+    if (updateStateFlag && wallet?.publicKey) {
       getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
         setUserState(res);
         setUpdateStateFlag(false);
