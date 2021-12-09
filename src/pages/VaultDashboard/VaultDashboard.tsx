@@ -179,7 +179,7 @@ const VaultDashboard = () => {
 
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
-    if (updateStateFlag) {
+    if (updateStateFlag && wallet?.publicKey) {
       getUpdatedUserState(connection, wallet, vault_mint as string, userState).then((res) => {
         setUserState(res);
         setUpdateStateFlag(false);

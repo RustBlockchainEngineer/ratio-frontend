@@ -18,8 +18,8 @@ dotenv.config();
 const App: React.FC = () => {
   return (
     <ConnectionProvider>
-      <WalletProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <WalletProvider>
           <AccountsProvider>
             <RaydiumPoolProvider>
               <PriceProvider>
@@ -42,8 +42,8 @@ const App: React.FC = () => {
               </PriceProvider>
             </RaydiumPoolProvider>
           </AccountsProvider>
-        </AuthProvider>
-      </WalletProvider>
+        </WalletProvider>
+      </AuthProvider>
     </ConnectionProvider>
   );
 };
