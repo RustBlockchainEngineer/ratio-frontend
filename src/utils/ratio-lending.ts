@@ -182,7 +182,7 @@ export async function getUserOverview(connection: Connection, wallet: any) {
   const totalLocked = 0;
   for( let i = 0; i < mints.length; i ++ ) {
       const state = await getUserState(connection, wallet, new PublicKey(mints[i]));
-      if (state) {
+      if (state && state.debt.toString() !== '0') {
         activeVaults[mints[i]] = cloneDeep(state);
         vaultCount ++;
         totalDebt += Number(state.debt.toString());
