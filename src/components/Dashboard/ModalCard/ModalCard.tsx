@@ -94,7 +94,6 @@ const ModalCard = ({
           <div>
             {type === 'deposit_withdraw' && (
               <div>
-                <Button className="button--fill modalCard__entervault">Enter Vault</Button>
                 <DepositModal data={depositData} />
               </div>
             )}
@@ -120,7 +119,6 @@ const ModalCard = ({
             {type === 'deposit_withdraw' && <WithdrawModal data={withdrawData} />}
             {type === 'borrow_payback' && (
               <div>
-                <Button className="button--fill modalCard__entervault">Enter Vault</Button>
                 <GenerateModal data={generateData} />
               </div>
             )}
