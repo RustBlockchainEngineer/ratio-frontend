@@ -42,6 +42,10 @@ export function PriceProvider({ children = undefined as any }) {
   );
 }
 
+export const usePrices = () => {
+  return useContext(PriceContext)?.prices;
+};
+
 export const usePrice = (mint: string) => {
   return Number(process.env.REACT_APP_LP_TOKEN_PRICE);
   const prices = useContext(PriceContext)?.prices;
