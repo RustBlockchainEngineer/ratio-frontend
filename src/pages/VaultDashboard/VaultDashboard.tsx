@@ -65,6 +65,11 @@ const VaultDashboard = () => {
   const tokenPrice = usePrice(vault_mint as string);
 
   const collAccount = useAccountByMint(vault_mint as string);
+  const usdrAccount = useAccountByMint(MINTADDRESS['USDR']);
+  const [lpWalletBalance, setLpWalletBalance] = useState(0);
+  const [lpWalletBalanceUSD, setLpWalletBalanceUSD] = useState(0);
+
+  const [usdrWalletBalance, setUsdrWalletBalance] = useState(0);
 
   const [userState, setUserState] = useState(null);
   const [VaultData, setVaultData] = useState<any>({});
@@ -80,7 +85,6 @@ const VaultDashboard = () => {
     usdrMint: MINTADDRESS['USDR'],
     usdrValue: 0,
   });
-  const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
   useEffect(() => {
     if (!connected) {
@@ -115,11 +119,23 @@ const VaultDashboard = () => {
   }, [wallet, collAccount, connection, collMint]);
 
   useEffect(() => {
+    if (wallet && wallet.publicKey && usdrMint && usdrAccount) {
+      const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', usdrMint?.decimals);
+      setUsdrWalletBalance(Number(tokenAmount.fixed()));
+    }
+    return () => {
+      setUsdrWalletBalance(0);
+    };
+  }, [wallet, usdrAccount, connection, usdrMint]);
+
+  useEffect(() => {
     if (tokenPrice) {
       const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
       const tmpMaxDeposit = '' + Math.min(initLPAmount, lpWalletBalance);
       console.log('deposit', tmpMaxDeposit);
       setDepositValue(tmpMaxDeposit);
+
+      setLpWalletBalanceUSD(tokenPrice * lpWalletBalance);
     }
     return () => {
       setDepositValue('0');
@@ -294,7 +310,13 @@ const VaultDashboard = () => {
           </div> */}
         </div>
         <div className="col col-md-4 vaultdashboard__bodyright">
-          <AmountPanel vault_mint={vault_mint} />
+          <AmountPanel
+            collAmount={lpWalletBalance}
+            collAmountUSD={lpWalletBalanceUSD}
+            icons={VaultData.icons}
+            tokenName={VaultData.title}
+            usdrAmount={usdrWalletBalance}
+          />
         </div>
       </div>
     </div>
