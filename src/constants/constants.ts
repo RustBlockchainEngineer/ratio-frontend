@@ -1,7 +1,7 @@
 export const MINTADDRESS: any = {
-  USDR: '7vK2iXymyZSem4Yf79emiMMYARGshWsg5ZkLimd6s9Ds',
-  'USDC-USDR': '3ZmQRcaKCmz9WF5L3noi6tZHhbY3ZmyujqyhTViWuffn',
-  'ETH-SOL': 'DJZUA9cQCtRiMH66tUJJNKR4RUmw7xZXhKnr7FGgiLKU',
-  'ATLAS-RAY': '8So1qJrk33QCrSaGGmPGxtzPbR3hkPqXjUJjgAbghRa1',
-  'SAMO-RAY': '3xAobruK6JiKnLDwjmBa3UqmqbiZK5YxQyvTYMNsiqFB',
+  USDR: '6EJAff7wySn7TMeGLH8Nk7XCZ9uYdkrYiiM5qA4sKR8i',
+  'USDC-USDR': '7M2dxU1tavGpKX47baKCsspBjZ5Rcthcun8DDouSU49x',
+  'ETH-SOL': '8Tddz1epzDM5nvEaYc5uPtmgu3DCRabRxsnfXu6yUneD',
+  'ATLAS-RAY': '4sGmJRR53TLUo6S1ovFChdEuEssjymPNuEaaDQacuKws',
+  'SAMO-RAY': 'AZFu6w1oj7t9QSgcBhpHdVmSp39QLuk6dMcqkqJ1cHXP',
 };
