@@ -25,6 +25,8 @@ import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
+import { MINTADDRESS } from '../constants';
+import { cloneDeep } from 'lodash-es';
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
@@ -170,6 +172,30 @@ export async function getUserState(connection: Connection, wallet: any, mintColl
     return null;
   }
 }
+
+export async function getUserOverview(connection: Connection, wallet: any) {
+  const mints: string[] = Object.values(MINTADDRESS);
+
+  const activeVaults: any = {};
+  let vaultCount = 0;
+  let totalDebt = 0;
+  const totalLocked = 0;
+  for( let i = 0; i < mints.length; i ++ ) {
+      const state = await getUserState(connection, wallet, new PublicKey(mints[i]));
+      if (state) {
+        activeVaults[mints[i]] = cloneDeep(state);
+        vaultCount ++;
+        totalDebt += Number(state.debt.toString());
+      }
+  }
+  return {
+    data: activeVaults,
+    totalDebt,
+    vaultCount,
+    totalLocked
+  }
+}
+
 
 export async function getUpdatedUserState(connection: any, wallet: any, mint: string, originState: any)
 {
