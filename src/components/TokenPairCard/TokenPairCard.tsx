@@ -22,7 +22,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
   const renderModalButton = () => {
-    if (data.risk >= 200 && data.risk < 250) return <DisclaimerModal data={data} />;
+    if (data.risk === 250) return <DisclaimerModal data={data} />;
     return <LockVaultModal data={data} />;
   };
 
