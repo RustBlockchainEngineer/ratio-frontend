@@ -15,6 +15,7 @@ import {
   isFaucetStateCreated,
 } from '../../utils/ratio-faucet';
 import { TOKEN_VAULT_OPTIONS } from '../../utils/ratio-lending';
+import { toast } from 'react-toastify';
 
 const Faucet = () => {
   const connection = useConnection();
@@ -61,6 +62,7 @@ const Faucet = () => {
     } else if (option.value === 'SAMO-RAY') {
       await faucetSamoRayLp(connection, wallet);
     }
+    toast('$10 worth of ' + option.value + ' LP token successfully minted!');
   };
 
   const onChangeLp = (value) => {

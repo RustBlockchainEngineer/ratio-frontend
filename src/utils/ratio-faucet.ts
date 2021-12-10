@@ -113,8 +113,6 @@ export async function createFaucetState(connection: Connection, wallet: any) {
   try {
     const globalState = await program.account.faucet.fetch(globalStateKey);
     console.log('already created');
-    console.log('globalState', globalState);
-    console.log('already created');
     return;
   } catch (e) {
     console.log('not created');
@@ -166,11 +164,7 @@ export async function faucetUsdcUsdrLp(connection: Connection, wallet: any) {
     program.programId
   );
 
-  const transaction = new Transaction();
-  const signers: Keypair[] = [];
-
-  console.log('lpMintKeyc', lpMintKey.toString());
-  const mintInstruction = await program.instruction.faucetUsdcUsdrLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
+  const tx = await program.rpc.faucetUsdcUsdrLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
     accounts: {
       owner: wallet.publicKey,
       faucetState: globalStateKey,
@@ -181,9 +175,6 @@ export async function faucetUsdcUsdrLp(connection: Connection, wallet: any) {
       rent: SYSVAR_RENT_PUBKEY,
     },
   });
-  transaction.add(mintInstruction);
-
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
 }
 
@@ -206,11 +197,7 @@ export async function faucetEthSolLp(connection: Connection, wallet: any) {
     program.programId
   );
 
-  const transaction = new Transaction();
-  const signers: Keypair[] = [];
-
-  console.log('lpMintKeyc', lpMintKey.toString());
-  const mintInstruction = await program.instruction.faucetEthSolLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
+  const tx = await program.rpc.faucetEthSolLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
     accounts: {
       owner: wallet.publicKey,
       faucetState: globalStateKey,
@@ -221,9 +208,6 @@ export async function faucetEthSolLp(connection: Connection, wallet: any) {
       rent: SYSVAR_RENT_PUBKEY,
     },
   });
-  transaction.add(mintInstruction);
-
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
 }
 
@@ -242,16 +226,12 @@ export async function faucetAtlasRayLp(connection: Connection, wallet: any) {
     program.programId
   );
 
-  const transaction = new Transaction();
-  const signers: Keypair[] = [];
-
   const [userLpKey, userLpKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(USER_ATLAS_RAY_TAG), wallet.publicKey.toBuffer(), lpMintKey.toBuffer()],
     program.programId
   );
 
-  console.log('lpMintKeyc', lpMintKey.toString());
-  const mintInstruction = await program.instruction.faucetAtlasRayLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
+  const tx = await program.rpc.faucetAtlasRayLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
     accounts: {
       owner: wallet.publicKey,
       faucetState: globalStateKey,
@@ -262,9 +242,6 @@ export async function faucetAtlasRayLp(connection: Connection, wallet: any) {
       rent: SYSVAR_RENT_PUBKEY,
     },
   });
-  transaction.add(mintInstruction);
-
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
 }
 
@@ -283,16 +260,12 @@ export async function faucetSamoRayLp(connection: Connection, wallet: any) {
     program.programId
   );
 
-  const transaction = new Transaction();
-  const signers: Keypair[] = [];
-
   const [userLpKey, userLpKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(USER_SAMO_RAY_TAG), wallet.publicKey.toBuffer(), lpMintKey.toBuffer()],
     program.programId
   );
 
-  console.log('lpMintKeyc', lpMintKey.toString());
-  const mintInstruction = await program.instruction.faucetSamoRayLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
+  const tx = await program.rpc.faucetSamoRayLp(globalStateNonce, lpMintKeyNonce, userLpKeyNonce, {
     accounts: {
       owner: wallet.publicKey,
       faucetState: globalStateKey,
@@ -303,8 +276,5 @@ export async function faucetSamoRayLp(connection: Connection, wallet: any) {
       rent: SYSVAR_RENT_PUBKEY,
     },
   });
-  transaction.add(mintInstruction);
-
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
 }
