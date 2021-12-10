@@ -9,6 +9,7 @@ type CustomInputProps = {
   appendValueStr?: string;
   className?: string;
   readOnly?: boolean;
+  maxValue?: number;
   onTextChange?: (value: string) => void;
 };
 
@@ -20,12 +21,19 @@ const CustomInput = ({
   className,
   onTextChange,
   readOnly,
+  maxValue,
 }: CustomInputProps) => {
+  if (typeof maxValue === 'string') {
+    maxValue = parseFloat(maxValue);
+  }
   const [value, setValue] = React.useState(initValue ? initValue : '0');
 
   const handleChange = (e: any) => {
     const re = /^[+-]?\d*(?:[.,]\d*)?$/;
     if (e.target.value === '' || re.test(e.target.value)) {
+      if (maxValue === 0 || (maxValue && maxValue < e.target.value)) {
+        return;
+      }
       setValue(e.target.value);
       onTextChange && onTextChange(e.target.value);
     }
