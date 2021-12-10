@@ -98,6 +98,7 @@ const PaybackModal = ({ data }: any) => {
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
               onTextChange={(value) => setPayBackAmount(Number(value))}
+              maxValue={data.usdrValue}
             />
             <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput />

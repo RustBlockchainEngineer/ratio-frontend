@@ -215,6 +215,7 @@ const LockVaultModal = ({ data }: any) => {
               appendValueStr={'' + maxLPAmount}
               tokenStr={`${data.title} LP`}
               onTextChange={(value) => setLockAmount(Number(value))}
+              maxValue={maxLPAmount}
             />
             <Button className="button--fill lockBtn" onClick={() => depositLP()}>
               Lock Assets
@@ -268,6 +269,7 @@ const LockVaultModal = ({ data }: any) => {
               appendValueStr={'' + maxUSDrAmount}
               tokenStr={`USDr`}
               onTextChange={(value) => setBorrowAmount(Number(value))}
+              maxValue={maxUSDrAmount}
             />
             <Button className="button--fill lockBtn" onClick={() => mintUSDr()}>
               Mint USDr
