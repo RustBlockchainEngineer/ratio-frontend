@@ -2,8 +2,6 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 
 import { Table } from 'react-bootstrap';
-import RAY from '../../../assets/images/RAY.svg';
-import SOL from '../../../assets/images/SOL.svg';
 import USDr from '../../../assets/images/USDr.png';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
 
@@ -13,39 +11,8 @@ import { USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 
-const WalletBalances = ({ vault_mint }: any) => {
-  const collAccount = useAccountByMint(vault_mint);
-  const collMint = useMint(vault_mint);
-  const [collAmount, setCollAmount] = useState(0);
-
-  const usdrAccount = useAccountByMint(USDR_MINT_KEY);
-  const usdrMint = useMint(USDR_MINT_KEY);
-  const [usdrAmount, setUSDrAmount] = useState(0);
-
-  useEffect(() => {
-    if (collAccount) {
-      const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-      setCollAmount(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
-    }
-    if (usdrAccount) {
-      const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', usdrMint?.decimals);
-      setUSDrAmount(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
-    }
-    return () => {
-      setCollAmount(0);
-      setUSDrAmount(0);
-    };
-  });
-
-  const [didMount, setDidMount] = useState(false);
-  useEffect(() => {
-    setDidMount(true);
-    return () => setDidMount(false);
-  }, []);
-
-  if (!didMount) {
-    return null;
-  }
+const WalletBalances = ({ data }: any) => {
+  console.log(data);
   return (
     <div>
       <h4>Wallet Balances</h4>
@@ -60,19 +27,19 @@ const WalletBalances = ({ vault_mint }: any) => {
         <tbody>
           <tr>
             <td className="name">
-              <img src={RAY} alt="RAY" />
-              <img src={SOL} alt="RAY" className="lastToken" />
-              RAY-SOL-LP
+              <img src={data.icons ? data.icons[0] : null} alt="TokenA" style={{ width: 32 }} />
+              <img src={data.icons ? data.icons[1] : null} alt="TokenB" style={{ width: 32 }} className="lastToken" />
+              {data.tokenName}
             </td>
-            <td>{collAmount}</td>
-            <td className="text-right">$635.12</td>
+            <td>{data.collAmount}</td>
+            <td className="text-right">${data.collAmountUSD}</td>
           </tr>
           <tr>
             <td>
               <img src={USDr} alt="RAY" style={{ width: 32 }} /> USDr
             </td>
-            <td>{usdrAmount}</td>
-            <td className="text-right">$52.28</td>
+            <td>{data.usdrAmount}</td>
+            <td className="text-right">${data.usdrAmount}</td>
           </tr>
         </tbody>
       </Table>
