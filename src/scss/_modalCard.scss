@@ -11,6 +11,13 @@
     border: 1px solid var(--unnamed-color-f9fbfe);
     border-radius: 16px;
   }
+  &__entervault {
+    padding: 14px 12px;
+    font-family: 'Poppins-Medium';
+    font-size: 15px;
+    min-width: 112px;
+    margin-bottom: 0.5rem;
+  }
   &__fillBtn {
     padding: 16px 20px;
     font-family: 'Poppins-Medium';
@@ -57,7 +64,7 @@
   &__footer {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     border-top: 1px solid var(--unnamed-color-f9fbfe);
     background-color: var(--unnamed-color-f8f9f9);
     border-bottom-left-radius: 16px;

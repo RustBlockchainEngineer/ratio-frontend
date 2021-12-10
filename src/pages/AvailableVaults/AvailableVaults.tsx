@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 import { MINTADDRESS } from '../../constants';
 import { getRiskLevel } from '../../libs/helper';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -11,7 +10,6 @@ import { selectors, actionTypes } from '../../features/dashboard';
 import { walletSelectors } from '../../features/wallet';
 
 import classNames from 'classnames';
-import useFetch from 'react-fetch-hook';
 import BootstrapTable from 'react-bootstrap-table-next';
 import Button from '../../components/Button';
 import FilterPanel from '../../components/FilterPanel';
@@ -22,29 +20,14 @@ import ComparingFooter from '../../components/ComparingFooter';
 
 import { getCoinPicSymbol } from '../../utils/helper';
 
-import usdrIcon from '../../assets/images/USDr.png';
-import ethIcon from '../../assets/images/ETH.svg';
-import { getFaucetState } from '../../utils/ratio-faucet';
-import { useConnection } from '../../contexts/connection';
-
 import { SET_AVAILABLE_VAULT } from '../../features/dashboard/actionTypes';
-
-type whitelistProps = {
-  id: number;
-  address: any;
-  created_at: string;
-  updated_at: string;
-  name: string;
-};
 
 const AvailableVaults = () => {
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
   const compareValutsList = useSelector(selectors.getCompareVaultsList);
-  const whitelist_data = useSelector(walletSelectors.getWhiteListData);
   const filter_data = useSelector(selectors.getFilterData);
 
-  const [enable, setEnable] = React.useState(false);
   const { connected, publicKey } = useWallet();
 
   const [data, setData] = React.useState([]);
@@ -64,20 +47,6 @@ const AvailableVaults = () => {
   React.useEffect(() => {
     getData();
   }, []);
-
-  React.useEffect(() => {
-    if (connected) {
-      const filtered = whitelist_data.filter((item: whitelistProps) => {
-        return item.address === publicKey?.toString();
-      });
-      if (filtered?.length > 0) {
-        setEnable(true);
-      } else {
-        setEnable(false);
-        toast('Please add your address to whitelist.');
-      }
-    }
-  }, [connected, publicKey]);
 
   const filterData = (array1: any, array2: any) => {
     if (array2.length === 0) {
@@ -102,7 +71,7 @@ const AvailableVaults = () => {
           icon1: getCoinPicSymbol(tokens[0]), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
           icon2: getCoinPicSymbol(tokens[1]),
           title: key,
-          tvl: '$20,818,044.40',
+          // tvl: '$20,818,044.40',
           apr: 125,
           details:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
@@ -121,7 +90,7 @@ const AvailableVaults = () => {
 
   const renderModalButton = (row: any, connect: boolean) => {
     if (connect) {
-      if (row.risk >= 200 && row.risk < 250) return <DisclaimerModal data={row} />;
+      if (row.risk === 250) return <DisclaimerModal data={row} />;
       return <LockVaultModal data={row} />;
     }
   };
@@ -138,8 +107,8 @@ const AvailableVaults = () => {
           <div className="align-items-center">
             <div className="d-flex ">
               <div>
-                <img src={row.icons[0]} alt={row.icons[0].toString()} />
-                <img src={row.icons[1]} alt={row.icons[1].toString()} className="activepaircard__header-icon" />
+                <img src={row.icons[0]} alt={row.icons[0].toString()} className="activepaircard__header-icon0" />
+                <img src={row.icons[1]} alt={row.icons[1].toString()} className="activepaircard__header-icon1" />
               </div>
               <div
                 className={classNames('activepaircard__titleBox', {
@@ -190,20 +159,16 @@ const AvailableVaults = () => {
               <Button className="button--gradientBorder lp-button">Insta-buy LP</Button>
             </div> */}
             <div className="col">
-              {walletConnected ? (
-                renderModalButton(row, walletConnected)
-              ) : (
-                <OverlayTrigger
-                  placement="top"
-                  trigger="click"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
-                >
-                  <div>
-                    <Button className="button--disabled generate">Mint USDr</Button>
-                  </div>
-                </OverlayTrigger>
-              )}
+              <OverlayTrigger
+                placement="top"
+                trigger="click"
+                delay={{ show: 250, hide: 400 }}
+                overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
+              >
+                <div>
+                  <Button className="button--disabled generate">Mint USDr</Button>
+                </div>
+              </OverlayTrigger>
             </div>
           </div>
         );
@@ -240,7 +205,7 @@ const AvailableVaults = () => {
     ),
   };
 
-  const showContent = (vtype: string, enable: boolean) => {
+  const showContent = (vtype: string) => {
     const onCompareVault = (data: PairType, status: boolean) => {
       if (status) {
         dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: [...compareValutsList, data] });
@@ -252,7 +217,7 @@ const AvailableVaults = () => {
 
     if (vtype === 'tile') {
       return factorial.map((item: any) => {
-        return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} enable={enable} />;
+        return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
       });
     } else {
       return (
@@ -291,7 +256,7 @@ const AvailableVaults = () => {
             </div>
           </div>
         ) : (
-          showContent(viewType, enable)
+          showContent(viewType)
         )}
       </div>
       {compareValutsList.length > 0 && <ComparingFooter list={compareValutsList} />}

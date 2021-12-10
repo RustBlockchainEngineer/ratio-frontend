@@ -53,30 +53,6 @@ const priceCardData = [
   // },
 ];
 
-const defaultModalCardData = [
-  {
-    title: 'Tokens Locked',
-    mint: '',
-    tokens: [rayIcon, solIcon],
-    tokenNames: 'USDC-USDr LP',
-    tokenValue: '0',
-    type: 'deposit',
-    withdrawValue: '0 USDC-USDr LP',
-    riskLevel: 0,
-    usdrMint: '',
-  },
-  {
-    title: 'Outstanding USDr Debt',
-    mint: '',
-    tokens: [usdrIcon],
-    tokenNames: 'USDC-USDr LP',
-    tokenValue: '0',
-    type: 'payback',
-    GenerateValue: '0 USDr',
-    usdrMint: '',
-  },
-];
-
 const VaultDashboard = () => {
   const history = useHistory();
   const { mint: vault_mint } = useParams<{ mint?: string }>();
@@ -89,6 +65,11 @@ const VaultDashboard = () => {
   const tokenPrice = usePrice(vault_mint as string);
 
   const collAccount = useAccountByMint(vault_mint as string);
+  const usdrAccount = useAccountByMint(MINTADDRESS['USDR']);
+  const [lpWalletBalance, setLpWalletBalance] = useState(0);
+  const [lpWalletBalanceUSD, setLpWalletBalanceUSD] = useState(0);
+
+  const [usdrWalletBalance, setUsdrWalletBalance] = useState(0);
 
   const [userState, setUserState] = useState(null);
   const [VaultData, setVaultData] = useState<any>({});
@@ -104,7 +85,6 @@ const VaultDashboard = () => {
     usdrMint: MINTADDRESS['USDR'],
     usdrValue: 0,
   });
-  const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
   useEffect(() => {
     if (!connected) {
@@ -139,11 +119,23 @@ const VaultDashboard = () => {
   }, [wallet, collAccount, connection, collMint]);
 
   useEffect(() => {
+    if (wallet && wallet.publicKey && usdrMint && usdrAccount) {
+      const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', usdrMint?.decimals);
+      setUsdrWalletBalance(Number(tokenAmount.fixed()));
+    }
+    return () => {
+      setUsdrWalletBalance(0);
+    };
+  }, [wallet, usdrAccount, connection, usdrMint]);
+
+  useEffect(() => {
     if (tokenPrice) {
       const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
       const tmpMaxDeposit = '' + Math.min(initLPAmount, lpWalletBalance);
       console.log('deposit', tmpMaxDeposit);
       setDepositValue(tmpMaxDeposit);
+
+      setLpWalletBalanceUSD(tokenPrice * lpWalletBalance);
     }
     return () => {
       setDepositValue('0');
@@ -157,7 +149,7 @@ const VaultDashboard = () => {
       const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
       console.log('generate', maxAmount);
 
-      setGenerateValue('' + Math.ceil(maxAmount * 1000) / 1000);
+      setGenerateValue('' + Math.ceil(Math.max(maxAmount, 0) * 1000) / 1000);
     }
     return () => {
       setGenerateValue('0');
@@ -167,11 +159,11 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (userState && vault_mint && connected) {
       const tmpWithdrawValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
-      setWithdrawValue('' + Math.ceil(parseFloat(tmpWithdrawValue) * 100) / 100);
+      setWithdrawValue(parseFloat(tmpWithdrawValue).toFixed(2));
       console.log('locked', tmpWithdrawValue);
 
       const tmpDebtValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
-      setDebtValue('' + Math.ceil(parseFloat(tmpDebtValue) * 100) / 100);
+      setDebtValue(parseFloat(tmpDebtValue).toFixed(2));
       console.log('debt', tmpDebtValue);
 
       setVaultDebtData({
@@ -179,6 +171,9 @@ const VaultDashboard = () => {
         usdrMint: MINTADDRESS['USDR'],
         usdrValue: Number(tmpDebtValue),
       });
+    }
+    if (!connected) {
+      history.push(`/dashboard/available-vaults`);
     }
     return () => {
       setVaultDebtData({
@@ -200,7 +195,7 @@ const VaultDashboard = () => {
 
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
-    if (updateStateFlag) {
+    if (updateStateFlag && wallet?.publicKey) {
       getUpdatedUserState(connection, wallet, vault_mint as string, userState).then((res) => {
         setUserState(res);
         setUpdateStateFlag(false);
@@ -279,7 +274,7 @@ const VaultDashboard = () => {
               return (
                 <div key={item.title} className="col col-md-12 col-sm-12">
                   <ComingSoon enable={index === 1}>
-                    <PriceCard data={item} comingsoon={index === 0} />
+                    <PriceCard data={{ currentPrice: '$' + tokenPrice.toFixed(2) }} comingsoon={false} />
                   </ComingSoon>
                 </div>
               );
@@ -292,6 +287,7 @@ const VaultDashboard = () => {
                 tokenName={VaultData.title}
                 depositValue={depositValue}
                 withdrawValue={withdrawValue}
+                debtValue={debtValue}
                 type="deposit_withdraw"
                 riskLevel={getRiskLevelNumber()}
               />
@@ -314,7 +310,13 @@ const VaultDashboard = () => {
           </div> */}
         </div>
         <div className="col col-md-4 vaultdashboard__bodyright">
-          <AmountPanel vault_mint={vault_mint} />
+          <AmountPanel
+            collAmount={lpWalletBalance}
+            collAmountUSD={lpWalletBalanceUSD}
+            icons={VaultData.icons}
+            tokenName={VaultData.title}
+            usdrAmount={usdrWalletBalance}
+          />
         </div>
       </div>
     </div>

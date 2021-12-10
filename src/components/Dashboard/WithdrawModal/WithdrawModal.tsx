@@ -84,7 +84,7 @@ const WithdrawModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="gradientBtn" onClick={() => setShow(!show)}>
+      <Button className="gradientBtn" disabled={Number(data.usdrValue) !== 0} onClick={() => setShow(!show)}>
         Withdraw
       </Button>
       <Modal
@@ -121,6 +121,7 @@ const WithdrawModal = ({ data }: any) => {
               appendValueStr={`${data.value}`}
               tokenStr={`${data.title}`}
               onTextChange={(value) => setWithdrawAmount(Number(value))}
+              maxValue={data.value}
             />
             <Button className="button--fill bottomBtn" onClick={() => withdraw()}>
               Withdraw Assets

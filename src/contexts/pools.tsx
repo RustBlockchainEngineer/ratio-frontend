@@ -15,9 +15,11 @@ export function RaydiumPoolProvider({ children = undefined as any }) {
   const [pools, setPools] = useState<any>(null);
   const [conn, setConnection] = useState<Connection>(new Connection(ENDPOINTS[0].endpoint));
   useEffect(() => {
-    getRaydiumPools(conn).then((res: any) => {
-      setPools(res);
-    });
+    try {
+      getRaydiumPools(conn).then((res: any) => {
+        setPools(res);
+      });
+    } catch (e) {}
   }, [conn]);
 
   return (

@@ -6,10 +6,10 @@ import LossCalculator from './LossCalculator';
 import SystemInfo from './SystemInfo';
 import ComingSoon from '../../ComingSoon';
 
-const AmountPanel = ({ vault_mint }: any) => {
+const AmountPanel = (data: any) => {
   return (
     <div className="amountPanel">
-      <WalletBalances vault_mint={vault_mint} />
+      <WalletBalances data={data} />
       {/* <ComingSoon enable>
         <div>
           <TokensEarned />

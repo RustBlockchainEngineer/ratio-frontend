@@ -14,6 +14,14 @@ import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg';
 import { RiMenuFoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
+import { useUpdateState } from '../../contexts/auth';
+import { useConnection } from '../../contexts/connection';
+import { getUserOverview, USDR_MINT_KEY } from '../../utils/ratio-lending';
+import { Left } from 'react-bootstrap/lib/Media';
+import { useMint } from '../../contexts/accounts';
+import { TokenAmount } from '../../utils/safe-math';
+import { sleep } from '../../utils/utils';
+import { usePrices } from '../../contexts/price';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -29,11 +37,41 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const location = useLocation();
   const history = useHistory();
   const [navIndex, setNavIndex] = useState(location.pathname);
-  const { connected, connect } = useWallet();
+  const { connected, connect, wallet } = useWallet();
+  const connection = useConnection();
 
+  const [activeVaultCount, setActiveVaultCount] = useState(0);
+  const [totalMinted, setTotalDebt] = useState(0);
+  const [totalLocked, setTotalLocked] = useState(0);
+  const usdrMint = useMint(USDR_MINT_KEY);
+  const prices = usePrices();
   React.useEffect(() => {
     setNavIndex(location.pathname);
   }, [location.pathname]);
+
+  const { updateStateFlag } = useUpdateState();
+
+  const updateOverview = async () => {
+    sleep(3000);
+    const overview = await getUserOverview(connection, wallet);
+
+    setTotalDebt(Number(new TokenAmount(overview.totalDebt, usdrMint?.decimals).fixed()));
+    setActiveVaultCount(overview.vaultCount);
+
+    let tmpLocked = 0;
+    const vaults = Object.values(overview.data);
+    for (const [mint, vault] of Object.entries(vaults)) {
+      const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
+      tmpLocked += price * Number(new TokenAmount((vault as any).lockedCollBalance, 9).fixed());
+    }
+    setTotalLocked(tmpLocked);
+  };
+
+  React.useEffect(() => {
+    if (connected && wallet?.publicKey && usdrMint) {
+      updateOverview();
+    }
+  }, [connected, wallet, usdrMint, updateStateFlag, prices]);
 
   const onItemClick = (index: string) => {
     setNavIndex(index);
@@ -83,15 +121,15 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
               <hr />
               <div className="navbar-vertical__item">
                 <h6>Active Vaults</h6>
-                <div>0</div>
+                <h6>{activeVaultCount}</h6>
               </div>
               <div className="navbar-vertical__item">
                 <h6>Total Vault Value</h6>
-                <div>0</div>
+                <h6>${totalLocked.toFixed(3)}</h6>
               </div>
               <div className="navbar-vertical__item">
                 <h6>USDr Minted</h6>
-                <div>0</div>
+                <h6>${totalMinted.toFixed(3)}</h6>
               </div>
             </div>
           ) : null

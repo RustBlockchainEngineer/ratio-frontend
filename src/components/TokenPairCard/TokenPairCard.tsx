@@ -14,7 +14,7 @@ import highRisk from '../../assets/images/highrisk.svg';
 import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 
-const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => {
+const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
@@ -22,7 +22,7 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
 
   const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
   const renderModalButton = () => {
-    if (data.risk >= 200 && data.risk < 250) return <DisclaimerModal data={data} />;
+    if (data.risk === 250) return <DisclaimerModal data={data} />;
     return <LockVaultModal data={data} />;
   };
 
@@ -97,22 +97,7 @@ const TokenPairCard = ({ data, onCompareVault, enable }: TokenPairCardProps) => 
                   <Button className="button--gradientBorder insta-buy-lp">Insta-buy LP</Button>
                 </Link>
               </div> */}
-              <div className="col">
-                {enable ? (
-                  renderModalButton()
-                ) : (
-                  <OverlayTrigger
-                    placement="top"
-                    trigger="click"
-                    delay={{ show: 250, hide: 400 }}
-                    overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
-                  >
-                    <div>
-                      <Button className="button--disabled generate">Mint USDr</Button>
-                    </div>
-                  </OverlayTrigger>
-                )}
-              </div>
+              <div className="col">{renderModalButton()}</div>
             </div>
           )}
 

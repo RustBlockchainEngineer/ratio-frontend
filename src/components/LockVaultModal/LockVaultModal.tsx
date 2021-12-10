@@ -68,7 +68,7 @@ const LockVaultModal = ({ data }: any) => {
       const availableAmount = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
 
       const maxAmount = availableAmount - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
-      setMaxUSDrAmount(Math.ceil(maxAmount * 1000) / 1000);
+      setMaxUSDrAmount(Math.ceil(Math.max(maxAmount, 0) * 1000) / 1000);
     }
     if (userState) {
       const endDateOfLock = (userState as any).lastMintTime.toNumber() + 3600;
@@ -116,15 +116,17 @@ const LockVaultModal = ({ data }: any) => {
           setCreated(false);
         }
       });
+    } else {
+      setShow(false);
     }
     return () => {
       setCreated(false);
     };
-  }, [connection]);
+  }, [connection, connected]);
 
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
-    if (updateStateFlag) {
+    if (updateStateFlag && wallet?.publicKey) {
       getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
         setUserState(res);
         setUpdateStateFlag(false);
@@ -187,7 +189,7 @@ const LockVaultModal = ({ data }: any) => {
 
   return (
     <>
-      <Button className="button--fill generate" onClick={() => setShow(!show)}>
+      <Button className="button--fill generate" disabled={!connected} onClick={() => setShow(!show)}>
         Mint USDr
       </Button>
       <Modal
@@ -213,6 +215,7 @@ const LockVaultModal = ({ data }: any) => {
               appendValueStr={'' + maxLPAmount}
               tokenStr={`${data.title} LP`}
               onTextChange={(value) => setLockAmount(Number(value))}
+              maxValue={maxLPAmount}
             />
             <Button className="button--fill lockBtn" onClick={() => depositLP()}>
               Lock Assets
@@ -266,6 +269,7 @@ const LockVaultModal = ({ data }: any) => {
               appendValueStr={'' + maxUSDrAmount}
               tokenStr={`USDr`}
               onTextChange={(value) => setBorrowAmount(Number(value))}
+              maxValue={maxUSDrAmount}
             />
             <Button className="button--fill lockBtn" onClick={() => mintUSDr()}>
               Mint USDr

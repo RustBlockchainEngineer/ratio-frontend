@@ -8,6 +8,15 @@
     padding-right: 0px;
   }
 
+  &__empty {
+    width: 100%;
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--unnamed-color-3c4760);
+  }
+
   &__loading {
     min-height: 50vh !important;
     display: flex;

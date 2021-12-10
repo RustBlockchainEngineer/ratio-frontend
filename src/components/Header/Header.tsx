@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
@@ -24,12 +24,18 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
+  useEffect(() => {
+    if (connected) {
+      setHover(false);
+    }
+  }, [connected]);
+
   return (
     <div className="header d-flex">
       {isMobile && <img src={darkMode ? darkLogo : logo} alt="logo" />}
-      <button className="header__faucet button--fill" onClick={() => history.push('/faucet')}>
+      <Button disabled={!connected} className="button--fill walletBtn" onClick={() => history.push('/faucet')}>
         Faucet
-      </button>
+      </Button>
       <SwitchButton />
       {connected ? (
         <div

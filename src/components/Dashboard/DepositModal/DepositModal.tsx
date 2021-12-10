@@ -106,6 +106,7 @@ const DepositModal = ({ data }: any) => {
               appendValueStr={data.value}
               tokenStr={`${data.title}`}
               onTextChange={(value) => setDepositAmount(Number(value))}
+              maxValue={data.value}
             />
             <Button className="button--fill bottomBtn" onClick={() => deposit()}>
               Deposit & Lock Assets
