@@ -36,11 +36,8 @@ const options = [
 const filter_options = [
   { value: 'SOL', label: 'SOL', network: 'solana', icon: [solIcon] },
   { value: 'RAY', label: 'RAY', network: 'solana', icon: [rayIcon] },
-  { value: 'SRM', label: 'SRM', network: 'solana', icon: [srmIcon] },
-  { value: 'MEDIA', label: 'MEDIA', network: 'solana', icon: [mediaIcon] },
   { value: 'ETH', label: 'ETH', network: 'solana', icon: [ethIcon] },
   { value: 'USDC', label: 'USDC', network: 'solana', icon: [usdcIcon] },
-  { value: 'STEP', label: 'STEP', network: 'solana', icon: [stepIcon] },
 ];
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {

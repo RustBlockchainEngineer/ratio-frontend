@@ -3,6 +3,7 @@ import DepositModal from '../DepositModal';
 import PaybackModal from '../PaybackModal';
 import WithdrawModal from '../WithdrawModal';
 import GenerateModal from '../GenerateModal';
+import Button from '../../Button';
 
 import { MINTADDRESS } from '../../../constants';
 
@@ -80,7 +81,7 @@ const ModalCard = ({
       <p className="modalCard__title mb-2">{title}</p>
       <div className="modalCard__cardbody">
         <div className="modalCard__header">
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-start">
             <div>
               {icons && <img src={icons[0]} alt={icons[0].toString()} />}
               {icons && icons[1] && <img src={icons[1]} alt={icons[1].toString()} className="modalCard__header-icon" />}
@@ -91,7 +92,12 @@ const ModalCard = ({
             </div>
           </div>
           <div>
-            {type === 'deposit_withdraw' && <DepositModal data={depositData} />}
+            {type === 'deposit_withdraw' && (
+              <div>
+                <Button className="button--fill modalCard__entervault">Enter Vault</Button>
+                <DepositModal data={depositData} />
+              </div>
+            )}
             {type === 'borrow_payback' && <PaybackModal data={paybackData} />}
           </div>
         </div>
@@ -112,7 +118,12 @@ const ModalCard = ({
           </div>
           <div>
             {type === 'deposit_withdraw' && <WithdrawModal data={withdrawData} />}
-            {type === 'borrow_payback' && <GenerateModal data={generateData} />}
+            {type === 'borrow_payback' && (
+              <div>
+                <Button className="button--fill modalCard__entervault">Enter Vault</Button>
+                <GenerateModal data={generateData} />
+              </div>
+            )}
           </div>
         </div>
       </div>
