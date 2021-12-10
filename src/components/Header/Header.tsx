@@ -33,7 +33,7 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
   return (
     <div className="header d-flex">
       {isMobile && <img src={darkMode ? darkLogo : logo} alt="logo" />}
-      <Button className="button--fill walletBtn" onClick={() => history.push('/faucet')}>
+      <Button disabled={!connected} className="button--fill walletBtn" onClick={() => history.push('/faucet')}>
         Faucet
       </Button>
       <SwitchButton />
