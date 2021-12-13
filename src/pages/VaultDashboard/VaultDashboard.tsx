@@ -111,7 +111,7 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
       const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-      setLpWalletBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
+      setLpWalletBalance(Number(tokenAmount.fixed()));
     }
     return () => {
       setLpWalletBalance(0);
@@ -129,9 +129,12 @@ const VaultDashboard = () => {
   }, [wallet, usdrAccount, connection, usdrMint]);
 
   useEffect(() => {
-    if (tokenPrice) {
-      const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
-      const tmpMaxDeposit = '' + Math.min(initLPAmount, lpWalletBalance);
+    if (tokenPrice && collMint) {
+      const initLPAmount = new TokenAmount(
+        Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice,
+        collMint?.decimals
+      );
+      const tmpMaxDeposit = '' + Math.min(Number(initLPAmount.fixed()), lpWalletBalance);
       console.log('deposit', tmpMaxDeposit);
       setDepositValue(tmpMaxDeposit);
 
@@ -140,7 +143,7 @@ const VaultDashboard = () => {
     return () => {
       setDepositValue('0');
     };
-  }, [lpWalletBalance, tokenPrice]);
+  }, [lpWalletBalance, tokenPrice, collMint]);
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
@@ -149,7 +152,7 @@ const VaultDashboard = () => {
       const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
       console.log('generate', maxAmount);
 
-      setGenerateValue('' + Math.ceil(Math.max(maxAmount, 0) * 1000) / 1000);
+      setGenerateValue(new TokenAmount(Math.max(maxAmount, 0), usdrMint?.decimals).fixed());
     }
     return () => {
       setGenerateValue('0');
