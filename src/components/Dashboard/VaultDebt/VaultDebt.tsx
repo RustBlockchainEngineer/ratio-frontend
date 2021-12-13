@@ -47,12 +47,12 @@ const VaultDebt = ({ data }: any) => {
   return (
     <div className="vaultdebt">
       <h4>Vault Debt</h4>
+      <Button className="button--fill paybackusdr" onClick={() => repay()}>
+        Pay Back
+      </Button>
       <p>
         You Owe <strong>$ {Math.ceil(Number(data.usdrValue) * 100) / 100} USDr</strong>
       </p>
-      <Button className="button--fill paybackusdr" onClick={() => repay()}>
-        Pay Back USDr
-      </Button>
     </div>
   );
 };

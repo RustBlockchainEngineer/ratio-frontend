@@ -57,24 +57,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
             </div>
             <div className="tokenpaircard__riskBox">
-              <div className="d-flex">
-                <p>Risk Level:</p>
-                {/* <OverlayTrigger
-                  placement="top"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={
-                    <Tooltip id="risk-tooltip">
-                      The risk is a financial formula comprised of the weight,
-                      standard deviations and covariances of the underlying
-                      assets in the LP pair.
-                    </Tooltip>
-                  }
-                >
-                  <img src={riskLevel} alt="lisklevel" className="ml-2" />
-                </OverlayTrigger> */}
-              </div>
-              <div className="d-flex justify-content-end align-items-center mt-1">
-                {getRiskLevel(data.risk) === 'EXTREME' && <img src={highRisk} alt="highRisk" className="highRisk" />}
+              <div className="text-right">
+                <p>Risk Level</p>
                 <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
               </div>
             </div>
