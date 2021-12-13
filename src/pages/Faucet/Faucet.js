@@ -96,7 +96,7 @@ const Faucet = () => {
             <>
               <div className="col pl-1">
                 <Button className="button swaptokensBtn swaptokensBtn--border" onClick={onCancel}>
-                  Cancel
+                  Exit
                 </Button>
               </div>
               <div className="col pr-1" onClick={!gWallet.connected ? connect : isCreated ? onSubmit : onCreateFaucet}>
