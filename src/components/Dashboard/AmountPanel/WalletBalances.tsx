@@ -12,7 +12,6 @@ import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 
 const WalletBalances = ({ data }: any) => {
-  console.log(data);
   return (
     <div>
       <h4>Wallet Balances</h4>
@@ -31,15 +30,15 @@ const WalletBalances = ({ data }: any) => {
               <img src={data.icons ? data.icons[1] : null} alt="TokenB" style={{ width: 32 }} className="lastToken" />
               {data.tokenName}
             </td>
-            <td>{data.collAmount}</td>
-            <td className="text-right">${data.collAmountUSD}</td>
+            <td>{data.collAmount.toFixed(2)}</td>
+            <td className="text-right">${data.collAmountUSD.toFixed(2)}</td>
           </tr>
           <tr>
             <td>
               <img src={USDr} alt="RAY" style={{ width: 32 }} /> USDr
             </td>
-            <td>{data.usdrAmount}</td>
-            <td className="text-right">${data.usdrAmount}</td>
+            <td>{data.usdrAmount.toFixed(2)}</td>
+            <td className="text-right">${data.usdrAmount.toFixed(2)}</td>
           </tr>
         </tbody>
       </Table>

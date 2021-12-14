@@ -65,7 +65,7 @@ const VaultDebt = ({ data }: any) => {
         Pay Back
       </Button> */}
       <p>
-        You Owe <strong>$ {Math.ceil(Number(data.usdrValue) * 100) / 100} USDr</strong>
+        You Owe <strong>$ {Math.ceil(data.usdrValue * 100) / 100} USDr</strong>
       </p>
     </div>
   );
