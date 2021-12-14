@@ -111,7 +111,7 @@ const ModalCard = ({
             {type === 'deposit_withdraw' && (
               <div>
                 <p>{tokenName}</p>
-                <h6>{withdrawValue.toFixed(3)}</h6>
+                <h6>{withdrawValue.toFixed(2)}</h6>
               </div>
             )}
           </div>
