@@ -34,6 +34,8 @@ const WithdrawModal = ({ data }: any) => {
 
   const [withdrawAmount, setWithdrawAmount] = React.useState(0);
   const { setUpdateStateFlag } = useUpdateState();
+  const [withdrawStatus, setWithdrawStatus] = React.useState(false);
+  const [invalidStr, setInvalidStr] = React.useState('');
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -59,10 +61,14 @@ const WithdrawModal = ({ data }: any) => {
   const withdraw = () => {
     console.log('Withdrawing', withdrawAmount);
     if (!(withdrawAmount && data.value >= withdrawAmount)) {
-      return toast('Insufficient funds to withdraw!');
+      setWithdrawStatus(true);
+      setInvalidStr('Insufficient funds to withdraw!');
+      return;
     }
     if (!(userCollAccount !== '' && collMint)) {
-      return toast('Invalid  User Collateral account to withdraw!');
+      setWithdrawStatus(true);
+      setInvalidStr('Invalid  User Collateral account to withdraw!');
+      return;
     }
     withdrawCollateral(
       connection,
@@ -117,11 +123,16 @@ const WithdrawModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to withdraw?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'0'}
+              initValue={withdrawAmount.toString()}
               appendValueStr={`${data.value}`}
               tokenStr={`${data.title}`}
-              onTextChange={(value) => setWithdrawAmount(Number(value))}
+              onTextChange={(value) => {
+                setWithdrawAmount(Number(value));
+                setWithdrawStatus(false);
+              }}
               maxValue={data.value}
+              valid={withdrawStatus}
+              invalidStr={invalidStr}
             />
             <Button className="button--fill bottomBtn" onClick={() => withdraw()}>
               Withdraw Assets

@@ -35,6 +35,8 @@ const DepositModal = ({ data }: any) => {
 
   const [didMount, setDidMount] = React.useState(false);
   const { setUpdateStateFlag } = useUpdateState();
+  const [depositStatus, setDepositStatus] = React.useState(false);
+  const [invalidStr, setInvalidStr] = React.useState('');
 
   useEffect(() => {
     setDidMount(true);
@@ -49,10 +51,14 @@ const DepositModal = ({ data }: any) => {
     console.log('Depositing', depositAmount, data.value);
     console.log(data.mint);
     if (!(depositAmount && data.value >= depositAmount)) {
-      return toast('Insufficient funds to deposit!');
+      setDepositStatus(true);
+      setInvalidStr('Insufficient funds to deposit!');
+      return;
     }
     if (!(collAccount && collMint && connected)) {
-      return toast('Invalid  User Collateral account to deposit!');
+      setDepositStatus(true);
+      setInvalidStr('Invalid  User Collateral account to deposit!');
+      return;
     }
     depositCollateral(
       connection,
@@ -102,11 +108,16 @@ const DepositModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much USDr would you like to generate?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'0'}
+              initValue={depositAmount.toString()}
               appendValueStr={data.value}
               tokenStr={`${data.title}`}
-              onTextChange={(value) => setDepositAmount(Number(value))}
+              onTextChange={(value) => {
+                setDepositAmount(Number(value));
+                setDepositStatus(false);
+              }}
               maxValue={data.value}
+              valid={depositStatus}
+              invalidStr={invalidStr}
             />
             <Button className="button--fill bottomBtn" onClick={() => deposit()}>
               Deposit & Lock Assets

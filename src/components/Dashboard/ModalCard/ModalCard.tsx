@@ -89,6 +89,7 @@ const ModalCard = ({
             <div className="modalCard__header_tokenName">
               {/* <p>{data.tokenNames}</p> */}
               {/* <h6>{data.tokenValue}</h6> */}
+              {type === 'borrow_payback' && <p>${paybackData.usdrValue}</p>}
             </div>
           </div>
           <div>

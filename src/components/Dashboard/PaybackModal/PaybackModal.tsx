@@ -31,12 +31,17 @@ const PaybackModal = ({ data }: any) => {
 
   const [paybackAmount, setPayBackAmount] = React.useState(Number(data.usdrValue));
   const { setUpdateStateFlag } = useUpdateState();
+  const [paybackStatus, setPaybackStatus] = React.useState(false);
+  const [invalidStr, setInvalidStr] = React.useState('');
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
+    if (paybackAmount > 0) {
+      setPaybackStatus(false);
+    }
     return () => setDidMount(false);
-  }, []);
+  }, [paybackAmount]);
 
   if (!didMount) {
     return null;
@@ -45,10 +50,14 @@ const PaybackModal = ({ data }: any) => {
   const repay = () => {
     console.log('PayBack', paybackAmount);
     if (!(paybackAmount && data.usdrValue >= paybackAmount)) {
-      return toast('Insufficient funds to payback!');
+      setPaybackStatus(true);
+      setInvalidStr('Insufficient funds to payback!');
+      return;
     }
     if (!usdrMint) {
-      return toast('Invalid USDr Mint address to payback!');
+      setPaybackStatus(true);
+      setInvalidStr('Invalid USDr Mint address to payback!');
+      return;
     }
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
       .then(() => {
@@ -94,14 +103,19 @@ const PaybackModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to pay back?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'' + data.usdrValue}
+              initValue={paybackAmount.toString()}
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
-              onTextChange={(value) => setPayBackAmount(Number(value))}
+              onTextChange={(value) => {
+                setPayBackAmount(Number(value));
+                setPaybackStatus(false);
+              }}
               maxValue={data.usdrValue}
+              valid={paybackStatus}
+              invalidStr={invalidStr}
             />
-            <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
-            <CustomDropDownInput />
+            {/* <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
+            <CustomDropDownInput /> */}
             <Button className="button--fill bottomBtn" onClick={() => repay()}>
               Pay Back Debt
             </Button>
