@@ -33,6 +33,7 @@
     }
     &__top {
       padding: 42px;
+      padding-bottom: 20px;
       background-color: var(--unnamed-color-1B1E29);
       border-top-left-radius: 12px;
       border-top-right-radius: 12px;
@@ -103,5 +104,14 @@
       font-family: 'Poppins-Regular';
       font-size: 14px;
     }
+  }
+  &__success {
+    margin-top: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--unnamed-color-07b127) !important;
+    color: var(--unnamed-color-07b127);
+    font-family: 'Poppins-Regular';
+    font-size: 14px;
+    padding: 0.5rem 1rem;
   }
 }
