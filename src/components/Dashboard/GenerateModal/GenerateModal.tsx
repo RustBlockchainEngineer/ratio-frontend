@@ -36,6 +36,8 @@ const GenerateModal = ({ data }: any) => {
   const usdrMint = useMint(data.usdrMint);
   const [borrowAmount, setBorrowAmount] = React.useState(0);
   const { setUpdateStateFlag } = useUpdateState();
+  const [mintStatus, setMintStatus] = React.useState(false);
+  const [invalidStr, setInvalidStr] = React.useState('');
 
   useEffect(() => {
     if (wallet && wallet.publicKey && data.mint) {
@@ -66,10 +68,14 @@ const GenerateModal = ({ data }: any) => {
   const borrow = () => {
     console.log('Borrowing USDr', borrowAmount);
     if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
-      return toast('Amount is invalid to generate USDr!');
+      setMintStatus(true);
+      setInvalidStr('Amount is invalid to generate USDr!');
+      return;
     }
     if (!usdrMint) {
-      return toast('Invalid USDr Mint address to generate!');
+      setMintStatus(true);
+      setInvalidStr('Invalid USDr Mint address to generate!');
+      return;
     }
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
       .then((tx) => {
@@ -115,11 +121,16 @@ const GenerateModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to mint?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'0'}
+              initValue={borrowAmount.toString()}
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
-              onTextChange={(value) => setBorrowAmount(Number(value))}
+              onTextChange={(value) => {
+                setBorrowAmount(Number(value));
+                setMintStatus(false);
+              }}
               maxValue={data.usdrValue}
+              valid={mintStatus}
+              invalidStr={invalidStr}
             />
             <label className="lockvaultmodal__label2">
               Available to mint after <strong>{mintTime}</strong>

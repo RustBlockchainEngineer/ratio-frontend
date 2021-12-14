@@ -89,6 +89,7 @@ const ModalCard = ({
             <div className="modalCard__header_tokenName">
               {/* <p>{data.tokenNames}</p> */}
               {/* <h6>{data.tokenValue}</h6> */}
+              {type === 'borrow_payback' && <p>${Math.ceil(paybackData.usdrValue * 100) / 100} USDr</p>}
             </div>
           </div>
           <div>

@@ -10,6 +10,8 @@ type CustomInputProps = {
   className?: string;
   readOnly?: boolean;
   maxValue?: number;
+  valid?: boolean;
+  invalidStr?: string;
   onTextChange?: (value: string) => void;
 };
 
@@ -22,6 +24,8 @@ const CustomInput = ({
   onTextChange,
   readOnly,
   maxValue,
+  valid,
+  invalidStr,
 }: CustomInputProps) => {
   if (typeof maxValue === 'string') {
     maxValue = parseFloat(maxValue);
@@ -45,25 +49,28 @@ const CustomInput = ({
   };
 
   return (
-    <InputGroup className={classNames('customInput mb-1', className)}>
-      <FormControl
-        placeholder=""
-        aria-label=""
-        aria-describedby="customInput"
-        value={value}
-        onChange={handleChange}
-        className={classNames(appendStr === '' && 'onlytext')}
-        readOnly={readOnly}
-      />
-      <p className={classNames('tokenName', appendStr === '' && 'tokenName--onlytext')}>{tokenStr}</p>
-      {appendStr !== '' && (
-        <InputGroup.Append onClick={setMaxValue}>
-          <InputGroup.Text id="customInput">
-            {appendStr} {appendValueStr && `(${Math.ceil(Number(appendValueStr) * 100) / 100})`}
-          </InputGroup.Text>
-        </InputGroup.Append>
-      )}
-    </InputGroup>
+    <>
+      <InputGroup className={classNames('customInput mb-1', className)}>
+        <FormControl
+          placeholder=""
+          aria-label=""
+          aria-describedby="customInput"
+          value={value}
+          onChange={handleChange}
+          className={classNames(appendStr === '' && 'onlytext')}
+          readOnly={readOnly}
+        />
+        <p className={classNames('tokenName', appendStr === '' && 'tokenName--onlytext')}>{tokenStr}</p>
+        {appendStr !== '' && (
+          <InputGroup.Append onClick={setMaxValue}>
+            <InputGroup.Text id="customInput">
+              {appendStr} {appendValueStr && `(${Math.ceil(Number(appendValueStr) * 100) / 100})`}
+            </InputGroup.Text>
+          </InputGroup.Append>
+        )}
+      </InputGroup>
+      {valid && <div className="customInput--valid">{invalidStr}</div>}
+    </>
   );
 };
 
