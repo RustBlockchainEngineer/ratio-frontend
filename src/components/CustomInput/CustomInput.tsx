@@ -59,7 +59,7 @@ const CustomInput = ({
       {appendStr !== '' && (
         <InputGroup.Append onClick={setMaxValue}>
           <InputGroup.Text id="customInput">
-            {appendStr} {appendValueStr && `(${appendValueStr})`}
+            {appendStr} {appendValueStr && `(${Math.ceil(Number(appendValueStr) * 100) / 100})`}
           </InputGroup.Text>
         </InputGroup.Append>
       )}
