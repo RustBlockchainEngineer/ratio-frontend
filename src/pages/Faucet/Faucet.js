@@ -15,7 +15,7 @@ import {
   isFaucetStateCreated,
 } from '../../utils/ratio-faucet';
 import { TOKEN_VAULT_OPTIONS } from '../../utils/ratio-lending';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 
 const Faucet = () => {
   const connection = useConnection();
@@ -28,6 +28,7 @@ const Faucet = () => {
 
   const [submitState, setSubmitState] = React.useState(false);
   const [isCreated, setIsCreated] = React.useState(false);
+  const [faucetStatus, setFaucetStatus] = React.useState(false);
 
   React.useEffect(async () => {
     if (gWallet.connected) {
@@ -53,6 +54,7 @@ const Faucet = () => {
   };
 
   const onSubmit = async () => {
+    setFaucetStatus(false);
     if (option.value === 'USDC-USDR') {
       await faucetUsdcUsdrLp(connection, wallet);
     } else if (option.value === 'ETH-SOL') {
@@ -62,7 +64,8 @@ const Faucet = () => {
     } else if (option.value === 'SAMO-RAY') {
       await faucetSamoRayLp(connection, wallet);
     }
-    toast('$10 worth of ' + option.value + ' LP token successfully minted!');
+    setFaucetStatus(true);
+    // toast('$10 worth of ' + option.value + ' LP token successfully minted!');
   };
 
   const onChangeLp = (value) => {
@@ -80,6 +83,9 @@ const Faucet = () => {
           </h6>
           <label>Choose which LP you wish to mint</label>
           <CustomSelect options={TOKEN_VAULT_OPTIONS} onChange={onChangeLp} />
+          {faucetStatus && (
+            <div className="faucet__success">{`You have minted $10 worth of ${option.value} LP tokens`}</div>
+          )}
           {/* <label className="mt-4">Choose the amount you would like to mint</label>
           <CustomInput appendStr="Max" appendValueStr="100" onTextChange={getInputValue} />
           {submitState && (
@@ -96,7 +102,7 @@ const Faucet = () => {
             <>
               <div className="col pl-1">
                 <Button className="button swaptokensBtn swaptokensBtn--border" onClick={onCancel}>
-                  Cancel
+                  Exit
                 </Button>
               </div>
               <div className="col pr-1" onClick={!gWallet.connected ? connect : isCreated ? onSubmit : onCreateFaucet}>

@@ -62,13 +62,16 @@ const LockVaultModal = ({ data }: any) => {
   const [maxLPAmount, setMaxLockAmount] = React.useState(0);
   const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
+  const [mintStatus, setMintStatus] = React.useState(false);
+  const [lockStatus, setLockStatus] = React.useState(false);
+
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
       const availableAmount = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
 
       const maxAmount = availableAmount - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
-      setMaxUSDrAmount(Math.ceil(Math.max(maxAmount, 0) * 1000) / 1000);
+      setMaxUSDrAmount(Number(maxAmount.toFixed(usdrMint?.decimals)));
     }
     if (userState) {
       const endDateOfLock = (userState as any).lastMintTime.toNumber() + 3600;
@@ -82,14 +85,14 @@ const LockVaultModal = ({ data }: any) => {
   }, [tokenPrice, userState, usdrMint, collMint]);
 
   useEffect(() => {
-    if (tokenPrice) {
-      const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
-      setMaxLockAmount(Math.min(initLPAmount, lpWalletBalance));
+    if (tokenPrice && collMint) {
+      const initLPAmount = Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice;
+      setMaxLockAmount(Number(Math.min(initLPAmount, lpWalletBalance).toFixed(collMint?.decimals)));
     }
     return () => {
       setMaxLockAmount(0);
     };
-  }, [tokenPrice, lpWalletBalance]);
+  }, [tokenPrice, lpWalletBalance, collMint]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -98,7 +101,7 @@ const LockVaultModal = ({ data }: any) => {
       });
       if (collAccount && collMint) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-        setLpWalletBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
+        setLpWalletBalance(Number(tokenAmount.fixed()));
       }
     }
     return () => {
@@ -146,7 +149,8 @@ const LockVaultModal = ({ data }: any) => {
 
   const depositLP = () => {
     if (!(lpWalletBalance >= lockAmount && lockAmount > 0)) {
-      toast('Insufficient funds!');
+      // toast('Insufficient funds!');
+      setLockStatus(true);
       return;
     }
     if (collAccount) {
@@ -171,7 +175,8 @@ const LockVaultModal = ({ data }: any) => {
 
   const mintUSDr = () => {
     if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {
-      toast('Amount is invalid to mint USDr!');
+      // toast('Amount is invalid to mint USDr!');
+      setMintStatus(true);
       return;
     }
 
@@ -183,7 +188,7 @@ const LockVaultModal = ({ data }: any) => {
         console.log(e);
       })
       .finally(() => {
-        // history.push(`/dashboard/vaultdashboard/${data.mint}`);
+        history.push(`/dashboard/vaultdashboard/${data.mint}`);
       });
   };
 
@@ -207,22 +212,27 @@ const LockVaultModal = ({ data }: any) => {
               <img src={data.icons[0]} alt={data.icons[0].toString()} className="lockvaultmodal__header-icon1" />
               <img src={data.icons[1]} alt={data.icons[1].toString()} className="lockvaultmodal__header-icon2" />
             </div>
-            <h3>Lock {data.title}-LP into vault</h3>
+            <h3 className="mt-3">Deposit {data.title} LP into vault</h3>
             <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'0'}
+              initValue={lockAmount.toString()}
               appendValueStr={'' + maxLPAmount}
               tokenStr={`${data.title} LP`}
-              onTextChange={(value) => setLockAmount(Number(value))}
+              onTextChange={(value) => {
+                setLockAmount(Number(value));
+                setLockStatus(false);
+              }}
               maxValue={maxLPAmount}
+              valid={lockStatus}
+              invalidStr="Insufficient funds!"
             />
             <Button className="button--fill lockBtn" onClick={() => depositLP()}>
-              Lock Assets
+              Deposit Assets
             </Button>
           </div>
         </Modal.Header>
-        <Modal.Body>
+        {/* <Modal.Body>
           <ComingSoon enable>
             <div className="lockvaultmodal__body">
               <div className="d-flex justify-content-between">
@@ -253,12 +263,12 @@ const LockVaultModal = ({ data }: any) => {
               </div>
             </div>
           </ComingSoon>
-        </Modal.Body>
+        </Modal.Body> */}
         <Modal.Footer>
           <div className="lockvaultmodal__footer">
-            <label className="lockvaultmodal__label2">
+            {/* <label className="lockvaultmodal__label2">
               Available to mint after <strong>{mintTime}</strong>
-            </label>
+            </label> */}
 
             <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label>
             <label className="lockvaultmodal__label2">
@@ -268,8 +278,13 @@ const LockVaultModal = ({ data }: any) => {
               appendStr="Max"
               appendValueStr={'' + maxUSDrAmount}
               tokenStr={`USDr`}
-              onTextChange={(value) => setBorrowAmount(Number(value))}
+              onTextChange={(value) => {
+                setBorrowAmount(Number(value));
+                setMintStatus(false);
+              }}
               maxValue={maxUSDrAmount}
+              valid={mintStatus}
+              invalidStr="Amount is invalid to mint USDr!"
             />
             <Button className="button--fill lockBtn" onClick={() => mintUSDr()}>
               Mint USDr

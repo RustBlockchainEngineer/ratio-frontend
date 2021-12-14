@@ -13,14 +13,62 @@ import Button from '../Button';
 import highRisk from '../../assets/images/highrisk.svg';
 import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
+import { useMint } from '../../contexts/accounts';
+import { usePrice } from '../../contexts/price';
+import { TokenAmount } from '../../utils/safe-math';
+import { useConnection } from '../../contexts/connection';
+import { getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
+import { PublicKey } from '@solana/web3.js';
+import { useUpdateState } from '../../contexts/auth';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
-  const { connected } = useWallet();
-
+  const tokenA = data.title.split('-')[0];
+  const tokenB = data.title.split('-')[1];
   const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
+
+  const connection = useConnection();
+  const { wallet, connected } = useWallet();
+
+  const collMint = useMint(data.mint);
+  const [userState, setUserState] = React.useState(null);
+  const tokenPrice = usePrice(data.mint);
+
+  const [positionValue, setPositionValue] = React.useState(0);
+
+  React.useEffect(() => {
+    if (wallet && wallet.publicKey) {
+      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
+        setUserState(res);
+      });
+    }
+    return () => {
+      setUserState(null);
+    };
+  }, [wallet, connection, collMint]);
+
+  React.useEffect(() => {
+    if (userState && tokenPrice && collMint) {
+      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
+      setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
+    }
+    return () => {
+      setPositionValue(0);
+    };
+  }, [tokenPrice, userState, collMint]);
+
+  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  React.useEffect(() => {
+    if (updateStateFlag && wallet?.publicKey) {
+      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
+        setUserState(res);
+        setUpdateStateFlag(false);
+      });
+    }
+  }, [updateStateFlag]);
+
   const renderModalButton = () => {
     if (data.risk === 250) return <DisclaimerModal data={data} />;
     return <LockVaultModal data={data} />;
@@ -57,24 +105,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
             </div>
             <div className="tokenpaircard__riskBox">
-              <div className="d-flex">
-                <p>Risk Level:</p>
-                {/* <OverlayTrigger
-                  placement="top"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={
-                    <Tooltip id="risk-tooltip">
-                      The risk is a financial formula comprised of the weight,
-                      standard deviations and covariances of the underlying
-                      assets in the LP pair.
-                    </Tooltip>
-                  }
-                >
-                  <img src={riskLevel} alt="lisklevel" className="ml-2" />
-                </OverlayTrigger> */}
-              </div>
-              <div className="d-flex justify-content-end align-items-center mt-1">
-                {getRiskLevel(data.risk) === 'EXTREME' && <img src={highRisk} alt="highRisk" className="highRisk" />}
+              <div className="text-right">
+                <p>Risk Level</p>
                 <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
               </div>
             </div>
@@ -107,15 +139,15 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div className="d-flex justify-content-between">
                   <div>
                     Position value:
-                    <p>$16,200</p>
-                    <div className="tokenpaircard__detailBox__content--tokens">
+                    <p>${positionValue.toFixed(2)}</p>
+                    {/* <div className="tokenpaircard__detailBox__content--tokens">
                       <img src={data.icons[0]} alt="RayIcon" />
-                      RAY: $4200
+                      {tokenA}: $4200
                     </div>
                     <div className="tokenpaircard__detailBox__content--tokens">
                       <img src={data.icons[1]} alt="USDrIcon" />
-                      USDr: $6400
-                    </div>
+                      {tokenB}: $6400
+                    </div> */}
                   </div>
                   <div className="text-right">
                     Rewards earned:

@@ -66,18 +66,18 @@ const VaultDashboard = () => {
 
   const collAccount = useAccountByMint(vault_mint as string);
   const usdrAccount = useAccountByMint(MINTADDRESS['USDR']);
-  const [lpWalletBalance, setLpWalletBalance] = useState(0);
-  const [lpWalletBalanceUSD, setLpWalletBalanceUSD] = useState(0);
-
-  const [usdrWalletBalance, setUsdrWalletBalance] = useState(0);
 
   const [userState, setUserState] = useState(null);
   const [VaultData, setVaultData] = useState<any>({});
 
-  const [depositValue, setDepositValue] = useState('0');
-  const [withdrawValue, setWithdrawValue] = useState('0');
-  const [generateValue, setGenerateValue] = useState('0');
-  const [debtValue, setDebtValue] = useState('0');
+  const [lpWalletBalance, setLpWalletBalance] = useState(0);
+  const [lpWalletBalanceUSD, setLpWalletBalanceUSD] = useState(0);
+  const [usdrWalletBalance, setUsdrWalletBalance] = useState(0);
+
+  const [depositValue, setDepositValue] = useState(0);
+  const [withdrawValue, setWithdrawValue] = useState(0);
+  const [generateValue, setGenerateValue] = useState(0);
+  const [debtValue, setDebtValue] = useState(0);
 
   const availableVaults = useSelector(selectors.getAvailableVaults);
   const [vauldDebtData, setVaultDebtData] = useState({
@@ -93,10 +93,6 @@ const VaultDashboard = () => {
       setIsLoading(true);
       getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {
         if (res) {
-          // let tv: string = new TokenAmount((res as any).lockedCollBalance, collMint ? collMint.decimals : 9).fixed();
-          // tv = '' + Math.ceil(parseFloat(tv) * 100) / 100;
-          // setWithdrawValue(tv);
-          // console.log('asdasd', tv);
           setIsLoading(false);
           setUserState(res);
         }
@@ -111,7 +107,7 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
       const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-      setLpWalletBalance(Math.ceil(parseFloat(tokenAmount.fixed()) * 100) / 100);
+      setLpWalletBalance(Number(tokenAmount.fixed()));
     }
     return () => {
       setLpWalletBalance(0);
@@ -129,18 +125,18 @@ const VaultDashboard = () => {
   }, [wallet, usdrAccount, connection, usdrMint]);
 
   useEffect(() => {
-    if (tokenPrice) {
-      const initLPAmount = Math.ceil((Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice) * 1000) / 1000;
-      const tmpMaxDeposit = '' + Math.min(initLPAmount, lpWalletBalance);
+    if (tokenPrice && collMint) {
+      const initLPAmount = Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice;
+      const tmpMaxDeposit = Math.min(initLPAmount, lpWalletBalance).toFixed(collMint?.decimals);
       console.log('deposit', tmpMaxDeposit);
-      setDepositValue(tmpMaxDeposit);
+      setDepositValue(Number(tmpMaxDeposit));
 
       setLpWalletBalanceUSD(tokenPrice * lpWalletBalance);
     }
     return () => {
-      setDepositValue('0');
+      setDepositValue(0);
     };
-  }, [lpWalletBalance, tokenPrice]);
+  }, [lpWalletBalance, tokenPrice, collMint]);
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
@@ -149,22 +145,22 @@ const VaultDashboard = () => {
       const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
       console.log('generate', maxAmount);
 
-      setGenerateValue('' + Math.ceil(Math.max(maxAmount, 0) * 1000) / 1000);
+      setGenerateValue(Number(maxAmount.toFixed(usdrMint?.decimals)));
     }
     return () => {
-      setGenerateValue('0');
+      setGenerateValue(0);
     };
   }, [tokenPrice, userState, usdrMint, collMint]);
 
   useEffect(() => {
     if (userState && vault_mint && connected) {
       const tmpWithdrawValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
-      setWithdrawValue(parseFloat(tmpWithdrawValue).toFixed(2));
       console.log('locked', tmpWithdrawValue);
+      setWithdrawValue(Number(tmpWithdrawValue));
 
       const tmpDebtValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
-      setDebtValue(parseFloat(tmpDebtValue).toFixed(2));
       console.log('debt', tmpDebtValue);
+      setDebtValue(Number(tmpDebtValue));
 
       setVaultDebtData({
         mint: vault_mint,

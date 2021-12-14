@@ -89,6 +89,7 @@ const ModalCard = ({
             <div className="modalCard__header_tokenName">
               {/* <p>{data.tokenNames}</p> */}
               {/* <h6>{data.tokenValue}</h6> */}
+              {type === 'borrow_payback' && <p>${Math.ceil(paybackData.usdrValue * 100) / 100} USDr</p>}
             </div>
           </div>
           <div>
@@ -105,13 +106,13 @@ const ModalCard = ({
             {type === 'borrow_payback' && (
               <div>
                 <label>Able to generate</label>
-                <p>{generateValue} USDr</p>
+                <p>{generateValue.toFixed(2)} USDr</p>
               </div>
             )}
             {type === 'deposit_withdraw' && (
               <div>
                 <p>{tokenName}</p>
-                <h6>{withdrawValue}</h6>
+                <h6>{withdrawValue.toFixed(2)}</h6>
               </div>
             )}
           </div>
