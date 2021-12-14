@@ -121,6 +121,7 @@ const WithdrawModal = ({ data }: any) => {
               appendValueStr={`${data.value}`}
               tokenStr={`${data.title}`}
               onTextChange={(value) => setWithdrawAmount(Number(value))}
+              maxValue={data.value}
             />
             <Button className="button--fill bottomBtn" onClick={() => withdraw()}>
               Withdraw Assets

@@ -96,15 +96,15 @@ const Faucet = () => {
             <>
               <div className="col pl-1">
                 <Button className="button swaptokensBtn swaptokensBtn--border" onClick={onCancel}>
-                  Cancel
+                  Exit
                 </Button>
               </div>
               <div className="col pr-1" onClick={!gWallet.connected ? connect : isCreated ? onSubmit : onCreateFaucet}>
                 <Button
                   className={classNames('swaptokensBtn', amount === -1 ? 'button--disabled' : 'button--fill')}
-                  disabled={amount === -1}
+                  disabled={!gWallet.connected}
                 >
-                  {!gWallet.connected ? 'Connect Wallet' : isCreated ? 'Mint' : 'Create Faucet'}
+                  {isCreated ? 'Mint' : 'Create Faucet'}
                 </Button>
               </div>
             </>

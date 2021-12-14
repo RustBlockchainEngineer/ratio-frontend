@@ -72,8 +72,8 @@ const GenerateModal = ({ data }: any) => {
       return toast('Invalid USDr Mint address to generate!');
     }
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
-      .then(() => {
-        console.log('Success Generate');
+      .then((tx) => {
+        console.log('Success Generate txid=', tx);
         setUpdateStateFlag(true);
       })
       .catch((e) => {
@@ -81,6 +81,7 @@ const GenerateModal = ({ data }: any) => {
       })
       .finally(() => {
         setShow(!show);
+        toast('Successfully minted USDr tokens!');
       });
   };
 
@@ -118,6 +119,7 @@ const GenerateModal = ({ data }: any) => {
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
               onTextChange={(value) => setBorrowAmount(Number(value))}
+              maxValue={data.usdrValue}
             />
             <label className="lockvaultmodal__label2">
               Available to mint after <strong>{mintTime}</strong>

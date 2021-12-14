@@ -210,7 +210,7 @@ const LockVaultModal = ({ data }: any) => {
               <img src={data.icons[0]} alt={data.icons[0].toString()} className="lockvaultmodal__header-icon1" />
               <img src={data.icons[1]} alt={data.icons[1].toString()} className="lockvaultmodal__header-icon2" />
             </div>
-            <h3>Lock {data.title}-LP into vault</h3>
+            <h3 className="mt-3">Deposit {data.title} LP into vault</h3>
             <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
             <CustomInput
               appendStr="Max"
@@ -218,13 +218,14 @@ const LockVaultModal = ({ data }: any) => {
               appendValueStr={'' + maxLPAmount}
               tokenStr={`${data.title} LP`}
               onTextChange={(value) => setLockAmount(Number(value))}
+              maxValue={maxLPAmount}
             />
             <Button className="button--fill lockBtn" onClick={() => depositLP()}>
-              Lock Assets
+              Deposit Assets
             </Button>
           </div>
         </Modal.Header>
-        <Modal.Body>
+        {/* <Modal.Body>
           <ComingSoon enable>
             <div className="lockvaultmodal__body">
               <div className="d-flex justify-content-between">
@@ -255,12 +256,12 @@ const LockVaultModal = ({ data }: any) => {
               </div>
             </div>
           </ComingSoon>
-        </Modal.Body>
+        </Modal.Body> */}
         <Modal.Footer>
           <div className="lockvaultmodal__footer">
-            <label className="lockvaultmodal__label2">
+            {/* <label className="lockvaultmodal__label2">
               Available to mint after <strong>{mintTime}</strong>
-            </label>
+            </label> */}
 
             <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label>
             <label className="lockvaultmodal__label2">
@@ -271,6 +272,7 @@ const LockVaultModal = ({ data }: any) => {
               appendValueStr={'' + maxUSDrAmount}
               tokenStr={`USDr`}
               onTextChange={(value) => setBorrowAmount(Number(value))}
+              maxValue={maxUSDrAmount}
             />
             <Button className="button--fill lockBtn" onClick={() => mintUSDr()}>
               Mint USDr
