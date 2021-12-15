@@ -80,7 +80,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
           <div className="mx-1"></div>
           <MintUSDrModal data={data} />
         </div>
-        <Button className="button button--gradientBorder generate mt-2" onClick={showDashboard}>
+        <Button className="button button--fill generate mt-2" onClick={showDashboard}>
           Enter Vault
         </Button>
       </div>
