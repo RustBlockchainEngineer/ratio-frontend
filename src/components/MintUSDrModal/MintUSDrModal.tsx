@@ -34,12 +34,13 @@ import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
 import { useUpdateState } from '../../contexts/auth';
+import usdrIcon from '../../assets/images/USDr.png';
 
 type LockVaultModalProps = {
   data: PairType;
 };
 
-const LockVaultModal = ({ data }: any) => {
+const MintUSDrModal = ({ data }: any) => {
   const history = useHistory();
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
@@ -163,14 +164,12 @@ const LockVaultModal = ({ data }: any) => {
       )
         .then(() => {
           setUpdateStateFlag(true);
-          setShow(false);
         })
         .catch((e) => {
           console.log(e);
         })
         .finally(() => {
           // history.push(`/dashboard/vaultdashboard/${data.mint}`);
-          setShow(false);
         });
     }
   };
@@ -197,7 +196,7 @@ const LockVaultModal = ({ data }: any) => {
   return (
     <>
       <Button className="button--fill generate" disabled={!connected} onClick={() => setShow(!show)}>
-        Deposit
+        Mint USDr
       </Button>
       <Modal
         show={show}
@@ -209,28 +208,33 @@ const LockVaultModal = ({ data }: any) => {
       >
         <Modal.Header>
           <div className="lockvaultmodal__footer">
+            {/* <label className="lockvaultmodal__label2">
+              Available to mint after <strong>{mintTime}</strong>
+            </label> */}
             <IoMdClose size={32} className="lockvaultmodal__header-close" onClick={() => setShow(false)} />
             <div>
-              <img src={data.icons[0]} alt={data.icons[0].toString()} className="lockvaultmodal__header-icon1" />
-              <img src={data.icons[1]} alt={data.icons[1].toString()} className="lockvaultmodal__header-icon2" />
+              <img src={usdrIcon} alt={data.icons[0].toString()} className="lockvaultmodal__header-icon1" />
+              {/* <img src={data.icons[1]} alt={data.icons[1].toString()} className="lockvaultmodal__header-icon2" /> */}
             </div>
-            <h3 className="mt-3">Deposit {data.title} LP into vault</h3>
-            <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
+            <h3 className="mt-3">How much USDr would you like to generate?</h3>
+            {/* <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label> */}
+            <label className="lockvaultmodal__label2">
+              Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
+            </label>
             <CustomInput
               appendStr="Max"
-              initValue={lockAmount.toString()}
-              appendValueStr={'' + maxLPAmount}
-              tokenStr={`${data.title} LP`}
+              appendValueStr={'' + maxUSDrAmount}
+              tokenStr={`USDr`}
               onTextChange={(value) => {
-                setLockAmount(Number(value));
-                setLockStatus(false);
+                setBorrowAmount(Number(value));
+                setMintStatus(false);
               }}
-              maxValue={maxLPAmount}
-              valid={lockStatus}
-              invalidStr="Insufficient funds!"
+              maxValue={maxUSDrAmount}
+              valid={mintStatus}
+              invalidStr="Amount is invalid to mint USDr!"
             />
-            <Button className="button--fill lockBtn" onClick={() => depositLP()}>
-              Deposit Assets
+            <Button className="button--fill lockBtn" onClick={() => mintUSDr()}>
+              Mint USDr
             </Button>
           </div>
         </Modal.Header>
@@ -239,4 +243,4 @@ const LockVaultModal = ({ data }: any) => {
   );
 };
 
-export default LockVaultModal;
+export default MintUSDrModal;
