@@ -112,8 +112,14 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
           </div>
           <div className="tokenpaircard__aprBox">
-            <h6>APR:</h6>
-            <h6 className="semiBold">{data.apr}%</h6>
+            <div>
+              <h5>Platform:</h5>
+              <h6 className="semiBold">Raydium</h6>
+            </div>
+            <div>
+              <h5>APR:</h5>
+              <h6 className="semiBold"></h6>
+            </div>
           </div>
           {compare_valuts_status ? (
             <div className={classNames('tokenpaircard__btnBox', { 'tokenpaircard__btnBox--checked': checked })}>
