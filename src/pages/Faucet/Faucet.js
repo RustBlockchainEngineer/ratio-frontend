@@ -73,6 +73,7 @@ const Faucet = () => {
   };
 
   const onChangeLp = (value) => {
+    setFaucetStatus(false);
     setOption(value);
   };
 
