@@ -179,20 +179,18 @@ export async function getUserOverview(connection: Connection, wallet: any) {
   const activeVaults: any = {};
   let vaultCount = 0;
   let totalDebt = 0;
-  const totalLocked = 0;
   for( let i = 0; i < mints.length; i ++ ) {
       const state = await getUserState(connection, wallet, new PublicKey(mints[i]));
-      if (state && state.debt.toString() !== '0') {
-        activeVaults[mints[i]] = cloneDeep(state);
+      if (state && state.lockedCollBalance.toString() !== '0') {
+        activeVaults[mints[i]] = state.lockedCollBalance.toString();
         vaultCount ++;
         totalDebt += Number(state.debt.toString());
       }
   }
   return {
-    data: activeVaults,
+    activeVaults,
     totalDebt,
     vaultCount,
-    totalLocked
   }
 }
 
@@ -249,7 +247,6 @@ export async function borrowUSDr(
     [Buffer.from(USER_USD_TOKEN_TAG), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
     program.programId
   );
-  console.log(userUsdKey.toString());
 
   const borrowInstruction = await program.instruction.borrowUsd(
     new anchor.BN(amount),
