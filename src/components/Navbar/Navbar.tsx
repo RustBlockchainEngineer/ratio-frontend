@@ -43,6 +43,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const [activeVaultCount, setActiveVaultCount] = useState(0);
   const [totalMinted, setTotalDebt] = useState(0);
   const [totalLocked, setTotalLocked] = useState(0);
+  const [overviewData, setOverviewData] = useState('{}');
   const usdrMint = useMint(USDR_MINT_KEY);
   const prices = usePrices();
   React.useEffect(() => {
@@ -51,25 +52,45 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
   const { updateStateFlag } = useUpdateState();
 
-  const updateOverview = async () => {
-    sleep(3000);
+  const showOverview = async () => {
     const overview = await getUserOverview(connection, wallet);
+    setOverviewData(JSON.stringify(overview));
+  };
 
-    setTotalDebt(Number(new TokenAmount(overview.totalDebt, usdrMint?.decimals).fixed()));
-    setActiveVaultCount(overview.vaultCount);
-
-    let tmpLocked = 0;
-    const vaults = Object.values(overview.data);
-    for (const [mint, vault] of Object.entries(vaults)) {
-      const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
-      tmpLocked += price * Number(new TokenAmount((vault as any).lockedCollBalance, 9).fixed());
-    }
-    setTotalLocked(tmpLocked);
+  const getUpdateOverview = async () => {
+    const originOverviewData = overviewData;
+    let newOverviewData = '';
+    do {
+      sleep(300);
+      const overview = await getUserOverview(connection, wallet);
+      newOverviewData = JSON.stringify(overview);
+    } while (newOverviewData !== originOverviewData);
+    setOverviewData(newOverviewData);
   };
 
   React.useEffect(() => {
+    const overview = JSON.parse(overviewData);
+    if (Object.keys(overview).length) {
+      setTotalDebt(Number(new TokenAmount(overview.totalDebt, usdrMint?.decimals).fixed()));
+      setActiveVaultCount(overview.vaultCount);
+
+      let tmpLocked = 0;
+      const vaults = Object.values(overview.activeVaults);
+      for (const [mint, lockedAmount] of Object.entries(vaults)) {
+        const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
+        tmpLocked += price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
+      }
+      setTotalLocked(tmpLocked);
+    }
+  }, [overviewData]);
+
+  React.useEffect(() => {
     if (connected && wallet?.publicKey && usdrMint) {
-      updateOverview();
+      if (updateStateFlag === false) {
+        showOverview();
+      } else {
+        getUpdateOverview();
+      }
     }
   }, [connected, wallet, usdrMint, updateStateFlag, prices]);
 
