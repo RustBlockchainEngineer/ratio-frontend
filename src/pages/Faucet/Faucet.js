@@ -55,17 +55,21 @@ const Faucet = () => {
 
   const onSubmit = async () => {
     setFaucetStatus(false);
-    if (option.value === 'USDC-USDR') {
-      await faucetUsdcUsdrLp(connection, wallet);
-    } else if (option.value === 'ETH-SOL') {
-      await faucetEthSolLp(connection, wallet);
-    } else if (option.value === 'ATLAS-RAY') {
-      await faucetAtlasRayLp(connection, wallet);
-    } else if (option.value === 'SAMO-RAY') {
-      await faucetSamoRayLp(connection, wallet);
+    try {
+      if (option.value === 'USDC-USDR') {
+        await faucetUsdcUsdrLp(connection, wallet);
+      } else if (option.value === 'ETH-SOL') {
+        await faucetEthSolLp(connection, wallet);
+      } else if (option.value === 'ATLAS-RAY') {
+        await faucetAtlasRayLp(connection, wallet);
+      } else if (option.value === 'SAMO-RAY') {
+        await faucetSamoRayLp(connection, wallet);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setFaucetStatus(true);
     }
-    setFaucetStatus(true);
-    // toast('$10 worth of ' + option.value + ' LP token successfully minted!');
   };
 
   const onChangeLp = (value) => {
