@@ -176,6 +176,7 @@ export async function faucetUsdcUsdrLp(connection: Connection, wallet: any) {
     },
   });
   console.log('tx id->', tx);
+  return tx;
 }
 
 export async function faucetEthSolLp(connection: Connection, wallet: any) {
@@ -209,6 +210,7 @@ export async function faucetEthSolLp(connection: Connection, wallet: any) {
     },
   });
   console.log('tx id->', tx);
+  return tx;
 }
 
 export async function faucetAtlasRayLp(connection: Connection, wallet: any) {
@@ -243,6 +245,7 @@ export async function faucetAtlasRayLp(connection: Connection, wallet: any) {
     },
   });
   console.log('tx id->', tx);
+  return tx;
 }
 
 export async function faucetSamoRayLp(connection: Connection, wallet: any) {
@@ -277,4 +280,5 @@ export async function faucetSamoRayLp(connection: Connection, wallet: any) {
     },
   });
   console.log('tx id->', tx);
+  return tx;
 }
