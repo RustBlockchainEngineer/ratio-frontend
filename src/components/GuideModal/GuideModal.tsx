@@ -33,7 +33,7 @@ const GuideModal = () => {
               <p>Step 2: Go to solfaucet.com to obtain devnet sol </p>
               <p>Step 3: Connect your wallet to dev.ratio.finance</p>
               <p>Step 4: Go to the faucet on the site </p>
-              <p>Step 5: Mint any of the LP dev net tokens </p>
+              <p>Step 5: Mint any of the LP devnet tokens </p>
               <p>Step 6: Use the app to deposit, mint, pay back, and withdraw LP </p>
               <h6>Note: Phantom wallets will give the best user experience</h6>
             </div>
