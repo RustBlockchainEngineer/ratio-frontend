@@ -94,8 +94,21 @@ const DepositModal = ({ data }: any) => {
           <div className="dashboardModal__modal__header">
             <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
             <div>
-              <img src={data.icons[0]} alt={data.icons[0].toString()} />
-              <img src={data.icons[1]} alt={data.icons[1].toString()} className="dashboardModal__modal__header-icon" />
+              {data.icons ? (
+                <>
+                  <img src={data.icons[0]} alt={data.icons[0].toString()} />
+                  <img
+                    src={data.icons[1]}
+                    alt={data.icons[1].toString()}
+                    className="dashboardModal__modal__header-icon"
+                  />
+                </>
+              ) : (
+                <>
+                  <img />
+                  <img className="dashboardModal__modal__header-icon" />
+                </>
+              )}
             </div>
             <h4>Deposit assets into vault</h4>
             <h5>
