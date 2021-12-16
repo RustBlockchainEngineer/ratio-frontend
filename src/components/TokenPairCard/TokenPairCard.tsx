@@ -80,7 +80,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
           <div className="mx-1"></div>
           <MintUSDrModal data={data} />
         </div>
-        <Button className="button button--fill generate mt-2" onClick={showDashboard}>
+        <Button disabled={positionValue === 0} className="button button--fill generate mt-2" onClick={showDashboard}>
           Enter Vault
         </Button>
       </div>
@@ -134,7 +134,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
             <div>
               <h5>APR:</h5>
-              <h6 className="semiBold"></h6>
+              <h6 className="semiBold mt-1">{data.apr}</h6>
             </div>
           </div>
           {compare_valuts_status ? (

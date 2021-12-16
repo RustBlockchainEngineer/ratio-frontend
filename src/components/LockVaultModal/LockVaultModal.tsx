@@ -196,7 +196,7 @@ const LockVaultModal = ({ data }: any) => {
 
   return (
     <>
-      <Button className="button--gradientBorder generate" disabled={!connected} onClick={() => setShow(!show)}>
+      <Button className="button--fill generate" disabled={!connected} onClick={() => setShow(!show)}>
         Deposit LP
       </Button>
       <Modal

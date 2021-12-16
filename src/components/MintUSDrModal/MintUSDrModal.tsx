@@ -189,7 +189,8 @@ const MintUSDrModal = ({ data }: any) => {
         console.log(e);
       })
       .finally(() => {
-        history.push(`/dashboard/vaultdashboard/${data.mint}`);
+        setShow(false);
+        // history.push(`/dashboard/vaultdashboard/${data.mint}`);
       });
   };
 
