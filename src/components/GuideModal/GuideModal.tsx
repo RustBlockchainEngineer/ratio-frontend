@@ -19,23 +19,28 @@ const GuideModal = () => {
       <Modal
         show={show}
         onHide={() => setShow(false)}
-        size="lg"
+        size="xl"
         aria-labelledby="contained-modal-title-vcenter"
         centered
-        className="disclaimerModal"
+        className="guidemodal"
       >
         <Modal.Body>
-          <div className="disclaimerModal__header">
-            <IoMdClose size={32} className="disclaimerModal__header-close" onClick={() => setShow(false)} />
-            <h2 className="disclaimerModal__title">Guide</h2>
-            <div className="disclaimerModal__body">
-              Are you sure you’d like to proceed? This LP pair has been
-              <strong> extremely volatile over the last 30 days</strong> and has displayed considerable risk.
+          <div className="guidemodal__header">
+            <IoMdClose size={32} className="guidemodal__header-close" onClick={() => setShow(false)} />
+            <h2 className="guidemodal__title">Guide</h2>
+            <div className="guidemodal__body">
+              <p>Step 1: Switch your wallet from a mainnet wallet to devnet </p>
+              <p>Step 2: Go to solfaucet.com to obtain devnet sol </p>
+              <p>Step 3: Connect your wallet to dev.ratio.finance</p>
+              <p>Step 4: Go to the faucet on the site </p>
+              <p>Step 5: Mint any of the LP dev net tokens </p>
+              <p>Step 6: Use the app to deposit, mint, pay back, and withdraw LP </p>
+              <h6>Note: Phantom wallets will give the best user experience</h6>
             </div>
-            <div className="disclaimerModal__btnBox row">
+            <div className="guidemodal__btnBox row">
               <div className="col">
                 <Button className="gradientBtn" onClick={() => setShow(!show)}>
-                  Cancel
+                  Exit
                 </Button>
               </div>
             </div>
