@@ -28,7 +28,7 @@ const Faucet = () => {
 
   const [submitState, setSubmitState] = React.useState(false);
   const [isCreated, setIsCreated] = React.useState(false);
-  const [faucetStatus, setFaucetStatus] = React.useState(false);
+  const [faucetStatus, setFaucetStatus] = React.useState('');
 
   React.useEffect(async () => {
     if (gWallet.connected) {
@@ -54,26 +54,30 @@ const Faucet = () => {
   };
 
   const onSubmit = async () => {
-    setFaucetStatus(false);
+    setFaucetStatus('minting ...');
+    let tx;
     try {
       if (option.value === 'USDC-USDR') {
-        await faucetUsdcUsdrLp(connection, wallet);
+        tx = await faucetUsdcUsdrLp(connection, wallet);
       } else if (option.value === 'ETH-SOL') {
-        await faucetEthSolLp(connection, wallet);
+        tx = await faucetEthSolLp(connection, wallet);
       } else if (option.value === 'ATLAS-RAY') {
-        await faucetAtlasRayLp(connection, wallet);
+        tx = await faucetAtlasRayLp(connection, wallet);
       } else if (option.value === 'SAMO-RAY') {
-        await faucetSamoRayLp(connection, wallet);
+        tx = await faucetSamoRayLp(connection, wallet);
+      } else {
+        setFaucetStatus('Please select a faucet token.');
+        return;
       }
+      setFaucetStatus('You have minted $10 worth of ' + option.value + ' LP tokens');
     } catch (e) {
       console.log(e);
-    } finally {
-      setFaucetStatus(true);
+      setFaucetStatus('Error occured! please check your transaction.');
     }
   };
 
   const onChangeLp = (value) => {
-    setFaucetStatus(false);
+    setFaucetStatus('');
     setOption(value);
   };
 
@@ -88,9 +92,7 @@ const Faucet = () => {
           </h6>
           <label>Choose which LP you wish to mint</label>
           <CustomSelect options={TOKEN_VAULT_OPTIONS} onChange={onChangeLp} />
-          {faucetStatus && (
-            <div className="faucet__success">{`You have minted $10 worth of ${option.value} LP tokens`}</div>
-          )}
+          {faucetStatus !== '' && <div className="faucet__success">{faucetStatus}</div>}
           {/* <label className="mt-4">Choose the amount you would like to mint</label>
           <CustomInput appendStr="Max" appendValueStr="100" onTextChange={getInputValue} />
           {submitState && (

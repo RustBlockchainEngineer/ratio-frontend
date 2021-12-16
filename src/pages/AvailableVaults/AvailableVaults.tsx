@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { MINTADDRESS } from '../../constants';
+import { MINTADDRESS, APR, TVL } from '../../constants';
 import { getRiskLevel } from '../../libs/helper';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useWallet } from '../../contexts/wallet';
@@ -71,8 +71,8 @@ const AvailableVaults = () => {
           icon1: getCoinPicSymbol(tokens[0]), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
           icon2: getCoinPicSymbol(tokens[1]),
           title: key,
-          // tvl: '$20,818,044.40',
-          apr: 125,
+          tvl: TVL[key],
+          apr: APR[key],
           details:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
           risk: d[key].c,
@@ -130,7 +130,7 @@ const AvailableVaults = () => {
       dataField: 'apr',
       text: 'APR',
       formatter: (cell: any, row: any) => {
-        return <h6 className="semiBold">{row.apr}%</h6>;
+        return <h6 className="semiBold">{row.apr}</h6>;
       },
       style: {
         paddingTop: 35,

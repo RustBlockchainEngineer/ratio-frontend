@@ -16,6 +16,9 @@
   }
   &__option {
     cursor: pointer;
+    img {
+      width: 35px;
+    }
     &:hover {
       background-color: #e5f7e9;
     }
