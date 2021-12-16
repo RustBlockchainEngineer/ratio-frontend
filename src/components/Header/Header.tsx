@@ -6,8 +6,11 @@ import { FaCheck } from 'react-icons/fa';
 import { IoMdCloseCircle } from 'react-icons/io';
 import Button from '../Button';
 import SwitchButton from '../SwitchButton';
+import GuideModal from '../GuideModal';
+
 import { shortenAddress } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
+
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 
@@ -33,6 +36,7 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
   return (
     <div className="header d-flex">
       {isMobile && <img src={darkMode ? darkLogo : logo} alt="logo" />}
+      <GuideModal />
       <Button disabled={!connected} className="button--fill walletBtn mr-3" onClick={() => history.push('/faucet')}>
         Faucet
       </Button>

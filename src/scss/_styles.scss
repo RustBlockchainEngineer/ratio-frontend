@@ -39,6 +39,7 @@
 @import './compareChart';
 @import './comingsoon';
 @import './adminpanel';
+@import './guidemodal';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
@@ -177,9 +178,12 @@ input {
   border-bottom-right-radius: 16px;
 }
 
-.modal-lg,
-.modal-xl {
+.modal-lg
+{
   max-width: 480px !important;
+}
+.modal-xl {
+  max-width: 600px !important;
 }
 .EXTREME {
   color: #ff3131 !important;

@@ -33,7 +33,6 @@ const ModalCard = ({
   icons,
   tokenName,
   type,
-
   depositValue,
   withdrawValue,
   generateValue,
@@ -43,7 +42,7 @@ const ModalCard = ({
 }: any) => {
   const depositData = {
     mint: mintAddress,
-    icons: [rayIcon, solIcon],
+    icons: icons,
     title: tokenName,
     value: depositValue,
     usdrMint: MINTADDRESS['USDR'],
@@ -52,7 +51,7 @@ const ModalCard = ({
 
   const withdrawData = {
     mint: mintAddress,
-    icons: [rayIcon, solIcon],
+    icons: icons,
     title: tokenName,
     value: withdrawValue,
     usdrValue: debtValue,

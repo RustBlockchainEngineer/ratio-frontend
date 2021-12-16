@@ -8,6 +8,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 import LockVaultModal from '../LockVaultModal';
+import MintUSDrModal from '../MintUSDrModal';
 import DisclaimerModal from '../DisclaimerModal';
 import Button from '../Button';
 import highRisk from '../../assets/images/highrisk.svg';
@@ -20,6 +21,7 @@ import { useConnection } from '../../contexts/connection';
 import { getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useUpdateState } from '../../contexts/auth';
+import rayIcon from '../../assets/images/RAY.svg';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -70,8 +72,19 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   }, [updateStateFlag]);
 
   const renderModalButton = () => {
-    if (data.risk === 250) return <DisclaimerModal data={data} />;
-    return <LockVaultModal data={data} />;
+    // if (data.risk === 250) return <DisclaimerModal data={data} />;
+    return (
+      <div>
+        <div className="d-flex justify-content-center align-items-center">
+          <LockVaultModal data={data} />
+          <div className="mx-1"></div>
+          <MintUSDrModal data={data} />
+        </div>
+        <Button className="button button--fill generate mt-2" onClick={showDashboard}>
+          Enter Vault
+        </Button>
+      </div>
+    );
   };
 
   const handleChangeComparison = (e: any) => {
@@ -98,7 +111,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <img src={data.icon2} alt={'Token2'} className="tokenpaircard__header-icon" />
               </div>
               <div className="tokenpaircard__titleBox">
-                <div onClick={showDashboard}>
+                <div>
                   <h6>{data.title}</h6>
                 </div>
                 <p>{data.tvl}</p>
@@ -112,8 +125,17 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
           </div>
           <div className="tokenpaircard__aprBox">
-            <h6>APR:</h6>
-            <h6 className="semiBold">{data.apr}%</h6>
+            <div>
+              <h5>Platform:</h5>
+              <div className="d-flex align-items-center mt-1">
+                <img src={rayIcon} />
+                <h6 className="semiBold ml-1">RAYDIUM</h6>
+              </div>
+            </div>
+            <div>
+              <h5>APR:</h5>
+              <h6 className="semiBold"></h6>
+            </div>
           </div>
           {compare_valuts_status ? (
             <div className={classNames('tokenpaircard__btnBox', { 'tokenpaircard__btnBox--checked': checked })}>
@@ -139,7 +161,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div className="d-flex justify-content-between">
                   <div>
                     Position value:
-                    <p>${positionValue.toFixed(2)}</p>
+                    <p>$ {positionValue.toFixed(2)}</p>
                     {/* <div className="tokenpaircard__detailBox__content--tokens">
                       <img src={data.icons[0]} alt="RayIcon" />
                       {tokenA}: $4200

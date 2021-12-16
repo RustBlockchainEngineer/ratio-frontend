@@ -37,7 +37,7 @@
   .generate {
     font-family: 'Poppins-Medium';
     font-size: 15px;
-    padding: 0.9rem 0rem;
+    padding: 0.8rem 0rem;
     width: 100%;
   }
   &__header {
@@ -112,13 +112,22 @@
     border-top: 1px solid rgba(#4c646f, 0.2);
     border-bottom: 1px solid rgba(#4c646f, 0.2);
     h6 {
-      font-size: 16px;
+      font-size: 14px;
       color: var(--unnamed-color-3c4760);
       margin-bottom: 0px;
       font-family: 'Poppins-Medium';
     }
+    h5 {
+      font-size: 12px;
+      color: var(--unnamed-color-3c4760);
+      margin-bottom: 0px;
+      font-family: 'Poppins-Regular';
+    }
     .semiBold {
       font-family: 'Poppins-SemiBold';
+    }
+    img {
+      width: 20px;
     }
   }
   &__btnBox {
