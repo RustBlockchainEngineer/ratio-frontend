@@ -55,12 +55,13 @@
     background-color: white;
   }
 
-  &--disabled {
-    background-color: rgba(#4c646f, 0.5);
-    color: #4c646f;
+  &:disabled {
+    background: rgba(#4c646f, 0.5);
+    color: #4c646f !important;
+    border: none !important;
     &:focus {
-      background-color: rgba(#4c646f, 0.5);
-      color: #4c646f;
+      background: rgba(#4c646f, 0.5);
+      color: #4c646f !important;
     }
   }
 }
