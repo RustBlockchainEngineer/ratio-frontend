@@ -178,9 +178,12 @@ input {
   border-bottom-right-radius: 16px;
 }
 
-.modal-lg,
-.modal-xl {
+.modal-lg
+{
   max-width: 480px !important;
+}
+.modal-xl {
+  max-width: 600px !important;
 }
 .EXTREME {
   color: #ff3131 !important;
