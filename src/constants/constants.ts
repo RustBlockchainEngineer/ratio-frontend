@@ -7,10 +7,10 @@ export const MINTADDRESS: any = {
 };
 
 export const APR: any = {
-  'USDC-USDR': '30%',
-  'ETH-SOL': '25%',
-  'ATLAS-RAY': '112%',
-  'SAMO-RAY': '115%',
+  'USDC-USDR': 30,
+  'ETH-SOL': 25,
+  'ATLAS-RAY': 112,
+  'SAMO-RAY': 115,
 };
 
 export const TVL: any = {

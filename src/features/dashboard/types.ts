@@ -1,4 +1,10 @@
-import { SET_COMPARE_VAULTS, SET_COMPARE_VAULTS_LIST, SET_FILTER_DATA, SET_AVAILABLE_VAULT } from './actionTypes';
+import {
+  SET_COMPARE_VAULTS,
+  SET_COMPARE_VAULTS_LIST,
+  SET_FILTER_DATA,
+  SET_AVAILABLE_VAULT,
+  SET_SORT_DATA,
+} from './actionTypes';
 
 interface setCompareVaultsAction {
   type: typeof SET_COMPARE_VAULTS;
@@ -20,11 +26,17 @@ interface setFilterData {
   payload: any;
 }
 
+interface setSortData {
+  type: typeof SET_SORT_DATA;
+  payload: any;
+}
+
 export interface SystemState {
   dashboard: {
     compare_vaults: false;
     compare_vaults_list: [];
     filter_data: [];
+    sort_data: any;
     available_vaults: [];
   };
 }
@@ -33,4 +45,5 @@ export type dashboardActionTypes =
   | setCompareVaultsAction
   | setCompareVaultsListAction
   | setFilterData
-  | setAvailableVaultAction;
+  | setAvailableVaultAction
+  | setSortData;
