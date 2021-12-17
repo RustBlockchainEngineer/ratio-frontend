@@ -36,7 +36,7 @@
       }
       &__title {
         padding-top: 20px;
-        padding-left: 10px;
+        // padding-left: 10px;
         padding-right: 10px;
         font-family: 'Poppins-SemiBold';
         font-size: 24px;
@@ -56,9 +56,8 @@
             font-size: 16px;
         }
         h6 {
-            margin-top: 20px;
             font-size: 14px;
-            font-family: 'Poppins-Light';
+            font-family: 'Poppins-Regular';
             color: var(--unnamed-color-4c646f);
         }
       }
