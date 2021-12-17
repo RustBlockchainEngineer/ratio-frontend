@@ -134,7 +134,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
             <div>
               <h5>APR:</h5>
-              <h6 className="semiBold mt-1">{data.apr}</h6>
+              <h6 className="semiBold mt-1">{data.apr}%</h6>
             </div>
           </div>
           {compare_valuts_status ? (
