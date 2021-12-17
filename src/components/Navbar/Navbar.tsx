@@ -61,7 +61,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
     const originOverviewData = overviewData;
     let newOverviewData = '';
     do {
-      sleep(300);
+      await sleep(300);
       const overview = await getUserOverview(connection, wallet);
       newOverviewData = JSON.stringify(overview);
     } while (newOverviewData !== originOverviewData);

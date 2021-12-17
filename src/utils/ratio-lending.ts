@@ -199,7 +199,7 @@ export async function getUpdatedUserState(connection: any, wallet: any, mint: st
 {
   let res = null;
   do {
-    sleep(300);
+    await sleep(300);
     res = await getUserState(connection, wallet, new PublicKey(mint));
   } while (
     !res ||
