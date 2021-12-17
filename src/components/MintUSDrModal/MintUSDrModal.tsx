@@ -219,9 +219,6 @@ const MintUSDrModal = ({ data }: any) => {
             </div>
             <h3 className="mt-3">How much USDr would you like to generate?</h3>
             {/* <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label> */}
-            <label className="lockvaultmodal__label2">
-              Min: <strong>1 USDr</strong>, Max: <strong>1000 USDr</strong>
-            </label>
             <CustomInput
               appendStr="Max"
               appendValueStr={'' + maxUSDrAmount}
