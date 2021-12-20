@@ -40,6 +40,7 @@ const Layer = () => {
   const { darkMode } = theme.state;
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
+  const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [collapseFlag, setCollapseFlag] = React.useState(false);
   const whitelist_data = useSelector(walletSelectors.getWhiteListData);
@@ -94,6 +95,10 @@ const Layer = () => {
   const onCollapseMenu = () => {
     setCollapseFlag(!collapseFlag);
   };
+
+  if (isTabletOrMobile) {
+    return <div className="layer__mobile">Coming Soon...</div>;
+  }
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>

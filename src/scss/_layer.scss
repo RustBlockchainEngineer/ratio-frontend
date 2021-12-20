@@ -1,4 +1,14 @@
 .layer {
+  &__mobile {
+    height:100vh;
+    width:100vw;
+    display: flex;
+    justify-content:center;
+    align-items:center;
+    font-family: 'Poppins-Medium';
+    font-size: 25px;
+    color: var(--unnamed-color-002332);
+  }
   overflow-y: hidden;
 
   // &::before {
