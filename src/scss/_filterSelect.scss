@@ -26,11 +26,14 @@
       background-color: red;
     }
     &--token {
+      padding-top: 5px;
       font-size: 15px;
       font-family: 'Poppins-SemiBold';
       color: #002332;
     }
     &--network {
+      padding-top: 3px;
+      float: right;
       font-size: 14px;
       font-family: 'Poppins-Light';
       color: #3c4760;
