@@ -28,9 +28,9 @@ type FilterPanelProps = {
 };
 
 const options = [
-  { value: 'APR', label: 'APR' },
-  { value: 'RISK', label: 'RISK' },
-  { value: 'TVL', label: 'TVL' },
+  { value: 'apr', label: 'APR' },
+  { value: 'risk', label: 'RISK' },
+  { value: 'tvl', label: 'TVL' },
 ];
 
 const filter_options = [
@@ -49,6 +49,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const [compareVaults, setCompareVaults] = React.useState(false);
 
   const filter_data = useSelector(selectors.getFilterData);
+  const sort_data = useSelector(selectors.getSortData);
 
   const onFilterChange = (values: any) => {
     dispatch({ type: actionTypes.SET_FILTER_DATA, payload: values });
@@ -57,6 +58,10 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const handleCompareVaults = () => {
     setCompareVaults(!compareVaults);
     dispatch({ type: actionTypes.SET_COMPARE_VAULTS, payload: !compareVaults });
+  };
+
+  const onSortChange = (values: any) => {
+    dispatch({ type: actionTypes.SET_SORT_DATA, payload: values });
   };
 
   return (
@@ -86,7 +91,13 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
         </div>
         <div className="d-md-flex align-items-center">
           <p className="mr-2 filterpanel__sortby">Sort by: </p>
-          <Select options={options} classNamePrefix="react-select" defaultValue={{ label: 'APR', value: 'APR' }} />
+          <Select
+            options={options}
+            value={sort_data}
+            onChange={onSortChange}
+            classNamePrefix="react-select"
+            defaultValue={{ value: 'apr', label: 'APR' }}
+          />
           {isDefault && (
             <>
               <img
