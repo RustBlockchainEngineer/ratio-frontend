@@ -86,11 +86,12 @@ const WithdrawModal = ({ data }: any) => {
       .finally(() => {
         setShow(false);
       });
+    //disabled={Number(data.usdrValue) !== 0}
   };
 
   return (
     <div className="dashboardModal">
-      <Button className="gradientBtn" disabled={Number(data.usdrValue) !== 0} onClick={() => setShow(!show)}>
+      <Button className="gradientBtn" onClick={() => setShow(!show)}>
         Withdraw
       </Button>
       <Modal
@@ -116,6 +117,9 @@ const WithdrawModal = ({ data }: any) => {
               </strong>{' '}
               tokens from your vault.
             </h5>
+            {Number(data.usdrValue) !== 0 && (
+              <div className="customInput--valid">LP cannot be withdrawn until USDr debt is paid back</div>
+            )}
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -134,7 +138,11 @@ const WithdrawModal = ({ data }: any) => {
               valid={withdrawStatus}
               invalidStr={invalidStr}
             />
-            <Button className="button--fill bottomBtn" onClick={() => withdraw()}>
+            <Button
+              className="button--fill bottomBtn"
+              disabled={Number(data.usdrValue) !== 0}
+              onClick={() => withdraw()}
+            >
               Withdraw Assets
             </Button>
           </div>

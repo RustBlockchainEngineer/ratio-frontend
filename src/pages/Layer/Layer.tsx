@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
@@ -34,17 +35,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // const isMobile = useMediaQuery({ maxWidth: 767 })
 
-const tokens = [
-  'So11111111111111111111111111111111111111112',
-  'StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT',
-  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-  '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
-  '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
-  'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
-  '8HGyAAB1yoM1ttS7pXjHMa3dukTFGQggnFFH3hJZgzQh',
-  'ETAtLmCmsoiEEKfNrHKJ2kYy3MoABhU6NQvpSfij5tDs',
-];
-
 const Layer = () => {
   const theme = React.useContext(ThemeContext);
   const { darkMode } = theme.state;
@@ -54,6 +44,7 @@ const Layer = () => {
   const [collapseFlag, setCollapseFlag] = React.useState(false);
   const whitelist_data = useSelector(walletSelectors.getWhiteListData);
   const { tokenMap } = useConnectionConfig();
+  const history = useHistory();
 
   const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/whitelist');
 
@@ -85,6 +76,8 @@ const Layer = () => {
         setEnable(false);
         toast('Please add your address to whitelist.');
       }
+    } else {
+      history.push('/dashboard');
     }
   }, [connected, publicKey]);
 
