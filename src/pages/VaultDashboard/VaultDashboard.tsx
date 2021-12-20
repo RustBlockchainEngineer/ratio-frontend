@@ -88,7 +88,7 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     if (!connected) {
-      history.push('/dashboard');
+      history.push('/dashboard/available-vaults');
     } else if (vault_mint) {
       setIsLoading(true);
       getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {
@@ -102,7 +102,7 @@ const VaultDashboard = () => {
     return () => {
       setUserState(null);
     };
-  }, [vault_mint, wallet]);
+  }, [vault_mint, wallet, connected]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
@@ -153,24 +153,31 @@ const VaultDashboard = () => {
   }, [tokenPrice, userState, usdrMint, collMint]);
 
   useEffect(() => {
-    if (userState && vault_mint && connected) {
+    if (userState && collMint) {
       const tmpWithdrawValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
       console.log('locked', tmpWithdrawValue);
       setWithdrawValue(Number(tmpWithdrawValue));
+    }
+    return () => {
+      setWithdrawValue(0);
+    };
+  }, [userState, collMint]);
 
+  useEffect(() => {
+    if (userState && usdrMint) {
       const tmpDebtValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
       console.log('debt', tmpDebtValue);
       setDebtValue(Number(tmpDebtValue));
 
-      setVaultDebtData({
-        mint: vault_mint,
-        usdrMint: MINTADDRESS['USDR'],
-        usdrValue: Number(tmpDebtValue),
-      });
+      if (vault_mint) {
+        setVaultDebtData({
+          mint: vault_mint,
+          usdrMint: MINTADDRESS['USDR'],
+          usdrValue: Number(tmpDebtValue),
+        });
+      }
     }
-    if (!connected) {
-      history.push(`/dashboard/available-vaults`);
-    }
+
     return () => {
       setVaultDebtData({
         mint: vault_mint,
@@ -178,7 +185,7 @@ const VaultDashboard = () => {
         usdrValue: 0,
       });
     };
-  }, [userState, connected, vault_mint, collMint, usdrMint]);
+  }, [userState, vault_mint, usdrMint]);
 
   useEffect(() => {
     setIsLoading(true);

@@ -18,27 +18,29 @@ import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { useConnection } from '../../contexts/connection';
-import { getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
+import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useUpdateState } from '../../contexts/auth';
 import rayIcon from '../../assets/images/RAY.svg';
+import { updateVariableDeclarationList } from 'typescript';
+import { sleep } from '@project-serum/common';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
-  const tokenA = data.title.split('-')[0];
-  const tokenB = data.title.split('-')[1];
   const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
-
   const connection = useConnection();
   const { wallet, connected } = useWallet();
+  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
 
   const collMint = useMint(data.mint);
   const [userState, setUserState] = React.useState(null);
   const tokenPrice = usePrice(data.mint);
 
   const [positionValue, setPositionValue] = React.useState(0);
+  const [tvl, setTVL] = React.useState(0);
+  const [tvlUSD, setTVLUSD] = React.useState(0);
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -51,6 +53,43 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     };
   }, [wallet, connection, collMint]);
 
+  const showTVL = async () => {
+    const tokenVault = await getTokenVaultByMint(connection, data.mint);
+    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
+    setTVL(Number(tvlAmount.fixed()));
+  };
+
+  const updateTVL = async () => {
+    const oriAmount = tvl;
+    let tvlAmount = null;
+    do {
+      await sleep(300);
+      const tokenVault = getTokenVaultByMint(connection, data.mint);
+      tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
+    } while (oriAmount === Number(tvlAmount.fixed()));
+
+    setTVL(Number(tvlAmount.fixed()));
+  };
+
+  React.useEffect(() => {
+    if (connection && collMint && data.mint) {
+      if (updateStateFlag) {
+        updateTVL();
+      } else {
+        showTVL();
+      }
+    }
+    return () => {
+      setTVL(0);
+    };
+  }, [connection, collMint, updateStateFlag]);
+
+  React.useEffect(() => {
+    if (tokenPrice && tvl) {
+      setTVLUSD(Number((tokenPrice * tvl).toFixed(2)));
+    }
+  }, [tvl, tokenPrice]);
+
   React.useEffect(() => {
     if (userState && tokenPrice && collMint) {
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
@@ -61,7 +100,6 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     };
   }, [tokenPrice, userState, collMint]);
 
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   React.useEffect(() => {
     if (updateStateFlag && wallet?.publicKey) {
       getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
@@ -114,7 +152,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div>
                   <h6>{data.title}</h6>
                 </div>
-                <p>{data.tvl}</p>
+                <p>$ {tvlUSD}</p>
               </div>
             </div>
             <div className="tokenpaircard__riskBox">
