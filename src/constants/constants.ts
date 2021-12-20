@@ -14,8 +14,8 @@ export const APR: any = {
 };
 
 export const TVL: any = {
-  'USDC-USDR': '$30,000,000',
-  'ETH-SOL': '$77,000,000',
-  'ATLAS-RAY': '$60,000,000',
-  'SAMO-RAY': '$9,000,000',
+  'USDC-USDR': 30000000,
+  'ETH-SOL': 77000000,
+  'ATLAS-RAY': 60000000,
+  'SAMO-RAY': 9000000,
 };

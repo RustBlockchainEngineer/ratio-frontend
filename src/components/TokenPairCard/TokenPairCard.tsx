@@ -17,6 +17,7 @@ import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
+import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
@@ -152,7 +153,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div>
                   <h6>{data.title}</h6>
                 </div>
-                <p>$ {data.tvl}</p>
+                <p>{formatUSD.format(data.tvl)}</p>
               </div>
             </div>
             <div className="tokenpaircard__riskBox">
