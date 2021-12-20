@@ -152,7 +152,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div>
                   <h6>{data.title}</h6>
                 </div>
-                <p>$ {tvlUSD}</p>
+                <p>$ {data.tvl}</p>
               </div>
             </div>
             <div className="tokenpaircard__riskBox">
