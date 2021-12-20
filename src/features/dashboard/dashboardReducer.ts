@@ -1,17 +1,10 @@
-import {
-  SET_COMPARE_VAULTS,
-  SET_COMPARE_VAULTS_LIST,
-  SET_FILTER_DATA,
-  SET_AVAILABLE_VAULT,
-  SET_SORT_DATA,
-} from './actionTypes';
+import { SET_COMPARE_VAULTS, SET_COMPARE_VAULTS_LIST, SET_FILTER_DATA, SET_AVAILABLE_VAULT } from './actionTypes';
 import { dashboardActionTypes } from './types';
 
 const initialState = {
   compare_vaults: false,
   compare_vaults_list: [],
   filter_data: [],
-  sort_data: { value: 'apr', label: 'APR' },
   available_vaults: [],
 };
 
@@ -25,8 +18,6 @@ export default (state = initialState, action: dashboardActionTypes) => {
       return { ...state, filter_data: action.payload };
     case SET_AVAILABLE_VAULT:
       return { ...state, available_vaults: action.payload };
-    case SET_SORT_DATA:
-      return { ...state, sort_data: action.payload };
     default:
       return state;
   }
