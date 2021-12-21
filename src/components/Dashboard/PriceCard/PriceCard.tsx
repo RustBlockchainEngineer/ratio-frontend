@@ -33,7 +33,7 @@ const PriceCard = ({ data, comingsoon }: PriceCardProps) => {
       <div className="pricecard__header">
         {data.currentPrice && (
           <div>
-            <label>Current Price Information</label>
+            <label>Current LP Token Price</label>
             <p>{data.currentPrice}</p>
           </div>
         )}

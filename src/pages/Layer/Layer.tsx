@@ -22,9 +22,13 @@ import CompareVaults from '../CompareVaults';
 import { actionTypes } from '../../features/wallet';
 import { walletSelectors } from '../../features/wallet';
 import logoside from '../../assets/images/logo-side.svg';
+import darkLogo from '../../assets/images/dark-logoside.svg';
 import telegram from '../../assets/images/telegram.svg';
 import twitter from '../../assets/images/twitter.svg';
 import medium from '../../assets/images/medium.svg';
+import telegramDark from '../../assets/images/telegram-dark.svg';
+import twitterDark from '../../assets/images/twitter-dark.svg';
+import mediumDark from '../../assets/images/medium-dark.svg';
 
 import { getTokenBySymbol } from '../../utils/tokens';
 import { getTokenIcon } from '../../utils/utils';
@@ -97,7 +101,14 @@ const Layer = () => {
   };
 
   if (isTabletOrMobile) {
-    return <div className="layer__mobile">Coming Soon...</div>;
+    return (
+      <div className="layer__mobile">
+        <div>
+          <img src={logoside} alt="logoside" />
+          <p>Coming Soon...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -116,7 +127,8 @@ const Layer = () => {
       {!isLoading && (
         <div
           className={classNames('layer_container', {
-            'layer_container--collapse': collapseFlag || !enable || !connected,
+            'layer_container--collapse': collapseFlag,
+            'layer_container--empty': !enable || !connected,
           })}
         >
           <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
@@ -152,18 +164,18 @@ const Layer = () => {
           ) : (
             <div className="layer__empty">
               <div className="text-center">
-                <img src={logoside} alt="logoside" />
+                <img src={darkMode ? darkLogo : logoside} alt="logoside" />
                 <h4 className="mt-4">Unlocking Solana&apos;s Liquidity</h4>
                 <h6 className="mt-4">Join our community</h6>
                 <div className="layer__social mt-3">
                   <a target="_blank" href="https://t.me/ratiofinance" rel="noreferrer">
-                    <img src={telegram} alt="telegram" />
+                    <img src={darkMode ? telegramDark : telegram} alt="telegram" />
                   </a>
                   <a target="_blank" href="https://twitter.com/ratiofinance" rel="noreferrer" className="ml-3">
-                    <img src={twitter} alt="twitter" />
+                    <img src={darkMode ? twitterDark : twitter} alt="twitter" />
                   </a>
                   <a target="_blank" href="https://medium.com/@ratiofinance" rel="noreferrer" className="ml-3">
-                    <img src={medium} alt="medium" />
+                    <img src={darkMode ? mediumDark : medium} alt="medium" />
                   </a>
                 </div>
               </div>

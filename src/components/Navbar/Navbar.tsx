@@ -12,7 +12,7 @@ import availableVaultsIcon from '../../assets/images/available-vaults-icon.svg';
 import instaBuyIcon from '../../assets/images/insta-buy-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg';
-import { RiMenuFoldLine } from 'react-icons/ri';
+import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import { useUpdateState } from '../../contexts/auth';
 import { useConnection } from '../../contexts/connection';
@@ -164,7 +164,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
         )}
       </div>
       <div className="navbar-vertical__collapsemenu" onClick={setCollapseFlag}>
-        <RiMenuFoldLine size={25} color="#4c646f" />
+        {!collapseFlag ? <RiMenuFoldLine size={25} color="#4c646f" /> : <RiMenuUnfoldLine size={25} color="#4c646f" />}
         {!collapseFlag && <p>Collapse Menu</p>}
       </div>
     </div>

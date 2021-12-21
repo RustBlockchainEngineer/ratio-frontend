@@ -215,7 +215,7 @@ const LockVaultModal = ({ data }: any) => {
               <img src={data.icons[1]} alt={data.icons[1].toString()} className="lockvaultmodal__header-icon2" />
             </div>
             <h3 className="mt-3">Deposit {data.title} LP into vault</h3>
-            <label className="lockvaultmodal__label1 mb-2">How much would you like to lock up?</label>
+            <label className="lockvaultmodal__label1 mb-2">How much would you like to desposit up?</label>
             <CustomInput
               appendStr="Max"
               initValue={lockAmount.toString()}

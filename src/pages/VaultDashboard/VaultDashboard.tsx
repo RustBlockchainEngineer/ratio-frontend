@@ -244,7 +244,7 @@ const VaultDashboard = () => {
       <div className="vaultdashboard__header">
         <div className="vaultdashboard__header_titleBox">
           <div>
-            <h3>{VaultData.title} Vault</h3>
+            <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
             {isMobile && (
               <Link to="/">
                 View on Solana Beach
@@ -285,7 +285,7 @@ const VaultDashboard = () => {
             <div className="col col-lg-6 col-sm-12">
               <ModalCard
                 mintAddress={vault_mint}
-                title="Tokens Locked"
+                title="Tokens in Vault"
                 icons={VaultData.icons}
                 tokenName={VaultData.title}
                 depositValue={depositValue}
@@ -298,7 +298,7 @@ const VaultDashboard = () => {
             <div className="col col-lg-6 col-sm-12">
               <ModalCard
                 mintAddress={vault_mint}
-                title="Outstanding USDr Debt"
+                title="USDr Loan Amount"
                 icons={[usdrIcon]}
                 tokenName={VaultData.title}
                 debtValue={debtValue}
