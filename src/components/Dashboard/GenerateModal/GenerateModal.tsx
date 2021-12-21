@@ -132,12 +132,12 @@ const GenerateModal = ({ data }: any) => {
               valid={mintStatus}
               invalidStr={invalidStr}
             />
-            <label className="lockvaultmodal__label2">
+            {/* <label className="lockvaultmodal__label2">
               Available to mint after <strong>{mintTime}</strong>
             </label>
             <p className="dashboardModal__modal__body-red">
               There will be a 2% stability fee associated with this transaction.
-            </p>
+            </p> */}
             <Button className="button--fill bottomBtn" onClick={() => borrow()}>
               Mint USDr
             </Button>

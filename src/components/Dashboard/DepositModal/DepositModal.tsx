@@ -118,7 +118,7 @@ const DepositModal = ({ data }: any) => {
         </Modal.Header>
         <Modal.Body>
           <div className="dashboardModal__modal__body">
-            <label className="dashboardModal__modal__label">How much USDr would you like to generate?</label>
+            <label className="dashboardModal__modal__label">How much USDr would you like to deposit?</label>
             <CustomInput
               appendStr="Max"
               initValue={depositAmount.toString()}
@@ -133,7 +133,7 @@ const DepositModal = ({ data }: any) => {
               invalidStr={invalidStr}
             />
             <Button className="button--fill bottomBtn" onClick={() => deposit()}>
-              Deposit & Lock Assets
+              Deposit Assets
             </Button>
           </div>
         </Modal.Body>
