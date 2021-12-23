@@ -92,7 +92,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <img src={data.icons[1]} alt={data.icons[1].toString()} className="activepaircard__header-icon1" />
               </div>
               <div className={classNames('activepaircard__titleBox')}>
-                <h6>{data.title}</h6>
+                <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 <p>TVL: {formatUSD.format(data.tvl)}</p>
               </div>
             </div>
