@@ -105,7 +105,7 @@ const Layer = () => {
       <div className="layer__mobile">
         <div>
           <img src={logoside} alt="logoside" />
-          <p>Coming Soon...</p>
+          <p>Mobile site coming Soon...</p>
         </div>
       </div>
     );

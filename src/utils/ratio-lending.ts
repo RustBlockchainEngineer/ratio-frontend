@@ -50,13 +50,13 @@ const defaultPrograms = {
 export const TOKEN_VAULT_OPTIONS = [
   {
     value: 'USDC-USDR',
-    label: 'USDC-USDR-LP',
+    label: 'USDC-USDr LP',
     icon: [`https://sdk.raydium.io/icons/${getTokenBySymbol('USDC')?.mintAddress}.png`, usdrIcon],
     mintAddress: '3ZmQRcaKCmz9WF5L3noi6tZHhbY3ZmyujqyhTViWuffn',
   },
   {
     value: 'ETH-SOL',
-    label: 'ETH-SOL-LP',
+    label: 'ETH-SOL LP',
     icon: [
       `https://sdk.raydium.io/icons/${getTokenBySymbol('ETH')?.mintAddress}.png`,
       `https://sdk.raydium.io/icons/${getTokenBySymbol('SOL')?.mintAddress}.png`,
@@ -65,7 +65,7 @@ export const TOKEN_VAULT_OPTIONS = [
   },
   {
     value: 'ATLAS-RAY',
-    label: 'ATLAS-RAY-LP',
+    label: 'ATLAS-RAY LP',
     icon: [
       `https://sdk.raydium.io/icons/${getTokenBySymbol('ATLAS')?.mintAddress}.png`,
       `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
@@ -74,7 +74,7 @@ export const TOKEN_VAULT_OPTIONS = [
   },
   {
     value: 'SAMO-RAY',
-    label: 'SAMO-RAY-LP',
+    label: 'SAMO-RAY LP',
     icon: [
       `https://sdk.raydium.io/icons/${getTokenBySymbol('SAMO')?.mintAddress}.png`,
       `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
@@ -179,38 +179,35 @@ export async function getUserOverview(connection: Connection, wallet: any) {
   const activeVaults: any = {};
   let vaultCount = 0;
   let totalDebt = 0;
-  for( let i = 0; i < mints.length; i ++ ) {
-      const state = await getUserState(connection, wallet, new PublicKey(mints[i]));
-      if (state && state.lockedCollBalance.toString() !== '0') {
-        activeVaults[mints[i]] = state.lockedCollBalance.toString();
-        vaultCount ++;
-        totalDebt += Number(state.debt.toString());
-      }
+  for (let i = 0; i < mints.length; i++) {
+    const state = await getUserState(connection, wallet, new PublicKey(mints[i]));
+    if (state && state.lockedCollBalance.toString() !== '0') {
+      activeVaults[mints[i]] = state.lockedCollBalance.toString();
+      vaultCount++;
+      totalDebt += Number(state.debt.toString());
+    }
   }
   return {
     activeVaults,
     totalDebt,
     vaultCount,
-  }
+  };
 }
 
-
-export async function getUpdatedUserState(connection: any, wallet: any, mint: string, originState: any)
-{
+export async function getUpdatedUserState(connection: any, wallet: any, mint: string, originState: any) {
   let res = null;
   do {
     await sleep(300);
     res = await getUserState(connection, wallet, new PublicKey(mint));
   } while (
     !res ||
-    originState && 
-    res.lockedCollBalance.toString() === originState.lockedCollBalance.toString() &&
-    res.debt.toString() === (originState as any).debt.toString()
+    (originState &&
+      res.lockedCollBalance.toString() === originState.lockedCollBalance.toString() &&
+      res.debt.toString() === (originState as any).debt.toString())
   );
-  
+
   return res;
 }
-
 
 export async function borrowUSDr(
   connection: Connection,
@@ -607,13 +604,7 @@ export async function lockAndMint(
   console.log('txid', tx);
 }
 
-
-
-export async function getUsdrMintKey(
-  connection: Connection,
-  wallet: any,
-) {
-
+export async function getUsdrMintKey(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, null);
 
   const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(USD_MINT_TAG)], program.programId);

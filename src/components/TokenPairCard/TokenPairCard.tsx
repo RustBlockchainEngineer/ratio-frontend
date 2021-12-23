@@ -151,7 +151,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div className="tokenpaircard__titleBox">
                 <div>
-                  <h6>{data.title}</h6>
+                  <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 </div>
                 <p>{formatUSD.format(data.tvl)}</p>
               </div>
