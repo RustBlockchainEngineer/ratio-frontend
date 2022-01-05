@@ -91,7 +91,7 @@ const WithdrawModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="gradientBtn" onClick={() => setShow(!show)}>
+      <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
         Withdraw
       </Button>
       <Modal
