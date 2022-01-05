@@ -39,6 +39,8 @@ const PaybackModal = ({ data }: any) => {
     setDidMount(true);
     if (paybackAmount > 0) {
       setPaybackStatus(false);
+    } else {
+      setPayBackAmount(0);
     }
     return () => setDidMount(false);
   }, [paybackAmount]);
@@ -62,6 +64,7 @@ const PaybackModal = ({ data }: any) => {
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
       .then(() => {
         setUpdateStateFlag(true);
+        setPayBackAmount(0);
       })
       .catch((e) => {
         console.log(e);
@@ -103,7 +106,7 @@ const PaybackModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to pay back?</label>
             <CustomInput
               appendStr="Max"
-              initValue={paybackAmount.toString()}
+              initValue={'0'}
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
               onTextChange={(value) => {

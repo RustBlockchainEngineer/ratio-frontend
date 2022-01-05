@@ -209,16 +209,11 @@ const MintUSDrModal = ({ data }: any) => {
       >
         <Modal.Header>
           <div className="lockvaultmodal__footer">
-            {/* <label className="lockvaultmodal__label2">
-              Available to mint after <strong>{mintTime}</strong>
-            </label> */}
             <IoMdClose size={32} className="lockvaultmodal__header-close" onClick={() => setShow(false)} />
             <div>
               <img src={usdrIcon} alt={data.icons[0].toString()} className="lockvaultmodal__header-icon1" />
-              {/* <img src={data.icons[1]} alt={data.icons[1].toString()} className="lockvaultmodal__header-icon2" /> */}
             </div>
             <h3 className="mt-3">How much USDr would you like to generate?</h3>
-            {/* <label className="lockvaultmodal__label1">How much USDr would you like to generate?</label> */}
             <CustomInput
               appendStr="Max"
               appendValueStr={'' + maxUSDrAmount}

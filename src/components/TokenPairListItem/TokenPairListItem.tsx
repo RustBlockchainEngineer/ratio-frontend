@@ -83,8 +83,8 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   return (
     <>
-      <tr onClick={showExpand}>
-        <th scope="row" className="align-middle">
+      <tr>
+        <th scope="row" className="align-middle" onClick={showExpand}>
           <div className="align-items-center">
             <div className="d-flex ">
               <div>
@@ -98,10 +98,10 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
           </div>
         </th>
-        <td className="align-middle">
+        <td className="align-middle" onClick={showExpand}>
           <h6 className="semiBold">{data.apr}%</h6>
         </td>
-        <td className="align-middle">
+        <td className="align-middle" onClick={showExpand}>
           <h6 className={classNames('semiBold', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)}</h6>
         </td>
         <td className="align-middle">{renderModalButton(data)}</td>

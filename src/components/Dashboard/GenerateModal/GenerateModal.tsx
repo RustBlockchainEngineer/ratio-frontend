@@ -93,7 +93,7 @@ const GenerateModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="gradientBtn" onClick={() => setShow(!show)}>
+      <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
         Mint
       </Button>
       <Modal
