@@ -4,27 +4,31 @@
       padding: 5px 16px;
       padding-right: 2px;
       min-width: 100px;
-      border: 1px solid rgba(#4c646f, 0.4);
+      background-color: var(--unnamed-color-1B1E29);
+      border: 1px solid rgba(var(--secondary-border), 0.2);
       font-weight: 600;
       letter-spacing: -0.32px;
       &:hover {
-        border: 1px solid rgba(#4c646f, 0.4);
+        border: 1px solid rgba(var(--secondary-border), 0.2);
       }
       &--is-focused {
-        border: 1px solid rgba(#4c646f, 0.4);
+        border: 1px solid rgba(var(--secondary-border), 0.2);
         box-shadow: none;
       }
       img {
         width: 30px;
         height: 30px;
-        border: 1px solid rgba(#4c646f, 0.4);
+        border: 1px solid rgba(var(--secondary-border), 0.2);
         border-radius: 100%; 
         padding: 2px;
         background-color: white;
       }
     }
+    &__menu {
+      background-color: var(--unnamed-color-1B1E29);
+    }
     &__single-value {
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
     }
     &__indicator-separator {
       display: none;
@@ -33,21 +37,22 @@
       svg {
         width: 25px;
         height: 30px;
-        color: #0f6eff;
+        // color: #0f6eff;
       }
     }
     &__option {
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
     }
   }
   &__option {
     cursor: pointer;;
+    color: var(--unnamed-color-3c4760);
     &:hover {
-      opacity: 0.8;
+      background-color: var(--unnamed-color-5fb5ff);
     }
     img {
       width: 30px;
-      border: 1px solid rgba(#4c646f, 0.4);
+      border: 1px solid rgba(var(--secondary-border), 0.2);
       border-radius: 100%; 
       padding: 2px;
       background-color: white;

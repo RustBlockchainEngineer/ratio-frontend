@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import CustomSelect from '../../components/CustomSelect';
 import Button from '../../components/Button';
-
+import { ThemeContext } from '../../contexts/ThemeContext';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import {
@@ -18,6 +18,8 @@ import { TOKEN_VAULT_OPTIONS } from '../../utils/ratio-lending';
 // import { toast } from 'react-toastify';
 
 const Faucet = () => {
+  const theme = React.useContext(ThemeContext);
+  const { darkMode } = theme.state;
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
@@ -82,7 +84,7 @@ const Faucet = () => {
   };
 
   return (
-    <div className="faucet" data-theme="light">
+    <div className="faucet" data-theme={darkMode ? 'dark' : 'light'}>
       <div className="faucet__card">
         <div className="faucet__card__top">
           <h3>Ratio LP Token Faucet</h3>

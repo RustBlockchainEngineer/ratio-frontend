@@ -20,7 +20,7 @@
       width: 35px;
     }
     &:hover {
-      background-color: #e5f7e9;
+      background-color: var(--unnamed-color-5fb5ff);
     }
     &--active {
       background-color: red;
@@ -29,20 +29,21 @@
       padding-top: 5px;
       font-size: 15px;
       font-family: 'Poppins-SemiBold';
-      color: #002332;
+      color: var(--unnamed-color-4c646f);
     }
     &--network {
       padding-top: 3px;
       float: right;
       font-size: 14px;
       font-family: 'Poppins-Light';
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
     }
   }
   .filter-select {
     &__indicator-separator {
       margin-top: 0px;
       margin-bottom: 0px;
+      background-color: rgba(var(--secondary-border), 0.2);
     }
     &__clear-indicator {
       display: none;
@@ -50,14 +51,21 @@
     &__control {
       width: 300px;
       position: relative;
+      background-color: var(--unnamed-color-1B1E29);
+      border: 1px solid rgba(var(--secondary-border), 0.2);
+      &:hover {
+        border: 1px solid rgba(var(--secondary-border), 0.2);
+      }
     }
     &__menu {
       width: 300px;
+      background-color: var(--unnamed-color-1B1E29);
     }
     &__input {
       font-family: 'Poppins-Regular';
       font-size: 16px;
       margin-top: 2px;
+      color: var(--unnamed-color-4c646f);
     }
   }
   &__valuesContainer {
