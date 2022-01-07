@@ -59,25 +59,44 @@
     }
   }
   .react-select {
+    &__indicator-separator {
+      margin-top: 0px;
+      margin-bottom: 0px;
+      background-color: rgba(var(--secondary-border), 0.2);
+    }
+    &__clear-indicator {
+      display: none;
+    }
     &__control {
-      min-width: 100px;
-      border: 1px solid rgba(#4c646f, 0.4);
+      width: 100px;
+      position: relative;
+      background-color: var(--unnamed-color-1B1E29);
+      border: 1px solid rgba(var(--secondary-border), 0.2);
       &:hover {
-        border: 1px solid rgba(#4c646f, 0.4);
-      }
-      &--is-focused {
-        border: 1px solid rgba(#4c646f, 0.4);
-        box-shadow: none;
+        border: 1px solid rgba(var(--secondary-border), 0.2);
       }
     }
+    &__menu {
+      width: 100px;
+      background-color: var(--unnamed-color-1B1E29);
+    }
+    &__input {
+      font-family: 'Poppins-Regular';
+      font-size: 16px;
+      margin-top: 2px;
+      color: var(--unnamed-color-4c646f);
+    }
     &__single-value {
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
     }
     &__indicator-separator {
       display: none;
     }
     &__option {
-      color: #3c4760;
+      color: var(--unnamed-color-3c4760);
+      &:hover {
+        background-color: var(--unnamed-color-5fb5ff);
+      }
     }
   }
 }
