@@ -10,13 +10,11 @@ const AmountPanel = (data: any) => {
   return (
     <div className="amountPanel">
       <WalletBalances data={data} />
-      {/* <ComingSoon enable>
-        <div>
-          <TokensEarned />
-          <LossCalculator />
-          <SystemInfo />
-        </div>
-      </ComingSoon> */}
+      <div className="pb-4">
+        <TokensEarned />
+        {/* <LossCalculator />
+          <SystemInfo /> */}
+      </div>
     </div>
   );
 };

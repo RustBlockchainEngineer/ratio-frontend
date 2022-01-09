@@ -74,6 +74,7 @@ const DepositModal = ({ data }: any) => {
         console.log(e);
       })
       .finally(() => {
+        toast('Successfully Deposited!');
         setShow(false);
       });
   };

@@ -189,6 +189,7 @@ const MintUSDrModal = ({ data }: any) => {
         console.log(e);
       })
       .finally(() => {
+        toast('Successfully Minted!');
         setShow(false);
         // history.push(`/dashboard/vaultdashboard/${data.mint}`);
       });

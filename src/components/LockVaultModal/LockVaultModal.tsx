@@ -170,6 +170,7 @@ const LockVaultModal = ({ data }: any) => {
         })
         .finally(() => {
           // history.push(`/dashboard/vaultdashboard/${data.mint}`);
+          toast('Successfully Deposited!');
           setShow(false);
         });
     }
