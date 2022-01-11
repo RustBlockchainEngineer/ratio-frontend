@@ -87,7 +87,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
         <th scope="row" className="align-middle" onClick={showExpand}>
           <div className="align-items-center">
             <div className="d-flex ">
-              <div>
+              <div className="d-flex align-items-center">
                 <img src={data.icons[0]} alt={data.icons[0].toString()} className="activepaircard__header-icon0" />
                 <img src={data.icons[1]} alt={data.icons[1].toString()} className="activepaircard__header-icon1" />
               </div>
@@ -108,18 +108,18 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
       </tr>
       {expand && (
         <tr>
-          <td>
+          <td colSpan={4}>
             <div>
               Position value:
               <p>$ {positionValue.toFixed(2)}</p>
-              {/* <div className="tokenpaircard__detailBox__content--tokens">
-              <img src={row.icons[0]} alt="RayIcon" />
-              RAY: $4200
-            </div>
-            <div className="tokenpaircard__detailBox__content--tokens">
-              <img src={row.icons[1]} alt="USDrIcon" />
-              USDr: $6400
-            </div> */}
+              <div className="tokenpaircard__detailBox__content--tokens">
+                {/* <img src={row.icons[0]} alt="RayIcon" /> */}
+                RAY: $4200
+              </div>
+              <div className="tokenpaircard__detailBox__content--tokens">
+                {/* <img src={row.icons[1]} alt="USDrIcon" /> */}
+                USDr: $6400
+              </div>
             </div>
           </td>
         </tr>

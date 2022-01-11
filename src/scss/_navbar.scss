@@ -102,6 +102,7 @@
       font-size: 12px;
       color: var(--unnamed-color-3c4760);
       margin-bottom: 0px;
+      line-height: 1rem;
     }
     div {
       color: white;
@@ -109,6 +110,18 @@
       background-color: rgba(#b8c2c7, 0.4);
       border-radius: 12px;
       font-size: 12px;
+    }
+    &--yellow {
+      padding: 2px 10px;
+      border-radius: 10px;
+      background-color: var(--unnamed-color-f48c57);
+      color: var(--unnamed-color-ffffff) !important;
+    }
+    &--green {
+      padding: 2px 10px;
+      border-radius: 10px;
+      background-color: rgba(#07b127, 0.2) !important;
+      color: var(--unnamed-color-07b127) !important;
     }
   }
   .walletBtn {
