@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { bool, publicKey, struct, u32, u64, u8 } from '@project-serum/borsh'
+import { bool, publicKey, struct, u32, u64, u8 } from '@project-serum/borsh';
 
 // https://github.com/solana-labs/solana-program-library/blob/master/token/js/client/token.js#L210
 export const ACCOUNT_LAYOUT = struct([
@@ -13,8 +13,8 @@ export const ACCOUNT_LAYOUT = struct([
   u64('isNative'),
   u64('delegatedAmount'),
   u32('closeAuthorityOption'),
-  publicKey('closeAuthority')
-])
+  publicKey('closeAuthority'),
+]);
 
 export const MINT_LAYOUT = struct([
   u32('mintAuthorityOption'),
@@ -23,9 +23,9 @@ export const MINT_LAYOUT = struct([
   u8('decimals'),
   bool('initialized'),
   u32('freezeAuthorityOption'),
-  publicKey('freezeAuthority')
-])
+  publicKey('freezeAuthority'),
+]);
 
 export function getBigNumber(num: any) {
-  return num === undefined || num === null ? 0 : parseFloat(num.toString())
+  return num === undefined || num === null ? 0 : parseFloat(num.toString());
 }
