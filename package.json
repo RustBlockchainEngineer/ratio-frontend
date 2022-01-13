@@ -4,7 +4,7 @@
   "license": "",
   "author": "",
   "engines": {
-    "node": ">=10"
+    "node": "^14.16.0"
   },
   "main": "",
   "description": "",
@@ -35,6 +35,8 @@
     "url": ""
   },
   "dependencies": {
+    "@apollo/client": "^3.5.7",
+    "@apollo/react-hooks": "^4.0.0",
     "@ledgerhq/hw-transport": "^6.3.0",
     "@ledgerhq/hw-transport-webusb": "^6.3.0",
     "@project-serum/anchor": "^0.18.2",
@@ -59,6 +61,7 @@
     "@types/react-select": "^4.0.16",
     "@types/redux-mock-store": "^1.0.1",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.0",
+    "apollo-link-logger": "^2.0.0",
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
     "bn.js": "^5.2.0",
@@ -72,6 +75,8 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eventemitter3": "^4.0.7",
     "google-spreadsheet": "^3.1.15",
+    "graphql": "^16.2.0",
+    "graphql-tag": "^2.12.6",
     "lodash-es": "^4.17.21",
     "node-sass": "4.14.1",
     "react": "^17.0.0",
