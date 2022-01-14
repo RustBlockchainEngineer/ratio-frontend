@@ -58,3 +58,15 @@ export const queryGetRewardForWallet = gql`
     }
   }
 `;
+
+export const queryClaimRewardForWallet = gql`
+  mutation Claim($id: Int!, $walletAddress: String!) {
+    claim(id: $id, walletAddress: $walletAddress) {
+      transactionAddress
+      transactionStatus
+      errors {
+        detail
+      }
+    }
+  }
+`;
