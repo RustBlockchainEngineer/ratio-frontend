@@ -71,7 +71,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
                 </OverlayTrigger> */}
               </div>
               <div className="d-flex justify-content-start align-items-center mt-1">
-                {getRiskLevel(data.risk) === 'EXTREME' && <img src={highRisk} alt="highRisk" />}
+                {getRiskLevel(data.risk) === 'DDD' && <img src={highRisk} alt="highRisk" />}
                 <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
               </div>
             </div>

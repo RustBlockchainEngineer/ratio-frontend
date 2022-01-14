@@ -7,11 +7,8 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
-import LockVaultModal from '../LockVaultModal';
-import MintUSDrModal from '../MintUSDrModal';
-import DisclaimerModal from '../DisclaimerModal';
+
 import Button from '../Button';
-import highRisk from '../../assets/images/highrisk.svg';
 import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
@@ -23,7 +20,10 @@ import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../ut
 import { PublicKey } from '@solana/web3.js';
 import { useUpdateState } from '../../contexts/auth';
 import rayIcon from '../../assets/images/RAY.svg';
-import { updateVariableDeclarationList } from 'typescript';
+import liskLevelIcon from '../../assets/images/risklevel.svg';
+import smallRatioIcon from '../../assets/images/smallRatio.svg';
+import highriskIcon from '../../assets/images/highrisk.svg';
+import linkIcon from '../../assets/images/link.svg';
 import { sleep } from '@project-serum/common';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
@@ -111,16 +111,10 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   }, [updateStateFlag]);
 
   const renderModalButton = () => {
-    // if (data.risk === 250) return <DisclaimerModal data={data} />;
     return (
-      <div>
-        <div className="d-flex justify-content-center align-items-center">
-          <LockVaultModal data={data} />
-          <div className="mx-1"></div>
-          <MintUSDrModal data={data} />
-        </div>
-        <Button disabled={positionValue === 0} className="button button--fill generate mt-2" onClick={showDashboard}>
-          Enter Vault
+      <div className="col">
+        <Button disabled={!connected} className="button button--fill generate mt-2" onClick={showDashboard}>
+          Open Vault
         </Button>
       </div>
     );
@@ -158,18 +152,30 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
             <div className="tokenpaircard__riskBox">
               <div className="text-right">
-                <p>Risk Level</p>
-                <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
+                <div className="d-flex">
+                  <img src={smallRatioIcon} alt="smallRatio" />
+                  <p>Risk Level</p>
+                  <img src={liskLevelIcon} alt="lisklevel" />
+                </div>
+                <div className="d-flex justify-content-end">
+                  {(getRiskLevel(data.risk) === 'DDD' || getRiskLevel(data.risk) === 'DD') && (
+                    <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
+                  )}
+                  <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
+                </div>
               </div>
             </div>
           </div>
           <div className="tokenpaircard__aprBox">
             <div>
               <h5>Platform:</h5>
-              <div className="d-flex align-items-center mt-1">
-                <img src={rayIcon} />
-                <h6 className="semiBold ml-1">RAYDIUM</h6>
-              </div>
+              <a href={data.platform.link} target="_blank" rel="noreferrer">
+                <div className="d-flex align-items-center mt-1 position-relative">
+                  <img src={data.platform.icon} />
+                  <h6 className="semiBold ml-1 tokenpaircard__aprBox--platformName">{data.platform.name}</h6>
+                  <img src={linkIcon} alt="linkIcon" className="tokenpaircard__aprBox--linkIcon" />
+                </div>
+              </a>
             </div>
             <div>
               <h5>APR:</h5>
@@ -185,12 +191,20 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
           ) : (
             <div className="tokenpaircard__btnBox d-flex">
-              {/* <div className="col">
-                <Link to="/insta-buy-lp">
-                  <Button className="button--gradientBorder insta-buy-lp">Insta-buy LP</Button>
-                </Link>
-              </div> */}
-              <div className="col">{renderModalButton()}</div>
+              {connected ? (
+                renderModalButton()
+              ) : (
+                <OverlayTrigger
+                  placement="top"
+                  trigger="click"
+                  delay={{ show: 250, hide: 400 }}
+                  overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
+                >
+                  <div className="col">
+                    <Button className="button--disabled generate mt-2">Open Vault</Button>
+                  </div>
+                </OverlayTrigger>
+              )}
             </div>
           )}
 
@@ -201,23 +215,12 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                   <div>
                     Position value:
                     <p>$ {positionValue.toFixed(2)}</p>
-                    {/* <div className="tokenpaircard__detailBox__content--tokens">
-                      <img src={data.icons[0]} alt="RayIcon" />
-                      {tokenA}: $4200
-                    </div>
-                    <div className="tokenpaircard__detailBox__content--tokens">
-                      <img src={data.icons[1]} alt="USDrIcon" />
-                      {tokenB}: $6400
-                    </div> */}
                   </div>
                   <div className="text-right">
                     Rewards earned:
                     <p>$0</p>
                   </div>
                 </div>
-                {/* <div className="mt-3">
-                  <Button className="button--fill insta-buy-lp">Harvest</Button>
-                </div> */}
               </div>
             )}
 

@@ -1,3 +1,8 @@
+import raydiumIcon from '../assets/images/raydium.svg';
+import orcaIcon from '../assets/images/orca.svg';
+import mercurialIcon from '../assets/images/mercurial.svg';
+import saberIcon from '../assets/images/saber.svg';
+
 export const MINTADDRESS: any = {
   USDR: '6EJAff7wySn7TMeGLH8Nk7XCZ9uYdkrYiiM5qA4sKR8i',
   'USDC-USDR': '7M2dxU1tavGpKX47baKCsspBjZ5Rcthcun8DDouSU49x',
@@ -18,4 +23,27 @@ export const TVL: any = {
   'ETH-SOL': 77000000,
   'ATLAS-RAY': 60000000,
   'SAMO-RAY': 9000000,
+};
+
+export const PLATFORM: any = {
+  'USDC-USDR': {
+    icon: raydiumIcon,
+    name: 'RAYDIUM',
+    link: 'https://raydium.io/pools/',
+  },
+  'ETH-SOL': {
+    icon: orcaIcon,
+    name: 'ORCA',
+    link: 'https://www.orca.so/pools',
+  },
+  'ATLAS-RAY': {
+    icon: mercurialIcon,
+    name: 'MERCURIAL',
+    link: 'https://mercurial.finance/',
+  },
+  'SAMO-RAY': {
+    icon: saberIcon,
+    name: 'SABER',
+    link: 'https://app.saber.so/#/pools/currencies/sol',
+  },
 };

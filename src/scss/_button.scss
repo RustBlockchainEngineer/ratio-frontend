@@ -55,6 +55,16 @@
     background-color: white;
   }
 
+  &--disabled {
+    background: rgba(#4c646f, 0.5);
+    color: #4c646f !important;
+    border: none !important;
+    &:focus {
+      background: rgba(#4c646f, 0.5);
+      color: #4c646f !important;
+    }
+  }
+
   &:disabled {
     background: rgba(#4c646f, 0.5);
     color: #4c646f !important;

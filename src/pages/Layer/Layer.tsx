@@ -128,59 +128,35 @@ const Layer = () => {
         <div
           className={classNames('layer_container', {
             'layer_container--collapse': collapseFlag,
-            'layer_container--empty': !enable || !connected,
           })}
         >
           <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
-          {enable && connected ? (
-            <>
-              <Navbar
-                darkMode={darkMode}
-                onClickWalletBtn={onClickWalletBtn}
-                clickMenuItem={clickMenuTrigger}
-                open={menuOpen}
-                collapseFlag={collapseFlag}
-                setCollapseFlag={onCollapseMenu}
-              />
+          <Navbar
+            darkMode={darkMode}
+            onClickWalletBtn={onClickWalletBtn}
+            clickMenuItem={clickMenuTrigger}
+            open={menuOpen}
+            collapseFlag={collapseFlag}
+            setCollapseFlag={onCollapseMenu}
+          />
 
-              {(isDefault || !menuOpen) && (
-                <div>
-                  <Switch>
-                    <Route path="/dashboard/available-vaults" component={AvailableVaults} exact />
-                    <Route path="/dashboard/my-active-vaults" component={ActiveVaults} exact />
-                    <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
-                    <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
-                    <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
-                    <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
-                    <Route exact path="/dashboard">
-                      <Redirect to="/dashboard/available-vaults" />
-                    </Route>
-                  </Switch>
-                  <Footer darkMode={darkMode} />
-                </div>
-              )}
-              {isMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
-            </>
-          ) : (
-            <div className="layer__empty">
-              <div className="text-center">
-                <img src={darkMode ? darkLogo : logoside} alt="logoside" />
-                <h4 className="mt-4">Unlocking Solana&apos;s Liquidity</h4>
-                <h6 className="mt-4">Join our community</h6>
-                <div className="layer__social mt-3">
-                  <a target="_blank" href="https://t.me/ratiofinance" rel="noreferrer">
-                    <img src={darkMode ? telegramDark : telegram} alt="telegram" />
-                  </a>
-                  <a target="_blank" href="https://twitter.com/ratiofinance" rel="noreferrer" className="ml-3">
-                    <img src={darkMode ? twitterDark : twitter} alt="twitter" />
-                  </a>
-                  <a target="_blank" href="https://medium.com/@ratiofinance" rel="noreferrer" className="ml-3">
-                    <img src={darkMode ? mediumDark : medium} alt="medium" />
-                  </a>
-                </div>
-              </div>
+          {(isDefault || !menuOpen) && (
+            <div>
+              <Switch>
+                <Route path="/dashboard/available-vaults" component={AvailableVaults} exact />
+                <Route path="/dashboard/my-active-vaults" component={ActiveVaults} exact />
+                <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
+                <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
+                <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
+                <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
+                <Route exact path="/dashboard">
+                  <Redirect to="/dashboard/available-vaults" />
+                </Route>
+              </Switch>
+              <Footer darkMode={darkMode} />
             </div>
           )}
+          {isMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
         </div>
       )}
     </div>
