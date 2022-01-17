@@ -2,11 +2,11 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { nu64, seq, struct, u8 } from 'buffer-layout'
-import { cloneDeep } from 'lodash-es'
+import { nu64, seq, struct, u8 } from 'buffer-layout';
+import { cloneDeep } from 'lodash-es';
 
-import { publicKey, u64 } from '@project-serum/borsh'
-import { Account, Connection, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js'
+import { publicKey, u64 } from '@project-serum/borsh';
+import { Account, Connection, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 
 import {
   CLOCK_PROGRAM_ID,
@@ -15,103 +15,103 @@ import {
   IDO_PROGRAM_ID_V3,
   RENT_PROGRAM_ID,
   SYSTEM_PROGRAM_ID,
-  TOKEN_PROGRAM_ID
-} from './ids'
-import { getBigNumber } from './layouts'
-import { TokenAmount } from './safe-math'
-import { TokenInfo, TOKENS } from './tokens'
-import { createAssociatedTokenAccount, findProgramAddress, sendTransaction } from './web3'
+  TOKEN_PROGRAM_ID,
+} from './ids';
+import { getBigNumber } from './layouts';
+import { TokenAmount } from './safe-math';
+import { TokenInfo, TOKENS } from './tokens';
+import { createAssociatedTokenAccount, findProgramAddress, sendTransaction } from './web3';
 
 export interface IdoPoolInfo {
-  startTime: number
-  endTime: number
-  startWithdrawTime: number
+  startTime: number;
+  endTime: number;
+  startWithdrawTime: number;
 
-  minDepositLimit: TokenAmount
-  maxDepositLimit: TokenAmount
+  minDepositLimit: TokenAmount;
+  maxDepositLimit: TokenAmount;
 
-  stakePoolId: PublicKey
+  stakePoolId: PublicKey;
 
-  minStakeLimit: TokenAmount
-  quoteTokenDeposited: TokenAmount
+  minStakeLimit: TokenAmount;
+  quoteTokenDeposited: TokenAmount;
 }
 
 export interface IdoLotteryPoolInfo {
-  status: number
-  nonce: number
-  startTime: number
-  endTime: number
-  startWithdrawTime: number
-  numerator: number
-  denominator: number
-  quoteTokenDeposited: TokenAmount
-  baseTokenSupply: TokenAmount
+  status: number;
+  nonce: number;
+  startTime: number;
+  endTime: number;
+  startWithdrawTime: number;
+  numerator: number;
+  denominator: number;
+  quoteTokenDeposited: TokenAmount;
+  baseTokenSupply: TokenAmount;
 
-  perUserMaxLottery: number
-  perUserMinLottery: number
-  perLotteryNeedMinStake: number
-  perLotteryWorthQuoteAmount: TokenAmount
+  perUserMaxLottery: number;
+  perUserMinLottery: number;
+  perLotteryNeedMinStake: number;
+  perLotteryWorthQuoteAmount: TokenAmount;
 
-  totalWinLotteryLimit: number
-  totalDepositUserNumber: number
-  currentLotteryNumber: number
+  totalWinLotteryLimit: number;
+  totalDepositUserNumber: number;
+  currentLotteryNumber: number;
   luckyInfos: Array<{
-    luckyTailDigits: number
-    luckyTailNumber: number
-    luckyWithinNumber: number
-    luckyNumberExist: number
-  }>
+    luckyTailDigits: number;
+    luckyTailNumber: number;
+    luckyWithinNumber: number;
+    luckyNumberExist: number;
+  }>;
 
-  quoteTokenMint: PublicKey
-  baseTokenMint: PublicKey
-  quoteTokenVault: PublicKey
-  baseTokenVault: PublicKey
-  stakePoolId: PublicKey
-  stakeProgramId: PublicKey
-  checkProgramId: PublicKey
-  idoOwner: PublicKey
-  poolSeedId: PublicKey
+  quoteTokenMint: PublicKey;
+  baseTokenMint: PublicKey;
+  quoteTokenVault: PublicKey;
+  baseTokenVault: PublicKey;
+  stakePoolId: PublicKey;
+  stakeProgramId: PublicKey;
+  checkProgramId: PublicKey;
+  idoOwner: PublicKey;
+  poolSeedId: PublicKey;
 }
 
 export interface IdoUserInfo {
-  deposited: TokenAmount
-  snapshoted: boolean
+  deposited: TokenAmount;
+  snapshoted: boolean;
 }
 export interface IdoLotteryUserInfo {
-  deposited: TokenAmount
-  snapshoted: boolean
+  deposited: TokenAmount;
+  snapshoted: boolean;
 
-  eligibleTicketAmount: number
+  eligibleTicketAmount: number;
 
-  quoteTokenDeposited: number
-  quoteTokenWithdrawn: number
-  baseTokenWithdrawn: number
-  lotteryBeginNumber: number
-  lotteryEndNumber: number
+  quoteTokenDeposited: number;
+  quoteTokenWithdrawn: number;
+  baseTokenWithdrawn: number;
+  lotteryBeginNumber: number;
+  lotteryEndNumber: number;
 }
 
 export interface IdoPool {
-  base: TokenInfo
-  quote: TokenInfo
+  base: TokenInfo;
+  quote: TokenInfo;
 
-  version: number
-  programId: string
-  snapshotProgramId: string
+  version: number;
+  programId: string;
+  snapshotProgramId: string;
 
-  isRayPool: boolean
-  isPrivate: boolean
-  status?: string
-  idoId: string
-  baseVault: string
-  quoteVault: string
+  isRayPool: boolean;
+  isPrivate: boolean;
+  status?: string;
+  idoId: string;
+  baseVault: string;
+  quoteVault: string;
 
-  info?: IdoPoolInfo | IdoLotteryPoolInfo
-  userInfo?: IdoUserInfo | IdoLotteryUserInfo
+  info?: IdoPoolInfo | IdoLotteryPoolInfo;
+  userInfo?: IdoUserInfo | IdoLotteryUserInfo;
 
-  price: TokenAmount
-  raise: TokenAmount
+  price: TokenAmount;
+  raise: TokenAmount;
 
-  seedId?: string // it's a string give from backend
+  seedId?: string; // it's a string give from backend
 }
 
 export const IDO_POOLS: IdoPool[] = [
@@ -131,7 +131,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: 'E4CvLEhwih2BekPtoAExKg4hFDxAnKGehC8nsEiKVoJy',
     baseVault: 'HGGGN5EW85q2b65ANC7PibnwY6cUBabmnZStiXQWa1g8',
     quoteVault: '6oW75ZhEpi7Xf4FFihtdkKsuMYw4peX6VtvWLVKq88dQ',
-    seedId: 'H5uXejEcXqQgtcfkqaCnwY3vTjTaNvJwyrWxmpk7ipzM'
+    seedId: 'H5uXejEcXqQgtcfkqaCnwY3vTjTaNvJwyrWxmpk7ipzM',
   },
   {
     base: { ...TOKENS.ATLAS },
@@ -149,7 +149,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: '5VUvtxLeEZhqw22gLb47oKT4zi9MfnD9Lm8wtoXoxXe2',
     baseVault: 'EjrYFq71uhywEEKu5t1Pug5hnuASyXCGJTvU4h9Pirov',
     quoteVault: 'DvAB5zNynTwYfjrz3XkgrrXvNxuBr1dZKfv82XvhKZkv',
-    seedId: 'Gez2YfnhhSY2aUphAfK7GDWLaDN9b4z2dfe7jH2oi7Xj'
+    seedId: 'Gez2YfnhhSY2aUphAfK7GDWLaDN9b4z2dfe7jH2oi7Xj',
   },
   {
     base: { ...TOKENS.POLIS },
@@ -167,7 +167,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: 'FzwVZtojkp2PMhReaqmw1a42pz9rvk9vE9MunCNUkDvM',
     baseVault: 'GXcxqbecKQYe7t9Vk5EtGJmQEbyT8D2JwFRAeysUPysT',
     quoteVault: 'ABoVH9ya22W7ghER3NHCvrJoBeKXXunccaJpBacAtWop',
-    seedId: 'Gez2YfnhhSY2aUphAfK7GDWLaDN9b4z2dfe7jH2oi7Xj'
+    seedId: 'Gez2YfnhhSY2aUphAfK7GDWLaDN9b4z2dfe7jH2oi7Xj',
   },
   {
     base: { ...TOKENS.LIKE },
@@ -185,7 +185,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: '6tVhfpkvg4JTYpDCrDgjb5tAEFSzvpZXLgPtAos5xThD',
     baseVault: '91MgsAE7qotAtYAd9k7YVZqjs2RfW44zJMQ3gLxAGEur',
     quoteVault: 'PsqkXYFRAM5PjWgyVSjYMMJGG2dqkfaWe2whUXHtEAh',
-    seedId: 'H8yyqemdjWgD2zkhhaMRsoWKUJSGWSb7kDaCEG16WH63'
+    seedId: 'H8yyqemdjWgD2zkhhaMRsoWKUJSGWSb7kDaCEG16WH63',
   },
   {
     base: { ...TOKENS.SLRS },
@@ -203,7 +203,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: '6djgqw4EXwjGJMPuxH43RdCih5DQgwop1UK5Wk2FDvWt',
     baseVault: 'E6A985RSVzJYhfEzW9B7e86xtYfHz5h9wxRe2KLHWnTZ',
     quoteVault: '8Q8xr7X7asGL82SdniAcrN8f9hTa1DjDcbJVLNVN38zg',
-    seedId: 'APDE8Mc9abyigJb9cWcS95mMCyyA4QN4kv5Zi4YePygt'
+    seedId: 'APDE8Mc9abyigJb9cWcS95mMCyyA4QN4kv5Zi4YePygt',
   },
   {
     base: { ...TOKENS.SLRS },
@@ -221,7 +221,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: '7nJQCQFNNqrp2VXQM5u9CZ98LBH2EYk62V2zuKRBvw8G',
     baseVault: 'C3qE7ErgGDWKiz8h9Pv6FBjfnfzJFDrF5Ubb3zacMnbL',
     quoteVault: '5AmMZChuCAw8XWCF6RRhWTaaosemKzHc6HV89nx2Qp6z',
-    seedId: 'FUbckyz9EKqTYvoPPRF3A2JpGJTJHRbHi2J6rJYhqCay'
+    seedId: 'FUbckyz9EKqTYvoPPRF3A2JpGJTJHRbHi2J6rJYhqCay',
   },
   {
     base: { ...TOKENS.SNY },
@@ -239,7 +239,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: '9aAMMBcRVfPEa7quoRyofR3rG7qF4QJTehUhV3o1mPzf',
     baseVault: 'D9X5KoDgC9sKFwPQcjYySGkHpe7akMvSSVDsorRgXYER',
     quoteVault: 'Emuu4LH3Y2c7RmC97RWw944foRUSU28QbAyx9ocyMJsS',
-    seedId: 'AjLbEuXP49PTx1Hwb93gNC4EbeCSATWDbDoo2nyAzVrT'
+    seedId: 'AjLbEuXP49PTx1Hwb93gNC4EbeCSATWDbDoo2nyAzVrT',
   },
   {
     base: { ...TOKENS.MER },
@@ -257,7 +257,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: '3GANPMCSLb1NeQZZ1VNKXHrH5jCyK3DQLr4tmhvkaYng',
     baseVault: 'Hw41WUxQjuEbNK21nBRdoefqVhgWFe6vjJ1CTJXtXryo',
     quoteVault: 'AdeaHKgjYDfvzdmiaj3WSTRh6rGUF5Rf2bdgm6c9DEni',
-    seedId: 'CAQi1pkhRPsCi24uyF6NnGm5Two1Bq2AhrDZrM9Mtfjs'
+    seedId: 'CAQi1pkhRPsCi24uyF6NnGm5Two1Bq2AhrDZrM9Mtfjs',
   },
   {
     base: { ...TOKENS.MER },
@@ -275,7 +275,7 @@ export const IDO_POOLS: IdoPool[] = [
     idoId: 'F5Rk8Eht3JU69146uc9piwmMGCdPwAmYgJKRUaWxhwim',
     baseVault: '3CDLcsVhRReJ4otXhfi2kD2FrppRUqQYtXXZ7LgQrNy5',
     quoteVault: 'HrKrc1mh6jQr6Sa1DAZ9JBbpKDvTTrgkEkAHSp28tven',
-    seedId: 'CAQi1pkhRPsCi24uyF6NnGm5Two1Bq2AhrDZrM9Mtfjs'
+    seedId: 'CAQi1pkhRPsCi24uyF6NnGm5Two1Bq2AhrDZrM9Mtfjs',
   },
   {
     base: { ...TOKENS.MEDIA },
@@ -292,7 +292,7 @@ export const IDO_POOLS: IdoPool[] = [
     isPrivate: false,
     idoId: 'EFnvwDxehFLycdUp6DiwcyBTz88qcZFP3KUDfmPU4Fdc',
     baseVault: '2WCoJRu1w6awJR7PvCc1mWKR9XpPNZDFyBDBX713k8ng',
-    quoteVault: '21XBxBZn3tX8aaJKm1KKm6sWsLUxsMedV3a1CvNBW2m9'
+    quoteVault: '21XBxBZn3tX8aaJKm1KKm6sWsLUxsMedV3a1CvNBW2m9',
   },
   {
     base: { ...TOKENS.MEDIA },
@@ -309,18 +309,18 @@ export const IDO_POOLS: IdoPool[] = [
     isPrivate: false,
     idoId: '3phgXrkHbMmVLUbUvXPXsnot9WxkdyvVEyiA8odyWY8s',
     baseVault: '2Gxcw4Vo7zGGNg9JxksrWYazcpQTWNi8JdQkF3bF5yaN',
-    quoteVault: '6TyVHwiEaDRQCf398QjvC6JLqPzK9REvMiS6DsCWG5o4'
-  }
-]
+    quoteVault: '6TyVHwiEaDRQCf398QjvC6JLqPzK9REvMiS6DsCWG5o4',
+  },
+];
 
 export function getIdoPoolById(idoId: string) {
-  const pool = IDO_POOLS.find((pool) => pool.idoId === idoId)
+  const pool = IDO_POOLS.find((pool) => pool.idoId === idoId);
 
   if (pool) {
-    return cloneDeep(pool)
+    return cloneDeep(pool);
   }
 
-  return pool
+  return pool;
 }
 
 export const IDO_POOL_INFO_LAYOUT = struct([
@@ -344,8 +344,8 @@ export const IDO_POOL_INFO_LAYOUT = struct([
   publicKey('stakePoolId'),
   publicKey('stakeProgramId'),
   publicKey('checkProgramId'),
-  publicKey('idoOwner')
-])
+  publicKey('idoOwner'),
+]);
 
 export const IDO_LOTTERY_POOL_INFO_LAYOUT = struct([
   u64('status'),
@@ -380,15 +380,15 @@ export const IDO_LOTTERY_POOL_INFO_LAYOUT = struct([
   publicKey('checkProgramId'),
   publicKey('idoOwner'),
 
-  publicKey('poolSeedId')
-])
+  publicKey('poolSeedId'),
+]);
 
 export const IDO_USER_INFO_LAYOUT = struct([
   u64('state'),
   publicKey('idoPoolId'),
   publicKey('owner'),
-  u64('quoteTokenDeposited')
-])
+  u64('quoteTokenDeposited'),
+]);
 
 export const IDO_LOTTERY_USER_INFO_LAYOUT = struct([
   u64('state'),
@@ -400,16 +400,16 @@ export const IDO_LOTTERY_USER_INFO_LAYOUT = struct([
   u64('baseTokenWithdrawn'),
 
   u64('lotteryBeginNumber'),
-  u64('lotteryEndNumber')
-])
-export const IDO_LOTTERY_SNAPSHOT_DATA_LAYOUT = struct([u64('eligibleTicketAmount')])
+  u64('lotteryEndNumber'),
+]);
+export const IDO_LOTTERY_SNAPSHOT_DATA_LAYOUT = struct([u64('eligibleTicketAmount')]);
 
 export async function findAssociatedIdoInfoAddress(idoId: PublicKey, walletAddress: PublicKey, programId: PublicKey) {
   const { publicKey } = await findProgramAddress(
     [idoId.toBuffer(), walletAddress.toBuffer(), new Uint8Array(Buffer.from('ido_associated_seed', 'utf-8'))],
     programId
-  )
-  return publicKey
+  );
+  return publicKey;
 }
 
 export async function findAssociatedIdoCheckAddress(
@@ -420,8 +420,8 @@ export async function findAssociatedIdoCheckAddress(
   const { publicKey } = await findProgramAddress(
     [idoId.toBuffer(), walletAddress.toBuffer(), snapshotProgramId.toBuffer()],
     snapshotProgramId
-  )
-  return publicKey
+  );
+  return publicKey;
 }
 
 export async function purchase({
@@ -430,34 +430,34 @@ export async function purchase({
   poolInfo,
   userQuoteTokenAccount,
   stakeInfoAccount,
-  amount
+  amount,
 }: {
-  connection: Connection
-  wallet: any
-  poolInfo: IdoPool
-  userQuoteTokenAccount: string
-  stakeInfoAccount: string
-  amount: string | number
+  connection: Connection;
+  wallet: any;
+  poolInfo: IdoPool;
+  userQuoteTokenAccount: string;
+  stakeInfoAccount: string;
+  amount: string | number;
 }) {
-  if (!connection || !wallet) throw new Error('Miss connection')
-  if (!poolInfo) throw new Error('Miss pool infomations')
+  if (!connection || !wallet) throw new Error('Miss connection');
+  if (!poolInfo) throw new Error('Miss pool infomations');
 
-  if (!amount) throw new Error('Miss amount infomations')
+  if (!amount) throw new Error('Miss amount infomations');
 
-  const transaction = new Transaction()
-  const signers: Account[] = []
+  const transaction = new Transaction();
+  const signers: Account[] = [];
 
-  const owner = wallet.publicKey
+  const owner = wallet.publicKey;
 
   const { publicKey: idoAuthority } = await findProgramAddress(
     [new PublicKey(poolInfo.idoId).toBuffer()],
     new PublicKey(poolInfo.programId)
-  )
+  );
   const userIdoInfo = await findAssociatedIdoInfoAddress(
     new PublicKey(poolInfo.idoId),
     owner,
     new PublicKey(poolInfo.programId)
-  )
+  );
   const userIdoCheck =
     poolInfo.version === 1
       ? await findAssociatedIdoCheckAddress(
@@ -469,7 +469,7 @@ export async function purchase({
           new PublicKey(poolInfo.seedId ?? 'CAQi1pkhRPsCi24uyF6NnGm5Two1Bq2AhrDZrM9Mtfjs'),
           owner,
           new PublicKey(poolInfo.snapshotProgramId)
-        )
+        );
 
   transaction.add(
     poolInfo.version === 3 // transaction point to lottery
@@ -482,14 +482,14 @@ export async function purchase({
             userQuoteTokenAccount: new PublicKey(userQuoteTokenAccount),
             userIdoInfo,
             userOwner: owner,
-            userIdoCheck
+            userIdoCheck,
           }
         )
       : poolInfo.isPrivate
       ? purchaseInstruction<'private'>(
           {
             programId: new PublicKey(poolInfo.programId),
-            amount: getBigNumber(new TokenAmount(amount, poolInfo.quote.decimals, false).wei)
+            amount: getBigNumber(new TokenAmount(amount, poolInfo.quote.decimals, false).wei),
           },
           {
             idoId: new PublicKey(poolInfo.idoId),
@@ -498,13 +498,13 @@ export async function purchase({
             userQuoteTokenAccount: new PublicKey(userQuoteTokenAccount),
             userIdoInfo,
             userOwner: owner,
-            userIdoCheck
+            userIdoCheck,
           }
         )
       : purchaseInstruction(
           {
             programId: new PublicKey(poolInfo.programId),
-            amount: getBigNumber(new TokenAmount(amount, poolInfo.quote.decimals, false).wei)
+            amount: getBigNumber(new TokenAmount(amount, poolInfo.quote.decimals, false).wei),
           },
           {
             idoId: new PublicKey(poolInfo.idoId),
@@ -514,12 +514,12 @@ export async function purchase({
             userIdoInfo,
             userOwner: owner,
             userStakeInfo: new PublicKey(stakeInfoAccount),
-            userIdoCheck
+            userIdoCheck,
           }
         )
-  )
+  );
 
-  return await sendTransaction(connection, wallet, transaction, signers)
+  return await sendTransaction(connection, wallet, transaction, signers);
 }
 
 export async function claim({
@@ -528,43 +528,43 @@ export async function claim({
   poolInfo,
   userBaseTokenAccount,
   userQuoteTokenAccount,
-  aim
+  aim,
 }: {
-  connection: Connection
-  wallet: any
-  poolInfo: IdoPool
-  userBaseTokenAccount: string
-  userQuoteTokenAccount: string
+  connection: Connection;
+  wallet: any;
+  poolInfo: IdoPool;
+  userBaseTokenAccount: string;
+  userQuoteTokenAccount: string;
 
   /**
    * this is only for lottery
    * the property indicate which coin user want to withdraw
    */
-  aim?: 'quote' | 'base'
+  aim?: 'quote' | 'base';
 }) {
-  if (!connection || !wallet) throw new Error('Miss connection')
-  if (!poolInfo) throw new Error('Miss pool infomations')
+  if (!connection || !wallet) throw new Error('Miss connection');
+  if (!poolInfo) throw new Error('Miss pool infomations');
 
-  const transaction = new Transaction()
-  const signers: Account[] = []
-  const owner = wallet.publicKey
+  const transaction = new Transaction();
+  const signers: Account[] = [];
+  const owner = wallet.publicKey;
 
   const newUserBaseTokenAccount = userBaseTokenAccount
     ? new PublicKey(userBaseTokenAccount)
-    : await createAssociatedTokenAccount(new PublicKey(poolInfo.base.mintAddress), owner, transaction)
+    : await createAssociatedTokenAccount(new PublicKey(poolInfo.base.mintAddress), owner, transaction);
   const newUserQuoteTokenAccount = userQuoteTokenAccount
     ? new PublicKey(userQuoteTokenAccount)
-    : await createAssociatedTokenAccount(new PublicKey(poolInfo.quote.mintAddress), owner, transaction)
+    : await createAssociatedTokenAccount(new PublicKey(poolInfo.quote.mintAddress), owner, transaction);
 
   const { publicKey: idoAuthority } = await findProgramAddress(
     [new PublicKey(poolInfo.idoId).toBuffer()],
     new PublicKey(poolInfo.programId)
-  )
+  );
   const userIdoInfo = await findAssociatedIdoInfoAddress(
     new PublicKey(poolInfo.idoId),
     owner,
     new PublicKey(poolInfo.programId)
-  )
+  );
   transaction.add(
     poolInfo.version === 3 // transaction point to lottery
       ? claimInstruction<'3'>(
@@ -575,7 +575,7 @@ export async function claim({
             poolTokenAccount: new PublicKey(aim === 'base' ? poolInfo.baseVault : poolInfo.quoteVault),
             userTokenAccount: aim === 'base' ? newUserBaseTokenAccount : newUserQuoteTokenAccount,
             userIdoInfo,
-            userOwner: owner
+            userOwner: owner,
           }
         )
       : claimInstruction(
@@ -588,47 +588,47 @@ export async function claim({
             userQuoteTokenAccount: newUserQuoteTokenAccount,
             userBaseTokenAccount: newUserBaseTokenAccount,
             userIdoInfo,
-            userOwner: owner
+            userOwner: owner,
           }
         )
-  )
+  );
 
-  return await sendTransaction(connection, wallet, transaction, signers)
+  return await sendTransaction(connection, wallet, transaction, signers);
 }
 
 interface PurchaseInstructionKeys {
   // ido
-  idoId: PublicKey
-  authority: PublicKey
-  poolQuoteTokenAccount: PublicKey
+  idoId: PublicKey;
+  authority: PublicKey;
+  poolQuoteTokenAccount: PublicKey;
   // user
-  userQuoteTokenAccount: PublicKey
-  userIdoInfo: PublicKey
-  userStakeInfo: PublicKey
-  userIdoCheck: PublicKey
-  userOwner: PublicKey
+  userQuoteTokenAccount: PublicKey;
+  userIdoInfo: PublicKey;
+  userStakeInfo: PublicKey;
+  userIdoCheck: PublicKey;
+  userOwner: PublicKey;
 }
 interface PurchaseInstructionKeysV3 {
   // ido
-  idoId: PublicKey
-  authority: PublicKey
-  poolQuoteTokenAccount: PublicKey
+  idoId: PublicKey;
+  authority: PublicKey;
+  poolQuoteTokenAccount: PublicKey;
   // user
-  userQuoteTokenAccount: PublicKey
-  userIdoInfo: PublicKey
-  userIdoCheck: PublicKey
-  userOwner: PublicKey
+  userQuoteTokenAccount: PublicKey;
+  userIdoInfo: PublicKey;
+  userIdoCheck: PublicKey;
+  userOwner: PublicKey;
 }
 interface PurchaseInstructionKeysPrivate {
   // ido
-  idoId: PublicKey
-  authority: PublicKey
-  poolQuoteTokenAccount: PublicKey
+  idoId: PublicKey;
+  authority: PublicKey;
+  poolQuoteTokenAccount: PublicKey;
   // user
-  userQuoteTokenAccount: PublicKey
-  userIdoInfo: PublicKey
-  userIdoCheck: PublicKey
-  userOwner: PublicKey
+  userQuoteTokenAccount: PublicKey;
+  userIdoInfo: PublicKey;
+  userIdoCheck: PublicKey;
+  userOwner: PublicKey;
 }
 export function purchaseInstruction<Flag extends '' | '3' | 'private' = ''>(
   { programId, amount }: { programId: PublicKey; amount: string | number },
@@ -638,7 +638,7 @@ export function purchaseInstruction<Flag extends '' | '3' | 'private' = ''>(
     ? PurchaseInstructionKeysPrivate
     : PurchaseInstructionKeys
 ): TransactionInstruction {
-  const dataLayout = struct([u8('instruction'), nu64('amount')])
+  const dataLayout = struct([u8('instruction'), nu64('amount')]);
   const keys = [
     // system
     { pubkey: SYSTEM_PROGRAM_ID, isSigner: false, isWritable: false },
@@ -649,44 +649,44 @@ export function purchaseInstruction<Flag extends '' | '3' | 'private' = ''>(
     ...Object.entries(instructionKeys).map(([name, pubkey]) => ({
       pubkey,
       isSigner: name === 'userOwner',
-      isWritable: !['authority', 'userOwner', 'userIdoCheck', 'userStakeInfo'].includes(name)
-    }))
-  ]
+      isWritable: !['authority', 'userOwner', 'userIdoCheck', 'userStakeInfo'].includes(name),
+    })),
+  ];
 
-  const data = Buffer.alloc(dataLayout.span)
-  dataLayout.encode({ instruction: 1, amount: Number(amount) }, data)
+  const data = Buffer.alloc(dataLayout.span);
+  dataLayout.encode({ instruction: 1, amount: Number(amount) }, data);
 
-  return new TransactionInstruction({ keys, programId, data })
+  return new TransactionInstruction({ keys, programId, data });
 }
 
 interface ClaimInstructionKeys {
   // ido
-  idoId: PublicKey
-  authority: PublicKey
-  poolQuoteTokenAccount: PublicKey
-  poolBaseTokenAccount: PublicKey
+  idoId: PublicKey;
+  authority: PublicKey;
+  poolQuoteTokenAccount: PublicKey;
+  poolBaseTokenAccount: PublicKey;
   // user
-  userQuoteTokenAccount: PublicKey
-  userBaseTokenAccount: PublicKey
-  userIdoInfo: PublicKey
-  userOwner: PublicKey
+  userQuoteTokenAccount: PublicKey;
+  userBaseTokenAccount: PublicKey;
+  userIdoInfo: PublicKey;
+  userOwner: PublicKey;
 }
 interface ClaimInstructionKeysV3 {
   // ido
-  idoId: PublicKey
-  authority: PublicKey
+  idoId: PublicKey;
+  authority: PublicKey;
 
-  poolTokenAccount: PublicKey // NEED_CHECK: is it Quote or Base?
+  poolTokenAccount: PublicKey; // NEED_CHECK: is it Quote or Base?
   // user
-  userTokenAccount: PublicKey // NEED_CHECK: is it Quote or Base? // differernt account in user wallet
-  userIdoInfo: PublicKey
-  userOwner: PublicKey
+  userTokenAccount: PublicKey; // NEED_CHECK: is it Quote or Base? // differernt account in user wallet
+  userIdoInfo: PublicKey;
+  userOwner: PublicKey;
 }
 export function claimInstruction<Version extends '' | '3' = ''>(
   { programId }: { programId: PublicKey },
   instructionKeys: Version extends '3' ? ClaimInstructionKeysV3 : ClaimInstructionKeys
 ): TransactionInstruction {
-  const dataLayout = struct([u8('instruction')])
+  const dataLayout = struct([u8('instruction')]);
 
   const keys = [
     { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
@@ -694,12 +694,12 @@ export function claimInstruction<Version extends '' | '3' = ''>(
     ...Object.entries(instructionKeys).map(([name, pubkey]) => ({
       pubkey,
       isSigner: name === 'userOwner',
-      isWritable: !['authority', 'userOwner'].includes(name)
-    }))
-  ]
+      isWritable: !['authority', 'userOwner'].includes(name),
+    })),
+  ];
 
-  const data = Buffer.alloc(dataLayout.span)
-  dataLayout.encode({ instruction: 2 }, data)
+  const data = Buffer.alloc(dataLayout.span);
+  dataLayout.encode({ instruction: 2 }, data);
 
-  return new TransactionInstruction({ keys, programId, data })
+  return new TransactionInstruction({ keys, programId, data });
 }

@@ -1,50 +1,50 @@
 /* eslint-disable prettier/prettier */
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep } from 'lodash-es';
 
-import SERUM_MARKETS from '@project-serum/serum/lib/markets.json'
+import SERUM_MARKETS from '@project-serum/serum/lib/markets.json';
 
 import {
   LIQUIDITY_POOL_PROGRAM_ID_V2,
   LIQUIDITY_POOL_PROGRAM_ID_V3,
   LIQUIDITY_POOL_PROGRAM_ID_V4,
   SERUM_PROGRAM_ID_V2,
-  SERUM_PROGRAM_ID_V3
-} from './ids'
-import { LP_TOKENS, NATIVE_SOL, TokenInfo, TOKENS } from './tokens'
+  SERUM_PROGRAM_ID_V3,
+} from './ids';
+import { LP_TOKENS, NATIVE_SOL, TokenInfo, TOKENS } from './tokens';
 
 export interface LiquidityPoolInfo {
-  name: string
-  coin: TokenInfo
-  pc: TokenInfo
-  lp: TokenInfo
+  name: string;
+  coin: TokenInfo;
+  pc: TokenInfo;
+  lp: TokenInfo;
 
-  version: number
-  programId: string
+  version: number;
+  programId: string;
 
-  ammId: string
-  ammAuthority: string
-  ammOpenOrders: string
-  ammTargetOrders: string
-  ammQuantities: string
+  ammId: string;
+  ammAuthority: string;
+  ammOpenOrders: string;
+  ammTargetOrders: string;
+  ammQuantities: string;
 
-  poolCoinTokenAccount: string
-  poolPcTokenAccount: string
-  poolWithdrawQueue: string
-  poolTempLpTokenAccount: string
+  poolCoinTokenAccount: string;
+  poolPcTokenAccount: string;
+  poolWithdrawQueue: string;
+  poolTempLpTokenAccount: string;
 
-  serumProgramId: string
-  serumMarket: string
-  serumBids?: string
-  serumAsks?: string
-  serumEventQueue?: string
-  serumCoinVaultAccount: string
-  serumPcVaultAccount: string
-  serumVaultSigner: string
+  serumProgramId: string;
+  serumMarket: string;
+  serumBids?: string;
+  serumAsks?: string;
+  serumEventQueue?: string;
+  serumCoinVaultAccount: string;
+  serumPcVaultAccount: string;
+  serumVaultSigner: string;
 
-  official: boolean
+  official: boolean;
 
-  status?: number
-  currentK?: number
+  status?: number;
+  currentK?: number;
 }
 
 /**
@@ -63,13 +63,13 @@ export function getPoolByTokenMintAddresses(
     (pool) =>
       (pool.coin.mintAddress === coinMintAddress && pool.pc.mintAddress === pcMintAddress) ||
       (pool.coin.mintAddress === pcMintAddress && pool.pc.mintAddress === coinMintAddress)
-  )
+  );
 
   if (pool) {
-    return cloneDeep(pool)
+    return cloneDeep(pool);
   }
 
-  return pool
+  return pool;
 }
 
 export function getPoolListByTokenMintAddresses(
@@ -85,15 +85,15 @@ export function getPoolListByTokenMintAddresses(
         [4, 5].includes(pool.version) &&
         pool.official
       ) {
-        return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket)
+        return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket);
       }
     } else {
-      return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket)
+      return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket);
     }
-    return false
-  })
+    return false;
+  });
   if (pool.length > 0) {
-    return cloneDeep(pool)
+    return cloneDeep(pool);
   } else {
     return cloneDeep(
       LIQUIDITY_POOLS.filter((pool) => {
@@ -103,14 +103,14 @@ export function getPoolListByTokenMintAddresses(
               (pool.coin.mintAddress === pcMintAddress && pool.pc.mintAddress === coinMintAddress)) &&
             [4, 5].includes(pool.version)
           ) {
-            return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket)
+            return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket);
           }
         } else {
-          return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket)
+          return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket);
         }
-        return false
+        return false;
       })
-    )
+    );
   }
 }
 
@@ -124,13 +124,13 @@ export function getLpMintByTokenMintAddresses(
       ((pool.coin.mintAddress === coinMintAddress && pool.pc.mintAddress === pcMintAddress) ||
         (pool.coin.mintAddress === pcMintAddress && pool.pc.mintAddress === coinMintAddress)) &&
       version.includes(pool.version)
-  )
+  );
 
   if (pool) {
-    return pool.lp.mintAddress
+    return pool.lp.mintAddress;
   }
 
-  return null
+  return null;
 }
 
 export function getLpListByTokenMintAddresses(
@@ -147,15 +147,15 @@ export function getLpListByTokenMintAddresses(
         version.includes(pool.version) &&
         pool.official
       ) {
-        return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket)
+        return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket);
       }
     } else {
-      return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket)
+      return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket);
     }
-    return false
-  })
+    return false;
+  });
   if (pool.length > 0) {
-    return pool
+    return pool;
   } else {
     return LIQUIDITY_POOLS.filter((pool) => {
       if (coinMintAddress && pcMintAddress) {
@@ -164,24 +164,24 @@ export function getLpListByTokenMintAddresses(
             (pool.coin.mintAddress === pcMintAddress && pool.pc.mintAddress === coinMintAddress)) &&
           version.includes(pool.version)
         ) {
-          return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket)
+          return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket);
         }
       } else {
-        return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket)
+        return !(ammIdOrMarket !== undefined && pool.ammId !== ammIdOrMarket && pool.serumMarket !== ammIdOrMarket);
       }
-      return false
-    })
+      return false;
+    });
   }
 }
 
 export function getPoolByLpMintAddress(lpMintAddress: string): LiquidityPoolInfo | undefined {
-  const pool = LIQUIDITY_POOLS.find((pool) => pool.lp.mintAddress === lpMintAddress)
+  const pool = LIQUIDITY_POOLS.find((pool) => pool.lp.mintAddress === lpMintAddress);
 
   if (pool) {
-    return cloneDeep(pool)
+    return cloneDeep(pool);
   }
 
-  return pool
+  return pool;
 }
 
 export function getAddressForWhat(address: string) {
@@ -189,31 +189,31 @@ export function getAddressForWhat(address: string) {
     for (const [key, value] of Object.entries(pool)) {
       if (key === 'lp') {
         if (value.mintAddress === address) {
-          return { key: 'lpMintAddress', lpMintAddress: pool.lp.mintAddress, version: pool.version }
+          return { key: 'lpMintAddress', lpMintAddress: pool.lp.mintAddress, version: pool.version };
         }
       } else if (value === address) {
-        return { key, lpMintAddress: pool.lp.mintAddress, version: pool.version }
+        return { key, lpMintAddress: pool.lp.mintAddress, version: pool.version };
       }
     }
   }
 
-  return {}
+  return {};
 }
 
 export function isOfficalMarket(marketAddress: string) {
   for (const market of SERUM_MARKETS) {
     if (market.address === marketAddress && !market.deprecated) {
-      return true
+      return true;
     }
   }
 
   for (const pool of LIQUIDITY_POOLS) {
     if (pool.serumMarket === marketAddress && pool.official === true) {
-      return true
+      return true;
     }
   }
 
-  return false
+  return false;
 }
 
 export const LIQUIDITY_POOLS: LiquidityPoolInfo[] = []; /* [
