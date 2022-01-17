@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
-import BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js';
 // @ts-ignore
-import { struct, u8 } from 'buffer-layout'
+import { struct, u8 } from 'buffer-layout';
 
 // import { AMM_INFO_LAYOUT_V4 } from './liquidity'
-import { Market as MarketSerum } from '@project-serum/serum'
-import { Orderbook } from '@project-serum/serum/lib/market.js'
-import { closeAccount, initializeAccount } from '@project-serum/serum/lib/token-instructions'
-import { ASSOCIATED_TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
+import { Market as MarketSerum } from '@project-serum/serum';
+import { Orderbook } from '@project-serum/serum/lib/market.js';
+import { closeAccount, initializeAccount } from '@project-serum/serum/lib/token-instructions';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, Token } from '@solana/spl-token';
 import {
   Account,
   Connection,
@@ -15,8 +15,8 @@ import {
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
   Transaction,
-  TransactionInstruction
-} from '@solana/web3.js'
+  TransactionInstruction,
+} from '@solana/web3.js';
 
 import {
   commitment,
@@ -26,9 +26,9 @@ import {
   getFilteredTokenAccountsByOwner,
   getMintDecimals,
   getMultipleAccounts,
-  sendTransaction
-} from './web3'
-import { TOKENS } from './tokens'
+  sendTransaction,
+} from './web3';
+import { TOKENS } from './tokens';
 import {
   AMM_ASSOCIATED_SEED,
   COIN_VAULT_ASSOCIATED_SEED,
@@ -41,12 +41,12 @@ import {
   TARGET_ASSOCIATED_SEED,
   TEMP_LP_TOKEN_ASSOCIATED_SEED,
   TOKEN_PROGRAM_ID,
-  WITHDRAW_ASSOCIATED_SEED
-} from './ids'
-import { throwIfNull } from './errors'
-import { ACCOUNT_LAYOUT, getBigNumber, MINT_LAYOUT } from './layouts'
-import { LIQUIDITY_POOLS } from './pools'
-import { transfer } from './swap'
+  WITHDRAW_ASSOCIATED_SEED,
+} from './ids';
+import { throwIfNull } from './errors';
+import { ACCOUNT_LAYOUT, getBigNumber, MINT_LAYOUT } from './layouts';
+import { LIQUIDITY_POOLS } from './pools';
+import { transfer } from './swap';
 
 export async function getMarket(conn: any, marketAddress: string): Promise<any | any> {
   try {
@@ -56,61 +56,61 @@ export async function getMarket(conn: any, marketAddress: string): Promise<any |
         new PublicKey(marketAddress),
         AMM_ASSOCIATED_SEED
       )
-    ).toString()
+    ).toString();
     if (LIQUIDITY_POOLS.find((item) => item.ammId === expectAmmId)) {
-      throw new Error('There is already a pool for this Serum Market')
+      throw new Error('There is already a pool for this Serum Market');
     }
-    const marketAddressPubKey = new PublicKey(marketAddress)
-    const market = await Market.load(conn, marketAddressPubKey, undefined, new PublicKey(SERUM_PROGRAM_ID_V3))
+    const marketAddressPubKey = new PublicKey(marketAddress);
+    const market = await Market.load(conn, marketAddressPubKey, undefined, new PublicKey(SERUM_PROGRAM_ID_V3));
     const {
       asksAddress,
       bidsAddress,
-      quoteMint
+      quoteMint,
       // baseMint
-    } = market
-    let coinOrPcInTokenFlag = false
+    } = market;
+    let coinOrPcInTokenFlag = false;
 
     for (const item of [TOKENS.USDT, TOKENS.USDC, TOKENS.RAY, TOKENS.WSOL, TOKENS.SRM, TOKENS.PAI, TOKENS.mSOL]) {
       if (quoteMint?.toBase58() === item.mintAddress) {
-        coinOrPcInTokenFlag = true
-        break
+        coinOrPcInTokenFlag = true;
+        break;
       }
     }
     if (!coinOrPcInTokenFlag) {
       throw new Error(
         'Only markets that contain USDC, USDT, SOL, RAY, SRM, PAI or mSOL as the Quote Token are currently supported.'
-      )
+      );
     }
-    const asks: number[] = []
-    const bids: number[] = []
+    const asks: number[] = [];
+    const bids: number[] = [];
 
-    const orderBookMsg = await getMultipleAccounts(conn, [bidsAddress, asksAddress], commitment)
+    const orderBookMsg = await getMultipleAccounts(conn, [bidsAddress, asksAddress], commitment);
     orderBookMsg.forEach((info) => {
       // @ts-ignore
-      const data = info.account.data
+      const data = info.account.data;
       // @ts-ignore
-      const orderbook = Orderbook.decode(market, data)
-      const { isBids, slab } = orderbook
+      const orderbook = Orderbook.decode(market, data);
+      const { isBids, slab } = orderbook;
       if (isBids) {
         for (const item of slab.items(true)) {
-          bids.push(market?.priceLotsToNumber(item.key.ushrn(64)) || 0)
+          bids.push(market?.priceLotsToNumber(item.key.ushrn(64)) || 0);
         }
       } else {
         for (const item of slab.items(false)) {
-          asks.push(market?.priceLotsToNumber(item.key.ushrn(64)) || 0)
+          asks.push(market?.priceLotsToNumber(item.key.ushrn(64)) || 0);
         }
       }
-    })
-    const price = asks.length > 0 && bids.length > 0 ? (asks[0] + bids[0]) / 2 : NaN
+    });
+    const price = asks.length > 0 && bids.length > 0 ? (asks[0] + bids[0]) / 2 : NaN;
 
-    const baseMintDecimals = new BigNumber(await getMintDecimals(conn, market.baseMintAddress as PublicKey))
-    const quoteMintDecimals = new BigNumber(await getMintDecimals(conn, market.quoteMintAddress as PublicKey))
-    return { market, price, msg: '', baseMintDecimals, quoteMintDecimals }
+    const baseMintDecimals = new BigNumber(await getMintDecimals(conn, market.baseMintAddress as PublicKey));
+    const quoteMintDecimals = new BigNumber(await getMintDecimals(conn, market.quoteMintAddress as PublicKey));
+    return { market, price, msg: '', baseMintDecimals, quoteMintDecimals };
   } catch (error) {
     if (error.message === 'Non-base58 character') {
-      return { market: null, price: null, msg: 'market input error', baseMintDecimals: 0, quoteMintDecimals: 0 }
+      return { market: null, price: null, msg: 'market input error', baseMintDecimals: 0, quoteMintDecimals: 0 };
     } else {
-      return { market: null, price: null, msg: error.message, baseMintDecimals: 0, quoteMintDecimals: 0 }
+      return { market: null, price: null, msg: error.message, baseMintDecimals: 0, quoteMintDecimals: 0 };
     }
   }
 }
@@ -122,70 +122,70 @@ export async function createAmm(
   userInputBaseValue: number,
   userInputQuoteValue: number
 ) {
-  const transaction = new Transaction()
-  const signers: any = []
-  const owner = wallet.publicKey
+  const transaction = new Transaction();
+  const signers: any = [];
+  const owner = wallet.publicKey;
 
-  const { publicKey, nonce } = await createAmmAuthority(new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4))
-  const ammAuthority = publicKey
+  const { publicKey, nonce } = await createAmmAuthority(new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4));
+  const ammAuthority = publicKey;
   const ammId: PublicKey = await createAssociatedId(
     new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4),
     market.address,
     AMM_ASSOCIATED_SEED
-  )
+  );
 
   const poolCoinTokenAccount: PublicKey = await createAssociatedId(
     new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4),
     market.address,
     COIN_VAULT_ASSOCIATED_SEED
-  )
+  );
   const poolPcTokenAccount: PublicKey = await createAssociatedId(
     new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4),
     market.address,
     PC_VAULT_ASSOCIATED_SEED
-  )
+  );
   const lpMintAddress: PublicKey = await createAssociatedId(
     new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4),
     market.address,
     LP_MINT_ASSOCIATED_SEED
-  )
+  );
   const poolTempLpTokenAccount: PublicKey = await createAssociatedId(
     new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4),
     market.address,
     TEMP_LP_TOKEN_ASSOCIATED_SEED
-  )
+  );
   const ammTargetOrders: PublicKey = await createAssociatedId(
     new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4),
     market.address,
     TARGET_ASSOCIATED_SEED
-  )
+  );
   const poolWithdrawQueue: PublicKey = await createAssociatedId(
     new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4),
     market.address,
     WITHDRAW_ASSOCIATED_SEED
-  )
+  );
 
   const ammOpenOrders: PublicKey = await createAssociatedId(
     new PublicKey(LIQUIDITY_POOL_PROGRAM_ID_V4),
     market.address,
     OPEN_ORDER_ASSOCIATED_SEED
-  )
+  );
 
-  let accountSuccessFlag = false
-  let accountAllSuccessFlag = false
+  let accountSuccessFlag = false;
+  let accountAllSuccessFlag = false;
 
-  const multipleInfo = await getMultipleAccounts(conn, [lpMintAddress], commitment)
+  const multipleInfo = await getMultipleAccounts(conn, [lpMintAddress], commitment);
   if (multipleInfo.length > 0 && multipleInfo[0] !== null) {
-    const tempLpMint = MINT_LAYOUT.decode(multipleInfo[0]?.account.data)
+    const tempLpMint = MINT_LAYOUT.decode(multipleInfo[0]?.account.data);
     if (getBigNumber(tempLpMint.supply) === 0) {
-      accountSuccessFlag = true
+      accountSuccessFlag = true;
     } else {
-      accountAllSuccessFlag = true
+      accountAllSuccessFlag = true;
     }
   } else {
-    accountSuccessFlag = false
+    accountSuccessFlag = false;
   }
-  console.log('init flag: ', accountSuccessFlag, accountAllSuccessFlag)
+  console.log('init flag: ', accountSuccessFlag, accountAllSuccessFlag);
 
   transaction.add(
     preInitialize(
@@ -203,10 +203,10 @@ export async function createAmm(
       owner,
       nonce
     )
-  )
+  );
 
-  const destLpToken = await findAssociatedTokenAddress(owner, lpMintAddress)
-  const destLpTokenInfo = await conn.getAccountInfo(destLpToken)
+  const destLpToken = await findAssociatedTokenAddress(owner, lpMintAddress);
+  const destLpTokenInfo = await conn.getAccountInfo(destLpToken);
   if (!destLpTokenInfo) {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
@@ -217,32 +217,32 @@ export async function createAmm(
         owner,
         owner
       )
-    )
+    );
   }
 
   if (!accountSuccessFlag) {
-    const txid = await sendTransaction(conn, wallet, transaction, signers)
-    console.log('txid', txid)
-    let txidSuccessFlag = 0
+    const txid = await sendTransaction(conn, wallet, transaction, signers);
+    console.log('txid', txid);
+    let txidSuccessFlag = 0;
     await conn.onSignature(txid, function (_signatureResult: any, _context: any) {
       if (_signatureResult.err) {
-        txidSuccessFlag = -1
+        txidSuccessFlag = -1;
       } else {
-        txidSuccessFlag = 1
+        txidSuccessFlag = 1;
       }
-    })
+    });
 
-    const timeAwait = new Date().getTime()
-    let outOfWhile = false
+    const timeAwait = new Date().getTime();
+    let outOfWhile = false;
     while (!outOfWhile) {
-      console.log('txid', outOfWhile, txidSuccessFlag, (new Date().getTime() - timeAwait) / 1000)
+      console.log('txid', outOfWhile, txidSuccessFlag, (new Date().getTime() - timeAwait) / 1000);
       if (txidSuccessFlag !== 0) {
-        outOfWhile = true
+        outOfWhile = true;
       }
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
     if (txidSuccessFlag !== 1) {
-      throw new Error('create tx1 error')
+      throw new Error('create tx1 error');
     }
   }
 
@@ -257,8 +257,8 @@ export async function createAmm(
     poolWithdrawQueue,
     poolTempLpTokenAccount,
     destLpToken,
-    nonce
-  }
+    nonce,
+  };
 
   if (!accountAllSuccessFlag) {
     await initAmm(
@@ -273,10 +273,10 @@ export async function createAmm(
       userInputQuoteValue,
       poolCoinTokenAccount,
       poolPcTokenAccount
-    )
+    );
   }
 
-  return ammId.toBase58()
+  return ammId.toBase58();
 }
 
 async function initAmm(
@@ -292,115 +292,115 @@ async function initAmm(
   poolCoinTokenAccount: PublicKey,
   poolPcTokenAccount: PublicKey
 ) {
-  const baseMintDecimals = new BigNumber(await getMintDecimals(conn, market.baseMintAddress as PublicKey))
-  const quoteMintDecimals = new BigNumber(await getMintDecimals(conn, market.quoteMintAddress as PublicKey))
+  const baseMintDecimals = new BigNumber(await getMintDecimals(conn, market.baseMintAddress as PublicKey));
+  const quoteMintDecimals = new BigNumber(await getMintDecimals(conn, market.quoteMintAddress as PublicKey));
 
-  const coinVol = new BigNumber(10).exponentiatedBy(baseMintDecimals).multipliedBy(userInputBaseValue)
-  const pcVol = new BigNumber(10).exponentiatedBy(quoteMintDecimals).multipliedBy(userInputQuoteValue)
+  const coinVol = new BigNumber(10).exponentiatedBy(baseMintDecimals).multipliedBy(userInputBaseValue);
+  const pcVol = new BigNumber(10).exponentiatedBy(quoteMintDecimals).multipliedBy(userInputQuoteValue);
 
-  const transaction = new Transaction()
-  const signers: any = []
-  const owner = wallet.publicKey
-  const baseTokenAccount = await getFilteredTokenAccountsByOwner(conn, owner, market.baseMintAddress)
-  const quoteTokenAccount = await getFilteredTokenAccountsByOwner(conn, owner, market.quoteMintAddress)
+  const transaction = new Transaction();
+  const signers: any = [];
+  const owner = wallet.publicKey;
+  const baseTokenAccount = await getFilteredTokenAccountsByOwner(conn, owner, market.baseMintAddress);
+  const quoteTokenAccount = await getFilteredTokenAccountsByOwner(conn, owner, market.quoteMintAddress);
   const baseTokenList: any = baseTokenAccount.value.map((item: any) => {
     if (item.account.data.parsed.info.tokenAmount.amount >= getBigNumber(coinVol)) {
-      return item.pubkey
+      return item.pubkey;
     }
-    return null
-  })
+    return null;
+  });
   const quoteTokenList: any = quoteTokenAccount.value.map((item: any) => {
     if (item.account.data.parsed.info.tokenAmount.amount >= getBigNumber(pcVol)) {
-      return item.pubkey
+      return item.pubkey;
     }
-    return null
-  })
-  let baseToken: string | null = null
+    return null;
+  });
+  let baseToken: string | null = null;
   for (const item of baseTokenList) {
     if (item !== null) {
-      baseToken = item
+      baseToken = item;
     }
   }
-  let quoteToken: string | null = null
+  let quoteToken: string | null = null;
   for (const item of quoteTokenList) {
     if (item !== null) {
-      quoteToken = item
+      quoteToken = item;
     }
   }
   if (
     (baseToken === null && market.baseMintAddress.toString() !== TOKENS.WSOL.mintAddress) ||
     (quoteToken === null && market.quoteMintAddress.toString() !== TOKENS.WSOL.mintAddress)
   ) {
-    throw new Error('no money')
+    throw new Error('no money');
   }
 
   if (market.baseMintAddress.toString() === TOKENS.WSOL.mintAddress) {
-    const newAccount = new Account()
+    const newAccount = new Account();
     transaction.add(
       SystemProgram.createAccount({
         fromPubkey: owner,
         newAccountPubkey: newAccount.publicKey,
         lamports: parseInt(coinVol.toFixed()) + 1e7,
         space: ACCOUNT_LAYOUT.span,
-        programId: TOKEN_PROGRAM_ID
+        programId: TOKEN_PROGRAM_ID,
       })
-    )
+    );
     transaction.add(
       initializeAccount({
         account: newAccount.publicKey,
         mint: new PublicKey(TOKENS.WSOL.mintAddress),
-        owner
+        owner,
       })
-    )
+    );
 
-    transaction.add(transfer(newAccount.publicKey, poolCoinTokenAccount, owner, parseInt(coinVol.toFixed())))
+    transaction.add(transfer(newAccount.publicKey, poolCoinTokenAccount, owner, parseInt(coinVol.toFixed())));
 
     transaction.add(
       closeAccount({
         source: newAccount.publicKey,
         destination: owner,
-        owner
+        owner,
       })
-    )
+    );
 
-    signers.push(newAccount)
+    signers.push(newAccount);
   } else {
     transaction.add(
       // @ts-ignore
       transfer(new PublicKey(baseToken), poolCoinTokenAccount, owner, parseInt(coinVol.toFixed()))
-    )
+    );
   }
   if (market.quoteMintAddress.toString() === TOKENS.WSOL.mintAddress) {
-    const newAccount = new Account()
+    const newAccount = new Account();
     transaction.add(
       SystemProgram.createAccount({
         fromPubkey: owner,
         newAccountPubkey: newAccount.publicKey,
         lamports: parseInt(pcVol.toFixed()) + 1e7,
         space: ACCOUNT_LAYOUT.span,
-        programId: TOKEN_PROGRAM_ID
+        programId: TOKEN_PROGRAM_ID,
       })
-    )
+    );
     transaction.add(
       initializeAccount({
         account: newAccount.publicKey,
         mint: new PublicKey(TOKENS.WSOL.mintAddress),
-        owner
+        owner,
       })
-    )
+    );
 
-    transaction.add(transfer(newAccount.publicKey, poolPcTokenAccount, owner, parseInt(pcVol.toFixed())))
+    transaction.add(transfer(newAccount.publicKey, poolPcTokenAccount, owner, parseInt(pcVol.toFixed())));
     transaction.add(
       closeAccount({
         source: newAccount.publicKey,
         destination: owner,
-        owner
+        owner,
       })
-    )
-    signers.push(newAccount)
+    );
+    signers.push(newAccount);
   } else {
     // @ts-ignore
-    transaction.add(transfer(new PublicKey(quoteToken), poolPcTokenAccount, owner, parseInt(pcVol.toFixed())))
+    transaction.add(transfer(new PublicKey(quoteToken), poolPcTokenAccount, owner, parseInt(pcVol.toFixed())));
   }
 
   transaction.add(
@@ -425,34 +425,34 @@ async function initAmm(
 
       ammKeys.nonce
     )
-  )
+  );
 
-  const txid = await sendTransaction(conn, wallet, transaction, signers)
+  const txid = await sendTransaction(conn, wallet, transaction, signers);
 
-  console.log('txid3', txid)
-  let txidSuccessFlag = 0
+  console.log('txid3', txid);
+  let txidSuccessFlag = 0;
   await conn.onSignature(txid, function (_signatureResult: any, _context: any) {
     if (_signatureResult.err) {
-      txidSuccessFlag = -1
+      txidSuccessFlag = -1;
     } else {
-      txidSuccessFlag = 1
+      txidSuccessFlag = 1;
     }
-  })
+  });
 
-  const timeAwait = new Date().getTime()
-  let outOfWhile = false
+  const timeAwait = new Date().getTime();
+  let outOfWhile = false;
   while (!outOfWhile) {
-    console.log('txid3', outOfWhile, txidSuccessFlag, (new Date().getTime() - timeAwait) / 1000)
+    console.log('txid3', outOfWhile, txidSuccessFlag, (new Date().getTime() - timeAwait) / 1000);
     if (txidSuccessFlag !== 0) {
-      outOfWhile = true
+      outOfWhile = true;
     }
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
   if (txidSuccessFlag !== 1) {
-    throw new Error('Transaction failed')
+    throw new Error('Transaction failed');
   }
 
-  clearLocal()
+  clearLocal();
 }
 
 export function initialize(
@@ -474,7 +474,7 @@ export function initialize(
   owner: PublicKey,
   nonce: number
 ): TransactionInstruction {
-  const dataLayout = struct([u8('instruction'), u8('nonce')])
+  const dataLayout = struct([u8('instruction'), u8('nonce')]);
 
   const keys = [
     { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
@@ -494,23 +494,23 @@ export function initialize(
     { pubkey: poolTempLpTokenAccount, isSigner: false, isWritable: true },
     { pubkey: serumProgramId, isSigner: false, isWritable: false },
     { pubkey: serumMarket, isSigner: false, isWritable: true },
-    { pubkey: owner, isSigner: true, isWritable: false }
-  ]
-  const data = Buffer.alloc(dataLayout.span)
+    { pubkey: owner, isSigner: true, isWritable: false },
+  ];
+  const data = Buffer.alloc(dataLayout.span);
 
   dataLayout.encode(
     {
       instruction: 0,
-      nonce
+      nonce,
     },
     data
-  )
+  );
 
   return new TransactionInstruction({
     keys,
     programId: ammProgramId,
-    data
-  })
+    data,
+  });
 }
 
 export function preInitialize(
@@ -528,7 +528,7 @@ export function preInitialize(
   owner: PublicKey,
   nonce: u8
 ): TransactionInstruction {
-  const dataLayout = struct([u8('instruction'), u8('nonce')])
+  const dataLayout = struct([u8('instruction'), u8('nonce')]);
 
   const keys = [
     { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
@@ -545,77 +545,77 @@ export function preInitialize(
     { pubkey: poolPcTokenAccount, isSigner: false, isWritable: true },
     { pubkey: poolTempLpTokenAccount, isSigner: false, isWritable: true },
     { pubkey: market, isSigner: false, isWritable: false },
-    { pubkey: owner, isSigner: true, isWritable: false }
-  ]
-  const data = Buffer.alloc(dataLayout.span)
+    { pubkey: owner, isSigner: true, isWritable: false },
+  ];
+  const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
     {
       instruction: 10,
-      nonce
+      nonce,
     },
     data
-  )
+  );
   return new TransactionInstruction({
     keys,
     programId,
-    data
-  })
+    data,
+  });
 }
 
 // @ts-ignore
 export class Market extends MarketSerum {
-  public baseVault: PublicKey | null = null
-  public quoteVault: PublicKey | null = null
-  public requestQueue: PublicKey | null = null
-  public eventQueue: PublicKey | null = null
-  public bids: PublicKey | null = null
-  public asks: PublicKey | null = null
-  public baseLotSize: number = 0
-  public quoteLotSize: number = 0
-  private _decoded: any
-  public quoteMint: PublicKey | null = null
-  public baseMint: PublicKey | null = null
+  public baseVault: PublicKey | null = null;
+  public quoteVault: PublicKey | null = null;
+  public requestQueue: PublicKey | null = null;
+  public eventQueue: PublicKey | null = null;
+  public bids: PublicKey | null = null;
+  public asks: PublicKey | null = null;
+  public baseLotSize: number = 0;
+  public quoteLotSize: number = 0;
+  private _decoded: any;
+  public quoteMint: PublicKey | null = null;
+  public baseMint: PublicKey | null = null;
 
   static async load(connection: Connection, address: PublicKey, options: any = {}, programId: PublicKey) {
-    const { owner, data } = throwIfNull(await connection.getAccountInfo(address), 'Market not found')
+    const { owner, data } = throwIfNull(await connection.getAccountInfo(address), 'Market not found');
     if (!owner.equals(programId)) {
-      throw new Error('Address not owned by program: ' + owner.toBase58())
+      throw new Error('Address not owned by program: ' + owner.toBase58());
     }
-    const decoded = this.getLayout(programId).decode(data)
+    const decoded = this.getLayout(programId).decode(data);
     if (!decoded.accountFlags.initialized || !decoded.accountFlags.market || !decoded.ownAddress.equals(address)) {
-      throw new Error('Invalid market')
+      throw new Error('Invalid market');
     }
     const [baseMintDecimals, quoteMintDecimals] = await Promise.all([
       getMintDecimals(connection, decoded.baseMint),
-      getMintDecimals(connection, decoded.quoteMint)
-    ])
+      getMintDecimals(connection, decoded.quoteMint),
+    ]);
 
-    const market = new Market(decoded, baseMintDecimals, quoteMintDecimals, options, programId)
-    market._decoded = decoded
-    market.baseLotSize = decoded.baseLotSize
-    market.quoteLotSize = decoded.quoteLotSize
-    market.baseVault = decoded.baseVault
-    market.quoteVault = decoded.quoteVault
-    market.requestQueue = decoded.requestQueue
-    market.eventQueue = decoded.eventQueue
-    market.bids = decoded.bids
-    market.asks = decoded.asks
-    market.quoteMint = decoded.quoteMint
-    market.baseMint = decoded.baseMint
-    return market
+    const market = new Market(decoded, baseMintDecimals, quoteMintDecimals, options, programId);
+    market._decoded = decoded;
+    market.baseLotSize = decoded.baseLotSize;
+    market.quoteLotSize = decoded.quoteLotSize;
+    market.baseVault = decoded.baseVault;
+    market.quoteVault = decoded.quoteVault;
+    market.requestQueue = decoded.requestQueue;
+    market.eventQueue = decoded.eventQueue;
+    market.bids = decoded.bids;
+    market.asks = decoded.asks;
+    market.quoteMint = decoded.quoteMint;
+    market.baseMint = decoded.baseMint;
+    return market;
   }
 }
 
 export function clearLocal() {
-  localStorage.removeItem('poolCoinTokenAccount')
-  localStorage.removeItem('poolPcTokenAccount')
-  localStorage.removeItem('lpMintAddress')
-  localStorage.removeItem('poolTempLpTokenAccount')
-  localStorage.removeItem('ammId')
-  localStorage.removeItem('ammOpenOrders')
-  localStorage.removeItem('ammTargetOrders')
-  localStorage.removeItem('poolWithdrawQueue')
-  localStorage.removeItem('destLpToken')
+  localStorage.removeItem('poolCoinTokenAccount');
+  localStorage.removeItem('poolPcTokenAccount');
+  localStorage.removeItem('lpMintAddress');
+  localStorage.removeItem('poolTempLpTokenAccount');
+  localStorage.removeItem('ammId');
+  localStorage.removeItem('ammOpenOrders');
+  localStorage.removeItem('ammTargetOrders');
+  localStorage.removeItem('poolWithdrawQueue');
+  localStorage.removeItem('destLpToken');
 
-  localStorage.removeItem('createMarket')
+  localStorage.removeItem('createMarket');
 }

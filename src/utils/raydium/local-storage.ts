@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
 export default class LocalStorage {
   static get(name: string) {
-    return localStorage.getItem(name)
+    return localStorage.getItem(name);
   }
 
   static set(name: string, val: any) {
-    return localStorage.setItem(name, val)
+    return localStorage.setItem(name, val);
   }
 }
