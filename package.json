@@ -78,7 +78,7 @@
     "graphql": "^16.2.0",
     "graphql-tag": "^2.12.6",
     "lodash-es": "^4.17.21",
-    "node-sass": "7.0.1",
+    "node-sass": "6.0.1",
     "react": "^17.0.0",
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-table-next": "^4.0.3",
