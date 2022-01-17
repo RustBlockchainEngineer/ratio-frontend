@@ -40,6 +40,9 @@
 @import './comingsoon';
 @import './adminpanel';
 @import './guidemodal';
+@import './vaultSetup';
+@import './vaulthistoryCard';
+@import './vaultSetupContainer';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');

@@ -129,7 +129,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     if (!connected) {
       toast('Please connect your wallet!');
     } else {
-      history.push(`/dashboard/vaultdashboard/${data.mint}`);
+      history.push(`/dashboard/vaultsetup/${data.mint}`);
     }
   };
 
