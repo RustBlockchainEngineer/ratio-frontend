@@ -139,7 +139,7 @@ const ActiveVaults = () => {
               <th scope="col">Platform</th>
               <th scope="col">APR</th>
               <th scope="col">Risk Level</th>
-              <th scope="col" className="availablevaults__table--action"></th>
+              {/* <th scope="col" className="availablevaults__table--action"></th> */}
             </tr>
           </thead>
           <tbody>

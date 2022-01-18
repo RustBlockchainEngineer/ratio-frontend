@@ -114,7 +114,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     return (
       <div className="col">
         <div className="d-flex">
-          <Button disabled={!connected} className="button button--gradientBorder generate mt-2">
+          <Button disabled={!connected} className="button button--fill generate mt-2">
             Harvest
           </Button>
           <div className="mx-1"></div>
