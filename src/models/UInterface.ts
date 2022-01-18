@@ -5,6 +5,7 @@ export type PairType = {
   icon1?: string;
   icon2?: string;
   title: string;
+  platform: any;
   tvl: number;
   risk: number;
   apr: number;

@@ -1,0 +1,41 @@
+.vaulthistorycard {
+    border: 1px solid rgba(var(--secondary-border), 0.2);
+    border-radius: 1rem;
+    padding: 0px !important;
+    margin: 1.5rem;
+    margin-left: 0rem;
+    margin-bottom: 0rem;
+    &-status {
+        font-family: 'Poppins-Medium';
+        font-size: 1.2rem;
+        color: var(--unnamed-color-3c4760);
+        margin-right: 0.5rem;
+    }
+    &-price {
+        font-family: 'Poppins-SemiBold';
+        font-size: 1.8rem;
+        color: var(--unnamed-color-0f6eff);
+    }
+    &-unit {
+        font-family: 'Poppins-Regular';
+        font-size: 0.9rem;
+        color: var(--unnamed-color-4c646f);
+        margin-left: 1rem;
+    }
+    &-bottom {
+        background-color: var(--unnamed-color-f8f9f9);
+        border-top: 1px solid rgba(var(--secondary-border), 0.2);
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+    }
+    &-pricelabel {
+        font-family: 'Poppins-Regular';
+        font-size: 0.9rem;
+        color: var(--unnamed-color-4c646f);
+    }
+    &-usdprice {
+        font-family: 'Poppins-SemiBold';
+        font-size: 1rem;
+        color: var(--unnamed-color-002332);
+    }
+}

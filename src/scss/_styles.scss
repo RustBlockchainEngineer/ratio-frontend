@@ -40,6 +40,9 @@
 @import './comingsoon';
 @import './adminpanel';
 @import './guidemodal';
+@import './vaultSetup';
+@import './vaulthistoryCard';
+@import './vaultSetupContainer';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
@@ -195,5 +198,18 @@ input {
   color: #f48c57 !important;
 }
 .LOW {
+  color: #07b127 !important;
+}
+
+.DDD {
+  color: #ff3131 !important;
+}
+.DD {
+  color: #ff3131 !important;
+}
+.AA {
+  color: #f48c57 !important;
+}
+.AAA {
   color: #07b127 !important;
 }

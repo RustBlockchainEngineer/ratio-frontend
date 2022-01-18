@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { MINTADDRESS, APR, TVL } from '../../constants';
+import { MINTADDRESS, APR, TVL, PLATFORM } from '../../constants';
 import { useWallet } from '../../contexts/wallet';
 import { PairType } from '../../models/UInterface';
 import { selectors, actionTypes } from '../../features/dashboard';
@@ -83,6 +83,7 @@ const AvailableVaults = () => {
           icon2: getCoinPicSymbol(tokens[1]),
           title: key,
           tvl: TVL[key],
+          platform: PLATFORM[key],
           apr: APR[key],
           details:
             'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
@@ -126,14 +127,11 @@ const AvailableVaults = () => {
         <table className="table availablevaults__table">
           <thead>
             <tr>
-              <th scope="col" className="w-25">
-                Asset
-              </th>
-              <th scope="col" className="w-25">
-                APR
-              </th>
+              <th scope="col">Asset</th>
+              <th scope="col">Platform</th>
+              <th scope="col">APR</th>
               <th scope="col">Risk Level</th>
-              <th scope="col"></th>
+              <th scope="col" className="availablevaults__table--action"></th>
             </tr>
           </thead>
           <tbody>
