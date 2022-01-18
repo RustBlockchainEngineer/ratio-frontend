@@ -112,7 +112,7 @@ const GenerateModal = ({ data }: any) => {
             </div>
             <h4>Mint more USDr</h4>
             <h5>
-              Mint to <strong>{data.usdrValue} USDr</strong>
+              Mint up to <strong>{data.usdrValue} USDr</strong>
             </h5>
           </div>
         </Modal.Header>
