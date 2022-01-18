@@ -104,7 +104,7 @@ const ModalCard = ({
           <div>
             {type === 'borrow_payback' && (
               <div>
-                <label>Able to generate</label>
+                <label>Able to mint</label>
                 <p>{generateValue.toFixed(2)} USDr</p>
               </div>
             )}

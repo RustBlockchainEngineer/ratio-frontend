@@ -1,265 +1,181 @@
-import React from 'react';
-import { getRiskLevel } from '../../libs/helper';
-import { IoWarningOutline } from 'react-icons/io5';
-import { useMediaQuery } from 'react-responsive';
-import classNames from 'classnames';
-import BootstrapTable from 'react-bootstrap-table-next';
-import Button from '../../components/Button';
-import ActivePairCard from '../../components/ActivePairCard';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { MINTADDRESS, APR, TVL, PLATFORM } from '../../constants';
+import { useWallet } from '../../contexts/wallet';
+import { PairType } from '../../models/UInterface';
+import { selectors, actionTypes } from '../../features/dashboard';
+
 import FilterPanel from '../../components/FilterPanel';
-import stepIcon from '../../assets/images/STEP.svg';
-import usdcIcon from '../../assets/images/USDC.svg';
-import rayIcon from '../../assets/images/RAY.svg';
-import solIcon from '../../assets/images/SOL.svg';
-import ethIcon from '../../assets/images/ETH.svg';
-import srmIcon from '../../assets/images/SRM.svg';
-import mediaIcon from '../../assets/images/MEDIA.svg';
+import ComparingFooter from '../../components/ComparingFooter';
+import TokenPairCard from '../../components/TokenPairCard';
+import TokenPairListItem from '../../components/TokenPairListItem';
 
-const tokenPairs = [
-  {
-    id: 0,
-    icons: [stepIcon, usdcIcon],
-    title: 'STEP-USDC',
-    tvl: '$70,458,607.97',
-    risk: 92,
-    apr: 125,
-    owed: '$1,200',
-    mint: '$600',
-    price: '$3,000',
-    warning: false,
-  },
-  {
-    id: 1,
-    icons: [rayIcon, solIcon],
-    title: 'RAY-SOL',
-    tvl: '$57,537,364.18',
-    risk: 47,
-    apr: 125,
-    owed: '$1,200',
-    mint: '$600',
-    price: '$3,000',
-    warning: true,
-  },
-  {
-    id: 2,
-    icons: [rayIcon, ethIcon],
-    title: 'RAY-ETH',
-    tvl: '$38,954,120.69',
-    risk: 47,
-    apr: 125,
-    owed: '$1,200',
-    mint: '$600',
-    price: '$3,000',
-    warning: false,
-  },
-  {
-    id: 3,
-    icons: [rayIcon, srmIcon],
-    title: 'RAY-SRM',
-    tvl: '$36,886,437.47',
-    risk: 47,
-    apr: 125,
-    owed: '$1,200',
-    mint: '$600',
-    price: '$3,000',
-    warning: false,
-  },
-  {
-    id: 4,
-    icons: [rayIcon, usdcIcon],
-    title: 'RAY-USDC',
-    tvl: '$34,697,467.58',
-    risk: 92,
-    apr: 125,
-    owed: '$1,200',
-    mint: '$600',
-    price: '$3,000',
-    warning: false,
-  },
-  {
-    id: 5,
-    icons: [mediaIcon, usdcIcon],
-    title: 'MEDIA-USDC',
-    tvl: '$20,818,044.40',
-    risk: 47,
-    apr: 125,
-    owed: '$1,200',
-    mint: '$600',
-    price: '$3,000',
-    warning: false,
-  },
-];
-
-const columns = [
-  {
-    dataField: 'id',
-    text: 'Asset',
-    headerStyle: {
-      width: '20%',
-    },
-    formatter: (cell: any, row: any) => {
-      return (
-        <div className="align-items-center">
-          <div className="d-flex ">
-            <div>
-              <img src={row.icons[0]} alt={row.icons[0].toString()} />
-              <img src={row.icons[1]} alt={row.icons[1].toString()} className="activepaircard__header-icon" />
-            </div>
-            <div
-              className={classNames('activepaircard__titleBox', {
-                'activepaircard__titleBox--warning': row.warning,
-              })}
-            >
-              <h6>{row.title}</h6>
-              <p>TVL: {row.tvl}</p>
-            </div>
-          </div>
-          {row.warning && (
-            <div className="activepaircard__warningBox">
-              <div>
-                <IoWarningOutline size={27} />
-              </div>
-              <p className="pt-1">
-                <strong>WARNING:</strong> You are approaching your liquidation threshold of <strong>$90.</strong>
-              </p>
-            </div>
-          )}
-        </div>
-      );
-    },
-    style: {
-      paddingTop: 35,
-    },
-  },
-  {
-    dataField: 'apr',
-    text: 'APR',
-    headerStyle: {
-      width: '7%',
-    },
-    formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.apr}%</h6>;
-    },
-    style: {
-      paddingTop: 35,
-    },
-  },
-  {
-    dataField: 'owed',
-    text: 'USDr Owed',
-    headerStyle: {
-      width: '10%',
-    },
-    formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.owed}</h6>;
-    },
-    style: {
-      paddingTop: 35,
-    },
-  },
-  {
-    dataField: 'mint',
-    text: 'Available to Mint',
-    headerStyle: {
-      width: '12%',
-    },
-    formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.mint}</h6>;
-    },
-    style: {
-      paddingTop: 35,
-    },
-  },
-  {
-    dataField: 'price',
-    text: 'Liquidation Price',
-    headerStyle: {
-      width: '12%',
-    },
-    formatter: (cell: any, row: any) => {
-      return <h6 className="semiBold">{row.price}</h6>;
-    },
-    style: {
-      paddingTop: 35,
-    },
-  },
-  {
-    dataField: 'risk',
-    text: 'Risk Level',
-    headerStyle: {
-      width: '9%',
-    },
-    formatter: (cell: any, row: any) => {
-      return <h6 className={classNames('semiBold', getRiskLevel(row.risk))}>{getRiskLevel(row.risk)}</h6>;
-    },
-    style: {
-      paddingTop: 35,
-    },
-  },
-  {
-    dataField: '',
-    text: '',
-    formatter: (cell: any, row: any) => {
-      return (
-        <div
-          className={classNames('activepaircard__btnBox d-flex', {
-            'activepaircard__btnBox--warning': row.warning,
-          })}
-        >
-          <div className="col">
-            <Button className="button--gradientBorder lp-button">Deposit LP</Button>
-          </div>
-          <div className="col">
-            <Button className="button--fill lp-button">Enter Vault</Button>
-          </div>
-        </div>
-      );
-    },
-  },
-];
-const rowClasses = (row: any) => {
-  let classes = '';
-  if (row.warning) {
-    classes = 'warning_position';
-  }
-  return classes;
-};
+import { getCoinPicSymbol } from '../../utils/helper';
 
 const ActiveVaults = () => {
-  const isMobile = useMediaQuery({ maxWidth: 767 });
-  const [viewType, setViewType] = React.useState('tile');
+  const dispatch = useDispatch();
+  const [viewType, setViewType] = useState('tile');
+  const compareValutsList = useSelector(selectors.getCompareVaultsList);
+  const filter_data = useSelector(selectors.getFilterData);
+  const sort_data = useSelector(selectors.getSortData);
+  const overview = useSelector(selectors.getOverview);
 
-  React.useEffect(() => {
-    if (isMobile) {
-      setViewType('tile');
-    }
-  }, [isMobile]);
+  console.log(Object.keys(overview.activeVaults));
+
+  const { connected } = useWallet();
+
+  const [data, setData] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onViewType = (type: string) => {
     setViewType(type);
   };
 
-  return (
-    <div className="activeVaults">
-      <FilterPanel label="My Active Vaults" viewType={viewType} onViewType={onViewType} />
-      <div className="row ">
-        {viewType === 'tile' &&
-          tokenPairs.map((item) => {
-            return <ActivePairCard data={item} key={item.id} />;
+  const getData = async () => {
+    setIsLoading(true);
+    const d = await axios.get('https://api.ratio.finance/api/rate');
+    setData(d.data);
+    setIsLoading(false);
+  };
+
+  React.useEffect(() => {
+    getData();
+  }, []);
+
+  const filterData = (array1: any, array2: any) => {
+    if (array2.length === 0) {
+      return array1;
+    }
+    return array1.filter((item1: any) => {
+      const item1Str = JSON.stringify(item1);
+      return array2.find((item2: any) => {
+        return item1Str.indexOf(item2.label) > -1;
+      });
+    });
+  };
+
+  function dynamicSort(property: string) {
+    let sortOrder = 1;
+    if (property[0] === '-') {
+      sortOrder = -1;
+      property = property.substr(1);
+    }
+    if (property === 'risk') {
+      return function (a: any, b: any) {
+        const result = a[property] < b[property] ? -1 : a[property] > b[property] ? 1 : 0;
+        return result * sortOrder;
+      };
+    }
+    return function (a: any, b: any) {
+      const result = a[property] > b[property] ? -1 : a[property] > b[property] ? 1 : 0;
+      return result * sortOrder;
+    };
+  }
+
+  function factorialOf(d: any, filter_data: any, sort_data: any) {
+    if (d !== undefined) {
+      const p = filterData(Object.keys(d), filter_data)
+        .map((key: any, index: any) => {
+          const tokens = key.split('-');
+
+          const aa = Object.keys(overview.activeVaults).indexOf(MINTADDRESS[key]);
+          console.log(aa);
+          if (aa > -1) {
+            return {
+              id: index,
+              mint: MINTADDRESS[key],
+              icons: [getCoinPicSymbol(tokens[0]), getCoinPicSymbol(tokens[1])],
+              icon1: getCoinPicSymbol(tokens[0]), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
+              icon2: getCoinPicSymbol(tokens[1]),
+              title: key,
+              tvl: TVL[key],
+              platform: PLATFORM[key],
+              apr: APR[key],
+              details:
+                'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+              risk: d[key].c,
+              riskPercentage: d[key].r,
+              riskLevel: d[key].riskLevel,
+            };
+          }
+        })
+        .filter(Boolean);
+      p.sort(dynamicSort(sort_data.value));
+      return p;
+    }
+    return [];
+  }
+
+  const factorial = React.useMemo(
+    () => factorialOf(data, filter_data, sort_data),
+    [data, connected, filter_data, sort_data, overview]
+  );
+
+  const showContent = (vtype: string) => {
+    const onCompareVault = (data: PairType, status: boolean) => {
+      if (status) {
+        dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: [...compareValutsList, data] });
+      } else {
+        const arr = compareValutsList.filter((vault: PairType) => vault.id !== data.id);
+        dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: arr });
+      }
+    };
+
+    if (vtype === 'tile') {
+      return (
+        <div className="row">
+          {factorial.map((item: any) => {
+            return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
           })}
-        {viewType === 'list' && (
-          <div className="mt-4 activeVaults__list">
-            <BootstrapTable
-              bootstrap4
-              keyField="id"
-              data={tokenPairs}
-              columns={columns}
-              bordered={false}
-              rowClasses={rowClasses}
-            />
+        </div>
+      );
+    } else {
+      return (
+        <table className="table availablevaults__table">
+          <thead>
+            <tr>
+              <th scope="col">Asset</th>
+              <th scope="col">Platform</th>
+              <th scope="col">APR</th>
+              <th scope="col">Risk Level</th>
+              <th scope="col" className="availablevaults__table--action"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {factorial.map((item: any) => {
+              return <TokenPairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+            })}
+          </tbody>
+        </table>
+      );
+    }
+  };
+
+  const [didMount, setDidMount] = React.useState(false);
+  useEffect(() => {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, []);
+
+  if (!didMount) {
+    return null;
+  }
+
+  return (
+    <div className="availablevaults">
+      <FilterPanel label="Active Vaults" viewType={viewType} onViewType={onViewType} />
+
+      {isLoading ? (
+        <div className="col availablevaults__loading">
+          <div className="spinner-border text-info" role="status">
+            <span className="sr-only">Loading...</span>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        showContent(viewType)
+      )}
+      {compareValutsList.length > 0 && <ComparingFooter list={compareValutsList} />}
     </div>
   );
 };

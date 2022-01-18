@@ -9,3 +9,5 @@ export const getFilterData = (state: SystemState) => state.dashboard.filter_data
 export const getSortData = (state: SystemState) => state.dashboard.sort_data;
 
 export const getAvailableVaults = (state: SystemState) => state.dashboard.available_vaults;
+
+export const getOverview = (state: SystemState) => state.dashboard.overview;
