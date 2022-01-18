@@ -61,7 +61,11 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const renderModalButton = () => {
     return (
-      <div className="col">
+      <div className="d-inline-flex">
+        <Button disabled={!connected} className="button button--gradientBorder generate mt-2">
+          Harvest
+        </Button>
+        <div className="mx-1"></div>
         <Button disabled={!connected} className="button button--fill generate mt-2" onClick={showDashboard}>
           Open Vault
         </Button>
@@ -89,8 +93,9 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
             </div>
           </div>
+          <div className="mt-1 d-block">{renderModalButton()}</div>
         </th>
-        <td className="align-middle" onClick={showExpand}>
+        <td onClick={showExpand}>
           <div className="tokenpaircard__table__td">
             <h5>Platform:</h5>
             <a href={data.platform.link} target="_blank" rel="noreferrer">
@@ -102,14 +107,14 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
             </a>
           </div>
         </td>
-        <td className="align-middle" onClick={showExpand}>
+        <td onClick={showExpand}>
           <div className="tokenpaircard__table__td">
             <h5>APR</h5>
             <h6 className="semiBold mt-2">{data.apr}%</h6>
           </div>
         </td>
-        <td className="align-middle " onClick={showExpand}>
-          <div className="d-flex justify-content-between align-items-center">
+        <td onClick={showExpand}>
+          <div className="d-flex justify-content-between align-items-start">
             <div className="tokenpaircard__table__td">
               <h5>Ratio Risk Rating:</h5>
               <div className="d-flex mt-2">
@@ -119,12 +124,11 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <h6 className={classNames('ml-2 mt-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
               </div>
             </div>
-            <div>
+            <div className="mt-1">
               <img src={arrowDownIcon} alt="arrowDownIcon" />
             </div>
           </div>
         </td>
-        <td className="align-middle">{renderModalButton()}</td>
       </tr>
       {expand && (
         <tr>

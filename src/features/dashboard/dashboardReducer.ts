@@ -4,6 +4,7 @@ import {
   SET_FILTER_DATA,
   SET_AVAILABLE_VAULT,
   SET_SORT_DATA,
+  SET_OVERVIEW,
 } from './actionTypes';
 import { dashboardActionTypes } from './types';
 
@@ -13,6 +14,7 @@ const initialState = {
   filter_data: [],
   sort_data: { value: 'apr', label: 'APR' },
   available_vaults: [],
+  overview: {},
 };
 
 export default (state = initialState, action: dashboardActionTypes) => {
@@ -27,6 +29,8 @@ export default (state = initialState, action: dashboardActionTypes) => {
       return { ...state, available_vaults: action.payload };
     case SET_SORT_DATA:
       return { ...state, sort_data: action.payload };
+    case SET_OVERVIEW:
+      return { ...state, overview: action.payload };
     default:
       return state;
   }
