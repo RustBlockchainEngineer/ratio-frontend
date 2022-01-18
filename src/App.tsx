@@ -13,6 +13,7 @@ import { AuthProvider } from './contexts/auth';
 import { RaydiumPoolProvider } from './contexts/pools';
 import { PriceProvider } from './contexts/price';
 import { MercurialAPIProvider } from './contexts/mercurialAPI';
+import ProtectedRoute from './components/ProtectedRoute';
 
 dotenv.config();
 
@@ -32,7 +33,7 @@ const App: React.FC = () => {
                           <Switch>
                             <Route path="/dashboard" component={Layer} />
                             <Route path="/faucet" exact component={Faucet} />
-                            <Route path="/adminpanel" exact component={AdminPanel} />
+                            <ProtectedRoute exact path="/adminpanel" component={AdminPanel} />
                             <Route exact path="/">
                               <Redirect to="/dashboard" />
                             </Route>

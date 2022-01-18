@@ -47,3 +47,6 @@ export const PLATFORM: any = {
     link: 'https://app.saber.so/#/pools/currencies/sol',
   },
 };
+
+//export const API_ENDPOINT = 'https://api.ratio.finance/api';
+export const API_ENDPOINT = 'https://f3b122a0-a7ec-476f-8bbe-095ef0791b9d.mock.pstmn.io/returnTrue'; //change the returnFalse to returnTrue to test the happy path
