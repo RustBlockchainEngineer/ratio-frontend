@@ -18,6 +18,7 @@ export function PriceProvider({ children = undefined as any }) {
   useEffect(() => {
     Axios('https://price-api.sonar.watch/prices').then((res) => {
       if (res && res.data) {
+        console.log('------ PRICE PROVIDER ------');
         const tmpPrices: any = {};
         res.data.forEach((item: any) => {
           tmpPrices[item.mint] = item.price;
@@ -26,6 +27,9 @@ export function PriceProvider({ children = undefined as any }) {
           ...tmpPrices,
           ...prices,
         });
+        console.log('TEM P PRICES');
+        console.log(tmpPrices);
+        console.log('-- PRICES ---');
       }
     });
   }, []);
@@ -47,7 +51,7 @@ export const usePrices = () => {
 };
 
 export const usePrice = (mint: string) => {
-  //return Number(process.env.REACT_APP_LP_TOKEN_PRICE);
+  return Number(process.env.REACT_APP_LP_TOKEN_PRICE);
   const prices = useContext(PriceContext)?.prices;
   const setPrices = useContext(PriceContext)?.setPrices;
   const [price, setPrice] = useState<number>(0);

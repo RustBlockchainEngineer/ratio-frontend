@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { getMercurialSwapPoolsInfo } from '../utils/mercurial-pools';
 import { getRaydiumPools } from '../utils/ray-pools';
 import { getSaberSwapPoolsInfo } from '../utils/saber-pools';
+import { getOrcaSwapPoolInfo } from '../utils/orca-pools';
 import { ENDPOINTS, useConnection } from './connection';
 
 interface PoolsConfig {
@@ -69,7 +70,7 @@ export function MercurialPoolProvider({ children = undefined as any }) {
   useEffect(() => {
     try {
       getMercurialSwapPoolsInfo().then((res: any) => {
-        console.log('ALREADY IN THE PROVIDER');
+        console.log('MERCURIAL PROVIDER');
         console.log(res);
         setPools(res);
       });
@@ -78,6 +79,33 @@ export function MercurialPoolProvider({ children = undefined as any }) {
       console.log(e);
     }
   }, []);
+
+  return (
+    <PoolsContext.Provider
+      value={{
+        pools,
+      }}
+    >
+      {children}
+    </PoolsContext.Provider>
+  );
+}
+
+export function OrcaPoolProvider({ children = undefined as any }) {
+  const [pools, setPools] = useState<any>(null);
+  const connection = useConnection();
+  useEffect(() => {
+    try {
+      getOrcaSwapPoolInfo(connection).then((res: any) => {
+        console.log('ORCA PROVIDER');
+        console.log(res);
+        setPools(res);
+      });
+    } catch (e) {
+      console.log('ORCA ERROR');
+      console.log(e);
+    }
+  }, [connection]);
 
   return (
     <PoolsContext.Provider
@@ -99,5 +127,9 @@ export function useSaberPools() {
 }
 
 export function useMercurialPools() {
+  return useContext(PoolsContext)?.pools;
+}
+
+export function useOrcaPools() {
   return useContext(PoolsContext)?.pools;
 }
