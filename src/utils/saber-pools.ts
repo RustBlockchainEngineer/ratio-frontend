@@ -34,6 +34,7 @@ export async function getSaberSwapPoolsInfo(conn:Connection,connEnv:string){
         [k:string]: any
     } = {};
     const pools = connEnv === 'devnet' ? await getDevnetPools() : await getMainnetPools();
+
     for(let i = 0; i < pools.length; i++){
         const swapAccount = new PublicKey(pools[i].address);
         const {tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount} = await getSaberSwapPoolInfo(conn,swapAccount);
