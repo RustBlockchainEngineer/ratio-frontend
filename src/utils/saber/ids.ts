@@ -1,27 +1,35 @@
 /* eslint-disable prettier/prettier */
-import { PublicKey } from '@solana/web3.js'
+import Axios from 'axios';
 
 export const SWAP_PROGRAM_ID = 'SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ';
 
-// SABER POOLS AVAILABLE DEVNET POOLS SWAP ACCOUNTS
-export const devnet_btc = 'AQsYrKkFLuv9Jw7kCcPH7SkeMQ2aZkP1KcBs4RYegHbv';
-export const devnet_usdc_cash = 'B94iYzzWe7Q3ksvRnt5yJm6G5YquerRFKpsUVUvasdmA';
-export const devnet_usdc_pai = 'DoycojcYVwc42yCpGb4CvkbuKJkQ6KBTugLdJXv3U8ZE';
-export const devnet_usdc_test = 'AqBGfWy3D9NpW8LuknrSSuv93tJUBiPWYxkBrettkG7x';
-export const devnet_usdc_usdt = 'VeNkoB1HvSP6bSeGybQDnx9wTWFsQb2NBCemeCDSuKL';
-export const devnet_usdt_cash = 'TEJVTFTsqFEuoNNGu864ED4MJuZr8weByrsYYpZGCfQ';
-
-export const DEVNET_SABER_POOLS = [
-    devnet_btc,
-    devnet_usdc_cash,
-    devnet_usdc_pai,
-    devnet_usdc_test,
-    devnet_usdc_usdt,
-    devnet_usdt_cash
-];
+export async function getDevnetPools() {
+    const poolsData = (await Axios.get('https://registry.saber.so/data/pools-info.devnet.json')).data.pools;
+    const swapPools = [];
+    for(let i = 0; i < poolsData.length; i++){
+        const poolName = poolsData[i].name;
+        const swapAccount = poolsData[i].swap.config.swapAccount;
+        swapPools.push({
+            name: poolName,
+            address: swapAccount,
+        });
+    }
+    console.log('swapPools DEVNET');
+    console.log(swapPools);
+    return swapPools;
+}
 
 // SABER POOLS AVAILABLE TESTNET POOLS
-
-export const MAINNET_SABER_POOLS = [
-
-];
+export async function getMainnetPools() {
+    const poolsData = (await Axios.get('https://registry.saber.so/data/pools-info.mainnet.json')).data.pools;
+    const swapPools = [];
+    for(let i = 0; i < poolsData.length; i++){
+        const poolName = poolsData[i].name;
+        const swapAccount = poolsData[i].swap.config.swapAccount;
+        swapPools.push({
+            name: poolName,
+            address: swapAccount,
+        });
+    }
+    return swapPools;
+}
