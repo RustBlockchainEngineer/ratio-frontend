@@ -2,6 +2,7 @@
 import { AccountInfo, Connection, PublicKey } from "@solana/web3.js"
 import { getOrca, OrcaPoolConfig, Network } from "@orca-so/sdk";
 import Decimal from "decimal.js";
+import Axios from "axios";
 
 export async function getOrcaSwapPoolInfo(conn:Connection){
     const orca = getOrca(conn,Network.DEVNET);
@@ -11,6 +12,11 @@ export async function getOrcaSwapPoolInfo(conn:Connection){
     
     const data = await orcaSolPool.getLPSupply();
 
+    const pools  = Axios.get('https://api.orca.so/pools').then((res) => {
+        console.log('------- ORCA POOLS API -------');
+    });
+
+    
     return {
         orcaToken,
         solToken

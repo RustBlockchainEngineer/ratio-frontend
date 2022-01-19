@@ -4,7 +4,7 @@ import { getMercurialSwapPoolsInfo } from '../utils/mercurial-pools';
 import { getRaydiumPools } from '../utils/ray-pools';
 import { getSaberSwapPoolsInfo } from '../utils/saber-pools';
 import { getOrcaSwapPoolInfo } from '../utils/orca-pools';
-import { ENDPOINTS, useConnection } from './connection';
+import { ENDPOINTS, useConnection, useConnectionConfig } from './connection';
 
 interface PoolsConfig {
   pools: any;
@@ -39,13 +39,10 @@ export function RaydiumPoolProvider({ children = undefined as any }) {
 export function SaberPoolProvider({ children = undefined as any }) {
   const [pools, setPools] = useState<any>(null);
   const connection = useConnection();
-  const swapA = new PublicKey('VeNkoB1HvSP6bSeGybQDnx9wTWFsQb2NBCemeCDSuKL');
+  const connectionConfig = useConnectionConfig();
   useEffect(() => {
     try {
-      getSaberSwapPoolsInfo(connection, [swapA]).then((res: any) => {
-        console.log('RESULT SUCCESSFULLY GETTED');
-        console.log(res);
-        console.log('-----------');
+      getSaberSwapPoolsInfo(connection, connectionConfig.env).then((res: any) => {
         setPools(res);
       });
     } catch (e) {
@@ -70,8 +67,6 @@ export function MercurialPoolProvider({ children = undefined as any }) {
   useEffect(() => {
     try {
       getMercurialSwapPoolsInfo().then((res: any) => {
-        console.log('MERCURIAL PROVIDER');
-        console.log(res);
         setPools(res);
       });
     } catch (e) {
@@ -97,8 +92,6 @@ export function OrcaPoolProvider({ children = undefined as any }) {
   useEffect(() => {
     try {
       getOrcaSwapPoolInfo(connection).then((res: any) => {
-        console.log('ORCA PROVIDER');
-        console.log(res);
         setPools(res);
       });
     } catch (e) {
