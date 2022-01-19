@@ -32,6 +32,9 @@ const AvailableVaults = () => {
   const getData = async () => {
     setIsLoading(true);
     const d = await axios.get('https://api.ratio.finance/api/rate');
+    console.log('---- DATA GOT BY RATIO API -----');
+    console.log(d);
+    console.log('------');
     setData(d.data);
     setIsLoading(false);
   };

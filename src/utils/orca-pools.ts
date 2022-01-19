@@ -1,24 +1,20 @@
 /* eslint-disable prettier/prettier */
-import { AccountInfo, Connection, PublicKey } from "@solana/web3.js"
-import { getOrca, OrcaPoolConfig, Network } from "@orca-so/sdk";
-import Decimal from "decimal.js";
+import { orcaApi } from "./orca/constants";
 import Axios from "axios";
 
-export async function getOrcaSwapPoolInfo(conn:Connection){
-    const orca = getOrca(conn,Network.DEVNET);
-    const orcaSolPool = orca.getPool(OrcaPoolConfig.ORCA_SOL);
-    const orcaToken = orcaSolPool.getTokenA();
-    const solToken = orcaSolPool.getTokenB();
-    
-    const data = await orcaSolPool.getLPSupply();
+export async function getOrcaSwapPoolInfo(){
+    const swapPoolsInfo : {
+        [k:string]: any
+    } = {};    
+    const poolsData = (await Axios.get(`${orcaApi}pools`)).data;
 
-    const pools  = Axios.get('https://api.orca.so/pools').then((res) => {
-        console.log('------- ORCA POOLS API -------');
-    });
-
+    for(let i = 0 ; i < poolsData.length; i++){
+        swapPoolsInfo[`${poolsData[i].name}`] = {
+            account: poolsData[i].account,
+            apy: poolsData[i].apy_24h,
+            tvl: poolsData[i].liquidity,
+        };
+    }
     
-    return {
-        orcaToken,
-        solToken
-    };
+    return swapPoolsInfo;
 }
