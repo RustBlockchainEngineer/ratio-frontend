@@ -14,8 +14,6 @@ export async function getDevnetPools() {
             address: swapAccount,
         });
     }
-    console.log('swapPools DEVNET');
-    console.log(swapPools);
     return swapPools;
 }
 

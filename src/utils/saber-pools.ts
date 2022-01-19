@@ -37,12 +37,14 @@ export async function getSaberSwapPoolsInfo(conn:Connection,connEnv:string){
     for(let i = 0; i < pools.length; i++){
         const swapAccount = new PublicKey(pools[i].address);
         const {tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount} = await getSaberSwapPoolInfo(conn,swapAccount);
-        swapPoolsInfo[`${pools[i].name}-tokenA`] = tokenAName;
-        swapPoolsInfo[`${pools[i].name}-tokenA-address`] = tokenAAddress;
-        swapPoolsInfo[`${pools[i].name}-tokenAAmount`] = tokenAAmount; 
-        swapPoolsInfo[`${pools[i].name}-tokenB`] = tokenBName;
-        swapPoolsInfo[`${pools[i].name}-tokenB-address`] = tokenBAddress;
-        swapPoolsInfo[`${pools[i].name}-tokenBAmount`] = tokenBAmount;
+        swapPoolsInfo[`${pools[i].name}`] = {
+            tokenAName,
+            tokenAAddress,
+            tokenAAmount,
+            tokenBName,
+            tokenBAddress,
+            tokenBAmount,
+        }; 
     }
     return swapPoolsInfo;
 }

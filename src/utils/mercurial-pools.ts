@@ -6,10 +6,13 @@ export async function getMercurialSwapPoolsInfo(){
     const swapPoolsInfo : {
         [k:string]: any
     } = {};
-    const mercurialData = await Axios(`${mercurialApi}pools`).then((res) => {
-        console.log('RES');
-        console.log(res);
-        console.log('-------');
-    })
+    const pools = (await Axios(`${mercurialApi}pools`)).data;
+    for(let i = 0; i < pools.length; i++){
+        swapPoolsInfo[`${pools[i].name}`] = {
+            address: pools[i].address,
+            apy: pools[i].apy.total,
+            tvl: pools[i].tvl
+        };
+    }
     return swapPoolsInfo;
 }
