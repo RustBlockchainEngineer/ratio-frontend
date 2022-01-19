@@ -16,6 +16,7 @@ import ActiveVaults from '../ActiveVaults';
 import InstaBuyLp from '../InstaBuyLP';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import VaultSetup from '../VaultSetup';
 import VaultDashboard from '../VaultDashboard';
 import CompareVaults from '../CompareVaults';
 

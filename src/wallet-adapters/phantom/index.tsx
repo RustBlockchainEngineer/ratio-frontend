@@ -50,9 +50,7 @@ export class PhantomWalletAdapter extends EventEmitter implements WalletAdapter 
   }
 
   // eslint-disable-next-line
-  async signAllTransactions(
-    transactions: Transaction[]
-  ): Promise<Transaction[]> {
+  async signAllTransactions(transactions: Transaction[]): Promise<Transaction[]> {
     if (!this._provider) {
       return transactions;
     }

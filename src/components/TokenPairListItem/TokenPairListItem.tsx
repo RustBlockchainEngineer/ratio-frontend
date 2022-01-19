@@ -5,8 +5,6 @@ import { useHistory } from 'react-router-dom';
 import { getRiskLevel } from '../../libs/helper';
 
 import { useWallet } from '../../contexts/wallet';
-import LockVaultModal from '../LockVaultModal';
-import MintUSDrModal from '../MintUSDrModal';
 import Button from '../Button';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
@@ -16,6 +14,10 @@ import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { getUserState } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
+
+import highriskIcon from '../../assets/images/highrisk.svg';
+import linkIcon from '../../assets/images/link.svg';
+import arrowDownIcon from '../../assets/images/arrow-down.svg';
 
 const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -57,24 +59,18 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     }
   };
 
-  const renderModalButton = (row: any) => {
-    if (connected) {
-      return (
-        <div className="d-flex justify-content-end">
-          <div>
-            <LockVaultModal data={row} />
-          </div>
-          <div className="ml-1">
-            <MintUSDrModal data={row} />
-          </div>
-          <div className="ml-1">
-            <Button disabled={positionValue === 0} className="button button--fill generate" onClick={showDashboard}>
-              Enter Vault
-            </Button>
-          </div>
-        </div>
-      );
-    }
+  const renderModalButton = () => {
+    return (
+      <div className="d-inline-flex">
+        <Button disabled={!connected} className="button button--gradientBorder generate mt-2">
+          Harvest
+        </Button>
+        <div className="mx-1"></div>
+        <Button disabled={!connected} className="button button--fill generate mt-2" onClick={showDashboard}>
+          Open Vault
+        </Button>
+      </div>
+    );
   };
 
   const showExpand = () => {
@@ -97,14 +93,42 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
             </div>
           </div>
+          <div className="mt-1 d-block">{renderModalButton()}</div>
         </th>
-        <td className="align-middle" onClick={showExpand}>
-          <h6 className="semiBold">{data.apr}%</h6>
+        <td onClick={showExpand}>
+          <div className="tokenpaircard__table__td">
+            <h5>Platform:</h5>
+            <a href={data.platform.link} target="_blank" rel="noreferrer">
+              <div className="d-flex align-items-center mt-2 position-relative">
+                <img src={data.platform.icon} />
+                <h6 className="semiBold ml-1 tokenpaircard__table__td--platformName">{data.platform.name}</h6>
+                <img src={linkIcon} alt="linkIcon" className="tokenpaircard__table__td--linkIcon" />
+              </div>
+            </a>
+          </div>
         </td>
-        <td className="align-middle" onClick={showExpand}>
-          <h6 className={classNames('semiBold', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)}</h6>
+        <td onClick={showExpand}>
+          <div className="tokenpaircard__table__td">
+            <h5>APR</h5>
+            <h6 className="semiBold mt-2">{data.apr}%</h6>
+          </div>
         </td>
-        <td className="align-middle">{renderModalButton(data)}</td>
+        <td onClick={showExpand}>
+          <div className="d-flex justify-content-between align-items-start">
+            <div className="tokenpaircard__table__td">
+              <h5>Ratio Risk Rating:</h5>
+              <div className="d-flex mt-2">
+                {(getRiskLevel(data.risk) === 'DDD' || getRiskLevel(data.risk) === 'DD') && (
+                  <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
+                )}
+                <h6 className={classNames('ml-2 mt-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
+              </div>
+            </div>
+            <div className="mt-1">
+              <img src={arrowDownIcon} alt="arrowDownIcon" />
+            </div>
+          </div>
+        </td>
       </tr>
       {expand && (
         <tr>

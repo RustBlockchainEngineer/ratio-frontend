@@ -1,27 +1,21 @@
 /* eslint-disable prettier/prettier */
-export function throwIfUndefined<T>(
-  value: T | undefined,
-  message = 'Not found'
-): T {
+export function throwIfUndefined<T>(value: T | undefined, message = 'Not found'): T {
   if (value === undefined) {
-    throw new Error(message)
+    throw new Error(message);
   }
-  return value
+  return value;
 }
 
 export function throwIfNull<T>(value: T | null, message = 'Not found'): T {
   if (value === null) {
-    throw new Error(message)
+    throw new Error(message);
   }
-  return value
+  return value;
 }
 
-export function throwIfEmpty<T>(
-  value: Array<T>,
-  message = 'Not found'
-): Array<T> {
+export function throwIfEmpty<T>(value: Array<T>, message = 'Not found'): Array<T> {
   if (value.length === 0) {
-    throw new Error(message)
+    throw new Error(message);
   }
-  return value
+  return value;
 }

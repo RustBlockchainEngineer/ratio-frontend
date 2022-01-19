@@ -4,13 +4,18 @@ import { initializeAccount } from '@project-serum/serum/lib/token-instructions';
 // @ts-ignore without ts ignore, yarn build will failed
 import { Token } from '@solana/spl-token';
 import {
-  Account, AccountInfo, Commitment, Connection, PublicKey, SystemProgram, Transaction,
-  TransactionInstruction, TransactionSignature
+  Account,
+  AccountInfo,
+  Commitment,
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  TransactionInstruction,
+  TransactionSignature,
 } from '@solana/web3.js';
 
-import {
-  ASSOCIATED_TOKEN_PROGRAM_ID, RENT_PROGRAM_ID, SYSTEM_PROGRAM_ID, TOKEN_PROGRAM_ID
-} from './ids';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, RENT_PROGRAM_ID, SYSTEM_PROGRAM_ID, TOKEN_PROGRAM_ID } from './ids';
 import { ACCOUNT_LAYOUT, MINT_LAYOUT } from './layouts';
 import { TOKENS } from './tokens';
 
@@ -22,40 +27,40 @@ export const web3Config = {
     { url: 'https://api.rpcpool.com', weight: 10 },
     { url: 'https://solana-api.projectserum.com', weight: 10 },
     { url: 'https://raydium.rpcpool.com', weight: 50 },
-    { url: 'https://api.mainnet-beta.solana.com', weight: 10 }
-  ]
-}
+    { url: 'https://api.mainnet-beta.solana.com', weight: 10 },
+  ],
+};
 
 // export const commitment: Commitment = 'processed'
-export const commitment: Commitment = 'confirmed'
+export const commitment: Commitment = 'confirmed';
 // export const commitment: Commitment = 'finalized'
 
 export async function findProgramAddress(seeds: Array<Buffer | Uint8Array>, programId: PublicKey) {
-  const [publicKey, nonce] = await PublicKey.findProgramAddress(seeds, programId)
-  return { publicKey, nonce }
+  const [publicKey, nonce] = await PublicKey.findProgramAddress(seeds, programId);
+  return { publicKey, nonce };
 }
 
 export async function createAmmAuthority(programId: PublicKey) {
   return await findProgramAddress(
     [new Uint8Array(Buffer.from('amm authority'.replace('\u00A0', ' '), 'utf-8'))],
     programId
-  )
+  );
 }
 
 export async function createAssociatedId(infoId: PublicKey, marketAddress: PublicKey, bufferKey: string) {
   const { publicKey } = await findProgramAddress(
     [infoId.toBuffer(), marketAddress.toBuffer(), Buffer.from(bufferKey)],
     infoId
-  )
-  return publicKey
+  );
+  return publicKey;
 }
 
 export async function findAssociatedTokenAddress(walletAddress: PublicKey, tokenMintAddress: PublicKey) {
   const { publicKey } = await findProgramAddress(
     [walletAddress.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), tokenMintAddress.toBuffer()],
     ASSOCIATED_TOKEN_PROGRAM_ID
-  )
-  return publicKey
+  );
+  return publicKey;
 }
 
 export async function findAssociatedStakeInfoAddress(
@@ -66,8 +71,8 @@ export async function findAssociatedStakeInfoAddress(
   const { publicKey } = await findProgramAddress(
     [poolId.toBuffer(), walletAddress.toBuffer(), Buffer.from('staker_info_v2_associated_seed')],
     programId
-  )
-  return publicKey
+  );
+  return publicKey;
 }
 
 export async function createTokenAccountIfNotExist(
@@ -80,10 +85,10 @@ export async function createTokenAccountIfNotExist(
   transaction: Transaction,
   signer: Array<Account>
 ) {
-  let publicKey
+  let publicKey;
 
   if (account) {
-    publicKey = new PublicKey(account)
+    publicKey = new PublicKey(account);
   } else {
     publicKey = await createProgramAccountIfNotExist(
       connection,
@@ -94,18 +99,18 @@ export async function createTokenAccountIfNotExist(
       ACCOUNT_LAYOUT,
       transaction,
       signer
-    )
+    );
 
     transaction.add(
       initializeAccount({
         account: publicKey,
         mint: new PublicKey(mintAddress),
-        owner
+        owner,
       })
-    )
+    );
   }
 
-  return publicKey
+  return publicKey;
 }
 
 export async function createAssociatedTokenAccountIfNotExist(
@@ -116,14 +121,14 @@ export async function createAssociatedTokenAccountIfNotExist(
   transaction: Transaction,
   atas: string[] = []
 ) {
-  let publicKey
+  let publicKey;
   if (account) {
-    publicKey = new PublicKey(account)
+    publicKey = new PublicKey(account);
   }
 
-  const mint = new PublicKey(mintAddress)
+  const mint = new PublicKey(mintAddress);
 
-  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner)
+  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner);
 
   if ((!publicKey || !ata.equals(publicKey)) && !atas.includes(ata.toBase58())) {
     transaction.add(
@@ -135,11 +140,11 @@ export async function createAssociatedTokenAccountIfNotExist(
         owner,
         owner
       )
-    )
-    atas.push(ata.toBase58())
+    );
+    atas.push(ata.toBase58());
   }
 
-  return ata
+  return ata;
 }
 
 export async function createAtaSolIfNotExistAndWrap(
@@ -150,14 +155,14 @@ export async function createAtaSolIfNotExistAndWrap(
   signers: Array<Account>,
   amount: number
 ) {
-  let publicKey
+  let publicKey;
   if (account) {
-    publicKey = new PublicKey(account)
+    publicKey = new PublicKey(account);
   }
-  const mint = new PublicKey(TOKENS.WSOL.mintAddress)
-  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner)
+  const mint = new PublicKey(TOKENS.WSOL.mintAddress);
+  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner);
   if (!publicKey) {
-    const rent = await Token.getMinBalanceRentForExemptAccount(connection)
+    const rent = await Token.getMinBalanceRentForExemptAccount(connection);
     transaction.add(
       SystemProgram.transfer({ fromPubkey: owner, toPubkey: ata, lamports: amount + rent }),
       Token.createAssociatedTokenAccountInstruction(
@@ -168,9 +173,9 @@ export async function createAtaSolIfNotExistAndWrap(
         owner,
         owner
       )
-    )
+    );
   } else {
-    const rent = await Token.getMinBalanceRentForExemptAccount(connection)
+    const rent = await Token.getMinBalanceRentForExemptAccount(connection);
     const wsol = await createTokenAccountIfNotExist(
       connection,
       null,
@@ -179,11 +184,11 @@ export async function createAtaSolIfNotExistAndWrap(
       amount + rent,
       transaction,
       signers
-    )
+    );
     transaction.add(
       Token.createTransferInstruction(TOKEN_PROGRAM_ID, wsol, ata, owner, [], amount),
       Token.createCloseAccountInstruction(TOKEN_PROGRAM_ID, wsol, owner, owner, [])
-    )
+    );
   }
 }
 
@@ -198,13 +203,13 @@ export async function createProgramAccountIfNotExist(
   transaction: Transaction,
   signer: Array<Account>
 ) {
-  let publicKey
+  let publicKey;
 
   if (account) {
-    publicKey = new PublicKey(account)
+    publicKey = new PublicKey(account);
   } else {
-    const newAccount = new Account()
-    publicKey = newAccount.publicKey
+    const newAccount = new Account();
+    publicKey = newAccount.publicKey;
 
     transaction.add(
       SystemProgram.createAccount({
@@ -212,14 +217,14 @@ export async function createProgramAccountIfNotExist(
         newAccountPubkey: publicKey,
         lamports: lamports ?? (await connection.getMinimumBalanceForRentExemption(layout.span)),
         space: layout.span,
-        programId
+        programId,
       })
-    )
+    );
 
-    signer.push(newAccount)
+    signer.push(newAccount);
   }
 
-  return publicKey
+  return publicKey;
 }
 
 export async function createAssociatedTokenAccount(
@@ -227,55 +232,55 @@ export async function createAssociatedTokenAccount(
   owner: PublicKey,
   transaction: Transaction
 ) {
-  const associatedTokenAddress = await findAssociatedTokenAddress(owner, tokenMintAddress)
+  const associatedTokenAddress = await findAssociatedTokenAddress(owner, tokenMintAddress);
 
   const keys = [
     {
       pubkey: owner,
       isSigner: true,
-      isWritable: false
+      isWritable: false,
     },
     {
       pubkey: associatedTokenAddress,
       isSigner: false,
-      isWritable: true
+      isWritable: true,
     },
     {
       pubkey: owner,
       isSigner: false,
-      isWritable: false
+      isWritable: false,
     },
     {
       pubkey: tokenMintAddress,
       isSigner: false,
-      isWritable: false
+      isWritable: false,
     },
     {
       pubkey: SYSTEM_PROGRAM_ID,
       isSigner: false,
-      isWritable: false
+      isWritable: false,
     },
     {
       pubkey: TOKEN_PROGRAM_ID,
       isSigner: false,
-      isWritable: false
+      isWritable: false,
     },
     {
       pubkey: RENT_PROGRAM_ID,
       isSigner: false,
-      isWritable: false
-    }
-  ]
+      isWritable: false,
+    },
+  ];
 
   transaction.add(
     new TransactionInstruction({
       keys,
       programId: ASSOCIATED_TOKEN_PROGRAM_ID,
-      data: Buffer.from([])
+      data: Buffer.from([]),
     })
-  )
+  );
 
-  return associatedTokenAddress
+  return associatedTokenAddress;
 }
 
 export async function getFilteredProgramAccounts(
@@ -288,21 +293,21 @@ export async function getFilteredProgramAccounts(
     {
       commitment: connection.commitment,
       filters,
-      encoding: 'base64'
-    }
-  ])
+      encoding: 'base64',
+    },
+  ]);
   if (resp.error) {
-    throw new Error(resp.error.message)
+    throw new Error(resp.error.message);
   }
-  return resp.result.map(({ pubkey, account: { data, executable, owner, lamports } } : any) => ({
+  return resp.result.map(({ pubkey, account: { data, executable, owner, lamports } }: any) => ({
     publicKey: new PublicKey(pubkey),
     accountInfo: {
       data: Buffer.from(data[0], 'base64'),
       executable,
       owner: new PublicKey(owner),
-      lamports
-    }
-  }))
+      lamports,
+    },
+  }));
 }
 
 export async function getFilteredProgramAccountsAmmOrMarketCache(
@@ -313,24 +318,24 @@ export async function getFilteredProgramAccountsAmmOrMarketCache(
 ): Promise<{ publicKey: PublicKey; accountInfo: AccountInfo<Buffer> }[]> {
   try {
     if (!cacheName) {
-      throw new Error('cacheName error')
+      throw new Error('cacheName error');
     }
 
-    const resp = await (await fetch('https://api.raydium.io/cache/rpc/' + cacheName)).json()
+    const resp = await (await fetch('https://api.raydium.io/cache/rpc/' + cacheName)).json();
     if (resp.error) {
-      throw new Error(resp.error.message)
+      throw new Error(resp.error.message);
     }
-    return resp.result.map(({ pubkey, account: { data, executable, owner, lamports } } : any) => ({
+    return resp.result.map(({ pubkey, account: { data, executable, owner, lamports } }: any) => ({
       publicKey: new PublicKey(pubkey),
       accountInfo: {
         data: Buffer.from(data[0], 'base64'),
         executable,
         owner: new PublicKey(owner),
-        lamports
-      }
-    }))
+        lamports,
+      },
+    }));
   } catch (e) {
-    return getFilteredProgramAccounts(connection, programId, filters)
+    return getFilteredProgramAccounts(connection, programId, filters);
   }
 }
 
@@ -340,53 +345,53 @@ export async function getMultipleAccounts(
   publicKeys: PublicKey[],
   commitment?: Commitment
 ): Promise<Array<null | { publicKey: PublicKey; account: AccountInfo<Buffer> }>> {
-  const keys: PublicKey[][] = []
-  let tempKeys: PublicKey[] = []
+  const keys: PublicKey[][] = [];
+  let tempKeys: PublicKey[] = [];
 
   publicKeys.forEach((k) => {
     if (tempKeys.length >= 100) {
-      keys.push(tempKeys)
-      tempKeys = []
+      keys.push(tempKeys);
+      tempKeys = [];
     }
-    tempKeys.push(k)
-  })
+    tempKeys.push(k);
+  });
   if (tempKeys.length > 0) {
-    keys.push(tempKeys)
+    keys.push(tempKeys);
   }
 
   const accounts: Array<null | {
-    executable: any
-    owner: PublicKey
-    lamports: any
-    data: Buffer
-  }> = []
+    executable: any;
+    owner: PublicKey;
+    lamports: any;
+    data: Buffer;
+  }> = [];
 
-  const resArray: { [key: number]: any } = {}
+  const resArray: { [key: number]: any } = {};
   await Promise.all(
     keys.map(async (key, index) => {
-      const res = await connection.getMultipleAccountsInfo(key, commitment)
-      resArray[index] = res
+      const res = await connection.getMultipleAccountsInfo(key, commitment);
+      resArray[index] = res;
     })
-  )
+  );
 
   Object.keys(resArray)
     .sort((a, b) => parseInt(a) - parseInt(b))
     .forEach((itemIndex) => {
-      const res = resArray[parseInt(itemIndex)]
+      const res = resArray[parseInt(itemIndex)];
       for (const account of res) {
-        accounts.push(account)
+        accounts.push(account);
       }
-    })
+    });
 
   return accounts.map((account, idx) => {
     if (account === null) {
-      return null
+      return null;
     }
     return {
       publicKey: publicKeys[idx],
-      account
-    }
-  })
+      account,
+    };
+  });
 }
 
 // transaction
@@ -396,12 +401,12 @@ export async function signTransaction(
   transaction: Transaction,
   signers: Array<Account> = []
 ) {
-  transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash
-  transaction.setSigners(wallet.publicKey, ...signers.map((s) => s.publicKey))
+  transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+  transaction.setSigners(wallet.publicKey, ...signers.map((s) => s.publicKey));
   if (signers.length > 0) {
-    transaction.partialSign(...signers)
+    transaction.partialSign(...signers);
   }
-  return await wallet.signTransaction(transaction)
+  return await wallet.signTransaction(transaction);
 }
 
 export async function sendTransaction(
@@ -413,33 +418,33 @@ export async function sendTransaction(
   const txid: TransactionSignature = await wallet.sendTransaction(transaction, connection, {
     signers,
     skipPreflight: true,
-    preflightCommitment: commitment
-  })
+    preflightCommitment: commitment,
+  });
 
-  return txid
+  return txid;
 }
 
 export function mergeTransactions(transactions: (Transaction | undefined)[]) {
-  const transaction = new Transaction()
+  const transaction = new Transaction();
   transactions
     .filter((t): t is Transaction => t !== undefined)
     .forEach((t) => {
-      transaction.add(t)
-    })
-  return transaction
+      transaction.add(t);
+    });
+  return transaction;
 }
 
 function throwIfNull<T>(value: T | null, message = 'account not found'): T {
   if (value === null) {
-    throw new Error(message)
+    throw new Error(message);
   }
-  return value
+  return value;
 }
 
 export async function getMintDecimals(connection: Connection, mint: PublicKey): Promise<number> {
-  const { data } = throwIfNull(await connection.getAccountInfo(mint), 'mint not found')
-  const { decimals } = MINT_LAYOUT.decode(data)
-  return decimals
+  const { data } = throwIfNull(await connection.getAccountInfo(mint), 'mint not found');
+  const { decimals } = MINT_LAYOUT.decode(data);
+  return decimals;
 }
 
 export async function getFilteredTokenAccountsByOwner(
@@ -450,14 +455,14 @@ export async function getFilteredTokenAccountsByOwner(
   const resp = await (connection as any)._rpcRequest('getTokenAccountsByOwner', [
     programId.toBase58(),
     {
-      mint: mint.toBase58()
+      mint: mint.toBase58(),
     },
     {
-      encoding: 'jsonParsed'
-    }
-  ])
+      encoding: 'jsonParsed',
+    },
+  ]);
   if (resp.error) {
-    throw new Error(resp.error.message)
+    throw new Error(resp.error.message);
   }
-  return resp.result
+  return resp.result;
 }

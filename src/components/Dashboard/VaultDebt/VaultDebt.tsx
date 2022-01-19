@@ -60,7 +60,7 @@ const VaultDebt = ({ data }: any) => {
   return (
     <div className="vaultdebt">
       <h4>Vault Debt</h4>
-      <PaybackModal data={paybackData} />
+      {/* <PaybackModal data={paybackData} /> */}
       {/* <Button className="button--fill paybackusdr" onClick={() => repay()}>
         Pay Back
       </Button> */}

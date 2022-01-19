@@ -68,7 +68,7 @@ export function getSolanaDerivationPath(account?: number, change?: number) {
 
   var derivationPath = Buffer.alloc(1 + length * 4);
   // eslint-disable-next-line
-  var offset = 0
+  var offset = 0;
   offset = derivationPath.writeUInt8(length, offset);
   offset = derivationPath.writeUInt32BE(harden(44), offset); // Using BIP44
   offset = derivationPath.writeUInt32BE(harden(501), offset); // Solana's BIP44 path

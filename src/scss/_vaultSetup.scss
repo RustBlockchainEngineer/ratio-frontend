@@ -1,0 +1,30 @@
+.vault-setup {
+    margin-top: 1rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    background-color: var(--background);
+
+    &-header {
+        font-family: 'Poppins-Medium';
+        font-size: 1.5rem;
+        color: var(--unnamed-color-3c4760);
+        &-label {
+            font-family: 'Poppins-Regular';
+            font-size: 0.875rem;
+            color: var(--unnamed-color-4c646f);
+        }
+        &-value {
+            font-family: 'Poppins-SemiBold';
+            font-size: 0.9rem;
+            color: var(--unnamed-color-002332) !important;
+        }
+        &-gap {
+            color: var(--unnamed-color-4c646f);
+            padding-bottom: 5px;
+        }
+        &-linkIcon {
+            padding-bottom: 10px;
+            padding-left: 2px;
+        }
+    }
+}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
@@ -22,6 +23,7 @@ import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { sleep } from '../../utils/utils';
 import { usePrices } from '../../contexts/price';
+import { actionTypes, selectors } from '../../features/dashboard';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -33,6 +35,7 @@ type NavbarProps = {
 };
 
 const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }: NavbarProps) => {
+  const dispatch = useDispatch();
   const isDefault = useMediaQuery({ minWidth: 768 });
   const location = useLocation();
   const history = useHistory();
@@ -46,6 +49,10 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const [overviewData, setOverviewData] = useState('{}');
   const usdrMint = useMint(USDR_MINT_KEY);
   const prices = usePrices();
+
+  const available_vaults = useSelector(selectors.getAvailableVaults);
+  const overview = useSelector(selectors.getOverview);
+
   React.useEffect(() => {
     setNavIndex(location.pathname);
   }, [location.pathname]);
@@ -54,6 +61,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
   const showOverview = async () => {
     const overview = await getUserOverview(connection, wallet);
+    dispatch({ type: actionTypes.SET_OVERVIEW, payload: overview });
     setOverviewData(JSON.stringify(overview));
   };
 
@@ -112,14 +120,16 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
           onItemClick={onItemClick}
           collapseFlag={collapseFlag}
         />
-        {/* <NavbarItem
-          icon={activeVaultsIcon}
-          name="My Active Vaults"
-          active={navIndex === '/dashboard/my-active-vaults'}
-          navIndex="/dashboard/my-active-vaults"
-          onItemClick={onItemClick}
-          collapseFlag={collapseFlag}
-        /> */}
+        {available_vaults.length > 0 && Object.keys(overview).length > 0 && (
+          <NavbarItem
+            icon={activeVaultsIcon}
+            name="My Active Vaults"
+            active={navIndex === '/dashboard/my-active-vaults'}
+            navIndex="/dashboard/my-active-vaults"
+            onItemClick={onItemClick}
+            collapseFlag={collapseFlag}
+          />
+        )}
         {/* <NavbarItem
           icon={archivedVaultsIcon}
           name="My Archived Vaults"
@@ -172,3 +182,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 };
 
 export default Navbar;
+function setOverview(overview: { activeVaults: any; totalDebt: number; vaultCount: number }): any {
+  throw new Error('Function not implemented.');
+}

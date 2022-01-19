@@ -28,12 +28,7 @@
     color: #3c4760;
     padding-left: 40px;
   }
-  .insta-buy-lp {
-    font-family: 'Poppins-Medium';
-    font-size: 15px;
-    padding: 0.8rem 0rem;
-    width: 100%;
-  }
+  
   .generate {
     font-family: 'Poppins-Medium';
     font-size: 15px;
@@ -85,17 +80,26 @@
       font-size: 14px;
       margin-bottom: 0px;
       text-transform: uppercase;
+      margin-top: 3px;
     }
-    .EXTREME {
+    .highrisk {
+      width: 20px;
+      border-radius: 0px;
+    }
+    img {
+      width: 15px;
+      border: none;
+    }
+    .DDD {
       color: #ff3131;
     }
-    .HIGH {
+    .DD {
       color: #ff3131;
     }
-    .MEDIUM {
+    .AA {
       color: #f48c57;
     }
-    .LOW {
+    .AAA {
       color: #07b127;
     }
   }
@@ -106,14 +110,23 @@
     background-color: var(--primary-border);
     border-top: 1px solid rgba(#4c646f, 0.2);
     border-bottom: 1px solid rgba(#4c646f, 0.2);
+    position: relative;
+
     h6 {
-      font-size: 14px;
+      font-size: 1rem;
       color: var(--unnamed-color-3c4760);
       margin-bottom: 0px;
       font-family: 'Poppins-Medium';
+      
+    }
+    &--platformName {
+      text-decoration: underline;
+      &:hover {
+        opacity: 0.8;
+      }
     }
     h5 {
-      font-size: 12px;
+      font-size: 0.8rem;
       color: var(--unnamed-color-3c4760);
       margin-bottom: 0px;
       font-family: 'Poppins-Regular';
@@ -122,7 +135,14 @@
       font-family: 'Poppins-SemiBold';
     }
     img {
-      width: 20px;
+      width: 22px;
+      border: none;
+    }
+    &--linkIcon {
+      width: 5px !important;
+      position: absolute;
+      top: 6px;
+      right: -10px;
     }
   }
   &__btnBox {
@@ -163,4 +183,42 @@
       }
     }
   }
+  &__table__td {
+    position: relative;
+    display: inline-block;
+    h6 {
+      font-size: 1rem;
+      color: var(--unnamed-color-3c4760);
+      margin-bottom: 0px;
+      font-family: 'Poppins-Medium';
+      
+    }
+    &--platformName {
+      text-decoration: underline;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    h5 {
+      font-size: 12px;
+      color: var(--unnamed-color-3c4760);
+      margin-bottom: 0px;
+      font-family: 'Poppins-Regular';
+    }
+    .semiBold {
+      font-family: 'Poppins-SemiBold';
+    }
+    img {
+      width: 22px;
+      border: none;
+    }
+    &--linkIcon {
+      width: 5px !important;
+      position: absolute;
+      top: 6px;
+      right: -10px;
+    }
+  }
+  
 }
+
