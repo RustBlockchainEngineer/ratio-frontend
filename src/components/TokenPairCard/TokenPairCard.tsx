@@ -139,6 +139,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     }
   };
 
+  const riskLevel = React.useMemo(() => getRiskLevel(data.risk), [data]);
+
   return (
     <>
       <div className="col col-xl-4 col-lg-6 col-md-12">
@@ -164,10 +166,10 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                   <img src={liskLevelIcon} alt="lisklevel" />
                 </div>
                 <div className="d-flex justify-content-end">
-                  {(getRiskLevel(data.risk) === 'DDD' || getRiskLevel(data.risk) === 'DD') && (
+                  {(riskLevel === 'DDD' || riskLevel === 'DD') && (
                     <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
                   )}
-                  <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
+                  <h6 className={classNames('ml-1', riskLevel)}>{riskLevel} </h6>
                 </div>
               </div>
             </div>
