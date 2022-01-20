@@ -124,6 +124,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
                 {(getRiskLevel(data.risk) === ERiskLevel.EXTREME || getRiskLevel(data.risk) === ERiskLevel.HIGH) && (
                   <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
                 )}
+                <h6 className={classNames('ml-2 mt-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
               </div>
             </div>
             <div className="mt-1 expand_arrow">
