@@ -77,6 +77,8 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     setExpand(!expand);
   };
 
+  const riskLevel = React.useMemo(() => getRiskLevel(data.risk), [data]);
+
   return (
     <>
       <tr>
@@ -118,10 +120,10 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
             <div className="tokenpaircard__table__td">
               <h5>Ratio Risk Rating:</h5>
               <div className="d-flex mt-2">
-                {(getRiskLevel(data.risk) === 'DDD' || getRiskLevel(data.risk) === 'DD') && (
+                <h6 className={classNames('mr-2 mt-1', riskLevel)}>{riskLevel} </h6>
+                {(riskLevel === 'DDD' || riskLevel === 'DD') && (
                   <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
                 )}
-                <h6 className={classNames('ml-2 mt-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
               </div>
             </div>
             <div className="mt-1">
