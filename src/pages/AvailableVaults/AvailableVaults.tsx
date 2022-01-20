@@ -19,6 +19,7 @@ const AvailableVaults = () => {
   const compareValutsList = useSelector(selectors.getCompareVaultsList);
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
+  const platform_data = useSelector(selectors.getPlatformData);
 
   const { connected } = useWallet();
 
@@ -40,10 +41,11 @@ const AvailableVaults = () => {
     getData();
   }, []);
 
-  const filterData = (array1: any, array2: any) => {
+  const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
       return array1;
     }
+
     return array1.filter((item1: any) => {
       const item1Str = JSON.stringify(item1);
       return array2.find((item2: any) => {
@@ -52,8 +54,19 @@ const AvailableVaults = () => {
     });
   };
 
+  const platformData = (array1: any, array2: any) => {
+    if (array2.length === 0) {
+      return array1;
+    }
+    return array1.filter((item1: any) => {
+      const item1Str = JSON.stringify(item1);
+      return array2.find((item2: any) => {
+        return item1Str.indexOf(item2.value) > -1;
+      });
+    });
+  };
+
   function dynamicSort(property: string) {
-    console.log(property);
     let sortOrder = 1;
     if (property[0] === '-') {
       sortOrder = -1;
@@ -71,9 +84,9 @@ const AvailableVaults = () => {
     };
   }
 
-  function factorialOf(d: any, filter_data: any, sort_data: any) {
+  function factorialOf(d: any, filter_data: any, sort_data: any, platform_data: any) {
     if (d !== undefined) {
-      const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
+      const p = filterData(Object.keys(d), filter_data, platform_data).map((key: any, index: any) => {
         const tokens = key.split('-');
         return {
           id: index,
@@ -92,16 +105,22 @@ const AvailableVaults = () => {
           riskLevel: d[key].riskLevel,
         };
       });
-      p.sort(dynamicSort(sort_data.value));
+      let x;
+      if (platform_data.value !== 'ALL') {
+        x = p.filter((item: any) => item.platform.name === platform_data.value);
+      } else {
+        x = p;
+      }
+      x.sort(dynamicSort(sort_data.value));
       dispatch({ type: actionTypes.SET_AVAILABLE_VAULT, payload: p });
-      return p;
+      return x;
     }
     return [];
   }
 
   const factorial = React.useMemo(
-    () => factorialOf(data, filter_data, sort_data),
-    [data, connected, filter_data, sort_data]
+    () => factorialOf(data, filter_data, sort_data, platform_data),
+    [data, connected, filter_data, sort_data, platform_data]
   );
 
   const showContent = (vtype: string) => {

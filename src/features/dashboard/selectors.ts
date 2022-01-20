@@ -11,3 +11,5 @@ export const getSortData = (state: SystemState) => state.dashboard.sort_data;
 export const getAvailableVaults = (state: SystemState) => state.dashboard.available_vaults;
 
 export const getOverview = (state: SystemState) => state.dashboard.overview;
+
+export const getPlatformData = (state: SystemState) => state.dashboard.platform_data;

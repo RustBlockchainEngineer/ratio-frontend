@@ -40,6 +40,14 @@ const filter_options = [
   { value: 'USDC', label: 'USDC', network: 'solana', icon: [usdcIcon] },
 ];
 
+const platformOptions = [
+  { value: 'ALL', label: 'All' },
+  { value: 'RAYDIUM', label: 'Raydium' },
+  { value: 'ORCA', label: 'Orca' },
+  { value: 'MERCURIAL', label: 'Mercurial' },
+  { value: 'SABER', label: 'Saber' },
+];
+
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const dispatch = useDispatch();
   const theme = React.useContext(ThemeContext);
@@ -50,6 +58,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
 
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
+  const platform_data = useSelector(selectors.getPlatformData);
 
   const onFilterChange = (values: any) => {
     dispatch({ type: actionTypes.SET_FILTER_DATA, payload: values });
@@ -64,6 +73,10 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
     dispatch({ type: actionTypes.SET_SORT_DATA, payload: values });
   };
 
+  const onPlatformChange = (values: any) => {
+    dispatch({ type: actionTypes.SET_PLATFORM_DATA, payload: values });
+  };
+
   return (
     <div className="filterpanel">
       <h2>{label}</h2>
@@ -76,6 +89,13 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             filterValue={filter_data}
             placeholder="Search all vaults by token"
             isMulti
+          />
+          <Select
+            options={platformOptions}
+            value={platform_data}
+            onChange={onPlatformChange}
+            classNamePrefix="platform-select"
+            // defaultValue={{ value: 'apr', label: 'APR' }}
           />
           {/* <Switch
             onChange={handleCompareVaults}

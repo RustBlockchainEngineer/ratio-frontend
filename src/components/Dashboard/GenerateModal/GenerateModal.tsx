@@ -121,7 +121,7 @@ const GenerateModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to mint?</label>
             <CustomInput
               appendStr="Max"
-              initValue={borrowAmount.toString()}
+              initValue={'0'}
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
               onTextChange={(value) => {

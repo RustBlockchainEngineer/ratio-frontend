@@ -38,14 +38,15 @@ const DepositModal = ({ data }: any) => {
   const [depositStatus, setDepositStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
 
-  useEffect(() => {
-    setDidMount(true);
-    return () => setDidMount(false);
-  }, []);
+  // useEffect(() => {
+  //   setDidMount(true);
+  //   setDepositAmount(0);
+  //   return () => setDidMount(false);
+  // }, []);
 
-  if (!didMount) {
-    return null;
-  }
+  // if (!didMount) {
+  //   return null;
+  // }
 
   const deposit = () => {
     console.log('Depositing', depositAmount, data.value);
@@ -122,7 +123,7 @@ const DepositModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to deposit?</label>
             <CustomInput
               appendStr="Max"
-              initValue={depositAmount.toString()}
+              initValue={'0'}
               appendValueStr={data.value}
               tokenStr={`${data.title}`}
               onTextChange={(value) => {

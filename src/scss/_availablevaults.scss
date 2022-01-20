@@ -50,6 +50,15 @@
     &--action {
       width: 10rem;
     }
+    .expand_arrow {
+      cursor: pointer;
+      svg {
+        stroke: var(--unnamed-color-3c4760);
+      }
+      &:hover {
+        opacity: 0.8;
+      }
+    }
   }
   
 }

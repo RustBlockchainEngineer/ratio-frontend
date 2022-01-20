@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { getRiskLevel } from '../../libs/helper';
-
+import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { TokenPairCardProps } from '../../models/UInterface';
@@ -82,7 +82,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   return (
     <>
       <tr>
-        <th scope="row" className="align-middle" onClick={showExpand}>
+        <th scope="row" className="align-middle">
           <div className="align-items-center">
             <div className="d-flex ">
               <div className="d-flex align-items-center">
@@ -91,13 +91,13 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
-                <p>TVL: {formatUSD.format(data.tvl)}</p>
+                <p>TVL {formatUSD.format(data.tvl)}</p>
               </div>
             </div>
           </div>
           <div className="mt-1 d-block">{renderModalButton()}</div>
         </th>
-        <td onClick={showExpand}>
+        <td>
           <div className="tokenpaircard__table__td">
             <h5>Platform:</h5>
             <a href={data.platform.link} target="_blank" rel="noreferrer">
@@ -109,13 +109,13 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
             </a>
           </div>
         </td>
-        <td onClick={showExpand}>
+        <td>
           <div className="tokenpaircard__table__td">
             <h5>APR</h5>
             <h6 className="semiBold mt-2">{data.apr}%</h6>
           </div>
         </td>
-        <td onClick={showExpand}>
+        <td>
           <div className="d-flex justify-content-between align-items-start">
             <div className="tokenpaircard__table__td">
               <h5>Ratio Risk Rating:</h5>
@@ -126,8 +126,12 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
                 )}
               </div>
             </div>
-            <div className="mt-1">
-              <img src={arrowDownIcon} alt="arrowDownIcon" />
+            <div className="mt-1 expand_arrow">
+              {expand ? (
+                <IoIosArrowUp size={20} onClick={showExpand} />
+              ) : (
+                <IoIosArrowDown size={20} onClick={showExpand} />
+              )}
             </div>
           </div>
         </td>
@@ -135,16 +139,22 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
       {expand && (
         <tr>
           <td colSpan={4}>
-            <div>
-              Position value:
-              <p>$ {positionValue.toFixed(2)}</p>
-              <div className="tokenpaircard__detailBox__content--tokens">
-                {/* <img src={row.icons[0]} alt="RayIcon" /> */}
-                RAY: $4200
+            <div className="tokenpaircard__detailBox__content d-flex justify-content-between">
+              <div>
+                Position value
+                <p>$ {positionValue.toFixed(2)}</p>
               </div>
-              <div className="tokenpaircard__detailBox__content--tokens">
-                {/* <img src={row.icons[1]} alt="USDrIcon" /> */}
-                USDr: $6400
+              <div>
+                Rewards Earned
+                <p>$ 0.00</p>
+              </div>
+              <div>
+                USDr Debt
+                <p>$ {positionValue.toFixed(2)}</p>
+              </div>
+              <div>
+                Ratio TVL
+                <p>$ {positionValue.toFixed(2)}</p>
               </div>
             </div>
           </td>
