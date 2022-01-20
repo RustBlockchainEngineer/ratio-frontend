@@ -140,7 +140,7 @@ const WithdrawModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to withdraw?</label>
             <CustomInput
               appendStr="Max"
-              initValue={withdrawAmount.toString()}
+              initValue={'0'}
               appendValueStr={`${data.value}`}
               tokenStr={`${data.title}`}
               onTextChange={(value) => {

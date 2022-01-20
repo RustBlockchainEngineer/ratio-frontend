@@ -99,4 +99,47 @@
       }
     }
   }
+  .platform-select {
+    &__indicator-separator {
+      margin-top: 0px;
+      margin-bottom: 0px;
+
+      background-color: rgba(var(--secondary-border), 0.2);
+    }
+    &__clear-indicator {
+      display: none;
+    }
+    &__control {
+      width: 150px;      
+      margin-left: 1rem;
+      position: relative;
+      background-color: var(--unnamed-color-1B1E29);
+      border: 1px solid rgba(var(--secondary-border), 0.2);
+      &:hover {
+        border: 1px solid rgba(var(--secondary-border), 0.2);
+      }
+    }
+    &__menu {
+      width: 150px;
+      background-color: var(--unnamed-color-1B1E29);
+    }
+    &__input {
+      font-family: 'Poppins-Regular';
+      font-size: 16px;
+      margin-top: 2px;
+      color: var(--unnamed-color-4c646f);
+    }
+    &__single-value {
+      color: var(--unnamed-color-3c4760);
+    }
+    &__indicator-separator {
+      display: none;
+    }
+    &__option {
+      color: var(--unnamed-color-3c4760);
+      &:hover {
+        background-color: var(--unnamed-color-5fb5ff);
+      }
+    }
+  }
 }

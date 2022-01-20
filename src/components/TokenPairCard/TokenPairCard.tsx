@@ -153,7 +153,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div>
                   <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 </div>
-                <p>{formatUSD.format(data.tvl)}</p>
+                <p>TVL {formatUSD.format(data.tvl)}</p>
               </div>
             </div>
             <div className="tokenpaircard__riskBox">
@@ -219,12 +219,22 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               <div className="tokenpaircard__detailBox__content">
                 <div className="d-flex justify-content-between">
                   <div>
-                    Position value:
+                    Position value
                     <p>$ {positionValue.toFixed(2)}</p>
                   </div>
                   <div className="text-right">
-                    Rewards earned:
+                    Rewards earned
                     <p>$0</p>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-between mt-1">
+                  <div>
+                    USDr Debt
+                    <p>$ 0.00</p>
+                  </div>
+                  <div className="text-right">
+                    Ratio TVL
+                    <p>$0,000,000</p>
                   </div>
                 </div>
               </div>
