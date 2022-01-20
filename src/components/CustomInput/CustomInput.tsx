@@ -30,7 +30,10 @@ const CustomInput = ({
   if (typeof maxValue === 'string') {
     maxValue = parseFloat(maxValue);
   }
-  const [value, setValue] = React.useState(initValue ? initValue : '0');
+
+  const defaultValue = initValue && +initValue ? initValue : maxValue ? maxValue : '0';
+  const [value, setValue] = React.useState(defaultValue);
+  const [hasValueChanged, setHasValueChanged] = React.useState(false);
 
   const handleChange = (e: any) => {
     const re = /^[+-]?\d*(?:[.,]\d*)?$/;
@@ -39,12 +42,14 @@ const CustomInput = ({
         return;
       }
       setValue(e.target.value);
+      setHasValueChanged(true);
       onTextChange && onTextChange(e.target.value);
     }
   };
 
   const setMaxValue = () => {
     setValue(appendValueStr ? appendValueStr : '1000');
+    setHasValueChanged(false);
     onTextChange && onTextChange(appendValueStr ? appendValueStr : '1000');
   };
 
@@ -57,15 +62,13 @@ const CustomInput = ({
           aria-describedby="customInput"
           value={value}
           onChange={handleChange}
-          className={classNames(appendStr === '' && 'onlytext')}
+          className={classNames({ onlytext: appendStr === '' }, { withMax: +defaultValue > 0 && !hasValueChanged })}
           readOnly={readOnly}
         />
-        <p className={classNames('tokenName', appendStr === '' && 'tokenName--onlytext')}>{tokenStr}</p>
+        <p className={classNames('tokenName', { 'tokenName--onlytext': appendStr === '' })}>{tokenStr}</p>
         {appendStr !== '' && (
           <InputGroup.Append onClick={setMaxValue}>
-            <InputGroup.Text id="customInput">
-              {appendStr} {appendValueStr && `(${Math.ceil(Number(appendValueStr) * 100) / 100})`}
-            </InputGroup.Text>
+            <InputGroup.Text id="customInput">{appendStr}</InputGroup.Text>
           </InputGroup.Append>
         )}
       </InputGroup>
