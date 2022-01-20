@@ -3,9 +3,10 @@ import classNames from 'classnames';
 
 import highRisk from '../../../assets/images/highrisk.svg';
 import smallRatio from '../../../assets/images/smallRatio.svg';
+import { ERiskLevel } from '../../../libs/helper';
 
 type RiskLevelProps = {
-  level: string;
+  level: ERiskLevel;
 };
 
 const RiskLevel = ({ level }: RiskLevelProps) => {
@@ -16,7 +17,9 @@ const RiskLevel = ({ level }: RiskLevelProps) => {
         Risk Rating
       </div>
       <div className={classNames('d-flex align-items-center', 'risklevel__level', `risklevel-${level}`)}>
-        {level === 'DDD' && <img src={highRisk} alt="highlevel" />}
+        {(level === ERiskLevel.EXTREME || level === ERiskLevel.HIGH) && (
+          <img src={highRisk} alt="highriskIcon" className="highrisk" />
+        )}
         <p>{level}</p>
       </div>
     </div>

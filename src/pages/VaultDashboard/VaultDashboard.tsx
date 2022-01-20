@@ -253,6 +253,9 @@ const VaultDashboard = () => {
             )}
             <RiskLevel level={getRiskLevel(VaultData.risk)} />
           </div>
+          <div>
+            <VaultDebt data={vauldDebtData} />
+          </div>
           {/* {isDefault && (
             <div className="text-right mt-4">
               <img src={share} alt="share" />
@@ -265,9 +268,9 @@ const VaultDashboard = () => {
           {/* <div className="vaultdashboard__header_speedometerBox">
             <SpeedoMetor risk={VaultData.risk} />
           </div> */}
-          <div className="vaultdashboard__header_vaultdebtBox">
-            <VaultDebt data={vauldDebtData} />
-          </div>
+          {/*<div className="vaultdashboard__header_vaultdebtBox">*/}
+          {/*<VaultDebt data={vauldDebtData} />*/}
+          {/*</div>*/}
         </div>
       </div>
       <div className="vaultdashboard__body row gutters">

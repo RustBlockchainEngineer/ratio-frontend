@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { getRiskLevel } from '../../libs/helper';
+import { ERiskLevel, getRiskLevel } from '../../libs/helper';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { TokenPairCardProps } from '../../models/UInterface';
@@ -120,8 +121,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
             <div className="tokenpaircard__table__td">
               <h5>Ratio Risk Rating:</h5>
               <div className="d-flex mt-2">
-                <h6 className={classNames('mr-2 mt-1', riskLevel)}>{riskLevel} </h6>
-                {(riskLevel === 'DDD' || riskLevel === 'DD') && (
+                {(getRiskLevel(data.risk) === ERiskLevel.EXTREME || getRiskLevel(data.risk) === ERiskLevel.HIGH) && (
                   <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
                 )}
               </div>

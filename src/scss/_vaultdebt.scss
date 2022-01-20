@@ -1,9 +1,22 @@
 .vaultdebt {
+  margin-left: 2.1rem;
+  margin-top: 57px;
   .paybackusdr {
     min-width: 130px;
     margin-bottom: 16px;
     font-family: 'Poppins-Medium';
     font-size: 15px;
     padding: 0.8rem 1.1rem;
+  }
+  h4 {
+    font-family: 'Poppins-Medium';
+    color: var(--unnamed-color-3c4760);
+    font-size: 16px;
+    margin-bottom: 7px;
+  }
+  p {
+    font-family: 'Poppins-Medium';
+    color: var(--unnamed-color-4c646f);
+    font-size: 14px;
   }
 }

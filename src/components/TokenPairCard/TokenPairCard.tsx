@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { getRiskLevel } from '../../libs/helper';
+import { ERiskLevel, getRiskLevel } from '../../libs/helper';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
@@ -166,7 +166,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                   <img src={liskLevelIcon} alt="lisklevel" />
                 </div>
                 <div className="d-flex justify-content-end">
-                  {(riskLevel === 'DDD' || riskLevel === 'DD') && (
+                  {(getRiskLevel(data.risk) === ERiskLevel.EXTREME || getRiskLevel(data.risk) === ERiskLevel.HIGH) && (
                     <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
                   )}
                   <h6 className={classNames('ml-1', riskLevel)}>{riskLevel} </h6>
