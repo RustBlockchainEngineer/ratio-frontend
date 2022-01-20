@@ -22,16 +22,16 @@ const App: React.FC = () => {
     <ConnectionProvider>
       <AuthProvider>
         <WalletProvider>
-          <APIAuthContextProvider>
-            <AccountsProvider>
-              <RaydiumPoolProvider>
-                <SaberPoolProvider>
-                  <MercurialPoolProvider>
-                    <OrcaPoolProvider>
-                      <PriceProvider>
-                        <MarketProvider>
-                          <MercurialAPIProvider>
-                            <ThemeProvider>
+          <AccountsProvider>
+            <RaydiumPoolProvider>
+              <SaberPoolProvider>
+                <MercurialPoolProvider>
+                  <OrcaPoolProvider>
+                    <PriceProvider>
+                      <MarketProvider>
+                        <MercurialAPIProvider>
+                          <ThemeProvider>
+                            <APIAuthContextProvider>
                               <Router>
                                 <div>
                                   <Switch>
@@ -44,16 +44,16 @@ const App: React.FC = () => {
                                   </Switch>
                                 </div>
                               </Router>
-                            </ThemeProvider>
-                          </MercurialAPIProvider>
-                        </MarketProvider>
-                      </PriceProvider>
-                    </OrcaPoolProvider>
-                  </MercurialPoolProvider>
-                </SaberPoolProvider>
-              </RaydiumPoolProvider>
-            </AccountsProvider>
-          </APIAuthContextProvider>
+                            </APIAuthContextProvider>
+                          </ThemeProvider>
+                        </MercurialAPIProvider>
+                      </MarketProvider>
+                    </PriceProvider>
+                  </OrcaPoolProvider>
+                </MercurialPoolProvider>
+              </SaberPoolProvider>
+            </RaydiumPoolProvider>
+          </AccountsProvider>
         </WalletProvider>
       </AuthProvider>
     </ConnectionProvider>
