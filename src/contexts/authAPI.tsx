@@ -100,7 +100,7 @@ export const AuthContextProvider = (props: any) => {
           setAccessToken(token);
           setStatus(AuthContextStatus.Finish);
         } else {
-          throw 'There was an error authenticating, no token found';
+          throw 'There was an error authenticating to the API, no token found';
         }
       } catch (err) {
         await disconnect();
