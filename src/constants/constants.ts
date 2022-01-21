@@ -48,5 +48,9 @@ export const PLATFORM: any = {
   },
 };
 
-//export const API_ENDPOINT = 'https://api.ratio.finance/api';
-export const API_ENDPOINT = 'http://localhost:3002'; //Localhost api from RF-engine repo
+export const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:3002';
+
+export const enum Roles {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}

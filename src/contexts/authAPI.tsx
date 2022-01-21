@@ -29,7 +29,11 @@ export const AuthContextProvider = (props: any) => {
 
   const fetchUser = React.useCallback(
     async (userAddress: string | undefined) => {
-      return await fetch(`${API_ENDPOINT}/users/${userAddress}`).then((response) => response.json());
+      const response = await fetch(`${API_ENDPOINT}/users/${userAddress}`);
+      if (!response.ok) {
+        throw await response.json();
+      }
+      return response.json();
     },
     [publicKey]
   );
@@ -44,8 +48,7 @@ export const AuthContextProvider = (props: any) => {
     async (nonce: string) => {
       const message = `Sign this message for authenticating with your wallet. Nonce: ${nonce}.`;
       const encodedMessage = new TextEncoder().encode(message);
-      console.log('messageBytes', encodedMessage);
-      return await (window as any).solana.request({
+      return (window as any).solana.request({
         method: 'signMessage',
         params: {
           message: encodedMessage,
@@ -64,6 +67,9 @@ export const AuthContextProvider = (props: any) => {
         },
         method: 'POST',
       });
+      if (!response.ok) {
+        throw await response.json();
+      }
       return response.json();
     },
     [handleSignMessage]
@@ -94,7 +100,7 @@ export const AuthContextProvider = (props: any) => {
           setAccessToken(token);
           setStatus(AuthContextStatus.Finish);
         } else {
-          throw 'No token';
+          throw 'There was an error authenticating, no token found';
         }
       } catch (err) {
         await disconnect();

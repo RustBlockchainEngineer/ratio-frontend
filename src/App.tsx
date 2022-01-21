@@ -15,6 +15,7 @@ import { AuthContextProvider as APIAuthContextProvider } from './contexts/authAP
 import { PriceProvider } from './contexts/price';
 import { MercurialAPIProvider } from './contexts/mercurialAPI';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Roles } from './constants/constants';
 
 dotenv.config();
 const App: React.FC = () => {
@@ -37,7 +38,12 @@ const App: React.FC = () => {
                                   <Switch>
                                     <Route path="/dashboard" component={Layer} />
                                     <Route path="/faucet" exact component={Faucet} />
-                                    <ProtectedRoute role="ADMIN" exact path="/adminpanel" component={AdminPanel} />
+                                    <ProtectedRoute
+                                      role={Roles.ADMIN}
+                                      exact
+                                      path="/adminpanel"
+                                      component={AdminPanel}
+                                    />
                                     <Route exact path="/">
                                       <Redirect to="/dashboard" />
                                     </Route>
