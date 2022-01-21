@@ -128,6 +128,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
             navIndex="/dashboard/my-active-vaults"
             onItemClick={onItemClick}
             collapseFlag={collapseFlag}
+            expands={true}
           />
         )}
         {/* <NavbarItem
@@ -156,11 +157,11 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
               </div>
               <div className="navbar-vertical__item">
                 <h6>Total Vault Value</h6>
-                <h6 className="navbar-vertical__item--yellow">${totalLocked.toFixed(2)}</h6>
+                <h6 className="navbar-vertical__item--yellow">$ {totalLocked.toFixed(2)}</h6>
               </div>
               <div className="navbar-vertical__item">
                 <h6>USDr Minted</h6>
-                <h6 className="navbar-vertical__item--green">${(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
+                <h6 className="navbar-vertical__item--green">$ {(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
             </div>
           ) : null

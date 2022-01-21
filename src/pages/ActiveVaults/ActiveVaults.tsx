@@ -80,7 +80,6 @@ const ActiveVaults = () => {
           const tokens = key.split('-');
 
           const aa = Object.keys(overview.activeVaults).indexOf(MINTADDRESS[key]);
-          console.log(aa);
           if (aa > -1) {
             return {
               id: index,
