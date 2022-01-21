@@ -47,10 +47,12 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const [totalMinted, setTotalDebt] = useState(0);
   const [totalLocked, setTotalLocked] = useState(0);
   const [overviewData, setOverviewData] = useState('{}');
+  const [activeVaultsData, setActiveVaultsData] = useState([]);
   const usdrMint = useMint(USDR_MINT_KEY);
   const prices = usePrices();
 
   const available_vaults = useSelector(selectors.getAvailableVaults);
+  const active_vaults = useSelector(selectors.getActiveVaults);
   const overview = useSelector(selectors.getOverview);
 
   React.useEffect(() => {
@@ -84,10 +86,19 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
       let tmpLocked = 0;
       const vaults = Object.values(overview.activeVaults);
+      const avdArr: any = [];
       for (const [mint, lockedAmount] of Object.entries(vaults)) {
         const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
+        const obj: any = {};
+        obj.mint = `${Object.keys(overview.activeVaults)[parseInt(mint)]}`;
+        obj.pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
+        // obj[`${Object.keys(overview.activeVaults)[parseInt(mint)]}`] =
+        //   price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
+        console.log(obj);
+        avdArr.push(obj);
         tmpLocked += price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
       }
+      setActiveVaultsData(avdArr);
       setTotalLocked(tmpLocked);
     }
   }, [overviewData]);
@@ -129,6 +140,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
             onItemClick={onItemClick}
             collapseFlag={collapseFlag}
             expands={true}
+            expandData={active_vaults}
+            positionValues={activeVaultsData}
           />
         )}
         {/* <NavbarItem
