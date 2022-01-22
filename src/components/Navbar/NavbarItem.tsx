@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { over } from 'lodash-es';
-import { formatUSD } from '../../utils/utils';
+import { nFormatter } from '../../utils/utils';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 type NavbarItemProps = {
   icon: string;
@@ -28,7 +28,6 @@ const NavbarItem = ({
   onItemClick,
 }: NavbarItemProps) => {
   const [expandStatus, setExpandStatus] = useState(false);
-  console.log(positionValues);
   return (
     <div className={classNames('navbarItem', active ? 'navbarItem--active' : '')}>
       <div
@@ -54,14 +53,27 @@ const NavbarItem = ({
       {expandStatus && expandData && (
         <div>
           {expandData.map((item: any, index: number) => {
-            console.log(positionValues[`${item.mint}`]);
             return (
               <div className="navbarItem__expand" key={index}>
                 <p className="navbarItem__expand-name">{item.title}</p>
-                <div className="navbarItem__expand-positionvalue">
-                  {positionValues && formatUSD.format(positionValues.find((i: any) => i.mint === item.mint).pv)}
+                <div className="d-flex">
+                  <OverlayTrigger
+                    placement="top"
+                    delay={{ show: 100, hide: 100 }}
+                    overlay={<Tooltip id="tooltip">Position Value</Tooltip>}
+                  >
+                    <div className="navbarItem__expand-positionvalue">
+                      $ {positionValues && nFormatter(positionValues.find((i: any) => i.mint === item.mint).pv, 2)}
+                    </div>
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={{ show: 100, hide: 100 }}
+                    overlay={<Tooltip id="tooltip">Rewards earned</Tooltip>}
+                  >
+                    <div className="navbarItem__expand-rewardsearned">$ {nFormatter(200000000000, 2)}</div>
+                  </OverlayTrigger>
                 </div>
-                <div className="navbarItem__expand-rewardsearned">$2,700</div>
               </div>
             );
           })}

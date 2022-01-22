@@ -94,7 +94,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
         obj.pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
         // obj[`${Object.keys(overview.activeVaults)[parseInt(mint)]}`] =
         //   price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
-        console.log(obj);
         avdArr.push(obj);
         tmpLocked += price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
       }
