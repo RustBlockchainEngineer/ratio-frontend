@@ -32,25 +32,25 @@ const App: React.FC = () => {
                       <MarketProvider>
                         <MercurialAPIProvider>
                           <ThemeProvider>
-                            <APIAuthContextProvider>
-                              <Router>
-                                <div>
-                                  <Switch>
-                                    <Route path="/dashboard" component={Layer} />
-                                    <Route path="/faucet" exact component={Faucet} />
+                            <Router>
+                              <div>
+                                <Switch>
+                                  <Route path="/dashboard" component={Layer} />
+                                  <Route path="/faucet" exact component={Faucet} />
+                                  <APIAuthContextProvider>
                                     <ProtectedRoute
                                       role={Roles.ADMIN}
                                       exact
                                       path="/adminpanel"
                                       component={AdminPanel}
                                     />
-                                    <Route exact path="/">
-                                      <Redirect to="/dashboard" />
-                                    </Route>
-                                  </Switch>
-                                </div>
-                              </Router>
-                            </APIAuthContextProvider>
+                                  </APIAuthContextProvider>
+                                  <Route exact path="/">
+                                    <Redirect to="/dashboard" />
+                                  </Route>
+                                </Switch>
+                              </div>
+                            </Router>
                           </ThemeProvider>
                         </MercurialAPIProvider>
                       </MarketProvider>
