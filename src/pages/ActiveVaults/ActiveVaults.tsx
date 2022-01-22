@@ -21,8 +21,6 @@ const ActiveVaults = () => {
   const sort_data = useSelector(selectors.getSortData);
   const overview = useSelector(selectors.getOverview);
 
-  console.log(Object.keys(overview.activeVaults));
-
   const { connected } = useWallet();
 
   const [data, setData] = React.useState([]);
@@ -80,7 +78,6 @@ const ActiveVaults = () => {
           const tokens = key.split('-');
 
           const aa = Object.keys(overview.activeVaults).indexOf(MINTADDRESS[key]);
-          console.log(aa);
           if (aa > -1) {
             return {
               id: index,
@@ -102,6 +99,7 @@ const ActiveVaults = () => {
         })
         .filter(Boolean);
       p.sort(dynamicSort(sort_data.value));
+      dispatch({ type: actionTypes.SET_ACTIVE_VAULT, payload: p });
       return p;
     }
     return [];

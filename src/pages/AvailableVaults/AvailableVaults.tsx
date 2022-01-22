@@ -57,18 +57,6 @@ const AvailableVaults = () => {
     });
   };
 
-  const platformData = (array1: any, array2: any) => {
-    if (array2.length === 0) {
-      return array1;
-    }
-    return array1.filter((item1: any) => {
-      const item1Str = JSON.stringify(item1);
-      return array2.find((item2: any) => {
-        return item1Str.indexOf(item2.value) > -1;
-      });
-    });
-  };
-
   function dynamicSort(property: string) {
     let sortOrder = 1;
     if (property[0] === '-') {
@@ -152,7 +140,7 @@ const AvailableVaults = () => {
               <th scope="col">Asset</th>
               <th scope="col">Platform</th>
               <th scope="col">APR</th>
-              <th scope="col">Risk Level</th>
+              <th scope="col">Risk Rating</th>
             </tr>
           </thead>
           <tbody>

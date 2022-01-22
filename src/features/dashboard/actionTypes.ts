@@ -6,6 +6,8 @@ export const SET_FILTER_DATA = 'SET_FILTER_DATA';
 
 export const SET_AVAILABLE_VAULT = 'SET_AVAILABLE_VAULT';
 
+export const SET_ACTIVE_VAULT = 'SET_ACTIVE_VAULT';
+
 export const SET_SORT_DATA = 'SET_SORT_DATA';
 
 export const SET_PLATFORM_DATA = 'SET_PLATFORM_DATA';

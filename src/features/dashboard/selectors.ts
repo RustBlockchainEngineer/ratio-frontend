@@ -13,3 +13,5 @@ export const getAvailableVaults = (state: SystemState) => state.dashboard.availa
 export const getOverview = (state: SystemState) => state.dashboard.overview;
 
 export const getPlatformData = (state: SystemState) => state.dashboard.platform_data;
+
+export const getActiveVaults = (state: SystemState) => state.dashboard.active_vaults;
