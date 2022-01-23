@@ -101,7 +101,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
         </div>
         <div className="d-md-flex align-items-center">
           <>
-            <p className="mr-2 filterpanel__sortby">Sort by: </p>
+            <p className="mr-2 filterpanel__sortby">Sort by </p>
             <Select
               className="less-margin"
               options={optionsSortBy}
@@ -112,7 +112,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             />
           </>
           <>
-            <p className="mr-2 filterpanel__viewby">View by: </p>
+            <p className="mr-2 filterpanel__viewby">View by </p>
             <Select
               className="more-width"
               options={optionsViewBy}
