@@ -147,7 +147,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
       <div className="col col-xl-4 col-lg-6 col-md-12">
         <div className="tokenpaircard mt-4">
           <div className="tokenpaircard__header">
-            <div className="d-flex">
+            <div>
               <div className="d-flex align-items-center">
                 <img src={data.icon1} alt={'Token1'} />
                 <img src={data.icon2} alt={'Token2'} className="tokenpaircard__header-icon" />
@@ -159,11 +159,11 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <p>TVL {formatUSD.format(data.tvl)}</p>
               </div>
             </div>
-            <div className="tokenpaircard__riskBox">
+            <div className="tokenpaircard__riskBox mt-2">
               <div className="text-right">
                 <div className="d-flex">
                   <img src={smallRatioIcon} alt="smallRatio" />
-                  <p>Risk Level</p>
+                  <p>Risk Rating</p>
                   <img src={liskLevelIcon} alt="lisklevel" />
                 </div>
                 <div className="d-flex justify-content-end">

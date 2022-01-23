@@ -265,6 +265,17 @@ const VaultDashboard = () => {
           )} */}
         </div>
         <div className="vaultdashboard__header_rightBox">
+          {isDefault && (
+            <div className="text-right mt-4">
+              <img src={share} alt="share" />
+              <a href={`https://solscan.io/token/${vault_mint}`} target="_blank" rel="noreferrer">
+                View on
+              </a>
+              <a href={`https://solscan.io/token/${vault_mint}`} target="_blank" rel="noreferrer">
+                Solana Beach
+              </a>
+            </div>
+          )}
           {/* <div className="vaultdashboard__header_speedometerBox">
             <SpeedoMetor risk={VaultData.risk} />
           </div> */}

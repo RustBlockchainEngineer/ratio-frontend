@@ -96,7 +96,7 @@ const AvailableVaults = () => {
           riskLevel: d[key].riskLevel,
         };
       });
-      let x;
+      let x = p;
       if (platform_data.value !== 'ALL') {
         x = p.filter((item: any) => item.platform.name === platform_data.value);
       } else {
