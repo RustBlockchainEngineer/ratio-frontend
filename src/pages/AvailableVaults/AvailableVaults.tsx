@@ -16,9 +16,10 @@ import { getCoinPicSymbol } from '../../utils/helper';
 const AvailableVaults = () => {
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
-  const compareValutsList = useSelector(selectors.getCompareVaultsList);
+  const compareVaultsList = useSelector(selectors.getCompareVaultsList);
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
+  const view_data = useSelector(selectors.getViewData);
 
   const { connected } = useWallet();
 
@@ -52,26 +53,15 @@ const AvailableVaults = () => {
     });
   };
 
-  function dynamicSort(property: string) {
-    console.log(property);
-    let sortOrder = 1;
-    if (property[0] === '-') {
-      sortOrder = -1;
-      property = property.substr(1);
-    }
-    if (property === 'risk') {
-      return function (a: any, b: any) {
-        const result = a[property] < b[property] ? -1 : a[property] > b[property] ? 1 : 0;
-        return result * sortOrder;
-      };
-    }
+  function dynamicSort(sortProperty: string, viewProperty: string) {
+    const sortOrder = viewProperty === 'ascending' ? 1 : -1;
     return function (a: any, b: any) {
-      const result = a[property] > b[property] ? -1 : a[property] > b[property] ? 1 : 0;
+      const result = a[sortProperty] < b[sortProperty] ? -1 : a[sortProperty] > b[sortProperty] ? 1 : 0;
       return result * sortOrder;
     };
   }
 
-  function factorialOf(d: any, filter_data: any, sort_data: any) {
+  function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any) {
     if (d !== undefined) {
       const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
         const tokens = key.split('-');
@@ -92,7 +82,7 @@ const AvailableVaults = () => {
           riskLevel: d[key].riskLevel,
         };
       });
-      p.sort(dynamicSort(sort_data.value));
+      p.sort(dynamicSort(sort_data.value, view_data.value));
       dispatch({ type: actionTypes.SET_AVAILABLE_VAULT, payload: p });
       return p;
     }
@@ -100,16 +90,16 @@ const AvailableVaults = () => {
   }
 
   const factorial = React.useMemo(
-    () => factorialOf(data, filter_data, sort_data),
-    [data, connected, filter_data, sort_data]
+    () => factorialOf(data, filter_data, sort_data, view_data),
+    [data, connected, filter_data, sort_data, view_data]
   );
 
   const showContent = (vtype: string) => {
     const onCompareVault = (data: PairType, status: boolean) => {
       if (status) {
-        dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: [...compareValutsList, data] });
+        dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: [...compareVaultsList, data] });
       } else {
-        const arr = compareValutsList.filter((vault: PairType) => vault.id !== data.id);
+        const arr = compareVaultsList.filter((vault: PairType) => vault.id !== data.id);
         dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: arr });
       }
     };
@@ -166,7 +156,7 @@ const AvailableVaults = () => {
       ) : (
         showContent(viewType)
       )}
-      {compareValutsList.length > 0 && <ComparingFooter list={compareValutsList} />}
+      {compareVaultsList.length > 0 && <ComparingFooter list={compareVaultsList} />}
     </div>
   );
 };
