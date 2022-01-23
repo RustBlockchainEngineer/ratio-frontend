@@ -8,4 +8,6 @@ export const SET_AVAILABLE_VAULT = 'SET_AVAILABLE_VAULT';
 
 export const SET_SORT_DATA = 'SET_SORT_DATA';
 
+export const SET_VIEW_DATA = 'SET_VIEW_DATA';
+
 export const SET_OVERVIEW = 'SET_OVERVIEW';
