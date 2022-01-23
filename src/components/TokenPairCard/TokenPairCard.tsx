@@ -1,15 +1,15 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { getRiskLevel } from '../../libs/helper';
+import { useSelector, useDispatch } from 'react-redux';
+import { ERiskLevel, getRiskLevel } from '../../libs/helper';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 
 import Button from '../Button';
-import { selectors } from '../../features/dashboard';
+import { actionTypes, selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
@@ -27,6 +27,7 @@ import linkIcon from '../../assets/images/link.svg';
 import { sleep } from '@project-serum/common';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
+  const dispatch = useDispatch();
   const history = useHistory();
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
@@ -139,6 +140,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     }
   };
 
+  const riskLevel = React.useMemo(() => getRiskLevel(data.risk), [data]);
+
   return (
     <>
       <div className="col col-xl-4 col-lg-6 col-md-12">
@@ -153,7 +156,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div>
                   <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 </div>
-                <p>{formatUSD.format(data.tvl)}</p>
+                <p>TVL {formatUSD.format(data.tvl)}</p>
               </div>
             </div>
             <div className="tokenpaircard__riskBox">
@@ -164,10 +167,10 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                   <img src={liskLevelIcon} alt="lisklevel" />
                 </div>
                 <div className="d-flex justify-content-end">
-                  {(getRiskLevel(data.risk) === 'DDD' || getRiskLevel(data.risk) === 'DD') && (
+                  {(getRiskLevel(data.risk) === ERiskLevel.EXTREME || getRiskLevel(data.risk) === ERiskLevel.HIGH) && (
                     <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
                   )}
-                  <h6 className={classNames('ml-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
+                  <h6 className={classNames('ml-1', riskLevel)}>{riskLevel} </h6>
                 </div>
               </div>
             </div>
@@ -219,12 +222,22 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               <div className="tokenpaircard__detailBox__content">
                 <div className="d-flex justify-content-between">
                   <div>
-                    Position value:
+                    Position value
                     <p>$ {positionValue.toFixed(2)}</p>
                   </div>
                   <div className="text-right">
-                    Rewards earned:
+                    Rewards earned
                     <p>$0</p>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-between mt-1">
+                  <div>
+                    USDr Debt
+                    <p>$ 0.00</p>
+                  </div>
+                  <div className="text-right">
+                    Ratio TVL
+                    <p>$0,000,000</p>
                   </div>
                 </div>
               </div>

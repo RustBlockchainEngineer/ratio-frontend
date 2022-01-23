@@ -1,37 +1,28 @@
 /* eslint-disable prettier/prettier */
-import { AccountInfo, Connection, PublicKey } from '@solana/web3.js';
-import { LIQUIDITY_POOL_PROGRAM_ID_V4, SERUM_PROGRAM_ID_V3 } from './raydium/ids';
-import {
-  AMM_INFO_LAYOUT,
-  AMM_INFO_LAYOUT_STABLE,
-  AMM_INFO_LAYOUT_V3,
-  AMM_INFO_LAYOUT_V4,
-  getLpMintListDecimals,
-} from './raydium/liquidity';
-import {
-  commitment,
-  createAmmAuthority,
-  getFilteredProgramAccountsAmmOrMarketCache,
-  getMultipleAccounts,
-} from './raydium/web3';
-import { OpenOrders, MARKET_STATE_LAYOUT_V2 } from '@project-serum/serum/lib/market';
-import { LP_TOKENS, NATIVE_SOL, TOKENS } from './raydium/tokens';
-import { ACCOUNT_LAYOUT, getBigNumber, MINT_LAYOUT } from './raydium/layouts';
-import { getAddressForWhat, LiquidityPoolInfo, LIQUIDITY_POOLS } from './raydium/pools';
-import { cloneDeep } from 'lodash-es';
-import { TokenAmount } from './raydium/safe-math';
+import { AccountInfo, Connection, PublicKey } from "@solana/web3.js"
+import { LIQUIDITY_POOL_PROGRAM_ID_V4, SERUM_PROGRAM_ID_V3 } from "./raydium/ids"
+import { AMM_INFO_LAYOUT, AMM_INFO_LAYOUT_STABLE, AMM_INFO_LAYOUT_V3, AMM_INFO_LAYOUT_V4, getLpMintListDecimals } from "./raydium/liquidity"
+import { commitment, createAmmAuthority, getFilteredProgramAccountsAmmOrMarketCache, getMultipleAccounts } from "./raydium/web3"
+import { OpenOrders, MARKET_STATE_LAYOUT_V2  } from '@project-serum/serum/lib/market'
+import { LP_TOKENS, NATIVE_SOL, TOKENS } from "./raydium/tokens"
+import { ACCOUNT_LAYOUT, getBigNumber, MINT_LAYOUT } from "./raydium/layouts"
+import { getAddressForWhat, LiquidityPoolInfo, LIQUIDITY_POOLS } from "./raydium/pools"
+import { cloneDeep } from "lodash-es"
+import { TokenAmount } from "./raydium/safe-math"
+import { raydiumApi } from "./raydium/constants"
+import Axios from 'axios';
 
-export async function getRaydiumPools(conn: Connection) {
-  let ammAll: {
-    publicKey: PublicKey;
-    accountInfo: AccountInfo<Buffer>;
-  }[] = [];
-  let marketAll: {
-    publicKey: PublicKey;
-    accountInfo: AccountInfo<Buffer>;
-  }[] = [];
+export async function getRaydiumPools(conn: Connection){
+    let ammAll: {
+        publicKey: PublicKey
+        accountInfo: AccountInfo<Buffer>
+      }[] = []
+    let marketAll: {
+      publicKey: PublicKey
+      accountInfo: AccountInfo<Buffer>
+      }[] = []
 
-  await Promise.all([
+    await Promise.all([
     await (async () => {
       ammAll = await getFilteredProgramAccountsAmmOrMarketCache(
         'amm',
@@ -291,6 +282,22 @@ export async function getRaydiumPools(conn: Connection) {
         }
       }
     }
-  });
-  return liquidityPools;
+    })
+    return liquidityPools
+}
+
+export async function getRaydiumPoolsInfo(){
+    const poolsData = (await Axios.get(`${raydiumApi}pools`)).data;
+    const swapPoolsInfo : {
+        [k:string]: any
+    } = {};
+    for(let i = 0; i < poolsData.length; i++){
+        swapPoolsInfo[`${poolsData[i].identifier}`] = {
+            tvl: poolsData[i].liquidity_locked,
+            apy: poolsData[i].apy,
+            token_id: poolsData[i]['token-id'],
+            mainnet: poolsData[i].official ? true : false,
+        }
+    }
+    return swapPoolsInfo;
 }

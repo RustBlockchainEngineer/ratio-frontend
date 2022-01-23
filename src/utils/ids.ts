@@ -1,7 +1,14 @@
 import { PublicKey } from '@solana/web3.js';
 
-export const WRAPPED_SOL_MINT = new PublicKey('So11111111111111111111111111111111111111112');
+/// COMMON IDS
+export const SYSTEM_PROGRAM_ID = new PublicKey('11111111111111111111111111111111');
 export const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+export const RENT_PROGRAM_ID = new PublicKey('SysvarRent111111111111111111111111111111111');
+export const CLOCK_PROGRAM_ID = new PublicKey('SysvarC1ock11111111111111111111111111111111');
+export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+/// COMMON IDS
+
+export const WRAPPED_SOL_MINT = new PublicKey('So11111111111111111111111111111111111111112');
 
 export const LENDING_PROGRAM_ID = new PublicKey('TokenLending1111111111111111111111111111111');
 

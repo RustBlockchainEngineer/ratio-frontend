@@ -9,7 +9,6 @@
       border-top: 1px solid var(--unnamed-color-f9fbfe);
       border-bottom: 1px solid var(--unnamed-color-f9fbfe);
       display: flex;
-      justify-content: space-between;
       padding: 3rem 5rem !important;
       width: 80%;
       @include respond-to(sm) {
@@ -73,9 +72,10 @@
     }
   }
   &__bodyleft {
-    padding: 2rem 5rem !important;
-    padding-right: 1rem !important;
+    margin-top: 0rem;
+    // padding-top: 2rem!important;
     padding-left: 3rem !important;
+    // padding-left: 1rem !important;
     @include respond-to(sm) {
       padding: 2rem 0rem !important;
       .col-sm-12 {
@@ -89,9 +89,10 @@
     padding: 0px 0px !important;
     margin-top: 2rem;
     border: 1px solid rgba(#214769, 0.2);
-    border-right: 0px;
-    border-top-left-radius: 25px;
-    border-bottom-left-radius: 25px;
+    // border-right: 0px;
+    // border-top-left-radius: 25px;
+    // border-bottom-left-radius: 25px;
+    border-radius: 25px;
     @include respond-to(sm) {
       margin-left: 10px;
       margin-right: 10px;

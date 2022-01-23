@@ -253,6 +253,9 @@ const VaultDashboard = () => {
             )}
             <RiskLevel level={getRiskLevel(VaultData.risk)} />
           </div>
+          <div>
+            <VaultDebt data={vauldDebtData} />
+          </div>
           {/* {isDefault && (
             <div className="text-right mt-4">
               <img src={share} alt="share" />
@@ -265,15 +268,15 @@ const VaultDashboard = () => {
           {/* <div className="vaultdashboard__header_speedometerBox">
             <SpeedoMetor risk={VaultData.risk} />
           </div> */}
-          <div className="vaultdashboard__header_vaultdebtBox">
-            <VaultDebt data={vauldDebtData} />
-          </div>
+          {/*<div className="vaultdashboard__header_vaultdebtBox">*/}
+          {/*<VaultDebt data={vauldDebtData} />*/}
+          {/*</div>*/}
         </div>
       </div>
-      <div className="vaultdashboard__body row">
+      <div className="vaultdashboard__body row gutters">
         <div className="col col-md-8">
           <div className="vaultdashboard__bodyleft row">
-            {priceCardData.map((item, index) => {
+            {/* {priceCardData.map((item, index) => {
               return (
                 <div key={item.title} className="col col-md-12 col-sm-12">
                   <ComingSoon enable={index === 1}>
@@ -281,7 +284,7 @@ const VaultDashboard = () => {
                   </ComingSoon>
                 </div>
               );
-            })}
+            })} */}
             <div className="col col-lg-6 col-sm-12">
               <ModalCard
                 mintAddress={vault_mint}
@@ -312,14 +315,16 @@ const VaultDashboard = () => {
             <VaultHistoryTable />
           </div> */}
         </div>
-        <div className="col col-md-4 vaultdashboard__bodyright">
-          <AmountPanel
-            collAmount={lpWalletBalance}
-            collAmountUSD={lpWalletBalanceUSD}
-            icons={VaultData.icons}
-            tokenName={VaultData.title}
-            usdrAmount={usdrWalletBalance}
-          />
+        <div className="col col-md-4 ">
+          <div className="vaultdashboard__bodyright">
+            <AmountPanel
+              collAmount={lpWalletBalance}
+              collAmountUSD={lpWalletBalanceUSD}
+              icons={VaultData.icons}
+              tokenName={VaultData.title}
+              usdrAmount={usdrWalletBalance}
+            />
+          </div>
         </div>
       </div>
     </div>

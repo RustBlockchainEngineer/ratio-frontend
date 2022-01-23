@@ -106,7 +106,7 @@ const PaybackModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to pay back?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'0'}
+              // initValue={'0'}
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
               onTextChange={(value) => {

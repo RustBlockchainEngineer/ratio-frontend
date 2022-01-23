@@ -6,6 +6,8 @@ import {
   SET_SORT_DATA,
   SET_VIEW_DATA,
   SET_OVERVIEW,
+  SET_PLATFORM_DATA,
+  SET_ACTIVE_VAULT,
 } from './actionTypes';
 
 interface setCompareVaultsAction {
@@ -33,6 +35,11 @@ interface setSortData {
   payload: any;
 }
 
+interface setPlatformData {
+  type: typeof SET_PLATFORM_DATA;
+  payload: any;
+}
+
 interface setViewData {
   type: typeof SET_VIEW_DATA;
   payload: any;
@@ -42,7 +49,10 @@ interface setOverview {
   type: typeof SET_OVERVIEW;
   payload: any;
 }
-
+interface setActiveVaultsAction {
+  type: typeof SET_ACTIVE_VAULT;
+  payload: any;
+}
 export interface SystemState {
   dashboard: {
     compare_vaults: false;
@@ -50,6 +60,7 @@ export interface SystemState {
     filter_data: [];
     sort_data: any;
     view_data: any;
+    platform_data: any;
     available_vaults: [];
     active_vaults: [];
     overview: any;
@@ -63,4 +74,6 @@ export type dashboardActionTypes =
   | setAvailableVaultAction
   | setSortData
   | setViewData
-  | setOverview;
+  | setOverview
+  | setPlatformData
+  | setActiveVaultsAction;

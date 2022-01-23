@@ -20,6 +20,7 @@ const AvailableVaults = () => {
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
   const view_data = useSelector(selectors.getViewData);
+  const platform_data = useSelector(selectors.getPlatformData);
 
   const { connected } = useWallet();
 
@@ -33,6 +34,9 @@ const AvailableVaults = () => {
   const getData = async () => {
     setIsLoading(true);
     const d = await axios.get('https://api.ratio.finance/api/rate');
+    console.log('---- DATA GOT BY RATIO API -----');
+    console.log(d);
+    console.log('------');
     setData(d.data);
     setIsLoading(false);
   };
@@ -41,10 +45,11 @@ const AvailableVaults = () => {
     getData();
   }, []);
 
-  const filterData = (array1: any, array2: any) => {
+  const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
       return array1;
     }
+
     return array1.filter((item1: any) => {
       const item1Str = JSON.stringify(item1);
       return array2.find((item2: any) => {
@@ -61,9 +66,9 @@ const AvailableVaults = () => {
     };
   }
 
-  function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any) {
+  function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
     if (d !== undefined) {
-      const p = filterData(Object.keys(d), filter_data).map((key: any, index: any) => {
+      const p = filterData(Object.keys(d), filter_data, platform_data).map((key: any, index: any) => {
         const tokens = key.split('-');
         return {
           id: index,
@@ -82,16 +87,22 @@ const AvailableVaults = () => {
           riskLevel: d[key].riskLevel,
         };
       });
-      p.sort(dynamicSort(sort_data.value, view_data.value));
+      let x;
+      if (platform_data.value !== 'ALL') {
+        x = p.filter((item: any) => item.platform.name === platform_data.value);
+      } else {
+        x = p;
+      }
+      x.sort(dynamicSort(sort_data.value, view_data.value));
       dispatch({ type: actionTypes.SET_AVAILABLE_VAULT, payload: p });
-      return p;
+      return x;
     }
     return [];
   }
 
   const factorial = React.useMemo(
-    () => factorialOf(data, filter_data, sort_data, view_data),
-    [data, connected, filter_data, sort_data, view_data]
+    () => factorialOf(data, filter_data, sort_data, view_data, platform_data),
+    [data, connected, filter_data, sort_data, view_data, platform_data]
   );
 
   const showContent = (vtype: string) => {
@@ -120,7 +131,7 @@ const AvailableVaults = () => {
               <th scope="col">Asset</th>
               <th scope="col">Platform</th>
               <th scope="col">APR</th>
-              <th scope="col">Risk Level</th>
+              <th scope="col">Risk Rating</th>
             </tr>
           </thead>
           <tbody>

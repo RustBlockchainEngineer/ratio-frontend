@@ -15,6 +15,11 @@
       width: 24px;
       height: 24px;
     }
+    .ratioicon {
+      width: 15px;
+      margin-right: 5px;
+      margin-top: -2px;
+    }
   }
   &__level {
     padding: 14px 20px;
@@ -26,28 +31,59 @@
       margin-left: 4px;
     }
   }
-  &-EXTREME {
+  &-DDD {
     border: 1px solid #ff3131;
     background-color: rgba(#ff3131, 0.1);
     p {
       color: #ff3131;
     }
   }
-  &-HIGH {
+  &-DD {
     border: 1px solid #ff3131;
     background-color: rgba(#ff3131, 0.1);
     p {
       color: #ff3131;
     }
   }
-  &-MEDIUM {
+  &-AAA {
     border: 1px solid #f48c57;
     background-color: rgba(#f48c57, 0.1);
     p {
       color: #f48c57;
     }
   }
-  &-LOW {
+  &-AA {
+    border: 1px solid #07b127;
+    background-color: rgba(#07b127, 0.1);
+    p {
+      color: #07b127;
+    }
+  }
+  &-DDD {
+    color: #ff3131 !important;
+    border: 1px solid #ff3131;
+    background-color: rgba(#ff3131, 0.1);
+    p {
+      color: #ff3131;
+    }
+  }
+  &-DD {
+    color: #ff3131 !important;
+    border: 1px solid #ff3131;
+    background-color: rgba(#ff3131, 0.1);
+    p {
+      color: #ff3131;
+    }
+  }
+  &-AA {
+    color: #f48c57 !important;
+    background-color: rgba(#f48c57, 0.1);
+    p {
+      color: #f48c57;
+    }
+  }
+  &-AAA {
+    color: #07b127 !important;
     border: 1px solid #07b127;
     background-color: rgba(#07b127, 0.1);
     p {
