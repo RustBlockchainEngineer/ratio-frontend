@@ -63,7 +63,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const renderModalButton = () => {
     return (
       <div className="d-inline-flex">
-        <Button disabled={!connected} className="button button--gradientBorder generate mt-2">
+        <Button disabled={!connected} className="button button--fill generate mt-2">
           Harvest
         </Button>
         <div className="mx-1"></div>
