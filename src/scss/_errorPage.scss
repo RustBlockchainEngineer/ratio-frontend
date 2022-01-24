@@ -1,0 +1,82 @@
+.error_page {
+  &__mobile {
+    height:100vh;
+    width:100vw;
+    display: flex;
+    justify-content:center;
+    align-items:center;
+    font-family: 'Poppins-Medium';
+    font-size: 17px;
+    color: var(--unnamed-color-002332);
+    text-align: center;
+    p {
+      margin-top: 20px;
+    }
+  }
+  overflow-y: hidden;
+  &::after {
+    @include respond-to(sm) {
+      display: none;
+    }
+    content: '';
+    position: fixed;
+    left: 100px;
+    bottom: 0px;
+    z-index: -1;
+    right: 0px;
+    height: 400px;
+    transform: rotate(0deg);
+    background-image: url('../assets/images/Footer.png');
+    background-repeat: no-repeat;
+    filter: blur(50px);
+  }
+  &_container {
+    background-color: var(--background);
+    @include respond-to(sm) {
+      margin-left: 0px;
+    }
+    margin-left: 300px;
+    min-height: 100vh;
+    &--collapse {
+      margin-left: 120px;
+    }
+    &--empty {
+      margin-left: 0px;
+    }
+  }
+  &_content {
+    padding: 5vw;
+    display: flex;
+    flex-direction: column;
+    flex:1;
+    justify-content: center;
+    top: 0px;
+    position: absolute;
+    height: 100%;
+    div{
+      display: flex;
+    }
+  }
+  &_headline {
+      font-family: 'Poppins-Regular';
+      color: var(--unnamed-color-3c4760);
+  }
+  &_message {
+      font-size: 1.7rem;
+      font-family: 'Poppins-SemiBold';
+      color: var(--unnamed-color-3c4760);
+      margin:3vh 0;
+  }
+  &_description {
+      font-family: 'Poppins-Light';
+      color: var(--unnamed-color-3c4760);
+      font-size: 0.85rem;
+      max-width: 20vw;
+      flex-direction: column;
+      .button {
+        align-self: flex-start;
+        min-height: 40px;
+        padding: 0px 15px;
+      }
+  }
+}
