@@ -35,6 +35,7 @@ import { selectors } from '../../features/dashboard';
 import { getRiskLevel } from '../../libs/helper';
 import { getUSDrAmount } from '../../utils/risk';
 import { useUpdateState } from '../../contexts/auth';
+import Breadcrumb from '../../components/Breadcrumb';
 
 const priceCardData = [
   {
@@ -243,18 +244,21 @@ const VaultDashboard = () => {
     <div className="vaultdashboard">
       <div className="vaultdashboard__header">
         <div className="vaultdashboard__header_titleBox">
-          <div>
-            <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
-            {isMobile && (
-              <Link to="/">
-                View on Solana Beach
-                <img src={share} alt="share" />
-              </Link>
-            )}
-            <RiskLevel level={getRiskLevel(VaultData.risk)} />
-          </div>
-          <div>
-            <VaultDebt data={vauldDebtData} />
+          <Breadcrumb />
+          <div className="d-flex">
+            <div>
+              <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
+              {isMobile && (
+                <Link to="/">
+                  View on Solana Beach
+                  <img src={share} alt="share" />
+                </Link>
+              )}
+              <RiskLevel level={getRiskLevel(VaultData.risk)} />
+            </div>
+            <div>
+              <VaultDebt data={vauldDebtData} />
+            </div>
           </div>
           {/* {isDefault && (
             <div className="text-right mt-4">
@@ -264,6 +268,7 @@ const VaultDashboard = () => {
             </div>
           )} */}
         </div>
+
         <div className="vaultdashboard__header_rightBox">
           {/* <div className="vaultdashboard__header_speedometerBox">
             <SpeedoMetor risk={VaultData.risk} />
@@ -271,6 +276,11 @@ const VaultDashboard = () => {
           {/*<div className="vaultdashboard__header_vaultdebtBox">*/}
           {/*<VaultDebt data={vauldDebtData} />*/}
           {/*</div>*/}
+          <div className="text-right mt-4">
+            <img src={share} alt="share" />
+            <Link to="/">View on</Link>
+            <Link to="/">Solana Beach</Link>
+          </div>
         </div>
       </div>
       <div className="vaultdashboard__body row gutters">

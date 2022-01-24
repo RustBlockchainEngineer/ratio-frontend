@@ -146,9 +146,13 @@
       display: none;
     }
     &__option {
+      cursor: pointer;
       color: var(--unnamed-color-3c4760);
       &:hover {
         background-color: var(--unnamed-color-5fb5ff);
+      }
+      &--active {
+        background-color: var(--unnamed-color-f48c57);
       }
     }
   }
