@@ -1,0 +1,48 @@
+.admin_form_page {
+  overflow-y: hidden;
+  &::after {
+    @include respond-to(sm) {
+      display: none;
+    }
+    content: '';
+    position: fixed;
+    left: 100px;
+    bottom: 0px;
+    z-index: -1;
+    right: 0px;
+    height: 400px;
+    transform: rotate(0deg);
+    background-image: url('../assets/images/Footer.png');
+    background-repeat: no-repeat;
+    filter: blur(50px);
+  }
+  &_container {
+    background-color: var(--background);
+    @include respond-to(sm) {
+      padding-left: 0px;
+    }
+    padding-left: 300px;
+    min-height: 100vh;
+    &--collapse {
+      padding-left: 120px;
+    }
+    &--empty {
+      padding-left: 0px;
+    }
+  }
+  &_content {
+    padding: 0vw 5vw;
+    display: flex;
+    flex-direction: column;
+    flex:1;
+    justify-content: center;
+    top: 0px;
+    p {
+      color: var(--unnamed-color-4c646f);
+    }
+  }
+  .input-group .form-control:not(:first-child),.input-group .input-group-text:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+}

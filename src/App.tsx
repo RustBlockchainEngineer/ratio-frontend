@@ -16,7 +16,6 @@ import { PriceProvider } from './contexts/price';
 import { MercurialAPIProvider } from './contexts/mercurialAPI';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Roles } from './constants/constants';
-import NotFound from './pages/NotFound';
 
 dotenv.config();
 const App: React.FC = () => {
@@ -41,22 +40,15 @@ const App: React.FC = () => {
                                   {/* This next route is temporal, until we start using APIAuthContextProvider on all cases */}
                                   <Route
                                     path="/adminpanel"
-                                    exact
                                     render={(props) => (
                                       <APIAuthContextProvider>
-                                        <ProtectedRoute
-                                          role={Roles.ADMIN}
-                                          exact
-                                          path="/adminpanel"
-                                          component={AdminPanel}
-                                        />
+                                        <ProtectedRoute role={Roles.ADMIN} path="/adminpanel" component={AdminPanel} />
                                       </APIAuthContextProvider>
                                     )}
                                   />
                                   <Route exact path="/">
                                     <Redirect to="/dashboard" />
                                   </Route>
-                                  <Route component={NotFound} />
                                 </Switch>
                               </div>
                             </Router>

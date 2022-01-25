@@ -16,6 +16,12 @@ import Header from '../../components/Header';
 import { useDispatch } from 'react-redux';
 import { actionTypes } from '../../features/wallet';
 import { ThemeContext } from '../../contexts/ThemeContext';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import FeesAdminForm from '../FeesAdminForm';
+import WhitelistAdminForm from '../WhitelistAdminForm';
+import CeilingsAdminForm from '../CeilingsAdminForm';
+import CollRatiosAdminForm from '../CollRatiosAdminForm';
+import LpTokenAdminForm from '../LpTokenAdminForm';
 
 const AdminPanel = () => {
   const connection = useConnection();
@@ -80,24 +86,13 @@ const AdminPanel = () => {
 
   return (
     <div className="adminpanel">
-      <div className="container">
-        <div className="d-flex align-items-center justify-content-between">
-          <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
-          {/* <Button className="button--fill mt-4">Connect Wallet</Button> */}
-        </div>
-        <h2>AdminPanel</h2>
-        <Button className="button--fill mt-4" onClick={onCreateProgramState} disabled={isCreated}>
-          Create Program State
-        </Button>
-        <form className="form-bg mt-4">
-          <div>
-            <CustomSelect options={TOKEN_VAULT_OPTIONS} onChange={onChangeLp} />
-          </div>
-          <Button className="button--fill mt-4" disabled={!mintAddress} onClick={onCreateTokenVault}>
-            Create LP Token
-          </Button>
-        </form>
-      </div>
+      <Switch>
+        <Route path="/adminpanel/fees" component={FeesAdminForm} exact />
+        <Route path="/adminpanel/whitelist" component={WhitelistAdminForm} exact />
+        <Route path="/adminpanel/ceilings" component={CeilingsAdminForm} exact />
+        <Route path="/adminpanel/collateralizationratios" component={CollRatiosAdminForm} exact />
+        <Route path="/adminpanel/lptoken" component={LpTokenAdminForm} exact />
+      </Switch>
     </div>
   );
 };
