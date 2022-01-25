@@ -35,13 +35,13 @@
     @include respond-to(sm) {
       margin-left: 0px;
     }
-    margin-left: 300px;
+    padding-left: 300px;
     min-height: 100vh;
     &--collapse {
-      margin-left: 120px;
+      padding-left: 120px;
     }
     &--empty {
-      margin-left: 0px;
+      padding-left: 0px;
     }
   }
   &_content {
