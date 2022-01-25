@@ -279,9 +279,11 @@ export const getDebtLimitForVault = async ({
   tokenPrice,
 }: GetDebtLimit) => {
   const userState = await getUserState(connection, wallet, new PublicKey(vaultMint));
-  const lpLockedAmount = new TokenAmount((userState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
-  const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), getRiskLevelNumber(vaultMint));
+  const lockedCollBalance = (userState as any)?.lockedCollBalance ?? 0;
   const debt = (userState as any)?.debt ?? 0;
+
+  const lpLockedAmount = new TokenAmount(lockedCollBalance, collMint?.decimals);
+  const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), getRiskLevelNumber(vaultMint));
   const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
 
   const debtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
