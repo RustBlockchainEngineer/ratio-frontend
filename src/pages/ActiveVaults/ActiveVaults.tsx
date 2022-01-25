@@ -114,17 +114,20 @@ const ActiveVaults = () => {
     [data, connected, filter_data, sort_data, overview]
   );
 
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState([]);
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
 
   React.useEffect(() => {
     if (connected && connection && wallet && factorial.length) {
       getDebtLimitForAllVaults(connection, wallet, factorial).then((vaults: any) => {
         const reducer = (sum: any, currentValue: any) => sum || currentValue.hasReachedDebtLimit;
-        const hasReachedDebtLimitReduced = vaults.reduce(reducer, false);
+        const hasReachedDebtLimitReduced: boolean = vaults.reduce(reducer, false);
 
         setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
       });
     }
+    return () => {
+      setHasUserReachedDebtLimit(false);
+    };
   }, [connected, connection, wallet, factorial]);
 
   const showContent = (vtype: string) => {
