@@ -195,7 +195,7 @@ const VaultDashboard = () => {
       setVaultData(result);
       setIsLoading(false);
     }
-  }, []);
+  }, [availableVaults, vault_mint]);
 
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
@@ -244,7 +244,7 @@ const VaultDashboard = () => {
     <div className="vaultdashboard">
       <div className="vaultdashboard__header">
         <div className="vaultdashboard__header_titleBox">
-          <Breadcrumb />
+          <Breadcrumb VaultData={VaultData} availableVaults={availableVaults} />
           <div className="d-flex">
             <div>
               <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
@@ -287,11 +287,6 @@ const VaultDashboard = () => {
           {/*<div className="vaultdashboard__header_vaultdebtBox">*/}
           {/*<VaultDebt data={vauldDebtData} />*/}
           {/*</div>*/}
-          <div className="text-right mt-4">
-            <img src={share} alt="share" />
-            <Link to="/">View on</Link>
-            <Link to="/">Solana Beach</Link>
-          </div>
         </div>
       </div>
       <div className="vaultdashboard__body row gutters">

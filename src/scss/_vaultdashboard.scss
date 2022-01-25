@@ -8,9 +8,8 @@
     &_titleBox {
       border-top: 1px solid var(--unnamed-color-f9fbfe);
       border-bottom: 1px solid var(--unnamed-color-f9fbfe);
-      display: flex;
-      // justify-content: space-between;
       padding: 3rem 5rem !important;
+      padding-top: 1rem !important;
       width: 80%;
       @include respond-to(sm) {
         padding: 2rem 1rem !important;
