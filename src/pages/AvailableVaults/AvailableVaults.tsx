@@ -12,6 +12,9 @@ import TokenPairCard from '../../components/TokenPairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
+import { getDebtLimitForAllVaults } from '../../utils/utils';
+import { useConnection } from '../../contexts/connection';
+import { Banner, BannerIcon } from '../../components/Banner';
 
 const AvailableVaults = () => {
   const dispatch = useDispatch();
@@ -21,7 +24,8 @@ const AvailableVaults = () => {
   const sort_data = useSelector(selectors.getSortData);
   const platform_data = useSelector(selectors.getPlatformData);
 
-  const { connected } = useWallet();
+  const connection = useConnection();
+  const { wallet, connected } = useWallet();
 
   const [data, setData] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -114,6 +118,19 @@ const AvailableVaults = () => {
     [data, connected, filter_data, sort_data, platform_data]
   );
 
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState([]);
+
+  React.useEffect(() => {
+    if (connected && connection && wallet && factorial.length) {
+      getDebtLimitForAllVaults(connection, wallet, factorial).then((vaults: any) => {
+        const reducer = (sum: any, currentValue: any) => sum || currentValue.hasReachedDebtLimit;
+        const hasReachedDebtLimitReduced = vaults.reduce(reducer, false);
+
+        setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
+      });
+    }
+  }, [connected, connection, wallet, factorial]);
+
   const showContent = (vtype: string) => {
     const onCompareVault = (data: PairType, status: boolean) => {
       if (status) {
@@ -164,20 +181,30 @@ const AvailableVaults = () => {
   }
 
   return (
-    <div className="availablevaults">
-      <FilterPanel label="Available Vaults" viewType={viewType} onViewType={onViewType} />
-
-      {isLoading ? (
-        <div className="col availablevaults__loading">
-          <div className="spinner-border text-info" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
-      ) : (
-        showContent(viewType)
+    <>
+      {hasUserReachedDebtLimit && (
+        <Banner
+          title="USDr Debt Limit Reached:"
+          message="You have reached your overall USDr Debt Limit"
+          bannerIcon={BannerIcon.riskLevel}
+          className="debt-limit-reached"
+        />
       )}
-      {compareValutsList.length > 0 && <ComparingFooter list={compareValutsList} />}
-    </div>
+      <div className="availablevaults">
+        <FilterPanel label="Available Vaults" viewType={viewType} onViewType={onViewType} />
+
+        {isLoading ? (
+          <div className="col availablevaults__loading">
+            <div className="spinner-border text-info" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        ) : (
+          showContent(viewType)
+        )}
+        {compareValutsList.length > 0 && <ComparingFooter list={compareValutsList} />}
+      </div>
+    </>
   );
 };
 
