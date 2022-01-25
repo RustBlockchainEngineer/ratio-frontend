@@ -1,6 +1,9 @@
 .filterpanel {
   margin-left: 10px;
   margin-right: 10px;
+  .less-right-margin {
+    margin-right: 32px;
+  }
   h2 {
     font-family: 'Poppins-Medium';
     letter-spacing: -0.72px;
@@ -42,7 +45,7 @@
       left: 8px;
     }
   }
-  &__sortby {
+  &__sortby , &__viewby {
     font-family: 'Poppins-Regular';
     color: var(--unnamed-color-3c4760);
     font-size: 16px;
@@ -56,6 +59,13 @@
     }
     &-active {
       opacity: 1;
+    }
+  }
+  .more-width {
+    .react-select {
+      &__control {
+        width: 130px;
+      }
     }
   }
   .react-select {
@@ -110,7 +120,7 @@
       display: none;
     }
     &__control {
-      width: 150px;      
+      width: 150px;
       margin-left: 1rem;
       position: relative;
       background-color: var(--unnamed-color-1B1E29);

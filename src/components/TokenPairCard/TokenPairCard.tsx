@@ -1,7 +1,7 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { ERiskLevel, getRiskLevel } from '../../libs/helper';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 
 import Button from '../Button';
-import { selectors } from '../../features/dashboard';
+import { actionTypes, selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
@@ -27,6 +27,7 @@ import linkIcon from '../../assets/images/link.svg';
 import { sleep } from '@project-serum/common';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
+  const dispatch = useDispatch();
   const history = useHistory();
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);

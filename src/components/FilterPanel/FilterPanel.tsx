@@ -27,10 +27,15 @@ type FilterPanelProps = {
   viewType: string;
 };
 
-const options = [
+const optionsSortBy = [
   { value: 'apr', label: 'APR' },
   { value: 'risk', label: 'RISK' },
   { value: 'tvl', label: 'TVL' },
+];
+
+const optionsViewBy = [
+  { value: 'ascending', label: 'Ascending' },
+  { value: 'descending', label: 'Descending' },
 ];
 
 const filter_options = [
@@ -58,6 +63,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
 
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
+  const view_data = useSelector(selectors.getViewData);
   const platform_data = useSelector(selectors.getPlatformData);
 
   const onFilterChange = (values: any) => {
@@ -71,6 +77,10 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
 
   const onSortChange = (values: any) => {
     dispatch({ type: actionTypes.SET_SORT_DATA, payload: values });
+  };
+
+  const onViewChange = (values: any) => {
+    dispatch({ type: actionTypes.SET_VIEW_DATA, payload: values });
   };
 
   const onPlatformChange = (values: any) => {
@@ -109,15 +119,29 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             width={48}
           /> */}
         </div>
-        <div className="d-md-flex align-items-center">
-          <p className="mr-2 filterpanel__sortby">Sort by: </p>
-          <Select
-            options={options}
-            value={sort_data}
-            onChange={onSortChange}
-            classNamePrefix="react-select"
-            defaultValue={{ value: 'apr', label: 'APR' }}
-          />
+        <div className="d-md-flex align-items-center ml-4">
+          <>
+            <p className="mr-2 filterpanel__sortby">Sort by </p>
+            <Select
+              className="less-right-margin"
+              options={optionsSortBy}
+              value={sort_data}
+              onChange={onSortChange}
+              classNamePrefix="react-select"
+              defaultValue={{ value: 'apr', label: 'APR' }}
+            />
+          </>
+          <>
+            <p className="mr-2 filterpanel__viewby">View by </p>
+            <Select
+              className="more-width"
+              options={optionsViewBy}
+              value={view_data}
+              onChange={onViewChange}
+              classNamePrefix="react-select"
+              defaultValue={{ value: 'ascending', label: 'Ascending' }}
+            />
+          </>
           {isDefault && (
             <>
               <img

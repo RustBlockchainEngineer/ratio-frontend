@@ -276,7 +276,7 @@ const VaultDashboard = () => {
       <div className="vaultdashboard__body row gutters">
         <div className="col col-md-8">
           <div className="vaultdashboard__bodyleft row">
-            {priceCardData.map((item, index) => {
+            {/* {priceCardData.map((item, index) => {
               return (
                 <div key={item.title} className="col col-md-12 col-sm-12">
                   <ComingSoon enable={index === 1}>
@@ -284,7 +284,7 @@ const VaultDashboard = () => {
                   </ComingSoon>
                 </div>
               );
-            })}
+            })} */}
             <div className="col col-lg-6 col-sm-12">
               <ModalCard
                 mintAddress={vault_mint}

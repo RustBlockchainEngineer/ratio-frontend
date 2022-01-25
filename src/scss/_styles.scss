@@ -43,8 +43,10 @@
 @import './vaultSetup';
 @import './vaulthistoryCard';
 @import './vaultSetupContainer';
+@import './errorPage';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
+@include font-face('Poppins-Bold', '../assets/fonts/Poppins-Bold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
 @include font-face('Poppins-Medium', '../assets/fonts/Poppins-Medium');
 @include font-face('Poppins-Regular', '../assets/fonts/Poppins-Regular');
