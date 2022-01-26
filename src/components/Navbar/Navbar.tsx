@@ -124,7 +124,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       <div className="mt-md-5">
         <NavbarItem
           icon={availableVaultsIcon}
-          name="Available Vaults"
+          name="All Vaults"
           active={navIndex === '/dashboard/available-vaults'}
           navIndex="/dashboard/available-vaults"
           onItemClick={onItemClick}
