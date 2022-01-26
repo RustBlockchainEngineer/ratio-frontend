@@ -13,7 +13,7 @@ import { AuthProvider } from './contexts/auth';
 import { RaydiumPoolProvider, SaberPoolProvider, MercurialPoolProvider, OrcaPoolProvider } from './contexts/pools';
 import { PriceProvider } from './contexts/price';
 import { MercurialAPIProvider } from './contexts/mercurialAPI';
-import ProtectedRoute from './components/ProtectedRoute';
+import NotFound from './pages/NotFound';
 
 dotenv.config();
 
@@ -40,6 +40,7 @@ const App: React.FC = () => {
                                   <Route exact path="/">
                                     <Redirect to="/dashboard" />
                                   </Route>
+                                  <Route component={NotFound} />
                                 </Switch>
                               </div>
                             </Router>
