@@ -236,7 +236,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                     <p>$ 0.00</p>
                   </div>
                   <div className="text-right">
-                    Ratio TVL
+                    {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} TVL
                     <p>$0,000,000</p>
                   </div>
                 </div>
