@@ -156,7 +156,7 @@ const AvailableVaults = () => {
 
   return (
     <div className="availablevaults">
-      <FilterPanel label="Available Vaults" viewType={viewType} onViewType={onViewType} />
+      <FilterPanel label="All Vaults" viewType={viewType} onViewType={onViewType} />
 
       {isLoading ? (
         <div className="col availablevaults__loading">
