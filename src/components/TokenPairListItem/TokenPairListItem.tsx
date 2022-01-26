@@ -83,7 +83,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   return (
     <>
       <tr>
-        <th scope="row" className="align-middle">
+        <td scope="row" className="align-middle">
           <div className="align-items-center">
             <div className="d-flex ">
               <div className="d-flex align-items-center">
@@ -97,7 +97,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
           </div>
           <div className="mt-1 d-block">{renderModalButton()}</div>
-        </th>
+        </td>
         <td>
           <div className="tokenpaircard__table__td">
             <h5>Platform:</h5>

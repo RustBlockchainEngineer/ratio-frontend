@@ -327,9 +327,9 @@ const VaultDashboard = () => {
               />
             </div>
           </div>
-          {/* <div className="vaultdashboard__bodyleft row pt-0">
+          <div className="vaultdashboard__bodyleft row pt-0 mt-5">
             <VaultHistoryTable />
-          </div> */}
+          </div>
         </div>
         <div className="col col-md-4 ">
           <div className="vaultdashboard__bodyright">

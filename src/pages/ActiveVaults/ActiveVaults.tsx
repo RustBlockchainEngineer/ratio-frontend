@@ -12,6 +12,7 @@ import TokenPairCard from '../../components/TokenPairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
+import Button from '../../components/Button';
 
 const ActiveVaults = () => {
   const dispatch = useDispatch();
@@ -163,7 +164,7 @@ const ActiveVaults = () => {
   return (
     <div className="availablevaults">
       <FilterPanel label="Active Vaults" viewType={viewType} onViewType={onViewType} />
-
+      <Button className="button button--fill generate mt-2 ml-2">Havest All</Button>
       {isLoading ? (
         <div className="col availablevaults__loading">
           <div className="spinner-border text-info" role="status">
