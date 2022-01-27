@@ -86,9 +86,10 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       setActiveVaultCount(vaultCount);
 
       let tmpTotalValueLocked = 0;
+      const vaults = Object.values(activeVaults);
 
       const avdArr: any = [];
-      for (const vault of activeVaults) {
+      for (const vault of vaults) {
         const { mint, lockedAmount, debt }: any = vault;
         const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
         const pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
