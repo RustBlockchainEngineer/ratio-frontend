@@ -96,7 +96,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
         const vaultValue: any = {
           mint,
           pv,
-          debt,
+          debt: new TokenAmount(debt, usdrMint?.decimals).fixed(),
         };
         avdArr.push(vaultValue);
         tmpTotalValueLocked += pv;
