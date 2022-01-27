@@ -44,7 +44,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const connection = useConnection();
 
   const [activeVaultCount, setActiveVaultCount] = useState(0);
-  const [totalMinted, setTotalDebt] = useState(0);
+  const [totalMinted, setTotalMinted] = useState(0);
   const [totalLocked, setTotalLocked] = useState(0);
   const [overviewData, setOverviewData] = useState('{}');
   const [activeVaultsData, setActiveVaultsData] = useState([]);
@@ -81,25 +81,33 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   React.useEffect(() => {
     const overview = JSON.parse(overviewData);
     if (Object.keys(overview).length) {
-      setTotalDebt(Number(new TokenAmount(overview.totalDebt, usdrMint?.decimals).fixed()));
-      setActiveVaultCount(overview.vaultCount);
+      const { totalDebt, activeVaults, vaultCount } = overview;
+      setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
+      setActiveVaultCount(vaultCount);
 
-      let tmpLocked = 0;
-      const vaults = Object.values(overview.activeVaults);
+      let tmpTotalValueLocked = 0;
+
       const avdArr: any = [];
-      for (const [mint, lockedAmount] of Object.entries(vaults)) {
+      for (const vault of activeVaults) {
+        const { mint, lockedAmount, debt }: any = vault;
         const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
-        const obj: any = {};
-        obj.mint = `${Object.keys(overview.activeVaults)[parseInt(mint)]}`;
-        obj.pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
-        // obj[`${Object.keys(overview.activeVaults)[parseInt(mint)]}`] =
-        //   price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
-        avdArr.push(obj);
-        tmpLocked += price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
+        const pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
+        const vaultValue: any = {
+          mint,
+          pv,
+          debt,
+        };
+        avdArr.push(vaultValue);
+        tmpTotalValueLocked += pv;
       }
       setActiveVaultsData(avdArr);
-      setTotalLocked(tmpLocked);
+      setTotalLocked(tmpTotalValueLocked);
     }
+
+    return () => {
+      setActiveVaultsData([]);
+      setTotalLocked(0);
+    };
   }, [overviewData]);
 
   React.useEffect(() => {
