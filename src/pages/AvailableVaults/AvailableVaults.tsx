@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { MINTADDRESS, APR, TVL, PLATFORM } from '../../constants';
 import { useWallet } from '../../contexts/wallet';
 import { PairType } from '../../models/UInterface';
 import { selectors, actionTypes } from '../../features/dashboard';
@@ -12,6 +10,9 @@ import TokenPairCard from '../../components/TokenPairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
+import { useFetchVaults } from './useFetchVaults';
+import { LPair } from './types';
+import { toast } from 'react-toastify';
 
 const AvailableVaults = () => {
   const dispatch = useDispatch();
@@ -24,26 +25,11 @@ const AvailableVaults = () => {
 
   const { connected } = useWallet();
 
-  const [data, setData] = React.useState([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-
   const onViewType = (type: string) => {
     setViewType(type);
   };
 
-  const getData = async () => {
-    setIsLoading(true);
-    const d = await axios.get('https://api.ratio.finance/api/rate');
-    console.log('---- DATA GOT BY RATIO API -----');
-    console.log(d);
-    console.log('------');
-    setData(d.data);
-    setIsLoading(false);
-  };
-
-  React.useEffect(() => {
-    getData();
-  }, []);
+  const { status, error, vaults } = useFetchVaults();
 
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
@@ -68,23 +54,22 @@ const AvailableVaults = () => {
 
   function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
     if (d !== undefined) {
-      const p = filterData(Object.keys(d), filter_data, platform_data).map((key: any, index: any) => {
-        const tokens = key.split('-');
+      const p = filterData(d, filter_data, platform_data).map((item: LPair, index: any) => {
+        console.log('Key received', item);
+        const tokens = item.symbol.split('-');
         return {
           id: index,
-          mint: MINTADDRESS[key],
+          mint: item.address_id, //MINTADDRESS[key]
           icons: [getCoinPicSymbol(tokens[0]), getCoinPicSymbol(tokens[1])],
-          icon1: getCoinPicSymbol(tokens[0]), //`https://sdk.raydium.io/icons/${getTokenBySymbol(tokens[0])?.mintAddress}.png`,
-          icon2: getCoinPicSymbol(tokens[1]),
-          title: key,
-          tvl: TVL[key],
-          platform: PLATFORM[key],
-          apr: APR[key],
-          details:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
-          risk: d[key].c,
-          riskPercentage: d[key].r,
-          riskLevel: d[key].riskLevel,
+          title: item.symbol,
+          tvl: 'TVL[key]',
+          platform: {
+            link: '',
+            name: item.platform?.name,
+            icon: '',
+          },
+          apr: 'APR[key]',
+          risk: item.risk_rating,
         };
       });
       let x;
@@ -101,8 +86,8 @@ const AvailableVaults = () => {
   }
 
   const factorial = React.useMemo(
-    () => factorialOf(data, filter_data, sort_data, view_data, platform_data),
-    [data, connected, filter_data, sort_data, view_data, platform_data]
+    () => factorialOf(vaults, filter_data, sort_data, view_data, platform_data),
+    [vaults, connected, filter_data, sort_data, view_data, platform_data]
   );
 
   const showContent = (vtype: string) => {
@@ -157,16 +142,15 @@ const AvailableVaults = () => {
   return (
     <div className="availablevaults">
       <FilterPanel label="Available Vaults" viewType={viewType} onViewType={onViewType} />
-
-      {isLoading ? (
+      {status === 'error' && toast.error(error)}
+      {status === 'fetching' && (
         <div className="col availablevaults__loading">
           <div className="spinner-border text-info" role="status">
             <span className="sr-only">Loading...</span>
           </div>
         </div>
-      ) : (
-        showContent(viewType)
       )}
+      {status === 'fetched' && showContent(viewType)}
       {compareVaultsList.length > 0 && <ComparingFooter list={compareVaultsList} />}
     </div>
   );
