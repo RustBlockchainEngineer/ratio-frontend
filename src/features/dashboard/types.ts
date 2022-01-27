@@ -2,7 +2,7 @@ import {
   SET_COMPARE_VAULTS,
   SET_COMPARE_VAULTS_LIST,
   SET_FILTER_DATA,
-  SET_AVAILABLE_VAULT,
+  SET_ALL_VAULT,
   SET_SORT_DATA,
   SET_VIEW_DATA,
   SET_OVERVIEW,
@@ -21,7 +21,7 @@ interface setCompareVaultsListAction {
 }
 
 interface setAvailableVaultAction {
-  type: typeof SET_AVAILABLE_VAULT;
+  type: typeof SET_ALL_VAULT;
   payload: any;
 }
 
@@ -61,7 +61,7 @@ export interface SystemState {
     sort_data: any;
     view_data: any;
     platform_data: any;
-    available_vaults: [];
+    all_vaults: [];
     active_vaults: [];
     overview: any;
   };

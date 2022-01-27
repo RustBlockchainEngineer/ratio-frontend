@@ -9,7 +9,7 @@ import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 import collapseLogo from '../../assets/images/image-logo.svg';
-import availableVaultsIcon from '../../assets/images/available-vaults-icon.svg';
+import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
 import instaBuyIcon from '../../assets/images/insta-buy-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg';
@@ -51,7 +51,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const usdrMint = useMint(USDR_MINT_KEY);
   const prices = usePrices();
 
-  const available_vaults = useSelector(selectors.getAvailableVaults);
+  const all_vaults = useSelector(selectors.getAllVaults);
   const active_vaults = useSelector(selectors.getActiveVaults);
   const overview = useSelector(selectors.getOverview);
 
@@ -123,14 +123,14 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       {isDefault && <img src={collapseFlag ? collapseLogo : darkMode ? darkLogo : logo} alt="logo" />}
       <div className="mt-md-5">
         <NavbarItem
-          icon={availableVaultsIcon}
+          icon={allVaultsIcon}
           name="All Vaults"
-          active={navIndex === '/dashboard/available-vaults'}
-          navIndex="/dashboard/available-vaults"
+          active={navIndex === '/dashboard/all-vaults'}
+          navIndex="/dashboard/all-vaults"
           onItemClick={onItemClick}
           collapseFlag={collapseFlag}
         />
-        {available_vaults.length > 0 && Object.keys(overview).length > 0 && (
+        {all_vaults.length > 0 && Object.keys(overview).length > 0 && (
           <NavbarItem
             icon={activeVaultsIcon}
             name="My Active Vaults"
