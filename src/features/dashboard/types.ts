@@ -20,7 +20,7 @@ interface setCompareVaultsListAction {
   payload: any;
 }
 
-interface setAvailableVaultAction {
+interface setAllVaultAction {
   type: typeof SET_ALL_VAULT;
   payload: any;
 }
@@ -71,7 +71,7 @@ export type dashboardActionTypes =
   | setCompareVaultsAction
   | setCompareVaultsListAction
   | setFilterData
-  | setAvailableVaultAction
+  | setAllVaultAction
   | setSortData
   | setViewData
   | setOverview
