@@ -8,14 +8,14 @@ import VaultHistoryCard from '../../components/VaultHistoryCard';
 import VaultSetupContainer from '../../components/VaultSetupContainer';
 
 const VaultSetup = () => {
-  const availableVaults = useSelector(selectors.getAvailableVaults);
+  const allVaults = useSelector(selectors.getAllVaults);
   const [vaultData, setVaultData] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
   const { mint: vault_mint } = useParams<{ mint?: string }>();
 
   useEffect(() => {
     setIsLoading(true);
-    const result: any = availableVaults.find((item: any) => item.mint === vault_mint);
+    const result: any = allVaults.find((item: any) => item.mint === vault_mint);
     if (result) {
       setVaultData(result);
       setIsLoading(false);
@@ -24,7 +24,7 @@ const VaultSetup = () => {
 
   if (isLoading)
     return (
-      <div className="col availablevaults__loading">
+      <div className="col allvaults__loading">
         <div className="spinner-border text-info" role="status">
           <span className="sr-only">Loading...</span>
         </div>

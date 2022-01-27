@@ -13,7 +13,7 @@ import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
 
-const AvailableVaults = () => {
+const AllVaults = () => {
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
   const compareVaultsList = useSelector(selectors.getCompareVaultsList);
@@ -94,7 +94,7 @@ const AvailableVaults = () => {
         x = p;
       }
       x.sort(dynamicSort(sort_data.value, view_data.value));
-      dispatch({ type: actionTypes.SET_AVAILABLE_VAULT, payload: p });
+      dispatch({ type: actionTypes.SET_ALL_VAULT, payload: p });
       return x;
     }
     return [];
@@ -125,7 +125,7 @@ const AvailableVaults = () => {
       );
     } else {
       return (
-        <table className="table availablevaults__table">
+        <table className="table allvaults__table">
           <thead>
             <tr>
               <th scope="col">Asset</th>
@@ -155,11 +155,11 @@ const AvailableVaults = () => {
   }
 
   return (
-    <div className="availablevaults">
-      <FilterPanel label="Available Vaults" viewType={viewType} onViewType={onViewType} />
+    <div className="allvaults">
+      <FilterPanel label="All Vaults" viewType={viewType} onViewType={onViewType} />
 
       {isLoading ? (
-        <div className="col availablevaults__loading">
+        <div className="col allvaults__loading">
           <div className="spinner-border text-info" role="status">
             <span className="sr-only">Loading...</span>
           </div>
@@ -172,4 +172,4 @@ const AvailableVaults = () => {
   );
 };
 
-export default AvailableVaults;
+export default AllVaults;
