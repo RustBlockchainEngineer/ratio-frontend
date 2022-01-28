@@ -182,7 +182,11 @@ export async function getUserOverview(connection: Connection, wallet: any) {
   for (let i = 0; i < mints.length; i++) {
     const state = await getUserState(connection, wallet, new PublicKey(mints[i]));
     if (state && state.lockedCollBalance.toString() !== '0') {
-      activeVaults[mints[i]] = state.lockedCollBalance.toString();
+      activeVaults[mints[i]] = {
+        mint: mints[i],
+        lockedAmount: Number(state.lockedCollBalance.toString()),
+        debt: Number(state.debt.toString()),
+      };
       vaultCount++;
       totalDebt += Number(state.debt.toString());
     }
