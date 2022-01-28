@@ -10,7 +10,7 @@ export const getSortData = (state: SystemState) => state.dashboard.sort_data;
 
 export const getViewData = (state: SystemState) => state.dashboard.view_data;
 
-export const getAvailableVaults = (state: SystemState) => state.dashboard.available_vaults;
+export const getAllVaults = (state: SystemState) => state.dashboard.all_vaults;
 
 export const getOverview = (state: SystemState) => state.dashboard.overview;
 

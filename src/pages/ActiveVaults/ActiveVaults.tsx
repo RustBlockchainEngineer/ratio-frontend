@@ -150,7 +150,7 @@ const ActiveVaults = () => {
       );
     } else {
       return (
-        <table className="table availablevaults__table">
+        <table className="table allvaults__table">
           <thead>
             <tr>
               <th scope="col">Asset</th>
@@ -190,11 +190,11 @@ const ActiveVaults = () => {
           className="debt-limit-reached"
         />
       )}
-      <div className="availablevaults">
+      <div className="allvaults">
         <FilterPanel label="Active Vaults" viewType={viewType} onViewType={onViewType} />
 
         {isLoading ? (
-          <div className="col availablevaults__loading">
+          <div className="col allvaults__loading">
             <div className="spinner-border text-info" role="status">
               <span className="sr-only">Loading...</span>
             </div>

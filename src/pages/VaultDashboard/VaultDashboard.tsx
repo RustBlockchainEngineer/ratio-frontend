@@ -81,7 +81,7 @@ const VaultDashboard = () => {
   const [debtValue, setDebtValue] = useState(0);
   const [hasReachedDebtLimit, setHasReachedDebtLimit] = useState(false);
 
-  const availableVaults = useSelector(selectors.getAvailableVaults);
+  const allVaults = useSelector(selectors.getAllVaults);
   const [vauldDebtData, setVaultDebtData] = useState({
     mint: vault_mint,
     usdrMint: MINTADDRESS['USDR'],
@@ -90,7 +90,7 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     if (!connected) {
-      history.push('/dashboard/available-vaults');
+      history.push('/dashboard/all-vaults');
     } else if (vault_mint) {
       setIsLoading(true);
       getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {
@@ -196,7 +196,7 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    const result: any = availableVaults.find((item: any) => item.mint === vault_mint);
+    const result: any = allVaults.find((item: any) => item.mint === vault_mint);
     if (result) {
       setVaultData(result);
       setIsLoading(false);
@@ -239,7 +239,7 @@ const VaultDashboard = () => {
 
   if (isLoading)
     return (
-      <div className="col availablevaults__loading">
+      <div className="col allvaults__loading">
         <div className="spinner-border text-info" role="status">
           <span className="sr-only">Loading...</span>
         </div>

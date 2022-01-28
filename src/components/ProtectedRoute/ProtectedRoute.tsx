@@ -1,41 +1,20 @@
 import { createElement, useState, useEffect } from 'react';
-import { API_ENDPOINT } from './../../constants/constants';
 import { Route } from 'react-router-dom';
 import { useWallet } from '../../contexts/wallet';
+import { useAuthContextProvider } from '../../contexts/authAPI';
 import Unauthorized from '../../pages/Unauthorized';
 import Forbidden from '../../pages/Forbidden';
 
-const ProtectedRoute = ({ component, ...rest }: any) => {
-  const [allowed, setAllowed] = useState(false);
-  const { connected, publicKey } = useWallet();
-  const fetchUserAllowed = async (userAddress: string | undefined) => {
-    const response = await fetch(`${API_ENDPOINT}/admin_whitelist?add=${userAddress}`);
-    if (!response.ok) {
-      throw Error(response.statusText);
-    }
-    const result = await response.json();
-    return result;
-  };
-
-  useEffect(() => {
-    const fetchAndSet = async () => {
-      if (publicKey !== undefined) {
-        const data = await fetchUserAllowed(publicKey?.toString());
-        if (data !== undefined) {
-          setAllowed(data);
-        }
-      }
-    };
-
-    fetchAndSet();
-  }, [publicKey]);
+const ProtectedRoute = ({ role, component, ...rest }: any) => {
+  const { connected } = useWallet();
+  const { user } = useAuthContextProvider();
 
   return (
     <Route
       {...rest}
       render={(props) => {
         if (connected) {
-          if (allowed) {
+          if (user && (user as any).role === role) {
             return createElement(component, props);
           } else {
             return <Forbidden />;
