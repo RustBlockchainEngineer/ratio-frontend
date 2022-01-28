@@ -12,8 +12,11 @@ import TokenPairCard from '../../components/TokenPairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
+import { getDebtLimitForAllVaults } from '../../utils/utils';
+import { useConnection } from '../../contexts/connection';
+import { Banner, BannerIcon } from '../../components/Banner';
 
-const AvailableVaults = () => {
+const AllVaults = () => {
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
   const compareVaultsList = useSelector(selectors.getCompareVaultsList);
@@ -22,7 +25,8 @@ const AvailableVaults = () => {
   const view_data = useSelector(selectors.getViewData);
   const platform_data = useSelector(selectors.getPlatformData);
 
-  const { connected } = useWallet();
+  const connection = useConnection();
+  const { wallet, connected } = useWallet();
 
   const [data, setData] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -94,7 +98,7 @@ const AvailableVaults = () => {
         x = p;
       }
       x.sort(dynamicSort(sort_data.value, view_data.value));
-      dispatch({ type: actionTypes.SET_AVAILABLE_VAULT, payload: p });
+      dispatch({ type: actionTypes.SET_ALL_VAULT, payload: p });
       return x;
     }
     return [];
@@ -104,6 +108,22 @@ const AvailableVaults = () => {
     () => factorialOf(data, filter_data, sort_data, view_data, platform_data),
     [data, connected, filter_data, sort_data, view_data, platform_data]
   );
+
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
+
+  React.useEffect(() => {
+    if (connected && connection && wallet && factorial.length) {
+      getDebtLimitForAllVaults(connection, wallet, factorial).then((vaults: any) => {
+        const reducer = (sum: any, currentValue: any) => sum || currentValue.hasReachedDebtLimit;
+        const hasReachedDebtLimitReduced: boolean = vaults.reduce(reducer, false);
+
+        setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
+      });
+    }
+    return () => {
+      setHasUserReachedDebtLimit(false);
+    };
+  }, [connected, connection, wallet, factorial]);
 
   const showContent = (vtype: string) => {
     const onCompareVault = (data: PairType, status: boolean) => {
@@ -125,7 +145,7 @@ const AvailableVaults = () => {
       );
     } else {
       return (
-        <table className="table availablevaults__table">
+        <table className="table allvaults__table">
           <thead>
             <tr>
               <th scope="col">Asset</th>
@@ -155,21 +175,31 @@ const AvailableVaults = () => {
   }
 
   return (
-    <div className="availablevaults">
-      <FilterPanel label="Available Vaults" viewType={viewType} onViewType={onViewType} />
-
-      {isLoading ? (
-        <div className="col availablevaults__loading">
-          <div className="spinner-border text-info" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
-      ) : (
-        showContent(viewType)
+    <>
+      {hasUserReachedDebtLimit && (
+        <Banner
+          title="USDr Debt Limit Reached:"
+          message="You have reached your overall USDr Debt Limit"
+          bannerIcon={BannerIcon.riskLevel}
+          className="debt-limit-reached"
+        />
       )}
-      {compareVaultsList.length > 0 && <ComparingFooter list={compareVaultsList} />}
-    </div>
+      <div className="allvaults">
+        <FilterPanel label="All Vaults" viewType={viewType} onViewType={onViewType} />
+
+        {isLoading ? (
+          <div className="col allvaults__loading">
+            <div className="spinner-border text-info" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        ) : (
+          showContent(viewType)
+        )}
+        {compareVaultsList.length > 0 && <ComparingFooter list={compareVaultsList} />}
+      </div>
+    </>
   );
 };
 
-export default AvailableVaults;
+export default AllVaults;

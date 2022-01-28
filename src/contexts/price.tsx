@@ -47,7 +47,9 @@ export const usePrices = () => {
 };
 
 export const usePrice = (mint: string) => {
+  // TODO: fix this LP Token Price
   return Number(process.env.REACT_APP_LP_TOKEN_PRICE);
+
   const prices = useContext(PriceContext)?.prices;
   const setPrices = useContext(PriceContext)?.setPrices;
   const [price, setPrice] = useState<number>(0);

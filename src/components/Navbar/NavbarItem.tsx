@@ -50,35 +50,41 @@ const NavbarItem = ({
           </div>
         )}
       </div>
-      {expandStatus && expandData && (
-        <div>
-          {expandData.map((item: any, index: number) => {
+      <div className="container navbar-active-vaults">
+        {expandStatus &&
+          expandData &&
+          expandData.map((item: any, index: number) => {
             return (
-              <div className="navbarItem__expand" key={index}>
-                <p className="navbarItem__expand-name">{item.title}</p>
-                <div className="d-flex">
+              <div className="row navbarItem__expand" key={index}>
+                <div className="text-left col-md-6">
+                  <p className="navbarItem__expand-name">{item.title}</p>
+                </div>
+                <div className="col-md-3">
                   <OverlayTrigger
                     placement="top"
                     delay={{ show: 100, hide: 100 }}
                     overlay={<Tooltip id="tooltip">Position Value</Tooltip>}
                   >
                     <div className="navbarItem__expand-positionvalue">
-                      $ {positionValues && nFormatter(positionValues.find((i: any) => i.mint === item.mint).pv, 2)}
+                      $ {positionValues && nFormatter(positionValues.find((i: any) => i.mint === item.mint).pv || 0, 2)}
                     </div>
                   </OverlayTrigger>
+                </div>
+                <div className="col-md-3">
                   <OverlayTrigger
                     placement="top"
                     delay={{ show: 100, hide: 100 }}
-                    overlay={<Tooltip id="tooltip">Rewards earned</Tooltip>}
+                    overlay={<Tooltip id="tooltip">USDr minted</Tooltip>}
                   >
-                    <div className="navbarItem__expand-rewardsearned">$ {nFormatter(200000000000, 2)}</div>
+                    <div className="navbarItem__expand-rewardsearned">
+                      $ {nFormatter(positionValues.find((i: any) => i.mint === item.mint).debt || 0, 2)}
+                    </div>
                   </OverlayTrigger>
                 </div>
               </div>
             );
           })}
-        </div>
-      )}
+      </div>
     </div>
   );
 };

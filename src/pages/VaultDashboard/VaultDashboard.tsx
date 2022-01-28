@@ -35,6 +35,7 @@ import { selectors } from '../../features/dashboard';
 import { getRiskLevel } from '../../libs/helper';
 import { getUSDrAmount } from '../../utils/risk';
 import { useUpdateState } from '../../contexts/auth';
+import { Banner, BannerIcon } from '../../components/Banner';
 
 const priceCardData = [
   {
@@ -78,8 +79,9 @@ const VaultDashboard = () => {
   const [withdrawValue, setWithdrawValue] = useState(0);
   const [generateValue, setGenerateValue] = useState(0);
   const [debtValue, setDebtValue] = useState(0);
+  const [hasReachedDebtLimit, setHasReachedDebtLimit] = useState(false);
 
-  const availableVaults = useSelector(selectors.getAvailableVaults);
+  const allVaults = useSelector(selectors.getAllVaults);
   const [vauldDebtData, setVaultDebtData] = useState({
     mint: vault_mint,
     usdrMint: MINTADDRESS['USDR'],
@@ -88,7 +90,7 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     if (!connected) {
-      history.push('/dashboard/available-vaults');
+      history.push('/dashboard/all-vaults');
     } else if (vault_mint) {
       setIsLoading(true);
       getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {
@@ -140,14 +142,19 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
+      const debt = (userState as any)?.debt ?? 0;
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
       const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), getRiskLevelNumber());
-      const maxAmount = totalUSDr - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
-      console.log('generate', maxAmount);
+      const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
 
-      setGenerateValue(Number(maxAmount.toFixed(usdrMint?.decimals)));
+      const debtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
+
+      // TODO: we should change how we evaluate the debt limit, we have a task for this here https://ratiofinance.atlassian.net/jira/software/c/projects/RFM/boards/1?modal=detail&selectedIssue=RFM-671&quickFilter=1
+      setHasReachedDebtLimit(debtLimit <= 0 && +debt > 0);
+      setGenerateValue(debtLimit);
     }
     return () => {
+      setHasReachedDebtLimit(false);
       setGenerateValue(0);
     };
   }, [tokenPrice, userState, usdrMint, collMint]);
@@ -189,7 +196,7 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    const result: any = availableVaults.find((item: any) => item.mint === vault_mint);
+    const result: any = allVaults.find((item: any) => item.mint === vault_mint);
     if (result) {
       setVaultData(result);
       setIsLoading(false);
@@ -232,7 +239,7 @@ const VaultDashboard = () => {
 
   if (isLoading)
     return (
-      <div className="col availablevaults__loading">
+      <div className="col allvaults__loading">
         <div className="spinner-border text-info" role="status">
           <span className="sr-only">Loading...</span>
         </div>
@@ -240,43 +247,52 @@ const VaultDashboard = () => {
     );
 
   return (
-    <div className="vaultdashboard">
-      <div className="vaultdashboard__header">
-        <div className="vaultdashboard__header_titleBox">
-          <div>
-            <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
-            {isMobile && (
-              <Link to="/">
-                View on Solana Beach
-                <img src={share} alt="share" />
-              </Link>
-            )}
-            <RiskLevel level={getRiskLevel(VaultData.risk)} />
-          </div>
-          <div>
-            <VaultDebt data={vauldDebtData} />
-          </div>
-          {/* {isDefault && (
+    <>
+      {hasReachedDebtLimit && (
+        <Banner
+          title="USDr Debt Limit Reached:"
+          message="You have reached your overall USDr Debt Limit"
+          bannerIcon={BannerIcon.riskLevel}
+          className="debt-limit-reached"
+        />
+      )}
+      <div className="vaultdashboard">
+        <div className="vaultdashboard__header">
+          <div className="vaultdashboard__header_titleBox">
+            <div>
+              <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
+              {isMobile && (
+                <Link to="/">
+                  View on Solana Beach
+                  <img src={share} alt="share" />
+                </Link>
+              )}
+              <RiskLevel level={getRiskLevel(VaultData.risk)} />
+            </div>
+            <div>
+              <VaultDebt data={vauldDebtData} />
+            </div>
+            {/* {isDefault && (
             <div className="text-right mt-4">
               <img src={share} alt="share" />
               <Link to="/">View on</Link>
               <Link to="/">Solana Beach</Link>
             </div>
           )} */}
-        </div>
-        <div className="vaultdashboard__header_rightBox">
-          {/* <div className="vaultdashboard__header_speedometerBox">
+          </div>
+          <div className="vaultdashboard__header_rightBox">
+            {/* <div className="vaultdashboard__header_speedometerBox">
             <SpeedoMetor risk={VaultData.risk} />
           </div> */}
-          {/*<div className="vaultdashboard__header_vaultdebtBox">*/}
-          {/*<VaultDebt data={vauldDebtData} />*/}
-          {/*</div>*/}
+            {/*<div className="vaultdashboard__header_vaultdebtBox">*/}
+            {/*<VaultDebt data={vauldDebtData} />*/}
+            {/*</div>*/}
+          </div>
         </div>
-      </div>
-      <div className="vaultdashboard__body row gutters">
-        <div className="col col-md-8">
-          <div className="vaultdashboard__bodyleft row">
-            {/* {priceCardData.map((item, index) => {
+        <div className="vaultdashboard__body row gutters">
+          <div className="col col-md-8">
+            <div className="vaultdashboard__bodyleft row">
+              {/* {priceCardData.map((item, index) => {
               return (
                 <div key={item.title} className="col col-md-12 col-sm-12">
                   <ComingSoon enable={index === 1}>
@@ -285,49 +301,50 @@ const VaultDashboard = () => {
                 </div>
               );
             })} */}
-            <div className="col col-lg-6 col-sm-12">
-              <ModalCard
-                mintAddress={vault_mint}
-                title="Tokens in Vault"
-                icons={VaultData.icons}
-                tokenName={VaultData.title}
-                depositValue={depositValue}
-                withdrawValue={withdrawValue}
-                debtValue={debtValue}
-                type="deposit_withdraw"
-                riskLevel={getRiskLevelNumber()}
-              />
+              <div className="col col-lg-6 col-sm-12">
+                <ModalCard
+                  mintAddress={vault_mint}
+                  title="Tokens in Vault"
+                  icons={VaultData.icons}
+                  tokenName={VaultData.title}
+                  depositValue={depositValue}
+                  withdrawValue={withdrawValue}
+                  debtValue={debtValue}
+                  type="deposit_withdraw"
+                  riskLevel={getRiskLevelNumber()}
+                />
+              </div>
+              <div className="col col-lg-6 col-sm-12">
+                <ModalCard
+                  mintAddress={vault_mint}
+                  title="USDr Loan Amount"
+                  icons={[usdrIcon]}
+                  tokenName={VaultData.title}
+                  debtValue={debtValue}
+                  generateValue={generateValue}
+                  type="borrow_payback"
+                  riskLevel={getRiskLevelNumber()}
+                />
+              </div>
             </div>
-            <div className="col col-lg-6 col-sm-12">
-              <ModalCard
-                mintAddress={vault_mint}
-                title="USDr Loan Amount"
-                icons={[usdrIcon]}
-                tokenName={VaultData.title}
-                debtValue={debtValue}
-                generateValue={generateValue}
-                type="borrow_payback"
-                riskLevel={getRiskLevelNumber()}
-              />
-            </div>
-          </div>
-          {/* <div className="vaultdashboard__bodyleft row pt-0">
+            {/* <div className="vaultdashboard__bodyleft row pt-0">
             <VaultHistoryTable />
           </div> */}
-        </div>
-        <div className="col col-md-4 ">
-          <div className="vaultdashboard__bodyright">
-            <AmountPanel
-              collAmount={lpWalletBalance}
-              collAmountUSD={lpWalletBalanceUSD}
-              icons={VaultData.icons}
-              tokenName={VaultData.title}
-              usdrAmount={usdrWalletBalance}
-            />
+          </div>
+          <div className="col col-md-4 ">
+            <div className="vaultdashboard__bodyright">
+              <AmountPanel
+                collAmount={lpWalletBalance}
+                collAmountUSD={lpWalletBalanceUSD}
+                icons={VaultData.icons}
+                tokenName={VaultData.title}
+                usdrAmount={usdrWalletBalance}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
