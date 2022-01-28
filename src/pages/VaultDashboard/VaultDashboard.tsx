@@ -149,6 +149,7 @@ const VaultDashboard = () => {
 
       const debtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
 
+      // TODO: we should change how we evaluate the debt limit, we have a task for this here https://ratiofinance.atlassian.net/jira/software/c/projects/RFM/boards/1?modal=detail&selectedIssue=RFM-671&quickFilter=1
       setHasReachedDebtLimit(debtLimit <= 0 && +debt > 0);
       setGenerateValue(debtLimit);
     }
