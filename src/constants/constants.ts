@@ -48,5 +48,9 @@ export const PLATFORM: any = {
   },
 };
 
-//export const API_ENDPOINT = 'https://api.ratio.finance/api';
-export const API_ENDPOINT = 'https://f3b122a0-a7ec-476f-8bbe-095ef0791b9d.mock.pstmn.io/returnFalse'; //change the returnFalse to returnTrue to test the happy path
+export const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:3002';
+
+export enum Roles {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}
