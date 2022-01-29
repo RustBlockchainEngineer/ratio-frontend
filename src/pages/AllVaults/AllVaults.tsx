@@ -55,18 +55,20 @@ const AllVaults = () => {
   function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
     if (d !== undefined) {
       const p = filterData(d, filter_data, platform_data).map((item: LPair, index: any) => {
-        console.log('Key received', item);
-        const tokens = item.symbol.split('-');
         return {
           id: index,
           mint: item.address_id, //MINTADDRESS[key]
-          icons: [getCoinPicSymbol(tokens[0]), getCoinPicSymbol(tokens[1])],
+          icons: item.lpasset?.map((item) =>
+            item.token_icon?.trim() === '' || item.token_icon === undefined
+              ? getCoinPicSymbol(item.token_symbole)
+              : item.token_icon
+          ),
           title: item.symbol,
           tvl: 'TVL[key]',
           platform: {
-            link: '',
+            link: item.platform?.site,
             name: item.platform?.name,
-            icon: '',
+            icon: item.platform?.icon,
           },
           apr: 'APR[key]',
           risk: item.risk_rating,

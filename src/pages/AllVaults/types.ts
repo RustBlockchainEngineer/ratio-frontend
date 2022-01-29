@@ -1,12 +1,17 @@
 export interface Platform {
   id?: string;
   name: string;
+  site?: string;
+  icon?: string;
   created_on?: number;
   updated_on?: number;
 }
 
 export interface PlatformsDict {
   [key: string]: Platform;
+}
+export interface AssetsDict {
+  [key: string]: LPAsset[];
 }
 
 export enum RISK_RATING {
