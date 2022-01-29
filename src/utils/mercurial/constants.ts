@@ -1,5 +1,5 @@
 /// MERCURIAL API
-export const mercurialApi = 'https://mercurial.finance/api/';
+export const MERCURIAL_API = 'https://mercurial.finance/api/';
 
 /// MERCURIAL MAINNET POOLS ADDRESSES (BASED ON THE API RESPONSES WE GET)
 export const pai_3Pool = 'SWABtvDnJwWwAb9CbSA3nv7nTnrtYjrACAVtuP3gyBB';

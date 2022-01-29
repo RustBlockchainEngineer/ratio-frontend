@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { mercurialApi } from './mercurial/constants';
+import { MERCURIAL_API } from './mercurial/constants';
 import Axios from 'axios';
 
 export async function getMercurialSwapPoolsInfo() {
   const swapPoolsInfo: {
     [k: string]: any;
   } = {};
-  const pools = (await Axios(`${mercurialApi}pools`)).data;
+  const pools = (await Axios(`${MERCURIAL_API}pools`)).data;
   for (let i = 0; i < pools.length; i++) {
     swapPoolsInfo[`${pools[i].name}`] = {
       address: pools[i].address,
