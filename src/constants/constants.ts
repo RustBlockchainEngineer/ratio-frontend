@@ -48,7 +48,7 @@ export const PLATFORM: any = {
   },
 };
 
-export const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:3002';
+export const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:3001';
 
 export enum Roles {
   ADMIN = 'ADMIN',

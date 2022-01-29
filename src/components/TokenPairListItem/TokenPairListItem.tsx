@@ -22,7 +22,6 @@ import arrowDownIcon from '../../assets/images/arrow-down.svg';
 
 const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
-
   const [expand, setExpand] = useState(false);
   const tokenPrice = usePrice(data.mint);
   const [positionValue, setPositionValue] = React.useState(0);
@@ -78,8 +77,6 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     setExpand(!expand);
   };
 
-  const riskLevel = React.useMemo(() => getRiskLevel(data.risk), [data]);
-
   return (
     <>
       <tr>
@@ -121,10 +118,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
             <div className="tokenpaircard__table__td">
               <h5>Ratio Risk Rating:</h5>
               <div className="d-flex mt-2">
-                {(getRiskLevel(data.risk) === ERiskLevel.EXTREME || getRiskLevel(data.risk) === ERiskLevel.HIGH) && (
-                  <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
-                )}
-                <h6 className={classNames('ml-2 mt-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
+                <h6 className={classNames('ml-2 mt-1', data.risk)}>{data.risk} </h6>
               </div>
             </div>
             <div className="mt-1 expand_arrow">
