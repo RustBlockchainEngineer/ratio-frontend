@@ -13,6 +13,9 @@ import { getCoinPicSymbol } from '../../utils/helper';
 import { useFetchVaults } from './useFetchVaults';
 import { LPair } from './types';
 import { toast } from 'react-toastify';
+import { getDebtLimitForAllVaults } from '../../utils/utils';
+import { useConnection } from '../../contexts/connection';
+import { Banner, BannerIcon } from '../../components/Banner';
 
 const AllVaults = () => {
   const dispatch = useDispatch();
@@ -23,7 +26,8 @@ const AllVaults = () => {
   const view_data = useSelector(selectors.getViewData);
   const platform_data = useSelector(selectors.getPlatformData);
 
-  const { connected } = useWallet();
+  const connection = useConnection();
+  const { wallet, connected } = useWallet();
 
   const onViewType = (type: string) => {
     setViewType(type);
@@ -92,6 +96,22 @@ const AllVaults = () => {
     [vaults, connected, filter_data, sort_data, view_data, platform_data]
   );
 
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
+
+  React.useEffect(() => {
+    if (connected && connection && wallet && factorial.length) {
+      getDebtLimitForAllVaults(connection, wallet, factorial).then((vaults: any) => {
+        const reducer = (sum: any, currentValue: any) => sum || currentValue.hasReachedDebtLimit;
+        const hasReachedDebtLimitReduced: boolean = vaults.reduce(reducer, false);
+
+        setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
+      });
+    }
+    return () => {
+      setHasUserReachedDebtLimit(false);
+    };
+  }, [connected, connection, wallet, factorial]);
+
   const showContent = (vtype: string) => {
     const onCompareVault = (data: PairType, status: boolean) => {
       if (status) {
@@ -142,20 +162,30 @@ const AllVaults = () => {
   }
 
   return (
-    <div className="allvaults">
-      <FilterPanel label="All Vaults" viewType={viewType} onViewType={onViewType} />
-
-      {status === 'error' && toast.error(error)}
-      {status === 'fetching' && (
-        <div className="col allvaults__loading">
-          <div className="spinner-border text-info" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
+    <>
+      {hasUserReachedDebtLimit && (
+        <Banner
+          title="USDr Debt Limit Reached:"
+          message="You have reached your overall USDr Debt Limit"
+          bannerIcon={BannerIcon.riskLevel}
+          className="debt-limit-reached"
+        />
       )}
-      {status === 'fetched' && showContent(viewType)}
-      {compareVaultsList.length > 0 && <ComparingFooter list={compareVaultsList} />}
-    </div>
+      <div className="allvaults">
+        <FilterPanel label="All Vaults" viewType={viewType} onViewType={onViewType} />
+
+        {status === 'error' && toast.error(error)}
+        {status === 'fetching' && (
+          <div className="col allvaults__loading">
+            <div className="spinner-border text-info" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        )}
+        {status === 'fetched' && showContent(viewType)}
+        {compareVaultsList.length > 0 && <ComparingFooter list={compareVaultsList} />}
+      </div>
+    </>
   );
 };
 
