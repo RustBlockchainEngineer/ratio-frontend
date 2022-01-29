@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { useEffect, useState } from 'react';
-import { jupiterApi } from '../utils/jupiter/constants';
+import { JUPITER_API } from '../utils/jupiter/constants';
 
 interface JupiterRoutePrice {
     startPlatform: string,
@@ -21,9 +21,10 @@ export function useJupiterRoute( inputMint: string, outputMint: string, amount =
     const [result, setResult] = useState<any>({data: 'DATA NOT LOADED YET'});
     const [error, setError] = useState<any>(null);
 
-    const endpoint = `${jupiterApi}/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippage=${slippage}`;
+    const endpoint = `${JUPITER_API}/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippage=${slippage}`;
 
     useEffect(() => {
+        let cancelRequest = false;
         async function fetchJupiterRoute() {
             try{
                 const response = await fetch(
@@ -40,11 +41,17 @@ export function useJupiterRoute( inputMint: string, outputMint: string, amount =
                 }
                 setResult(res);
             }catch(error){
+                if(cancelRequest) return;
                 setError(error);
             }
         }
         fetchJupiterRoute();
-    },[]);
+
+        return function cleanup() {
+            cancelRequest = true;
+        };
+
+    },[endpoint]);
 
     return [result,error];
 }
