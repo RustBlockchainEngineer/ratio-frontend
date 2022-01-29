@@ -2,6 +2,17 @@ import { useEffect, useRef, useReducer } from 'react';
 import { API_ENDPOINT } from '../../constants';
 import { LPair, PlatformsDict, Platform, AssetsDict, LPAsset } from './types';
 
+/* 
+  This custom hook allows to get the Vaults information from the API. There's also a status value that is returned, and that can take the following values: 
+  - fetching: During the retrieval process, vaults and error values are defaulted. 
+  - fetched: Data was obtained successfully, the vaults variable contains the results
+  - error: There was an error fetching any of the information, the error can be found on the error variable.
+
+  The data is cached, so next calls to it would use the cached version.
+
+  Example usage: 
+    const { status, error, vaults } = useFetchVaults();
+*/
 export const useFetchVaults = () => {
   const cache = useRef<LPair[]>([]);
   const platformsCache = useRef<PlatformsDict>({});
@@ -33,10 +44,12 @@ export const useFetchVaults = () => {
 
     fetchData();
 
+    // We use the cancelrequest variable to avoid updating any component state if the component was cleaned up.
     return function cleanup() {
       cancelRequest = true;
     };
 
+    //Gets the platorm information for the specified platform_id. The platform information fetched is cached.
     async function getPlatform(platform_id: string) {
       const url = `${API_ENDPOINT}/platforms/${platform_id}`;
       let data: Platform = { name: '' };
@@ -55,6 +68,7 @@ export const useFetchVaults = () => {
       return data;
     }
 
+    //Gets the tokens information related to the LPairs with the address provided. The information fetched is cached.
     async function getAssets(address_id: string): Promise<LPAsset[]> {
       const url = `${API_ENDPOINT}/lpairs/${address_id}`;
       let data: LPAsset[] = [];
@@ -73,6 +87,7 @@ export const useFetchVaults = () => {
       return data;
     }
 
+    // Gets the data for all the existent vaults. If a cached version is found, it gets returned.
     async function fetchData() {
       dispatch({ type: 'FETCHING' });
       if (cache.current && cache.current.length > 0) {
