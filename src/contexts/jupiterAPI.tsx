@@ -39,6 +39,7 @@ export function useJupiterRoute( inputMint: string, outputMint: string, amount =
                     priceWithSlippage: bestRoute.outAmountWithSlippage ,
                     priceImpactPct: bestRoute.priceImpactPct ,
                 }
+                if(cancelRequest) return;
                 setResult(res);
             }catch(error){
                 if(cancelRequest) return;
