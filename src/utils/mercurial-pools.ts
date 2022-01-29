@@ -12,6 +12,7 @@ export async function getMercurialSwapPoolsInfo() {
       address: pools[i].address,
       apy: pools[i].apy.total,
       tvl: pools[i].tvl,
+      balances: pools[i].balances,
     };
   }
   return swapPoolsInfo;

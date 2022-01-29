@@ -7,7 +7,6 @@ export async function getOrcaSwapPoolInfo() {
     [k: string]: any;
   } = {};
   const poolsData = (await Axios.get(`${orcaApi}pools`)).data;
-
   for (let i = 0; i < poolsData.length; i++) {
     swapPoolsInfo[`${poolsData[i].name}`] = {
       account: poolsData[i].account,
