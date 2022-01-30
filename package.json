@@ -79,15 +79,16 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eventemitter3": "^4.0.7",
     "google-spreadsheet": "^3.1.15",
-    "jsbi": "^4.1.0",
     "graphql": "^16.2.0",
     "graphql-tag": "^2.12.6",
+    "jsbi": "^4.1.0",
     "lodash-es": "^4.17.21",
     "node-sass": "6.0.1",
     "react": "^17.0.0",
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-table-next": "^4.0.3",
     "react-dom": "^17.0.0",
+    "react-error-overlay": "6.0.9",
     "react-fetch-hook": "^1.8.5",
     "react-gauge-chart": "^0.3.0",
     "react-icons": "^4.2.0",
@@ -176,5 +177,9 @@
     "prettier": "^2.3.2",
     "semantic-release": "17.4.1",
     "yarn": "^1.22.11"
+  },
+  "resolutions": {
+    "//": "See https://github.com/facebook/create-react-app/issues/11773",
+    "react-error-overlay": "6.0.9"
   }
 }
