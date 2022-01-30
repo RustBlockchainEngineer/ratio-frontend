@@ -70,9 +70,9 @@ const AllVaults = () => {
           title: item.symbol,
           tvl: 'TVL[key]',
           platform: {
-            link: item.platform?.site,
-            name: item.platform?.name,
-            icon: item.platform?.icon,
+            link: item.platform_site,
+            name: item.platform_name,
+            icon: item.platform_icon,
           },
           apr: 'APR[key]',
           risk: item.risk_rating,
