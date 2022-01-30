@@ -49,44 +49,6 @@ export const useFetchVaults = () => {
       cancelRequest = true;
     };
 
-    //Gets the platorm information for the specified platform_id. The platform information fetched is cached.
-    async function getPlatform(platform_id: string) {
-      const url = `${API_ENDPOINT}/platforms/${platform_id}`;
-      let data: Platform = { name: '' };
-      if (platformsCache.current[url]) {
-        data = platformsCache.current[url];
-      } else {
-        try {
-          const response = await fetch(url);
-          data = await response.json();
-          platformsCache.current[url] = data;
-        } catch (error: any) {
-          if (cancelRequest) return;
-          dispatch({ type: 'FETCH_ERROR', payload: error.message });
-        }
-      }
-      return data;
-    }
-
-    //Gets the tokens information related to the LPairs with the address provided. The information fetched is cached.
-    async function getAssets(address_id: string): Promise<LPAsset[]> {
-      const url = `${API_ENDPOINT}/lpairs/${address_id}`;
-      let data: LPAsset[] = [];
-      if (assetsCache.current[url]) {
-        data = assetsCache.current[url];
-      } else {
-        try {
-          const response = await fetch(url);
-          data = (await response.json()).lpasset;
-          assetsCache.current[url] = data;
-        } catch (error: any) {
-          if (cancelRequest) return [];
-          dispatch({ type: 'FETCH_ERROR', payload: error.message });
-        }
-      }
-      return data;
-    }
-
     // Gets the data for all the existent vaults. If a cached version is found, it gets returned.
     async function fetchData() {
       dispatch({ type: 'FETCHING' });
@@ -97,12 +59,6 @@ export const useFetchVaults = () => {
         try {
           const response = await fetch(url);
           const data: LPair[] = await response.json();
-          await Promise.all(
-            data.map(async (item) => {
-              item.platform = await getPlatform(item.platform_id);
-              item.lpasset = await getAssets(item.address_id);
-            })
-          );
           cache.current = data;
           if (cancelRequest) return;
           dispatch({ type: 'FETCHED', payload: data });
