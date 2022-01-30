@@ -40,11 +40,13 @@ export interface LPair {
   page_url: string;
   pool_size: number;
   platform_id: string;
+  platform_name?: string;
+  platform_site?: string;
+  platform_icon?: string;
   collateralization_ratio: number;
   liquidation_ratio: number;
   risk_rating: RISK_RATING;
   created_on?: number;
   updated_on: number;
   lpasset?: LPAsset[];
-  platform?: Platform;
 }
