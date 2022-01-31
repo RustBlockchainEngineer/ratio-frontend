@@ -340,9 +340,9 @@ const VaultDashboard = () => {
                 />
               </div>
             </div>
-            {/* <div className="vaultdashboard__bodyleft row pt-0">
-            <VaultHistoryTable />
-          </div> */}
+            <div className="vaultdashboard__bodyleft row pt-0 mt-5">
+              <VaultHistoryTable />
+            </div>
           </div>
           <div className="col col-md-4 ">
             <div className="vaultdashboard__bodyright">
@@ -354,20 +354,6 @@ const VaultDashboard = () => {
                 usdrAmount={usdrWalletBalance}
               />
             </div>
-          </div>
-          <div className="vaultdashboard__bodyleft row pt-0 mt-5">
-            <VaultHistoryTable />
-          </div>
-        </div>
-        <div className="col col-md-4 ">
-          <div className="vaultdashboard__bodyright">
-            <AmountPanel
-              collAmount={lpWalletBalance}
-              collAmountUSD={lpWalletBalanceUSD}
-              icons={VaultData.icons}
-              tokenName={VaultData.title}
-              usdrAmount={usdrWalletBalance}
-            />
           </div>
         </div>
       </div>
