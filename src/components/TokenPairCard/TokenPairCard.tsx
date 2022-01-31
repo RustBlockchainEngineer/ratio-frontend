@@ -1,15 +1,16 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { ERiskLevel, getRiskLevel } from '../../libs/helper';
+import { useSelector } from 'react-redux';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
-import { useWallet } from '../../contexts/wallet';
+import { PublicKey } from '@solana/web3.js';
+import { sleep } from '@project-serum/common';
 
+import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
-import { actionTypes, selectors } from '../../features/dashboard';
+import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
@@ -17,29 +18,25 @@ import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
-import { PublicKey } from '@solana/web3.js';
 import { useUpdateState } from '../../contexts/auth';
-import rayIcon from '../../assets/images/RAY.svg';
 import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
-import highriskIcon from '../../assets/images/highrisk.svg';
 import linkIcon from '../../assets/images/link.svg';
-import { sleep } from '@project-serum/common';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
-  const dispatch = useDispatch();
   const history = useHistory();
-  const [isOpen, setOpen] = React.useState(false);
-  const [checked, setChecked] = React.useState(false);
-  const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
+
+  const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
 
   const collMint = useMint(data.mint);
-  const [userState, setUserState] = React.useState(null);
   const tokenPrice = usePrice(data.mint);
 
+  const [isOpen, setOpen] = React.useState(false);
+  const [checked, setChecked] = React.useState(false);
+  const [userState, setUserState] = React.useState(null);
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
@@ -186,7 +183,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               <h6 className="semiBold mt-1">{data.apr}%</h6>
             </div>
           </div>
-          {compare_valuts_status ? (
+          {compare_vaults_status ? (
             <div className={classNames('tokenpaircard__btnBox', { 'tokenpaircard__btnBox--checked': checked })}>
               <label>
                 <input type="checkbox" className="filled-in" checked={checked} onChange={handleChangeComparison} />
@@ -231,8 +228,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                     <p>$ 0.00</p>
                   </div>
                   <div className="text-right">
-                    {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} TVL
-                    <p>$0,000,000</p>
+                    Ratio TVL
+                    <p>{formatUSD.format(tvlUSD)}</p>
                   </div>
                 </div>
               </div>

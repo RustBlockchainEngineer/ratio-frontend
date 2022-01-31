@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { ERiskLevel, getRiskLevel } from '../../libs/helper';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import { PublicKey } from '@solana/web3.js';
 
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
@@ -13,23 +13,27 @@ import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getUserState } from '../../utils/ratio-lending';
-import { PublicKey } from '@solana/web3.js';
-
-import highriskIcon from '../../assets/images/highrisk.svg';
+import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
 import linkIcon from '../../assets/images/link.svg';
-import arrowDownIcon from '../../assets/images/arrow-down.svg';
+import { sleep } from '@project-serum/common';
+import { useUpdateState } from '../../contexts/auth';
 
 const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
-  const [expand, setExpand] = useState(false);
+
   const tokenPrice = usePrice(data.mint);
-  const [positionValue, setPositionValue] = React.useState(0);
   const { wallet, connected, publicKey } = useWallet();
-  const [userState, setUserState] = React.useState(null);
   const connection = useConnection();
   const collMint = useMint(data.mint);
+  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
 
+  const [expand, setExpand] = React.useState(false);
+  const [userState, setUserState] = React.useState(null);
+  const [positionValue, setPositionValue] = React.useState(0);
+  const [tvl, setTVL] = React.useState(0);
+  const [tvlUSD, setTVLUSD] = React.useState(0);
+
+  console.log('data', data);
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
       getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
@@ -41,6 +45,43 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     };
   }, [wallet, connection, collMint]);
 
+  const showTVL = async () => {
+    const tokenVault = await getTokenVaultByMint(connection, data.mint);
+    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
+    setTVL(Number(tvlAmount.fixed()));
+  };
+
+  const updateTVL = async () => {
+    const oriAmount = tvl;
+    let tvlAmount = null;
+    do {
+      await sleep(300);
+      const tokenVault = getTokenVaultByMint(connection, data.mint);
+      tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
+    } while (oriAmount === Number(tvlAmount.fixed()));
+
+    setTVL(Number(tvlAmount.fixed()));
+  };
+
+  React.useEffect(() => {
+    if (connection && collMint && data.mint) {
+      if (updateStateFlag) {
+        updateTVL();
+      } else {
+        showTVL();
+      }
+    }
+    return () => {
+      setTVL(0);
+    };
+  }, [connection, collMint, updateStateFlag]);
+
+  React.useEffect(() => {
+    if (tokenPrice && tvl) {
+      setTVLUSD(Number((tokenPrice * tvl).toFixed(2)));
+    }
+  }, [tvl, tokenPrice]);
+
   React.useEffect(() => {
     if (userState && tokenPrice && collMint) {
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
@@ -50,6 +91,15 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
       setPositionValue(0);
     };
   }, [tokenPrice, userState, collMint]);
+
+  React.useEffect(() => {
+    if (updateStateFlag && wallet?.publicKey) {
+      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
+        setUserState(res);
+        setUpdateStateFlag(false);
+      });
+    }
+  }, [updateStateFlag]);
 
   const showDashboard = () => {
     if (!connected) {
@@ -148,8 +198,8 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <p>$ {positionValue.toFixed(2)}</p>
               </div>
               <div>
-                {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} TVL
-                <p>$ {positionValue.toFixed(2)}</p>
+                Ratio TVL
+                <p>{formatUSD.format(tvlUSD)}</p>
               </div>
             </div>
           </td>
