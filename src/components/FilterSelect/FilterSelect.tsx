@@ -6,7 +6,7 @@ import Select, { components } from 'react-select';
 interface Option {
   value: string;
   label: string;
-  network: string;
+  network?: string;
   icon: Array<any>;
 }
 
@@ -27,7 +27,7 @@ const FilterSelect = ({ options, onFilterChange, filterValue, isMulti, placehold
           <img src={data.icon[0]} alt={children} />
           {data.icon[1] && <img src={data.icon[1]} alt={children} className="secondIcon" />}
           <span className="ml-3 filterselect__option--token">{children}</span>
-          <span className="ml-3 filterselect__option--network">{data.network}</span>
+          {data.network && <span className="ml-3 filterselect__option--network">{data.network}</span>}
         </div>
       </div>
     );
@@ -66,7 +66,7 @@ const FilterSelect = ({ options, onFilterChange, filterValue, isMulti, placehold
         controlShouldRenderValue={false}
         onChange={onFilterChange}
         value={filterValue}
-        isMulti
+        isMulti={isMulti}
         placeholder={placeholder}
       />
       <div className="filterselect__valuesContainer">

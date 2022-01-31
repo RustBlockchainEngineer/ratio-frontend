@@ -38,15 +38,15 @@ const DepositModal = ({ data }: any) => {
   const [depositStatus, setDepositStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
 
-  // useEffect(() => {
-  //   setDidMount(true);
-  //   setDepositAmount(0);
-  //   return () => setDidMount(false);
-  // }, []);
+  useEffect(() => {
+    setDidMount(true);
+    setDepositAmount(0);
+    return () => setDidMount(false);
+  }, []);
 
-  // if (!didMount) {
-  //   return null;
-  // }
+  if (!didMount) {
+    return null;
+  }
 
   const deposit = () => {
     console.log('Depositing', depositAmount, data.value);

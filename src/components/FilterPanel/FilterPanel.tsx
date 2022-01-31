@@ -8,6 +8,11 @@ import Switch from 'react-switch';
 import FilterSelect from '../FilterSelect';
 import { actionTypes, selectors } from '../../features/dashboard';
 
+import raydiumIcon from '../../assets/images/raydium.svg';
+import orcaIcon from '../../assets/images/orca.svg';
+import mercurialIcon from '../../assets/images/mercurial.svg';
+import saberIcon from '../../assets/images/saber.svg';
+
 import title from '../../assets/images/tile.svg';
 import list from '../../assets/images/list.svg';
 import titleDark from '../../assets/images/tile-dark.svg';
@@ -46,11 +51,11 @@ const filter_options = [
 ];
 
 const platformOptions = [
-  { value: 'ALL', label: 'All' },
-  { value: 'RAYDIUM', label: 'Raydium' },
-  { value: 'ORCA', label: 'Orca' },
-  { value: 'MERCURIAL', label: 'Mercurial' },
-  { value: 'SABER', label: 'Saber' },
+  { value: 'ALL', label: 'All platforms', icon: null },
+  { value: 'RAYDIUM', label: 'Raydium', icon: raydiumIcon },
+  { value: 'ORCA', label: 'Orca', icon: orcaIcon },
+  { value: 'MERCURIAL', label: 'Mercurial', icon: mercurialIcon },
+  { value: 'SABER', label: 'Saber', icon: saberIcon },
 ];
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
@@ -87,6 +92,18 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
     dispatch({ type: actionTypes.SET_PLATFORM_DATA, payload: values });
   };
 
+  const CustomOption = (props: any) => {
+    const { children, innerProps, data } = props;
+    return (
+      <div className={classNames('platform-select__option', { 'platform-select__option--active': props.isSelected })}>
+        <div {...innerProps} className="px-3 py-2">
+          {data.icon && <img src={data.icon} alt={children} />}
+          <span className="ml-3 platform-select__option--token">{children}</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="filterpanel">
       <h2>{label}</h2>
@@ -101,6 +118,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             isMulti
           />
           <Select
+            components={{ Option: CustomOption }}
             options={platformOptions}
             value={platform_data}
             onChange={onPlatformChange}

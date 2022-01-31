@@ -31,7 +31,7 @@ const WalletBalances = ({ data }: any) => {
               {data.tokenName === 'USDC-USDR' ? 'USDC-USDr' : data.tokenName}
             </td>
             <td>{data.collAmount.toFixed(2)}</td>
-            <td className="text-right">${data.collAmountUSD.toFixed(2)}</td>
+            <td className="text-right">$ {data.collAmountUSD.toFixed(2)}</td>
           </tr>
           <tr>
             <td>
