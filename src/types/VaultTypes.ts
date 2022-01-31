@@ -39,6 +39,7 @@ export interface LPair {
   symbol: string;
   page_url: string;
   pool_size: number;
+  platform_tvl: number;
   platform_id: string;
   platform_name?: string;
   platform_site?: string;
