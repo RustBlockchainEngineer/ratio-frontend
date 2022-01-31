@@ -1,14 +1,18 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable no-restricted-properties */
 /* eslint-disable no-nested-ternary */
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MintInfo } from '@solana/spl-token';
 
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import { TokenInfo } from '@solana/spl-token-registry';
-import { WAD, ZERO } from '../constants';
+import { WAD, ZERO, MINTADDRESS } from '../constants';
 import { TokenAccount } from './../models';
+import { getUserState } from '../utils/ratio-lending';
+import { TokenAmount } from '../utils/safe-math';
+import { getUSDrAmount } from '../utils/risk';
+import { cache, MintParser, useMint } from '../contexts/accounts';
 
 export type KnownTokenMap = Map<string, TokenInfo>;
 
@@ -235,3 +239,91 @@ export function nFormatter(num: number, digits: number) {
     });
   return item ? (num / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : '0';
 }
+
+interface GetDebtLimit {
+  connection: Connection;
+  wallet: any;
+  vaultMint: MintInfo;
+  collMint: MintInfo;
+  usdrMint: MintInfo;
+  tokenPrice: any | number;
+}
+
+const getRiskLevelNumber = (vaultMint: MintInfo) => {
+  switch (vaultMint) {
+    case MINTADDRESS['USDC-USDR']:
+      return 0;
+      break;
+    case MINTADDRESS['ETH-SOL']:
+      return 1;
+      break;
+    case MINTADDRESS['ATLAS-RAY']:
+      return 2;
+      break;
+    case MINTADDRESS['SAMO-RAY']:
+      return 3;
+      break;
+
+    default:
+      break;
+  }
+  return 10;
+};
+
+export const getDebtLimitForVault = async ({
+  connection,
+  wallet,
+  vaultMint,
+  collMint,
+  usdrMint,
+  tokenPrice,
+}: GetDebtLimit) => {
+  const userState = await getUserState(connection, wallet, new PublicKey(vaultMint));
+  const lockedCollBalance = (userState as any)?.lockedCollBalance ?? 0;
+  const debt = (userState as any)?.debt ?? 0;
+
+  const lpLockedAmount = new TokenAmount(lockedCollBalance, collMint?.decimals);
+  const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), getRiskLevelNumber(vaultMint));
+  const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
+
+  const debtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
+
+  return {
+    debtLimit,
+    hasReachedDebtLimit: debtLimit <= 0 && +debt > 0,
+  };
+};
+
+export const getMint = async (connection: Connection, key: any) => {
+  const id = typeof key === 'string' ? key : key?.toBase58();
+  const { info } = await cache.query(connection, id, MintParser);
+  return info;
+};
+
+export const getDebtLimitForAllVaults = async (connection: Connection, wallet: any, vaults: any) => {
+  const usdrMint = await getMint(connection, MINTADDRESS['USDR']);
+
+  const debtLimitForAllVaults = await Promise.all(
+    vaults.map(async (vault: any) => {
+      const collMint = await getMint(connection, vault.mint);
+
+      const params: GetDebtLimit = {
+        connection,
+        wallet,
+        collMint,
+        usdrMint,
+        vaultMint: vault.mint,
+        tokenPrice: Number(process.env.REACT_APP_LP_TOKEN_PRICE), // TODO: fix this LP Token Price
+      };
+
+      const debtLimit = await getDebtLimitForVault(params);
+      return {
+        id: vault.id,
+        title: vault.title,
+        ...debtLimit,
+      };
+    })
+  );
+
+  return debtLimitForAllVaults;
+};

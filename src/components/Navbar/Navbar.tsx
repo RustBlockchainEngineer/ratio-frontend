@@ -9,7 +9,7 @@ import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 import collapseLogo from '../../assets/images/image-logo.svg';
-import availableVaultsIcon from '../../assets/images/available-vaults-icon.svg';
+import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
 import instaBuyIcon from '../../assets/images/insta-buy-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg';
@@ -44,14 +44,14 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const connection = useConnection();
 
   const [activeVaultCount, setActiveVaultCount] = useState(0);
-  const [totalMinted, setTotalDebt] = useState(0);
+  const [totalMinted, setTotalMinted] = useState(0);
   const [totalLocked, setTotalLocked] = useState(0);
   const [overviewData, setOverviewData] = useState('{}');
   const [activeVaultsData, setActiveVaultsData] = useState([]);
   const usdrMint = useMint(USDR_MINT_KEY);
   const prices = usePrices();
 
-  const available_vaults = useSelector(selectors.getAvailableVaults);
+  const all_vaults = useSelector(selectors.getAllVaults);
   const active_vaults = useSelector(selectors.getActiveVaults);
   const overview = useSelector(selectors.getOverview);
 
@@ -81,25 +81,34 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   React.useEffect(() => {
     const overview = JSON.parse(overviewData);
     if (Object.keys(overview).length) {
-      setTotalDebt(Number(new TokenAmount(overview.totalDebt, usdrMint?.decimals).fixed()));
-      setActiveVaultCount(overview.vaultCount);
+      const { totalDebt, activeVaults, vaultCount } = overview;
+      setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
+      setActiveVaultCount(vaultCount);
 
-      let tmpLocked = 0;
-      const vaults = Object.values(overview.activeVaults);
+      let tmpTotalValueLocked = 0;
+      const vaults = Object.values(activeVaults);
+
       const avdArr: any = [];
-      for (const [mint, lockedAmount] of Object.entries(vaults)) {
+      for (const vault of vaults) {
+        const { mint, lockedAmount, debt }: any = vault;
         const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
-        const obj: any = {};
-        obj.mint = `${Object.keys(overview.activeVaults)[parseInt(mint)]}`;
-        obj.pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
-        // obj[`${Object.keys(overview.activeVaults)[parseInt(mint)]}`] =
-        //   price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
-        avdArr.push(obj);
-        tmpLocked += price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
+        const pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
+        const vaultValue: any = {
+          mint,
+          pv,
+          debt: new TokenAmount(debt, usdrMint?.decimals).fixed(),
+        };
+        avdArr.push(vaultValue);
+        tmpTotalValueLocked += pv;
       }
       setActiveVaultsData(avdArr);
-      setTotalLocked(tmpLocked);
+      setTotalLocked(tmpTotalValueLocked);
     }
+
+    return () => {
+      setActiveVaultsData([]);
+      setTotalLocked(0);
+    };
   }, [overviewData]);
 
   React.useEffect(() => {
@@ -123,14 +132,14 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       {isDefault && <img src={collapseFlag ? collapseLogo : darkMode ? darkLogo : logo} alt="logo" />}
       <div className="mt-md-5">
         <NavbarItem
-          icon={availableVaultsIcon}
-          name="Available Vaults"
-          active={navIndex === '/dashboard/available-vaults'}
-          navIndex="/dashboard/available-vaults"
+          icon={allVaultsIcon}
+          name="All Vaults"
+          active={navIndex === '/dashboard/all-vaults'}
+          navIndex="/dashboard/all-vaults"
           onItemClick={onItemClick}
           collapseFlag={collapseFlag}
         />
-        {available_vaults.length > 0 && Object.keys(overview).length > 0 && (
+        {all_vaults.length > 0 && Object.keys(overview).length > 0 && (
           <NavbarItem
             icon={activeVaultsIcon}
             name="My Active Vaults"

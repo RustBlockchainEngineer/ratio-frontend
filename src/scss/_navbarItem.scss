@@ -29,7 +29,7 @@
     justify-content: space-between;
     margin-left: 3rem;
     padding-left: 1rem;
-    padding-right: 1rem;
+    padding-right: 0.5rem;
     border-left: 2px solid var(--unnamed-color-bg);
     &-name {
       font-family: 'Poppins-SemiBold';
@@ -54,4 +54,16 @@
       border-radius: 2rem;
     }
   }
+}
+
+.navbarItem__expand > .col-md-3 {
+  padding-right: 0;
+  padding-left: 0;
+}
+.navbarItem__expand > .col-md-6 {
+  padding-left: 0;
+}
+
+.navbar-active-vaults {
+  padding-left: 50px !important;
 }
