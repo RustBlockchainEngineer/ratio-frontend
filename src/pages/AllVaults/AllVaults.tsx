@@ -10,12 +10,13 @@ import TokenPairCard from '../../components/TokenPairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
-import { useFetchVaults } from './useFetchVaults';
-import { LPair } from './types';
+import { useFetchVaults } from '../../hooks/useFetchVaults';
+import { LPair } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { getDebtLimitForAllVaults } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
+import { useFillPatformTvls } from '../../hooks/useFillPatformTvls';
 
 const AllVaults = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,8 @@ const AllVaults = () => {
   };
 
   const { status, error, vaults } = useFetchVaults();
+
+  const vaultsWithPlatTvl = useFillPatformTvls(vaults);
 
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
@@ -68,7 +71,7 @@ const AllVaults = () => {
               : item.token_icon
           ),
           title: item.symbol,
-          tvl: 'TVL[key]',
+          tvl: item.platform_tvl,
           platform: {
             link: item.platform_site,
             name: item.platform_name,
@@ -92,8 +95,8 @@ const AllVaults = () => {
   }
 
   const factorial = React.useMemo(
-    () => factorialOf(vaults, filter_data, sort_data, view_data, platform_data),
-    [vaults, connected, filter_data, sort_data, view_data, platform_data]
+    () => factorialOf(vaultsWithPlatTvl, filter_data, sort_data, view_data, platform_data),
+    [vaultsWithPlatTvl, connected, filter_data, sort_data, view_data, platform_data]
   );
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);

@@ -77,6 +77,17 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     setExpand(!expand);
   };
 
+  const printTvl = () => {
+    if (isNaN(data.tvl)) {
+      return (
+        <div className="spinner-border spinner-border-sm text-info" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      );
+    }
+    return formatUSD.format(data.tvl);
+  };
+
   return (
     <>
       <tr>
@@ -89,7 +100,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
-                <p>TVL {formatUSD.format(data.tvl)}</p>
+                <p>TVL {printTvl()}</p>
               </div>
             </div>
           </div>

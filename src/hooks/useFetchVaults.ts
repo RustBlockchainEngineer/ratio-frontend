@@ -1,6 +1,6 @@
 import { useEffect, useRef, useReducer } from 'react';
-import { API_ENDPOINT } from '../../constants';
-import { LPair, PlatformsDict, Platform, AssetsDict, LPAsset } from './types';
+import { API_ENDPOINT } from '../constants';
+import { LPair } from '../types/VaultTypes';
 
 /* 
   This custom hook allows to get the Vaults information from the API. There's also a status value that is returned, and that can take the following values: 
@@ -15,8 +15,6 @@ import { LPair, PlatformsDict, Platform, AssetsDict, LPAsset } from './types';
 */
 export const useFetchVaults = () => {
   const cache = useRef<LPair[]>([]);
-  const platformsCache = useRef<PlatformsDict>({});
-  const assetsCache = useRef<AssetsDict>({});
 
   const initialState = {
     status: 'idle',
