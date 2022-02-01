@@ -41,7 +41,7 @@ export async function getSaberSwapPoolsInfo(conn: Connection, connEnv: string) {
   for (let i = 0; i < pools.length; i++) {
     const swapAccount = new PublicKey(pools[i].swapAddress);
     const poolAddr = pools[i].quarryAddress;
-    const { tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount, tvl  } =
+    const { tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount, tvl } =
       await getSaberSwapPoolInfo(conn, swapAccount);
     swapPoolsInfo[`${pools[i].name}`] = {
       poolAddr,
