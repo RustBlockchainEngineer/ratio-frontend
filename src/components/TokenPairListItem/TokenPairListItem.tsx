@@ -156,7 +156,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div>
                 USDr Debt
-                <p>$ {positionValue.toFixed(2)}</p>
+                <p> {positionValue.toFixed(2)}</p>
               </div>
               <div>
                 {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} TVL

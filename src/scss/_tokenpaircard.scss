@@ -28,6 +28,24 @@
     color: #3c4760;
     padding-left: 40px;
   }
+
+  &--warning {
+    box-shadow: 0px 2px 8px #f48c5780;
+    border: 2px solid #f48c57;
+  }
+
+  &__warningBox {
+    min-height: 70px;
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    padding-top: 0px;
+    color: #f48c57;
+    p {
+      margin-bottom: 0px;
+      margin-left: 0.5rem;
+    }
+  }
   
   .generate {
     font-family: 'Poppins-Medium';
