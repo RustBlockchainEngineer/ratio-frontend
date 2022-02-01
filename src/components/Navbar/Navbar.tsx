@@ -148,7 +148,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
             onItemClick={onItemClick}
             collapseFlag={collapseFlag}
             expands={true}
-            expandData={active_vaults}
+            expandData={activeVaultsData}
             positionValues={activeVaultsData}
           />
         )}

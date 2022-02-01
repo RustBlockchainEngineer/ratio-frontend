@@ -12,7 +12,7 @@ type NavbarItemProps = {
   collapseFlag: boolean;
   onItemClick: (navIndex: string) => void;
   expands?: boolean;
-  expandData?: [];
+  expandData?: any;
   positionValues?: any;
 };
 
@@ -28,6 +28,12 @@ const NavbarItem = ({
   onItemClick,
 }: NavbarItemProps) => {
   const [expandStatus, setExpandStatus] = useState(false);
+
+  const changeExpandStatus = (e: any) => {
+    e.stopPropagation();
+    setExpandStatus(!expandStatus);
+  };
+
   return (
     <div className={classNames('navbarItem', active ? 'navbarItem--active' : '')}>
       <div
@@ -43,9 +49,9 @@ const NavbarItem = ({
         {expands && (
           <div>
             {expandStatus ? (
-              <IoIosArrowUp onClick={() => setExpandStatus(!expandStatus)} />
+              <IoIosArrowUp onClick={changeExpandStatus} />
             ) : (
-              <IoIosArrowDown onClick={() => setExpandStatus(!expandStatus)} />
+              <IoIosArrowDown onClick={changeExpandStatus} />
             )}
           </div>
         )}
