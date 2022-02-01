@@ -9,12 +9,12 @@ export async function getDevnetPools() {
   const swapPools = [];
   for (let i = 0; i < poolsData.length; i++) {
     const poolName = poolsData[i].name;
-    const swapAccount = poolsData[i].swap.config.swapAccount;
+    const swapAddress = poolsData[i].swap.config.swapAccount;
     const quarryAddress = poolsData[i].quarry;
     swapPools.push({
       name: poolName,
-      swapAddress: swapAccount,
-      quarryAddress: quarryAddress,
+      swapAddress,
+      quarryAddress,
     });
   }
   return swapPools;
@@ -26,12 +26,12 @@ export async function getMainnetPools() {
   const swapPools = [];
   for (let i = 0; i < poolsData.length; i++) {
     const poolName = poolsData[i].name;
-    const swapAccount = poolsData[i].swap.config.swapAccount;
+    const swapAddress = poolsData[i].swap.config.swapAccount;
     const quarryAddress = poolsData[i].quarry;
     swapPools.push({
       name: poolName,
-      swapAddress: swapAccount,
-      quarryAddress: quarryAddress,
+      swapAddress,
+      quarryAddress,
     });
   }
   return swapPools;
