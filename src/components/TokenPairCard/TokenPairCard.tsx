@@ -140,6 +140,17 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     }
   };
 
+  const printTvl = () => {
+    if (isNaN(data.tvl)) {
+      return (
+        <div className="spinner-border spinner-border-sm text-info" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      );
+    }
+    return formatUSD.format(data.tvl);
+  };
+
   return (
     <>
       <div className="col col-xl-4 col-lg-6 col-md-12">
@@ -154,7 +165,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div>
                   <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 </div>
-                <p>TVL {formatUSD.format(data.tvl)}</p>
+                <p>TVL {printTvl()}</p>
               </div>
             </div>
             <div className="tokenpaircard__riskBox mt-2">

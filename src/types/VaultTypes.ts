@@ -51,3 +51,9 @@ export interface LPair {
   updated_on: number;
   lpasset?: LPAsset[];
 }
+export enum PoolProvider {
+  'ORCA' = 'ORCA',
+  'RAYDIUM' = 'RAYDIUM',
+  'SABER' = 'SABER',
+  'MERCURIAL' = 'MERCURIAL',
+}

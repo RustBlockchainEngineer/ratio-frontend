@@ -1,4 +1,4 @@
-import { LPair } from '../../types/VaultTypes';
+import { LPair, PoolProvider } from '../../types/VaultTypes';
 import { IPoolInfoProvider } from './IPoolInfoProvider';
 import { MercurialPoolInfoProvider } from './MercurialPoolInfoProvider';
 import { OrcaPoolInfoProvider } from './OrcaPoolInfoProvider';
@@ -8,14 +8,14 @@ import { SaberPoolInfoProvider } from './SaberPoolInfoProvider';
 // Allows to obtain the specific provider related to the vault's platform.
 export class PoolInfoProviderFactory {
   providers: {
-    [key: string]: IPoolInfoProvider;
+    [Key in PoolProvider as string]: IPoolInfoProvider;
   };
   constructor(_raydiumPools: any, _orcaPools: any, _saberPools: any, _mercurialPools: any) {
     this.providers = {};
-    this.providers['ORCA'] = new OrcaPoolInfoProvider(_orcaPools);
-    this.providers['RAYDIUM'] = new RaydiumPoolInfoProvider(_raydiumPools);
-    this.providers['SABER'] = new SaberPoolInfoProvider(_saberPools);
-    this.providers['MERCURIAL'] = new MercurialPoolInfoProvider(_mercurialPools);
+    this.providers[PoolProvider.ORCA] = new OrcaPoolInfoProvider(_orcaPools);
+    this.providers[PoolProvider.RAYDIUM] = new RaydiumPoolInfoProvider(_raydiumPools);
+    this.providers[PoolProvider.SABER] = new SaberPoolInfoProvider(_saberPools);
+    this.providers[PoolProvider.MERCURIAL] = new MercurialPoolInfoProvider(_mercurialPools);
   }
   getProviderForVault(vault: LPair): IPoolInfoProvider {
     if (vault.platform_name === undefined) {
