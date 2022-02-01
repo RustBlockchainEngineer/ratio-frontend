@@ -182,7 +182,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
               </div>
               <div className="navbar-vertical__item">
                 <h6>USDr Minted</h6>
-                <h6 className="navbar-vertical__item--green">$ {(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
+                <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
             </div>
           ) : null

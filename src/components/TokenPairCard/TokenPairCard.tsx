@@ -228,7 +228,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div className="d-flex justify-content-between mt-1">
                   <div>
                     USDr Debt
-                    <p>$ 0.00</p>
+                    <p> 0.00</p>
                   </div>
                   <div className="text-right">
                     {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} TVL

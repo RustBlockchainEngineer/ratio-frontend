@@ -96,8 +96,8 @@ const PaybackModal = ({ data }: any) => {
             <h4>Pay back USDr debt</h4>
             <h5>
               You owe &nbsp;
-              <span className="dashboardModal__modal__header-red">${data.usdrValue} USDr </span>. Pay back some or all
-              of your debt below.
+              <span className="dashboardModal__modal__header-red">{data.usdrValue} USDr </span>. Pay back some or all of
+              your debt below.
             </h5>
           </div>
         </Modal.Header>
