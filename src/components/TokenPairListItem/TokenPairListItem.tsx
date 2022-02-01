@@ -112,7 +112,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const renderModalButton = () => {
     return (
       <div className="d-inline-flex">
-        <Button disabled={!connected} className="button button--gradientBorder generate mt-2">
+        <Button disabled={!connected} className="button button--fill generate mt-2">
           Harvest
         </Button>
         <div className="mx-1"></div>
@@ -127,10 +127,21 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     setExpand(!expand);
   };
 
+  const printTvl = () => {
+    if (isNaN(data.tvl)) {
+      return (
+        <div className="spinner-border spinner-border-sm text-info" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      );
+    }
+    return formatUSD.format(data.tvl);
+  };
+
   return (
     <>
       <tr>
-        <th scope="row" className="align-middle">
+        <td scope="row" className="align-middle">
           <div className="align-items-center">
             <div className="d-flex ">
               <div className="d-flex align-items-center">
@@ -139,12 +150,12 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
-                <p>TVL {formatUSD.format(data.tvl)}</p>
+                <p>TVL {printTvl()}</p>
               </div>
             </div>
           </div>
           <div className="mt-1 d-block">{renderModalButton()}</div>
-        </th>
+        </td>
         <td>
           <div className="tokenpaircard__table__td">
             <h5>Platform:</h5>
@@ -195,7 +206,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div>
                 USDr Debt
-                <p>$ {positionValue.toFixed(2)}</p>
+                <p> {positionValue.toFixed(2)}</p>
               </div>
               <div>
                 Ratio TVL

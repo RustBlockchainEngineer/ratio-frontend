@@ -2,6 +2,7 @@
   padding-left: 5rem;
   padding-right: 5rem;
   background-color: var(--background);
+  padding-bottom: 5rem;
   @include respond-to(sm) {
     padding-top: 2rem;
     padding-left: 0px;
@@ -46,15 +47,20 @@
       padding-bottom: 1.5rem !important;
       font-family: 'Poppins-Regular';
       font-size: 0.9rem;
+      color: var(--unnamed-color-3c4760);
+    }
+    td {
+      padding-top: 1.5rem !important;
+      padding-bottom: 1.5rem !important;
+      font-family: 'Poppins-Regular';
+      font-size: 0.9rem;
     }
     &--action {
       width: 10rem;
     }
     .expand_arrow {
       cursor: pointer;
-      svg {
-        stroke: var(--unnamed-color-3c4760);
-      }
+      color: var(--unnamed-color-4c646f);
       &:hover {
         opacity: 0.8;
       }

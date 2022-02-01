@@ -19,6 +19,8 @@ export async function getSaberSwapPoolInfo(conn: Connection, swapAccount: Public
   const tokenBAddress = exchangeInfo?.reserves[1].amount.token.address;
   const tokenBAmount = exchangeInfo?.reserves[1].amount.formatUnits().toString();
 
+  const tvl = exchangeInfo?.lpTotalSupply.format().toString();
+
   return {
     tokenAName,
     tokenAAddress,
@@ -26,6 +28,7 @@ export async function getSaberSwapPoolInfo(conn: Connection, swapAccount: Public
     tokenBName,
     tokenBAddress,
     tokenBAmount,
+    tvl,
   };
 }
 
@@ -36,16 +39,19 @@ export async function getSaberSwapPoolsInfo(conn: Connection, connEnv: string) {
   const pools = connEnv === 'devnet' ? await getDevnetPools() : await getMainnetPools();
 
   for (let i = 0; i < pools.length; i++) {
-    const swapAccount = new PublicKey(pools[i].address);
-    const { tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount } =
+    const swapAccount = new PublicKey(pools[i].swapAddress);
+    const poolAddr = pools[i].quarryAddress;
+    const { tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount, tvl } =
       await getSaberSwapPoolInfo(conn, swapAccount);
     swapPoolsInfo[`${pools[i].name}`] = {
+      poolAddr,
       tokenAName,
       tokenAAddress,
       tokenAAmount,
       tokenBName,
       tokenBAddress,
       tokenBAmount,
+      tvl,
     };
   }
   return swapPoolsInfo;

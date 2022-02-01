@@ -35,6 +35,7 @@ import { selectors } from '../../features/dashboard';
 import { getRiskLevel } from '../../libs/helper';
 import { getUSDrAmount } from '../../utils/risk';
 import { useUpdateState } from '../../contexts/auth';
+import Breadcrumb from '../../components/Breadcrumb';
 import { Banner, BannerIcon } from '../../components/Banner';
 
 const priceCardData = [
@@ -201,7 +202,7 @@ const VaultDashboard = () => {
       setVaultData(result);
       setIsLoading(false);
     }
-  }, []);
+  }, [allVaults, vault_mint]);
 
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
@@ -259,28 +260,40 @@ const VaultDashboard = () => {
       <div className="vaultdashboard">
         <div className="vaultdashboard__header">
           <div className="vaultdashboard__header_titleBox">
-            <div>
-              <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
-              {isMobile && (
-                <Link to="/">
-                  View on Solana Beach
-                  <img src={share} alt="share" />
-                </Link>
-              )}
-              <RiskLevel level={getRiskLevel(VaultData.risk)} />
+            <Breadcrumb VaultData={VaultData} availableVaults={allVaults} />
+            <div className="d-flex">
+              <div>
+                <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
+                {isMobile && (
+                  <Link to="/">
+                    View on Solana Beach
+                    <img src={share} alt="share" />
+                  </Link>
+                )}
+                <RiskLevel level={getRiskLevel(VaultData.risk)} />
+              </div>
+              <div>
+                <VaultDebt data={vauldDebtData} />
+              </div>
             </div>
-            <div>
-              <VaultDebt data={vauldDebtData} />
-            </div>
-            {/* {isDefault && (
+          </div>
+
+          {/* {isDefault && (
             <div className="text-right mt-4">
               <img src={share} alt="share" />
               <Link to="/">View on</Link>
               <Link to="/">Solana Beach</Link>
             </div>
           )} */}
-          </div>
+
           <div className="vaultdashboard__header_rightBox">
+            {isDefault && (
+              <div className="text-right mt-4">
+                <img src={share} alt="share" />
+                <Link to="/">View on</Link>
+                <Link to="/">Solana Beach</Link>
+              </div>
+            )}
             {/* <div className="vaultdashboard__header_speedometerBox">
             <SpeedoMetor risk={VaultData.risk} />
           </div> */}
@@ -327,9 +340,9 @@ const VaultDashboard = () => {
                 />
               </div>
             </div>
-            {/* <div className="vaultdashboard__bodyleft row pt-0">
-            <VaultHistoryTable />
-          </div> */}
+            <div className="vaultdashboard__bodyleft row pt-0 mt-5">
+              <VaultHistoryTable />
+            </div>
           </div>
           <div className="col col-md-4 ">
             <div className="vaultdashboard__bodyright">

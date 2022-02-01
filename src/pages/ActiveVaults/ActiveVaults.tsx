@@ -12,6 +12,7 @@ import TokenPairCard from '../../components/TokenPairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
+import Button from '../../components/Button';
 import { getDebtLimitForAllVaults } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
@@ -192,7 +193,7 @@ const ActiveVaults = () => {
       )}
       <div className="allvaults">
         <FilterPanel label="Active Vaults" viewType={viewType} onViewType={onViewType} />
-
+        <Button className="button button--fill generate mt-2 ml-2">Havest All</Button>
         {isLoading ? (
           <div className="col allvaults__loading">
             <div className="spinner-border text-info" role="status">

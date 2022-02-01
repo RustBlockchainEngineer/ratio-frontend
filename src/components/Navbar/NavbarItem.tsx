@@ -77,7 +77,7 @@ const NavbarItem = ({
                     overlay={<Tooltip id="tooltip">USDr minted</Tooltip>}
                   >
                     <div className="navbarItem__expand-rewardsearned">
-                      $ {nFormatter(positionValues.find((i: any) => i.mint === item.mint).debt || 0, 2)}
+                      {nFormatter(positionValues.find((i: any) => i.mint === item.mint).debt || 0, 2)}
                     </div>
                   </OverlayTrigger>
                 </div>

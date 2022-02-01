@@ -1,0 +1,75 @@
+
+.bread-crumb {
+    display: flex;
+    align-items: center;
+    .show>.btn-primary.dropdown-toggle {
+        background-color: transparent !important;
+        color: var(--unnamed-color-002332) !important;
+        opacity: 0.4;
+        box-shadow: none !important;
+        border-color: none !important;
+    }
+    .dropdown-menu {
+        padding-top: 0px;
+        padding-bottom: 0px;
+        // border: none;
+        width: 12.5rem;
+    }
+    .react-select__menu {
+        margin-top: 0px;
+        width: 12.5rem;
+    }
+    .react-select__control {
+        border: none;
+        box-shadow: none;
+    }
+    .react-select__single-value {
+        font-family: 'Poppins-Regular';
+        font-size: 0.875rem;
+    }
+    .react-select__option {
+        font-family: 'Poppins-Regular';
+        font-size: 0.875rem;
+        cursor: pointer;
+        &--icon1 {
+            width: 20px;
+            border: 1px solid var(--unnamed-color-bg);
+            border-radius: 100%;
+        }
+        &--icon2 {
+            width: 20px;
+            border: 1px solid var(--unnamed-color-bg);
+            border-radius: 100%;
+            margin-left: -5px;
+        }
+        &:hover {
+            background-color: var(--unnamed-color-5fb5ff);
+        }
+        &--active {
+            background-color: var(--unnamed-color-f48c57);
+        }
+    }
+    .btn-primary {
+        background-color: transparent;
+        border: none;
+        font-family: 'Poppins-Regular';
+        font-size: 0.875rem;
+        color: var(--unnamed-color-002332);
+        opacity: 0.4;
+        box-shadow: none;
+        text-transform: none;
+        &:hover, &:active, &:focus {
+            background-color: transparent !important;
+            color: var(--unnamed-color-002332) !important;
+            opacity: 0.4;
+            box-shadow: none !important;
+            border-color: none !important;
+        }
+    }
+    &__text {
+        font-family: 'Poppins-Regular';
+        font-size: 0.875rem;
+        color: var(--unnamed-color-002332);
+        opacity: 0.4;
+    }
+}

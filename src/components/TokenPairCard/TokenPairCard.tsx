@@ -21,6 +21,8 @@ import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../ut
 import { useUpdateState } from '../../contexts/auth';
 import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
+import highriskIcon from '../../assets/images/highrisk.svg';
+import { IoWarningOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
@@ -40,6 +42,21 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
+
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
+
+  React.useEffect(() => {
+    // replace this boolean value with a function to determine wether user limit reached
+    const userLimitReached = false;
+    // replace this boolean value with a function to determine wether global limit reached
+    const globalLimitReached = true;
+    if (userLimitReached) {
+      setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
+    }
+    if (globalLimitReached) {
+      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+    }
+  }, [wallet, connection]);
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -137,12 +154,27 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     }
   };
 
+  const printTvl = () => {
+    if (isNaN(data.tvl)) {
+      return (
+        <div className="spinner-border spinner-border-sm text-info" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      );
+    }
+    return formatUSD.format(data.tvl);
+  };
+
   return (
     <>
       <div className="col col-xl-4 col-lg-6 col-md-12">
-        <div className="tokenpaircard mt-4">
+        <div
+          className={classNames('tokenpaircard mt-4', {
+            'tokenpaircard--warning': hasUserReachedDebtLimit,
+          })}
+        >
           <div className="tokenpaircard__header">
-            <div className="d-flex">
+            <div>
               <div className="d-flex align-items-center">
                 <img src={data.icons[0]} alt={'Token1'} />
                 <img src={data.icons[1]} alt={'Token2'} className="tokenpaircard__header-icon" />
@@ -151,14 +183,14 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div>
                   <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 </div>
-                <p>TVL {formatUSD.format(data.tvl)}</p>
+                <p>TVL {printTvl()}</p>
               </div>
             </div>
-            <div className="tokenpaircard__riskBox">
+            <div className="tokenpaircard__riskBox mt-2">
               <div className="text-right">
                 <div className="d-flex">
                   <img src={smallRatioIcon} alt="smallRatio" />
-                  <p>Risk Level</p>
+                  <p>Risk Rating</p>
                   <img src={liskLevelIcon} alt="lisklevel" />
                 </div>
                 <div className="d-flex justify-content-end">
@@ -208,7 +240,16 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               )}
             </div>
           )}
-
+          {hasUserReachedDebtLimit && (
+            <div className="tokenpaircard__warningBox">
+              <div>
+                <IoWarningOutline size={27} />
+              </div>
+              <p>
+                <strong>USDr Limit Reached:</strong> {hasUserReachedDebtLimit}
+              </p>
+            </div>
+          )}
           <div className="tokenpaircard__detailBox">
             {isOpen && (
               <div className="tokenpaircard__detailBox__content">
@@ -225,7 +266,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div className="d-flex justify-content-between mt-1">
                   <div>
                     USDr Debt
-                    <p>$ 0.00</p>
+                    <p> 0.00</p>
                   </div>
                   <div className="text-right">
                     Ratio TVL
