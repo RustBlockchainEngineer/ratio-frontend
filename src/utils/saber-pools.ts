@@ -50,7 +50,5 @@ export async function getSaberSwapPoolsInfo(conn: Connection, connEnv: string) {
       tokenBAmount,
     };
   }
-  console.log('SABER POOLS');
-  console.log(swapPoolsInfo);
   return swapPoolsInfo;
 }

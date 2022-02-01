@@ -8,11 +8,11 @@ export async function getDevnetPools() {
   const poolsData = (await Axios.get('https://registry.saber.so/data/pools-info.devnet.json')).data.pools;
   const swapPools = [];
   for (let i = 0; i < poolsData.length; i++) {
-    const poolName = poolsData[i].name;
-    const swapAddress = poolsData[i].swap.config.swapAccount;
-    const quarryAddress = poolsData[i].quarry;
+    const name = poolsData[i]?.name;
+    const swapAddress = poolsData[i]?.swap?.config?.swapAccount;
+    const quarryAddress = poolsData[i]?.quarry;
     swapPools.push({
-      name: poolName,
+      name,
       swapAddress,
       quarryAddress,
     });
@@ -25,11 +25,11 @@ export async function getMainnetPools() {
   const poolsData = (await Axios.get('https://registry.saber.so/data/pools-info.mainnet.json')).data.pools;
   const swapPools = [];
   for (let i = 0; i < poolsData.length; i++) {
-    const poolName = poolsData[i].name;
-    const swapAddress = poolsData[i].swap.config.swapAccount;
-    const quarryAddress = poolsData[i].quarry;
+    const name = poolsData[i]?.name;
+    const swapAddress = poolsData[i]?.swap?.config?.swapAccount;
+    const quarryAddress = poolsData[i]?.quarry;
     swapPools.push({
-      name: poolName,
+      name,
       swapAddress,
       quarryAddress,
     });
