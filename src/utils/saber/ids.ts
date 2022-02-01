@@ -10,9 +10,11 @@ export async function getDevnetPools() {
   for (let i = 0; i < poolsData.length; i++) {
     const poolName = poolsData[i].name;
     const swapAccount = poolsData[i].swap.config.swapAccount;
+    const quarryAddress = poolsData[i].quarry;
     swapPools.push({
       name: poolName,
-      address: swapAccount,
+      swapAddress: swapAccount,
+      quarryAddress: quarryAddress,
     });
   }
   return swapPools;
@@ -25,9 +27,11 @@ export async function getMainnetPools() {
   for (let i = 0; i < poolsData.length; i++) {
     const poolName = poolsData[i].name;
     const swapAccount = poolsData[i].swap.config.swapAccount;
+    const quarryAddress = poolsData[i].quarry;
     swapPools.push({
       name: poolName,
-      address: swapAccount,
+      swapAddress: swapAccount,
+      quarryAddress: quarryAddress,
     });
   }
   return swapPools;
