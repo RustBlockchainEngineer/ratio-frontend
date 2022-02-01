@@ -130,9 +130,9 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const printTvl = () => {
     if (isNaN(data.tvl)) {
       return (
-        <div className="spinner-border spinner-border-sm text-info" role="status">
+        <span className="spinner-border spinner-border-sm text-info" role="status">
           <span className="sr-only">Loading...</span>
-        </div>
+        </span>
       );
     }
     return formatUSD.format(data.tvl);
