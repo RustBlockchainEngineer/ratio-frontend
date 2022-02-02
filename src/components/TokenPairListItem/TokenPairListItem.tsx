@@ -53,7 +53,6 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
     const debtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
 
-    console.log('Debt', debtAmount.fixed(), formatUSD.format(Number(totalDebt.toFixed(2))));
     setTVL(Number(tvlAmount.fixed()));
     setTotalDebt(Number(debtAmount.fixed()));
   };
