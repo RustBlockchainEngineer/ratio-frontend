@@ -222,7 +222,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
             <div>
               <h5>APR:</h5>
-              <h6 className="semiBold mt-1">{data.apr}%</h6>
+              <h6 className="semiBold mt-1">{Number(data?.apr).toFixed(2)}%</h6>
             </div>
           </div>
           {compare_vaults_status ? (
