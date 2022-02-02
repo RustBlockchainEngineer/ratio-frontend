@@ -44,6 +44,7 @@
     "@project-serum/common": "^0.0.1-beta.3",
     "@project-serum/serum": "^0.13.55",
     "@project-serum/sol-wallet-adapter": "^0.2.5",
+    "@pythnetwork/client": "^2.5.3",
     "@saberhq/stableswap-sdk": "^1.12.32",
     "@solana/buffer-layout": "^4.0.0",
     "@solana/spl-token": "^0.1.6",
