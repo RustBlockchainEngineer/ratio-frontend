@@ -25,7 +25,7 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
   const [hover, setHover] = React.useState(false);
   // const { onClick, children, disabled, allowWalletChange, ...rest } = props
 
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const isTable = useMediaQuery({ minWidth: 990, maxWidth: 1280 });
 
   useEffect(() => {
     if (connected) {
@@ -35,7 +35,7 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
 
   return (
     <div className="header d-flex">
-      {isMobile && <img src={darkMode ? darkLogo : logo} alt="logo" />}
+      {/* {isTable && <img src={darkMode ? darkLogo : logo} alt="logo" />} */}
       {connected && <GuideModal />}
       {connected && (
         <Button disabled={!connected} className="button--fill walletBtn mr-3" onClick={() => history.push('/faucet')}>

@@ -41,7 +41,7 @@
   //   filter: blur(50px);
   // }
   &::after {
-    @include respond-to(sm) {
+    @include respond-to(md) {
       display: none;
     }
     content: '';
@@ -58,7 +58,7 @@
   }
   &_container {
     background-color: var(--background);
-    @include respond-to(sm) {
+    @include respond-to(md) {
       margin-left: 0px;
     }
     margin-left: 300px;

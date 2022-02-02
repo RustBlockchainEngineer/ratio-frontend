@@ -3,6 +3,15 @@
   padding-right: 5rem;
   background-color: var(--background);
   padding-bottom: 5rem;
+  @include respond-to(xl) {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+  @include respond-to(lg) {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
   @include respond-to(sm) {
     padding-top: 2rem;
     padding-left: 0px;
