@@ -17,6 +17,7 @@ import { getDebtLimitForAllVaults } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformTvls } from '../../hooks/useFillPlatformTvls';
+import { useFillPlatformAPR } from '../../hooks/useFillPlatformAPR';
 
 const AllVaults = () => {
   const dispatch = useDispatch();
@@ -38,7 +39,7 @@ const AllVaults = () => {
 
   const vaultsWithPlatTvl = useFillPlatformTvls(vaults);
 
-  console.log(vaultsWithPlatTvl, vaults);
+  const vaultsWithPlatAPR = useFillPlatformAPR(vaultsWithPlatTvl);
 
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
@@ -74,12 +75,12 @@ const AllVaults = () => {
           ),
           title: item.symbol,
           tvl: item.platform_tvl,
+          apr: item.platform_apr,
           platform: {
             link: item.platform_site,
             name: item.platform_name,
             icon: item.platform_icon,
           },
-          apr: 'APR[key]',
           risk: item.risk_rating,
         };
       });
@@ -97,8 +98,8 @@ const AllVaults = () => {
   };
 
   const factorial = React.useMemo(
-    () => factorialOf(vaultsWithPlatTvl, filter_data, sort_data, view_data, platform_data),
-    [vaultsWithPlatTvl, connected, filter_data, sort_data, view_data, platform_data]
+    () => factorialOf(vaultsWithPlatAPR, filter_data, sort_data, view_data, platform_data),
+    [vaultsWithPlatAPR, connected, filter_data, sort_data, view_data, platform_data]
   );
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
