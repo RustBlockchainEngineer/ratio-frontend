@@ -123,9 +123,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
         setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
       });
     }
-    return () => {
-      setHasUserReachedDebtLimit(false);
-    };
   }, [connected, connection, wallet, factorial]);
 
   const showContent = (vtype: string) => {
