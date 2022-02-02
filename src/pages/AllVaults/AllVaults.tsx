@@ -16,7 +16,7 @@ import { toast } from 'react-toastify';
 import { getDebtLimitForAllVaults } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
-import { useFillPatformTvls } from '../../hooks/useFillPatformTvls';
+import { useFillPlatformTvls } from '../../hooks/useFillPlatformTvls';
 
 const AllVaults = () => {
   const dispatch = useDispatch();
@@ -36,7 +36,9 @@ const AllVaults = () => {
 
   const { status, error, vaults } = useFetchVaults();
 
-  const vaultsWithPlatTvl = useFillPatformTvls(vaults);
+  const vaultsWithPlatTvl = useFillPlatformTvls(vaults);
+
+  console.log(vaultsWithPlatTvl, vaults);
 
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
@@ -51,15 +53,15 @@ const AllVaults = () => {
     });
   };
 
-  function dynamicSort(sortProperty: string, viewProperty: string) {
+  const dynamicSort = (sortProperty: string, viewProperty: string) => {
     const sortOrder = viewProperty === 'ascending' ? 1 : -1;
     return function (a: any, b: any) {
       const result = a[sortProperty] < b[sortProperty] ? -1 : a[sortProperty] > b[sortProperty] ? 1 : 0;
       return result * sortOrder;
     };
-  }
+  };
 
-  function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
+  const factorialOf = (d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) => {
     if (d !== undefined) {
       const p = filterData(d, filter_data, platform_data).map((item: LPair, index: any) => {
         return {
@@ -92,7 +94,7 @@ const AllVaults = () => {
       return x;
     }
     return [];
-  }
+  };
 
   const factorial = React.useMemo(
     () => factorialOf(vaultsWithPlatTvl, filter_data, sort_data, view_data, platform_data),
