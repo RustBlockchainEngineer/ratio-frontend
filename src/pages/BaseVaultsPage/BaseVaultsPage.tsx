@@ -121,6 +121,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
         const hasReachedDebtLimitReduced: boolean = vaults.reduce(reducer, false);
 
         setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
+        //In case a cleanup function needs to be added, consider that setting state to default values might race against other pages that use this same base page.
       });
     }
   }, [connected, connection, wallet, factorial]);
