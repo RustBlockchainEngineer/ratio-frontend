@@ -24,6 +24,7 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import highriskIcon from '../../assets/images/highrisk.svg';
 import { IoWarningOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -156,11 +157,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const printTvl = () => {
     if (isNaN(data.tvl)) {
-      return (
-        <div className="spinner-border spinner-border-sm text-info" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      );
+      return <LoadingSpinner className="spinner-border-sm text-info" />;
     }
     return formatUSD.format(data.tvl);
   };

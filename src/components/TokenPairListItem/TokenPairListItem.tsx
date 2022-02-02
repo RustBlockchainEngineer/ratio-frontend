@@ -17,6 +17,7 @@ import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../ut
 import linkIcon from '../../assets/images/link.svg';
 import { sleep } from '@project-serum/common';
 import { useUpdateState } from '../../contexts/auth';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
 
 const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -129,11 +130,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const printTvl = () => {
     if (isNaN(data.tvl)) {
-      return (
-        <div className="spinner-border spinner-border-sm text-info" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      );
+      return <LoadingSpinner className="spinner-border-sm text-info" />;
     }
     return formatUSD.format(data.tvl);
   };
