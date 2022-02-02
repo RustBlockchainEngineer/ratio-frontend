@@ -40,15 +40,8 @@ export const useFetchVaults = () => {
     const url = `${API_ENDPOINT}/lpairs`;
     if (!API_ENDPOINT || !API_ENDPOINT.trim()) return;
 
-    fetchData();
-
-    // We use the cancelrequest variable to avoid updating any component state if the component was cleaned up.
-    return function cleanup() {
-      cancelRequest = true;
-    };
-
     // Gets the data for all the existent vaults. If a cached version is found, it gets returned.
-    async function fetchData() {
+    const fetchData = async () => {
       dispatch({ type: 'FETCHING' });
       if (cache.current && cache.current.length > 0) {
         const data = cache.current;
@@ -65,7 +58,14 @@ export const useFetchVaults = () => {
           dispatch({ type: 'FETCH_ERROR', payload: error.message });
         }
       }
-    }
+    };
+
+    fetchData();
+
+    // We use the cancelrequest variable to avoid updating any component state if the component was cleaned up.
+    return () => {
+      cancelRequest = true;
+    };
   }, [API_ENDPOINT]);
 
   return state;
