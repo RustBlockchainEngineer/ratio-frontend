@@ -17,6 +17,7 @@ import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../ut
 import linkIcon from '../../assets/images/link.svg';
 import { sleep } from '@project-serum/common';
 import { useUpdateState } from '../../contexts/auth';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { MINTADDRESS } from '../../constants';
 
 const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
@@ -63,7 +64,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     let totalDebtAmount = null;
     let tvlAmount = null;
     do {
-      await sleep(300);
+      await sleep(1000);
       const tokenVault = getTokenVaultByMint(connection, data.mint);
       tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
       totalDebtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
@@ -140,11 +141,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const printTvl = () => {
     if (isNaN(data.tvl)) {
-      return (
-        <div className="spinner-border spinner-border-sm text-info" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      );
+      return <LoadingSpinner className="spinner-border-sm text-info" />;
     }
     return formatUSD.format(data.tvl);
   };

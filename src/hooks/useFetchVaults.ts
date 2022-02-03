@@ -13,11 +13,17 @@ import { LPair } from '../types/VaultTypes';
   Example usage: 
     const { status, error, vaults } = useFetchVaults();
 */
+export enum VaultsFetchingStatus {
+  NotAsked,
+  Loading,
+  Finish,
+  Error,
+}
 export const useFetchVaults = () => {
   const cache = useRef<LPair[]>([]);
 
   const initialState = {
-    status: 'idle',
+    status: VaultsFetchingStatus.NotAsked,
     error: null,
     vaults: [],
   };
@@ -25,11 +31,11 @@ export const useFetchVaults = () => {
   const [state, dispatch] = useReducer((state: any, action: any) => {
     switch (action.type) {
       case 'FETCHING':
-        return { ...initialState, status: 'fetching' };
+        return { ...initialState, status: VaultsFetchingStatus.Loading };
       case 'FETCHED':
-        return { ...initialState, status: 'fetched', vaults: action.payload };
+        return { ...initialState, status: VaultsFetchingStatus.Finish, vaults: action.payload };
       case 'FETCH_ERROR':
-        return { ...initialState, status: 'error', error: action.payload };
+        return { ...initialState, status: VaultsFetchingStatus.Error, error: action.payload };
       default:
         return state;
     }
