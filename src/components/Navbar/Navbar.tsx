@@ -93,7 +93,9 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
         const { mint, lockedAmount, debt }: any = vault;
         const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
         const pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
+        const title = all_vaults.filter((vault: any) => vault['mint'] === mint)[0]['title'];
         const vaultValue: any = {
+          title,
           mint,
           pv,
           debt: new TokenAmount(debt, usdrMint?.decimals).fixed(),
@@ -148,7 +150,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
             onItemClick={onItemClick}
             collapseFlag={collapseFlag}
             expands={true}
-            expandData={activeVaultsData}
+            expandData={active_vaults}
             positionValues={activeVaultsData}
           />
         )}
