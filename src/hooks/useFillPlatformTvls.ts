@@ -32,6 +32,7 @@ export const useFillPlatformTvls = (vaults: LPair[]) => {
     const result = vaults.map((item) => {
       //Obtain the tvl for the vault specific platform.
       item.platform_tvl = poolInfoProviderFactory.getProviderForVault(item).getTVLbyVault(item);
+      item.earned_rewards = poolInfoProviderFactory.getProviderForVault(item).getRewards();
       return item;
     });
     setVaultsWithTvl(result);
