@@ -210,7 +210,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div>
                 Rewards Earned
-                <p>$ 0.00</p>
+                <p>{formatUSD.format(data.earned_rewards)}</p>
               </div>
               <div>
                 USDr Debt
