@@ -40,6 +40,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   const { status, error, vaults } = useVaultsContextProvider();
 
+  // TODO : try to create a useFillPlatformWithRatioValues, with this boths hooks
   const vaultsWithPlatTvl = useFillPlatformTvls(vaults);
 
   const vaultsWithPlatAPR = useFillPlatformAPR(vaultsWithPlatTvl);
@@ -84,6 +85,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               title: item.symbol,
               tvl: item.platform_tvl,
               apr: item.platform_apr,
+              earned_rewards: item.earned_rewards,
               platform: {
                 link: item.platform_site,
                 name: item.platform_name,
