@@ -10,9 +10,9 @@ import { LPair } from '../types/VaultTypes';
   This custom hook allows to fill the platforms tvl information for each of the vaults received, depending on the platform related to the vault. 
 
   Example usage: 
-    const vaultsWithPatformTvls = useFillPatformTvls(vaults);
+    const vaultsWithPlatformTvls = useFillPlatformTvls(vaults);
 */
-export const useFillPatformTvls = (vaults: LPair[]) => {
+export const useFillPlatformTvls = (vaults: LPair[]) => {
   const [vaultsWithTvl, setVaultsWithTvl] = useState<LPair[]>([]);
   const { pools: raydiumPools } = useRaydiumPoolsInfo();
   const { pools: orcaPools } = useOrcaPoolsInfo();

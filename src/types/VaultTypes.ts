@@ -40,6 +40,7 @@ export interface LPair {
   page_url: string;
   pool_size: number;
   platform_tvl: number;
+  platform_apr: number;
   platform_id: string;
   platform_name?: string;
   platform_site?: string;
@@ -51,6 +52,13 @@ export interface LPair {
   updated_on: number;
   lpasset?: LPAsset[];
 }
+
+export interface LPairAPRLast {
+  lpair_address_id: string;
+  apr: number;
+  created_on?: number;
+}
+
 export enum PoolProvider {
   'ORCA' = 'ORCA',
   'RAYDIUM' = 'RAYDIUM',
