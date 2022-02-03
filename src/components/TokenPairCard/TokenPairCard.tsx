@@ -248,16 +248,18 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               )}
             </div>
           )}
-          {hasUserReachedDebtLimit && (
-            <div className="tokenpaircard__warningBox">
-              <div>
-                <IoWarningOutline size={27} />
+          {
+            /* TODO: fix this */ false && (
+              <div className="tokenpaircard__warningBox">
+                <div>
+                  <IoWarningOutline size={27} />
+                </div>
+                <p>
+                  <strong>USDr Limit Reached:</strong> {hasUserReachedDebtLimit}
+                </p>
               </div>
-              <p>
-                <strong>USDr Limit Reached:</strong> {hasUserReachedDebtLimit}
-              </p>
-            </div>
-          )}
+            )
+          }
           <div className="tokenpaircard__detailBox">
             {isOpen && (
               <div className="tokenpaircard__detailBox__content">

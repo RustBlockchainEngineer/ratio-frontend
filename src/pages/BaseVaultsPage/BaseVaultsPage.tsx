@@ -180,14 +180,16 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   return (
     <>
-      {hasUserReachedDebtLimit && (
-        <Banner
-          title="USDr Debt Limit Reached:"
-          message="You have reached your overall USDr Debt Limit"
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
-      )}
+      {
+        /* TODO: fix this */ false && (
+          <Banner
+            title="USDr Debt Limit Reached:"
+            message="You have reached your overall USDr Debt Limit"
+            bannerIcon={BannerIcon.riskLevel}
+            className="debt-limit-reached"
+          />
+        )
+      }
       <div className="allvaults">
         <FilterPanel label={title} viewType={viewType} onViewType={onViewType} />
 
