@@ -176,11 +176,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   return (
     <>
       <div className="col col-xl-4 col-lg-6 col-md-12">
-        <div
-          className={classNames('tokenpaircard mt-4', {
-            'tokenpaircard--warning': hasUserReachedDebtLimit,
-          })}
-        >
+        {/* TODO: fix this class, added when the user reach the limit {'tokenpaircard--warning': hasUserReachedDebtLimit}*/}
+        <div className={classNames('tokenpaircard mt-4')}>
           <div className="tokenpaircard__header">
             <div>
               <div className="d-flex align-items-center">
