@@ -267,7 +267,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                   </div>
                   <div className="text-right">
                     Rewards earned
-                    <p>$0</p>
+                    <p>{formatUSD.format(data.earned_rewards)}</p>
                   </div>
                 </div>
                 <div className="d-flex justify-content-between mt-1">
