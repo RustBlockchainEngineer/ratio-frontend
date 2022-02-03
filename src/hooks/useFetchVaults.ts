@@ -43,8 +43,8 @@ export const useFetchVaults = () => {
 
   useEffect(() => {
     let cancelRequest = false;
-    const url = `${API_ENDPOINT}/lpairs`;
     if (!API_ENDPOINT || !API_ENDPOINT.trim()) return;
+    const url = `${API_ENDPOINT}/lpairs`;
 
     // Gets the data for all the existent vaults. If a cached version is found, it gets returned.
     const fetchData = async () => {
@@ -55,8 +55,13 @@ export const useFetchVaults = () => {
       } else {
         try {
           const response = await fetch(url);
-          const data: LPair[] = await response.json();
-          cache.current = data;
+          let data: LPair[] = [];
+
+          if (response.status === 200) {
+            data = await response.json();
+            cache.current = data;
+          }
+
           if (cancelRequest) return;
           dispatch({ type: 'FETCHED', payload: data });
         } catch (error: any) {

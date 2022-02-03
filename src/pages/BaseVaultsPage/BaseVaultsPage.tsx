@@ -139,6 +139,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       }
     };
 
+    if (factorial && factorial.length === 0) {
+      return (
+        <div className="d-flex flex-column vh-40 justify-content-center align-items-center">
+          <h4>There are no vaults available</h4>
+        </div>
+      );
+    }
+
     if (vtype === 'tile') {
       return (
         <div className="row">
