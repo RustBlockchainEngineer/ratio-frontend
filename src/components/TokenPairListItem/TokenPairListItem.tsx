@@ -179,7 +179,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
         <td>
           <div className="tokenpaircard__table__td">
             <h5>APR</h5>
-            <h6 className="semiBold mt-2">{Number(data?.apr).toFixed(2)}%</h6>
+            <h6 className="semiBold mt-2">{Number(data?.apr).toFixed()}%</h6>
           </div>
         </td>
         <td>
