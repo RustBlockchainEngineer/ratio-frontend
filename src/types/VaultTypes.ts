@@ -39,6 +39,7 @@ export interface LPair {
   symbol: string;
   page_url: string;
   pool_size: number;
+  platform_tvl: number;
   platform_id: string;
   platform_name?: string;
   platform_site?: string;
@@ -49,4 +50,10 @@ export interface LPair {
   created_on?: number;
   updated_on: number;
   lpasset?: LPAsset[];
+}
+export enum PoolProvider {
+  'ORCA' = 'ORCA',
+  'RAYDIUM' = 'RAYDIUM',
+  'SABER' = 'SABER',
+  'MERCURIAL' = 'MERCURIAL',
 }

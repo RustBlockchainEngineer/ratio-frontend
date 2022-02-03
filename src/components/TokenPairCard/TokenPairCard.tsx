@@ -1,15 +1,16 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { ERiskLevel, getRiskLevel } from '../../libs/helper';
+import { useSelector } from 'react-redux';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
-import { useWallet } from '../../contexts/wallet';
+import { PublicKey } from '@solana/web3.js';
+import { sleep } from '@project-serum/common';
 
+import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
-import { actionTypes, selectors } from '../../features/dashboard';
+import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
@@ -17,32 +18,46 @@ import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
-import { PublicKey } from '@solana/web3.js';
 import { useUpdateState } from '../../contexts/auth';
-import rayIcon from '../../assets/images/RAY.svg';
 import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import highriskIcon from '../../assets/images/highrisk.svg';
+import { IoWarningOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
-import { sleep } from '@project-serum/common';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
-  const dispatch = useDispatch();
   const history = useHistory();
-  const [isOpen, setOpen] = React.useState(false);
-  const [checked, setChecked] = React.useState(false);
-  const compare_valuts_status = useSelector(selectors.getCompareVaultsStatus);
+
+  const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
 
   const collMint = useMint(data.mint);
-  const [userState, setUserState] = React.useState(null);
   const tokenPrice = usePrice(data.mint);
 
+  const [isOpen, setOpen] = React.useState(false);
+  const [checked, setChecked] = React.useState(false);
+  const [userState, setUserState] = React.useState(null);
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
+
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
+
+  React.useEffect(() => {
+    // replace this boolean value with a function to determine wether user limit reached
+    const userLimitReached = false;
+    // replace this boolean value with a function to determine wether global limit reached
+    const globalLimitReached = true;
+    if (userLimitReached) {
+      setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
+    }
+    if (globalLimitReached) {
+      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+    }
+  }, [wallet, connection]);
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -140,10 +155,21 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     }
   };
 
+  const printTvl = () => {
+    if (isNaN(data.tvl)) {
+      return <LoadingSpinner className="spinner-border-sm text-info" />;
+    }
+    return formatUSD.format(data.tvl);
+  };
+
   return (
     <>
       <div className="col col-xl-4 col-lg-6 col-md-12">
-        <div className="tokenpaircard mt-4">
+        <div
+          className={classNames('tokenpaircard mt-4', {
+            'tokenpaircard--warning': hasUserReachedDebtLimit,
+          })}
+        >
           <div className="tokenpaircard__header">
             <div>
               <div className="d-flex align-items-center">
@@ -154,7 +180,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div>
                   <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 </div>
-                <p>TVL {formatUSD.format(data.tvl)}</p>
+                <p>TVL {printTvl()}</p>
               </div>
             </div>
             <div className="tokenpaircard__riskBox mt-2">
@@ -186,7 +212,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               <h6 className="semiBold mt-1">{data.apr}%</h6>
             </div>
           </div>
-          {compare_valuts_status ? (
+          {compare_vaults_status ? (
             <div className={classNames('tokenpaircard__btnBox', { 'tokenpaircard__btnBox--checked': checked })}>
               <label>
                 <input type="checkbox" className="filled-in" checked={checked} onChange={handleChangeComparison} />
@@ -211,7 +237,16 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
               )}
             </div>
           )}
-
+          {hasUserReachedDebtLimit && (
+            <div className="tokenpaircard__warningBox">
+              <div>
+                <IoWarningOutline size={27} />
+              </div>
+              <p>
+                <strong>USDr Limit Reached:</strong> {hasUserReachedDebtLimit}
+              </p>
+            </div>
+          )}
           <div className="tokenpaircard__detailBox">
             {isOpen && (
               <div className="tokenpaircard__detailBox__content">
@@ -228,11 +263,11 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <div className="d-flex justify-content-between mt-1">
                   <div>
                     USDr Debt
-                    <p>$ 0.00</p>
+                    <p> 0.00</p>
                   </div>
                   <div className="text-right">
-                    {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} TVL
-                    <p>$0,000,000</p>
+                    Ratio TVL
+                    <p>{formatUSD.format(tvlUSD)}</p>
                   </div>
                 </div>
               </div>

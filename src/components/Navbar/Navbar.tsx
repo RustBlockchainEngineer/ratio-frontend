@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 import NavbarItem from './NavbarItem';
+import NavbarProgressBar from './NavbarProgressBar';
 import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
@@ -24,6 +25,8 @@ import { TokenAmount } from '../../utils/safe-math';
 import { sleep } from '../../utils/utils';
 import { usePrices } from '../../contexts/price';
 import { actionTypes, selectors } from '../../features/dashboard';
+import { LPair } from '../../types/VaultTypes';
+import { useVaultsContextProvider } from '../../contexts/vaults';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -51,6 +54,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const usdrMint = useMint(USDR_MINT_KEY);
   const prices = usePrices();
 
+  const { vaults } = useVaultsContextProvider();
+  const mints = useMemo(() => vaults?.map((item: LPair) => item.address_id) || [], [vaults]);
   const all_vaults = useSelector(selectors.getAllVaults);
   const active_vaults = useSelector(selectors.getActiveVaults);
   const overview = useSelector(selectors.getOverview);
@@ -61,18 +66,18 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
   const { updateStateFlag } = useUpdateState();
 
-  const showOverview = async () => {
-    const overview = await getUserOverview(connection, wallet);
+  const showOverview = async (mints: any[]) => {
+    const overview = await getUserOverview(connection, wallet, mints);
     dispatch({ type: actionTypes.SET_OVERVIEW, payload: overview });
     setOverviewData(JSON.stringify(overview));
   };
 
-  const getUpdateOverview = async () => {
+  const getUpdateOverview = async (mints: any[]) => {
     const originOverviewData = overviewData;
     let newOverviewData = '';
     do {
       await sleep(300);
-      const overview = await getUserOverview(connection, wallet);
+      const overview = await getUserOverview(connection, wallet, mints);
       newOverviewData = JSON.stringify(overview);
     } while (newOverviewData !== originOverviewData);
     setOverviewData(newOverviewData);
@@ -116,12 +121,12 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   React.useEffect(() => {
     if (connected && wallet?.publicKey && usdrMint) {
       if (updateStateFlag === false) {
-        showOverview();
+        showOverview(mints);
       } else {
-        getUpdateOverview();
+        getUpdateOverview(mints);
       }
     }
-  }, [connected, wallet, usdrMint, updateStateFlag, prices]);
+  }, [connected, wallet, usdrMint, updateStateFlag, prices, mints]);
 
   const onItemClick = (index: string) => {
     setNavIndex(index);
@@ -184,8 +189,10 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
               </div>
               <div className="navbar-vertical__item">
                 <h6>USDr Minted</h6>
-                <h6 className="navbar-vertical__item--green">$ {(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
+                <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
+              <NavbarProgressBar type="TVL Cap" />
+              <NavbarProgressBar type="USDr Debt" />
             </div>
           ) : null
         ) : (

@@ -10,13 +10,14 @@ import Layer from './pages/Layer';
 import Faucet from './pages/Faucet';
 import AdminPanel from './pages/AdminPanel';
 import { AuthProvider } from './contexts/auth';
-import { RaydiumPoolProvider, SaberPoolProvider, MercurialPoolProvider, OrcaPoolProvider } from './contexts/pools';
+import { RaydiumPoolProvider } from './contexts/pools';
 import { AuthContextProvider as APIAuthContextProvider } from './contexts/authAPI';
 import { PriceProvider } from './contexts/price';
 import { MercurialAPIProvider } from './contexts/mercurialAPI';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Roles } from './constants/constants';
 import NotFound from './pages/NotFound';
+import { VaultsContextProvider } from './contexts/vaults';
 
 dotenv.config();
 const App: React.FC = () => {
@@ -26,47 +27,43 @@ const App: React.FC = () => {
         <WalletProvider>
           <AccountsProvider>
             <RaydiumPoolProvider>
-              <SaberPoolProvider>
-                <MercurialPoolProvider>
-                  <OrcaPoolProvider>
-                    <PriceProvider>
-                      <MarketProvider>
-                        <MercurialAPIProvider>
-                          <ThemeProvider>
-                            <Router>
-                              <div>
-                                <Switch>
-                                  <Route path="/dashboard" component={Layer} />
-                                  <Route path="/faucet" exact component={Faucet} />
-                                  {/* This next route is temporal, until we start using APIAuthContextProvider on all cases */}
-                                  <Route
-                                    path="/adminpanel"
-                                    exact
-                                    render={(props) => (
-                                      <APIAuthContextProvider>
-                                        <ProtectedRoute
-                                          role={Roles.ADMIN}
-                                          exact
-                                          path="/adminpanel"
-                                          component={AdminPanel}
-                                        />
-                                      </APIAuthContextProvider>
-                                    )}
-                                  />
-                                  <Route exact path="/">
-                                    <Redirect to="/dashboard" />
-                                  </Route>
-                                  <Route component={NotFound} />
-                                </Switch>
-                              </div>
-                            </Router>
-                          </ThemeProvider>
-                        </MercurialAPIProvider>
-                      </MarketProvider>
-                    </PriceProvider>
-                  </OrcaPoolProvider>
-                </MercurialPoolProvider>
-              </SaberPoolProvider>
+              <PriceProvider>
+                <MarketProvider>
+                  <MercurialAPIProvider>
+                    <ThemeProvider>
+                      <VaultsContextProvider>
+                        <Router>
+                          <div>
+                            <Switch>
+                              <Route path="/dashboard" component={Layer} />
+                              <Route path="/faucet" exact component={Faucet} />
+                              {/* This next route is temporal, until we start using APIAuthContextProvider on all cases */}
+                              <Route
+                                path="/adminpanel"
+                                exact
+                                render={(props) => (
+                                  <APIAuthContextProvider>
+                                    <ProtectedRoute
+                                      role={Roles.ADMIN}
+                                      exact
+                                      path="/adminpanel"
+                                      component={AdminPanel}
+                                    />
+                                  </APIAuthContextProvider>
+                                )}
+                              />
+                              <Route exact path="/">
+                                <Redirect to="/dashboard" />
+                              </Route>
+                              <Route component={NotFound} />
+                            </Switch>
+                          </div>
+                        </Router>
+                      </VaultsContextProvider>
+                    </ThemeProvider>
+                  </MercurialAPIProvider>
+                </MarketProvider>
+              </PriceProvider>
             </RaydiumPoolProvider>
           </AccountsProvider>
         </WalletProvider>
