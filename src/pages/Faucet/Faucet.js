@@ -110,13 +110,13 @@ const Faucet = () => {
           {!submitState && (
             <>
               <div className="col pl-1">
-                <Button className="button--fill swaptokensBtn " onClick={onCancel}>
+                <Button className="button--blue swaptokensBtn " onClick={onCancel}>
                   Exit
                 </Button>
               </div>
               <div className="col pr-1" onClick={!gWallet.connected ? connect : isCreated ? onSubmit : onCreateFaucet}>
                 <Button
-                  className={classNames('swaptokensBtn', amount === -1 ? 'button--disabled' : 'button--fill')}
+                  className={classNames('swaptokensBtn', amount === -1 ? 'button--disabled' : 'button--blue')}
                   disabled={!gWallet.connected}
                 >
                   {isCreated ? 'Mint' : 'Create Faucet'}
