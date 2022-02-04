@@ -46,6 +46,18 @@
       margin-left: 0.5rem;
     }
   }
+
+  &__table__warningBox {
+    //min-height: 70px;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 5px;
+    color: #FF3131;
+    p {
+      margin-bottom: 0px;
+      margin-left: 0.5rem;
+    }
+  }
   
   .generate {
     font-family: 'Poppins-Medium';
