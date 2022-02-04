@@ -11,7 +11,7 @@ export const AuthContextStatus = {
 
 export const AUTH_CONTEXT_DEFAULT_VALUE = {
   status: AuthContextStatus.NotAsked,
-  accessToken: null,
+  accessToken: '',
   user: null,
   disconnect: async () => {
     return;
@@ -23,7 +23,7 @@ const AuthContext = React.createContext(AUTH_CONTEXT_DEFAULT_VALUE);
 export const AuthContextProvider = (props: any) => {
   const [status, setStatus] = React.useState(AuthContextStatus.NotAsked);
   const [user, setUser] = React.useState(null);
-  const [accessToken, setAccessToken] = React.useState(null);
+  const [accessToken, setAccessToken] = React.useState('');
 
   const { publicKey, disconnect: disconnectWeb3, connected } = useWallet();
 
@@ -41,7 +41,7 @@ export const AuthContextProvider = (props: any) => {
   const disconnect = React.useCallback(async () => {
     await disconnectWeb3();
     setStatus(AuthContextStatus.NotAsked);
-    setAccessToken(null);
+    setAccessToken('');
   }, [disconnectWeb3]);
 
   const handleSignMessage = React.useCallback(
@@ -113,7 +113,7 @@ export const AuthContextProvider = (props: any) => {
 
   React.useEffect(() => {
     if (!connected) {
-      setAccessToken(null);
+      setAccessToken('');
       setStatus(AuthContextStatus.NotAsked);
     } else {
       auth(publicKey);

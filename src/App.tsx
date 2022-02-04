@@ -33,31 +33,15 @@ const App: React.FC = () => {
                     <ThemeProvider>
                       <VaultsContextProvider>
                         <Router>
-                          <div>
-                            <Switch>
-                              <Route path="/dashboard" component={Layer} />
-                              <Route path="/faucet" exact component={Faucet} />
-                              {/* This next route is temporal, until we start using APIAuthContextProvider on all cases */}
-                              <Route
-                                path="/adminpanel"
-                                exact
-                                render={(props) => (
-                                  <APIAuthContextProvider>
-                                    <ProtectedRoute
-                                      role={Roles.ADMIN}
-                                      exact
-                                      path="/adminpanel"
-                                      component={AdminPanel}
-                                    />
-                                  </APIAuthContextProvider>
-                                )}
-                              />
-                              <Route exact path="/">
-                                <Redirect to="/dashboard" />
-                              </Route>
-                              <Route component={NotFound} />
-                            </Switch>
-                          </div>
+                          <Switch>
+                            <Route path="/dashboard" component={Layer} />
+                            <Route path="/faucet" exact component={Faucet} />
+                            <Route path="/adminpanel" component={AdminPanel} />
+                            <Route exact path="/">
+                              <Redirect to="/dashboard" />
+                            </Route>
+                            <Route component={NotFound} />
+                          </Switch>
                         </Router>
                       </VaultsContextProvider>
                     </ThemeProvider>
