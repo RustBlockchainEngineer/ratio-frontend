@@ -48,13 +48,13 @@ const defaultPrograms = {
 export const TOKEN_VAULT_OPTIONS = [
   {
     value: 'USDC-USDR',
-    label: 'USDC-USDr LP',
+    label: 'wtUST-USDC test LP',
     icon: [`https://sdk.raydium.io/icons/${getTokenBySymbol('USDC')?.mintAddress}.png`, usdrIcon],
     mintAddress: '3ZmQRcaKCmz9WF5L3noi6tZHhbY3ZmyujqyhTViWuffn',
   },
   {
     value: 'ETH-SOL',
-    label: 'ETH-SOL LP',
+    label: 'USDC-USDT test LP',
     icon: [
       `https://sdk.raydium.io/icons/${getTokenBySymbol('ETH')?.mintAddress}.png`,
       `https://sdk.raydium.io/icons/${getTokenBySymbol('SOL')?.mintAddress}.png`,
@@ -63,7 +63,7 @@ export const TOKEN_VAULT_OPTIONS = [
   },
   {
     value: 'ATLAS-RAY',
-    label: 'ATLAS-RAY LP',
+    label: 'UST-3Pool test LP',
     icon: [
       `https://sdk.raydium.io/icons/${getTokenBySymbol('ATLAS')?.mintAddress}.png`,
       `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
@@ -72,7 +72,7 @@ export const TOKEN_VAULT_OPTIONS = [
   },
   {
     value: 'SAMO-RAY',
-    label: 'SAMO-RAY LP',
+    label: 'USDC-CASH test LP',
     icon: [
       `https://sdk.raydium.io/icons/${getTokenBySymbol('SAMO')?.mintAddress}.png`,
       `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
