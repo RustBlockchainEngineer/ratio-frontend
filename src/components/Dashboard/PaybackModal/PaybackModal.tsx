@@ -76,7 +76,7 @@ const PaybackModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
+      <Button className="gradientBtn" onClick={() => setShow(!show)}>
         Pay Back
       </Button>
       <Modal
@@ -96,8 +96,8 @@ const PaybackModal = ({ data }: any) => {
             <h4>Pay back USDr debt</h4>
             <h5>
               You owe &nbsp;
-              <span className="dashboardModal__modal__header-red">${data.usdrValue} USDr </span>. Pay back some or all
-              of your debt below.
+              <span className="dashboardModal__modal__header-red">{data.usdrValue} USDr </span>. Pay back some or all of
+              your debt below.
             </h5>
           </div>
         </Modal.Header>
@@ -119,7 +119,7 @@ const PaybackModal = ({ data }: any) => {
             />
             {/* <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput /> */}
-            <Button className="button--fill bottomBtn" onClick={() => repay()}>
+            <Button className="button--blue bottomBtn" onClick={() => repay()}>
               Pay Back Debt
             </Button>
           </div>

@@ -8,8 +8,8 @@
     &_titleBox {
       border-top: 1px solid var(--unnamed-color-f9fbfe);
       border-bottom: 1px solid var(--unnamed-color-f9fbfe);
-      display: flex;
       padding: 3rem 5rem !important;
+      padding-top: 1rem !important;
       width: 80%;
       @include respond-to(sm) {
         padding: 2rem 1rem !important;
@@ -45,8 +45,23 @@
       border-bottom: 1px solid var(--unnamed-color-f9fbfe);
       width: 20%;
       display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-right: 5rem;
       @include respond-to(sm) {
         width: 100%;
+      }
+      a {
+        display: block;
+        color: var(--unnamed-color-4c646f);
+        text-align: right;
+        &:hover {
+          color: var(--unnamed-color-4c646f);
+        }
+        @include respond-to(sm) {
+          text-align: left;
+          margin-bottom: 12px;
+        }
       }
     }
     &_speedometerBox {

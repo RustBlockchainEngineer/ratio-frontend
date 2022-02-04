@@ -52,6 +52,13 @@
       color: #f48c57;
     }
   }
+  &-A {
+    border: 1px solid #07b127;
+    background-color: rgba(#07b127, 0.1);
+    p {
+      color: #07b127;
+    }
+  }
   &-AA {
     border: 1px solid #07b127;
     background-color: rgba(#07b127, 0.1);
@@ -73,13 +80,6 @@
     background-color: rgba(#ff3131, 0.1);
     p {
       color: #ff3131;
-    }
-  }
-  &-AA {
-    color: #f48c57 !important;
-    background-color: rgba(#f48c57, 0.1);
-    p {
-      color: #f48c57;
     }
   }
   &-AAA {

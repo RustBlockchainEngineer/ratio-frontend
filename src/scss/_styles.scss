@@ -2,6 +2,7 @@
 @import './layer';
 @import './navbar';
 @import './navbarItem';
+@import './navbarProgressBar';
 @import './font-face';
 @import './button';
 @import './footer';
@@ -44,6 +45,7 @@
 @import './vaultSetup';
 @import './vaulthistoryCard';
 @import './vaultSetupContainer';
+@import './breadcrumb';
 @import './errorPage';
 @import './adminFormPage';
 
@@ -52,6 +54,15 @@
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
 @include font-face('Poppins-Medium', '../assets/fonts/Poppins-Medium');
 @include font-face('Poppins-Regular', '../assets/fonts/Poppins-Regular');
+
+$grid-breakpoints: (
+  xs: 479px,
+  sm: 767px,
+  md: 991px,
+  lg: 1280px,
+  xl: 1350px,
+  xxl: 1539px
+);
 
 :root {
   /* Colors: */
@@ -99,7 +110,7 @@
 }
 
 [data-theme='light'] {
-  --background: transparent;
+  --background: #ffffff;
   --nav-boxshadow: 10px 0px 40px #00000034;
   --primary-border: #dbe0e2;
   --secondary-border: 76, 100, 111;
@@ -192,28 +203,15 @@ input {
 .modal-xl {
   max-width: 600px !important;
 }
-.EXTREME {
+.EXTREME, .DDD, .DD, .D {
   color: #ff3131 !important;
 }
-.HIGH {
+.HIGH, .CCC, .CC, .C {
   color: #ff3131 !important;
 }
-.MEDIUM {
+.MEDIUM, .BBB, .BB, .B {
   color: #f48c57 !important;
 }
-.LOW {
-  color: #07b127 !important;
-}
-
-.DDD {
-  color: #ff3131 !important;
-}
-.DD {
-  color: #ff3131 !important;
-}
-.AA {
-  color: #f48c57 !important;
-}
-.AAA {
+.LOW, .AAA, .AA, .A {
   color: #07b127 !important;
 }

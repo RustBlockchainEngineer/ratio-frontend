@@ -48,7 +48,10 @@
   &__sortby , &__viewby {
     font-family: 'Poppins-Regular';
     color: var(--unnamed-color-3c4760);
-    font-size: 16px;
+    font-size: 0.75rem;
+    @include respond-to(sm) {
+      margin-top: 0.5rem;
+    }
   }
   &__viewtype {
     opacity: 0.4;
@@ -128,6 +131,9 @@
       &:hover {
         border: 1px solid rgba(var(--secondary-border), 0.2);
       }
+      @include respond-to(sm) {
+        margin-left: 0rem;
+      }
     }
     &__menu {
       width: 150px;
@@ -146,9 +152,13 @@
       display: none;
     }
     &__option {
+      cursor: pointer;
       color: var(--unnamed-color-3c4760);
       &:hover {
         background-color: var(--unnamed-color-5fb5ff);
+      }
+      &--active {
+        background-color: var(--unnamed-color-f48c57);
       }
     }
   }

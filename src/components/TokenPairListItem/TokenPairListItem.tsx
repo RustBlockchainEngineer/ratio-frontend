@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { ERiskLevel, getRiskLevel } from '../../libs/helper';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import { PublicKey } from '@solana/web3.js';
 
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
@@ -13,23 +13,46 @@ import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getUserState } from '../../utils/ratio-lending';
-import { PublicKey } from '@solana/web3.js';
-
-import highriskIcon from '../../assets/images/highrisk.svg';
+import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
 import linkIcon from '../../assets/images/link.svg';
-import arrowDownIcon from '../../assets/images/arrow-down.svg';
+import { IoAlertCircleOutline } from 'react-icons/io5';
+import { sleep } from '@project-serum/common';
+import { useUpdateState } from '../../contexts/auth';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
+import { MINTADDRESS } from '../../constants';
 
 const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
 
-  const [expand, setExpand] = useState(false);
   const tokenPrice = usePrice(data.mint);
-  const [positionValue, setPositionValue] = React.useState(0);
   const { wallet, connected, publicKey } = useWallet();
-  const [userState, setUserState] = React.useState(null);
   const connection = useConnection();
   const collMint = useMint(data.mint);
+  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+
+  const usdrMint = useMint(MINTADDRESS['USDR']);
+
+  const [expand, setExpand] = React.useState(false);
+  const [userState, setUserState] = React.useState(null);
+  const [positionValue, setPositionValue] = React.useState(0);
+  const [tvl, setTVL] = React.useState(0);
+  const [tvlUSD, setTVLUSD] = React.useState(0);
+  const [totalDebt, setTotalDebt] = React.useState(0);
+
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
+
+  React.useEffect(() => {
+    // replace this boolean value with a function to determine wether user limit reached
+    const userLimitReached = false;
+    // replace this boolean value with a function to determine wether global limit reached
+    const globalLimitReached = false;
+    if (userLimitReached) {
+      setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
+    }
+    if (globalLimitReached) {
+      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+    }
+  }, [wallet, connection]);
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -42,6 +65,51 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     };
   }, [wallet, connection, collMint]);
 
+  const updateVaultValues = async () => {
+    const tokenVault = await getTokenVaultByMint(connection, data.mint);
+    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
+    const debtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
+
+    setTVL(Number(tvlAmount.fixed()));
+    setTotalDebt(Number(debtAmount.fixed()));
+  };
+
+  const refreshVaultValues = async () => {
+    const oriAmount = tvl;
+    const oriTotalDebt = totalDebt;
+    let totalDebtAmount = null;
+    let tvlAmount = null;
+    do {
+      await sleep(1000);
+      const tokenVault = getTokenVaultByMint(connection, data.mint);
+      tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
+      totalDebtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
+    } while (oriAmount === Number(tvlAmount.fixed()) || oriTotalDebt === Number(totalDebtAmount.fixed()));
+
+    setTVL(Number(tvlAmount.fixed()));
+    setTotalDebt(Number(totalDebtAmount.fixed()));
+  };
+
+  React.useEffect(() => {
+    if (connection && collMint && usdrMint && data.mint) {
+      if (updateStateFlag) {
+        refreshVaultValues();
+      } else {
+        updateVaultValues();
+      }
+    }
+    return () => {
+      setTVL(0);
+      setTotalDebt(0);
+    };
+  }, [connection, collMint, usdrMint, updateStateFlag]);
+
+  React.useEffect(() => {
+    if (tokenPrice && tvl) {
+      setTVLUSD(Number((tokenPrice * tvl).toFixed(2)));
+    }
+  }, [tvl, tokenPrice]);
+
   React.useEffect(() => {
     if (userState && tokenPrice && collMint) {
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
@@ -51,6 +119,15 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
       setPositionValue(0);
     };
   }, [tokenPrice, userState, collMint]);
+
+  React.useEffect(() => {
+    if (updateStateFlag && wallet?.publicKey) {
+      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
+        setUserState(res);
+        setUpdateStateFlag(false);
+      });
+    }
+  }, [updateStateFlag]);
 
   const showDashboard = () => {
     if (!connected) {
@@ -63,11 +140,11 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const renderModalButton = () => {
     return (
       <div className="d-inline-flex">
-        <Button disabled={!connected} className="button button--gradientBorder generate mt-2">
+        <Button disabled={!connected} className="button button--blue generate mt-2">
           Harvest
         </Button>
         <div className="mx-1"></div>
-        <Button disabled={!connected} className="button button--fill generate mt-2" onClick={showDashboard}>
+        <Button disabled={!connected} className="button button--blue generate mt-2" onClick={showDashboard}>
           Open Vault
         </Button>
       </div>
@@ -78,12 +155,17 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     setExpand(!expand);
   };
 
-  const riskLevel = React.useMemo(() => getRiskLevel(data.risk), [data]);
+  const printTvl = () => {
+    if (isNaN(data.tvl)) {
+      return <LoadingSpinner className="spinner-border-sm text-info" />;
+    }
+    return formatUSD.format(data.tvl);
+  };
 
   return (
     <>
       <tr>
-        <th scope="row" className="align-middle">
+        <td scope="row" className="align-middle">
           <div className="align-items-center">
             <div className="d-flex ">
               <div className="d-flex align-items-center">
@@ -92,12 +174,22 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
-                <p>TVL {formatUSD.format(data.tvl)}</p>
+                <p>TVL {printTvl()}</p>
               </div>
             </div>
           </div>
+          {hasUserReachedDebtLimit && (
+            <div className="tokenpaircard__table__warningBox">
+              <div>
+                <IoAlertCircleOutline size={20} />
+              </div>
+              <p>
+                <strong>USDr Limit Reached:</strong> {hasUserReachedDebtLimit}
+              </p>
+            </div>
+          )}
           <div className="mt-1 d-block">{renderModalButton()}</div>
-        </th>
+        </td>
         <td>
           <div className="tokenpaircard__table__td">
             <h5>Platform:</h5>
@@ -113,7 +205,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
         <td>
           <div className="tokenpaircard__table__td">
             <h5>APR</h5>
-            <h6 className="semiBold mt-2">{data.apr}%</h6>
+            <h6 className="semiBold mt-2">{Number(data?.apr).toFixed()}%</h6>
           </div>
         </td>
         <td>
@@ -121,10 +213,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
             <div className="tokenpaircard__table__td">
               <h5>Ratio Risk Rating:</h5>
               <div className="d-flex mt-2">
-                {(getRiskLevel(data.risk) === ERiskLevel.EXTREME || getRiskLevel(data.risk) === ERiskLevel.HIGH) && (
-                  <img src={highriskIcon} alt="highriskIcon" className="highrisk" />
-                )}
-                <h6 className={classNames('ml-2 mt-1', getRiskLevel(data.risk))}>{getRiskLevel(data.risk)} </h6>
+                <h6 className={classNames('ml-2 mt-1', data.risk)}>{data.risk} </h6>
               </div>
             </div>
             <div className="mt-1 expand_arrow">
@@ -147,15 +236,15 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
               <div>
                 Rewards Earned
-                <p>$ 0.00</p>
+                <p>{formatUSD.format(data.earned_rewards)}</p>
               </div>
               <div>
                 USDr Debt
-                <p>$ {positionValue.toFixed(2)}</p>
+                <p>{formatUSD.format(Number(totalDebt.toFixed(2)))}</p>
               </div>
               <div>
-                {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} TVL
-                <p>$ {positionValue.toFixed(2)}</p>
+                Ratio TVL
+                <p>{formatUSD.format(tvlUSD)}</p>
               </div>
             </div>
           </td>

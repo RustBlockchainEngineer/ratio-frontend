@@ -48,7 +48,8 @@
       font-family: 'Poppins-Medium';
       font-size: 15px;
       color: white;
-      background-image: linear-gradient(to bottom, #5fb5ff, #0f6eff);
+      // background-image: url('../assets/images/btn-bg.svg');
+      background: linear-gradient(150deg, #5FB5FF 0%, #075FE5 100%) 0% 0% no-repeat padding-box;
       border: 0px;
     }
   }

@@ -38,15 +38,15 @@ const DepositModal = ({ data }: any) => {
   const [depositStatus, setDepositStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
 
-  // useEffect(() => {
-  //   setDidMount(true);
-  //   setDepositAmount(0);
-  //   return () => setDidMount(false);
-  // }, []);
+  useEffect(() => {
+    setDidMount(true);
+    setDepositAmount(0);
+    return () => setDidMount(false);
+  }, []);
 
-  // if (!didMount) {
-  //   return null;
-  // }
+  if (!didMount) {
+    return null;
+  }
 
   const deposit = () => {
     console.log('Depositing', depositAmount, data.value);
@@ -81,7 +81,7 @@ const DepositModal = ({ data }: any) => {
   };
   return (
     <div className="dashboardModal">
-      <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
+      <Button className="button--blue fillBtn" onClick={() => setShow(!show)}>
         Deposit
       </Button>
       <Modal
@@ -134,7 +134,7 @@ const DepositModal = ({ data }: any) => {
               valid={depositStatus}
               invalidStr={invalidStr}
             />
-            <Button className="button--fill bottomBtn" onClick={() => deposit()}>
+            <Button className="button--blue bottomBtn" onClick={() => deposit()}>
               Deposit & Lock Assets
             </Button>
           </div>

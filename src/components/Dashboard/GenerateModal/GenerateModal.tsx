@@ -98,7 +98,7 @@ const GenerateModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
+      <Button className="button--blue fillBtn" onClick={() => setShow(!show)}>
         Mint
       </Button>
       <Modal
@@ -143,7 +143,7 @@ const GenerateModal = ({ data }: any) => {
             <p className="dashboardModal__modal__body-red">
               There will be a 2% stability fee associated with this transaction.
             </p> */}
-            <Button className="button--fill bottomBtn" onClick={() => borrow()}>
+            <Button className="button--blue bottomBtn" onClick={() => borrow()}>
               Mint USDr
             </Button>
           </div>

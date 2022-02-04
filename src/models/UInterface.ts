@@ -9,6 +9,7 @@ export type PairType = {
   tvl: number;
   risk: number;
   apr: number;
+  earned_rewards: number;
   details: string;
   riskPercentage: number;
 };

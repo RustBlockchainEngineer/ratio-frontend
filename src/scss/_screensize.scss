@@ -1,4 +1,5 @@
-$xl: 1539px;
+$xxl: 1539px;
+$xl: 1350px;
 $lg: 1280px;
 $md: 991px;
 $sm: 767px;
@@ -8,6 +9,10 @@ $xs: 479px;
   @if ($width == normal) {
     @if ($media == xl) {
       @media only screen and (max-width: $xl) {
+        @content;
+      }
+    } @else if ($media == l) {
+      @media only screen and (max-width: $lg) {
         @content;
       }
     } @else if ($media == lg) {
