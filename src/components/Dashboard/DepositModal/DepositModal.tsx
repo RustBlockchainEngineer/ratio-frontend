@@ -142,6 +142,7 @@ const DepositModal = ({ data }: any) => {
               invalidStr={invalidStr}
             />
             <Button
+              disabled={depositAmount <= 0}
               className="button--blue bottomBtn"
               onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
             >
