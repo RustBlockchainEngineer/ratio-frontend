@@ -10,6 +10,24 @@
   &:focus {
     background-color: transparent;
   }
+  &--blue {
+    background-image: url('../assets/images/btn-bg.svg');
+    // background: transparent linear-gradient(90deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
+    opacity: 1;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    &:hover {
+      opacity: 0.8;
+    }
+    &:focus {
+      background-image: url('../assets/images/btn-bg.svg');
+      // background: transparent linear-gradient(90deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+  }
+
   &--fill {
     // background-image: url('../assets/images/btn-bg.svg');
     background: transparent linear-gradient(90deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
@@ -32,10 +50,10 @@
     background-clip: padding-box;
     border: solid 2px transparent;
     border-radius: 10px;
-    color: #bc5cf7;
+    color: #075FE5;
     background-color: white;
     &:focus {
-      color: #bc5cf7;
+      color: #075FE5;
       background-color: white;
     }
     &:before {
@@ -48,7 +66,8 @@
       z-index: -1;
       margin: -2px; /* !importanté */
       border-radius: inherit; /* !importanté */
-      background: linear-gradient(90deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
+      background-image: url('../assets/images/btn-bg.svg');
+      // background: linear-gradient(90deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
     }
   }
   &--danger {

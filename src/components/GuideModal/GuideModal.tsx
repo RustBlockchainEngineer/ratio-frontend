@@ -12,7 +12,7 @@ const GuideModal = () => {
 
   return (
     <div className="guidemodal">
-      <Button disabled={!connected} className="button--fill guidemodal__button" onClick={() => setShow(!show)}>
+      <Button disabled={!connected} className="button--blue guidemodal__button" onClick={() => setShow(!show)}>
         Guide
       </Button>
 

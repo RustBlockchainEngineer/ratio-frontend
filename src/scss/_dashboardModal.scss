@@ -6,12 +6,13 @@
     min-width: 112px;
   }
   .gradientBtn {
-    padding: 12px 20px;
+    padding: 10px 20px;
     font-family: 'Poppins-Medium';
     font-size: 15px;
     color: #0f6eff;
     min-width: 112px;
     border: 2px solid var(--unnamed-color-0f6eff);
+    background-color: white;
   }
   &__modal {
     .modal-body {

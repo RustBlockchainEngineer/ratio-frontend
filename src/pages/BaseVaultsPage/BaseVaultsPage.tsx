@@ -16,8 +16,9 @@ import { toast } from 'react-toastify';
 import { getDebtLimitForAllVaults } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
-import { useFillPatformTvls } from '../../hooks/useFillPatformTvls';
+import { useFillPlatformTvls } from '../../hooks/useFillPlatformTvls';
 import { useVaultsContextProvider } from '../../contexts/vaults';
+import { useFillPlatformAPR } from '../../hooks/useFillPlatformAPR';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -39,7 +40,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   const { status, error, vaults } = useVaultsContextProvider();
 
-  const vaultsWithPlatTvl = useFillPatformTvls(vaults);
+  // TODO : try to create a useFillPlatformWithRatioValues, with this boths hooks
+  const vaultsWithPlatTvl = useFillPlatformTvls(vaults);
+
+  const vaultsWithPlatAPR = useFillPlatformAPR(vaultsWithPlatTvl);
 
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
@@ -80,12 +84,13 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               ),
               title: item.symbol,
               tvl: item.platform_tvl,
+              apr: item.platform_apr,
+              earned_rewards: item.earned_rewards,
               platform: {
                 link: item.platform_site,
                 name: item.platform_name,
                 icon: item.platform_icon,
               },
-              apr: 'APR[key]',
               risk: item.risk_rating,
             };
           }
@@ -109,8 +114,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }
 
   useEffect(() => {
-    setFactorial(factorialOf(vaultsWithPlatTvl, filter_data, sort_data, view_data, platform_data));
-  }, [vaultsWithPlatTvl, connected, filter_data, sort_data, view_data, platform_data, overview]);
+    setFactorial(factorialOf(vaultsWithPlatAPR, filter_data, sort_data, view_data, platform_data));
+  }, [vaultsWithPlatAPR, connected, filter_data, sort_data, view_data, platform_data, overview]);
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
 
@@ -177,14 +182,16 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   return (
     <>
-      {hasUserReachedDebtLimit && (
-        <Banner
-          title="USDr Debt Limit Reached:"
-          message="You have reached your overall USDr Debt Limit"
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
-      )}
+      {
+        /* TODO: fix this */ false && (
+          <Banner
+            title="USDr Debt Limit Reached:"
+            message="You have reached your overall USDr Debt Limit"
+            bannerIcon={BannerIcon.riskLevel}
+            className="debt-limit-reached"
+          />
+        )
+      }
       <div className="allvaults">
         <FilterPanel label={title} viewType={viewType} onViewType={onViewType} />
 

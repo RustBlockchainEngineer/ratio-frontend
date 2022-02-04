@@ -82,13 +82,18 @@ const ModalCard = ({
         <div className="modalCard__header">
           <div className="d-flex align-items-start">
             <div>
-              {icons && <img src={icons[0]} alt={icons[0].toString()} />}
+              {type === 'deposit_withdraw' && icons && <img src={icons[0]} alt={icons[0].toString()} />}
               {icons && icons[1] && <img src={icons[1]} alt={icons[1].toString()} className="modalCard__header-icon" />}
             </div>
             <div className="modalCard__header_tokenName">
               {/* <p>{data.tokenNames}</p> */}
               {/* <h6>{data.tokenValue}</h6> */}
-              {type === 'borrow_payback' && <p>{Math.ceil(paybackData.usdrValue * 100) / 100} USDr</p>}
+              {type === 'borrow_payback' && (
+                <div>
+                  <label>Able to mint</label>
+                  <p className="mt-0">{generateValue.toFixed(2)} USDr</p>
+                </div>
+              )}
             </div>
           </div>
           <div>
@@ -97,15 +102,21 @@ const ModalCard = ({
                 <DepositModal data={depositData} />
               </div>
             )}
-            {type === 'borrow_payback' && <PaybackModal data={paybackData} />}
+            {type === 'borrow_payback' && <GenerateModal data={generateData} />}
           </div>
         </div>
         <div className="modalCard__footer">
           <div>
-            {type === 'borrow_payback' && (
+            {/* {type === 'borrow_payback' && (
               <div>
                 <label>Able to mint</label>
                 <p>{generateValue.toFixed(2)} USDr</p>
+              </div>
+            )} */}
+            {type === 'borrow_payback' && (
+              <div className="d-flex align-items-center">
+                {icons && <img src={icons[0]} alt={icons[0].toString()} />}
+                <p className="ml-2">{Math.ceil(paybackData.usdrValue * 100) / 100} USDr</p>
               </div>
             )}
             {type === 'deposit_withdraw' && (
@@ -119,7 +130,7 @@ const ModalCard = ({
             {type === 'deposit_withdraw' && <WithdrawModal data={withdrawData} />}
             {type === 'borrow_payback' && (
               <div>
-                <GenerateModal data={generateData} />
+                <PaybackModal data={paybackData} />
               </div>
             )}
           </div>

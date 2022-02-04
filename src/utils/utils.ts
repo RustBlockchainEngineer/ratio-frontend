@@ -327,3 +327,13 @@ export const getDebtLimitForAllVaults = async (connection: Connection, wallet: a
 
   return debtLimitForAllVaults;
 };
+
+/**
+ * Get a random number between a min and a max
+ * @param {number} min
+ * @param {number} max
+ * @returns {any}
+ */
+export const randomInteger = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};

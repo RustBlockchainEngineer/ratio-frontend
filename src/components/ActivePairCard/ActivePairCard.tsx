@@ -96,7 +96,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
           </div>
           <div className="activepaircard__btnBox d-flex">
             <div className="col">
-              <Button className="button--gradientBorder lp-button">Deposit LP</Button>
+              <Button className="button button--gradientBorder lp-button">Deposit LP</Button>
             </div>
             <div className="col">
               <Button className="button--fill lp-button">Enter Vault</Button>
