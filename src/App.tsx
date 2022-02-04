@@ -11,7 +11,6 @@ import Faucet from './pages/Faucet';
 import AdminPanel from './pages/AdminPanel';
 import { AuthProvider } from './contexts/auth';
 import { RaydiumPoolProvider, SaberPoolProvider, MercurialPoolProvider, OrcaPoolProvider } from './contexts/pools';
-import { AuthContextProvider as APIAuthContextProvider } from './contexts/authAPI';
 import { PriceProvider } from './contexts/price';
 import { MercurialAPIProvider } from './contexts/mercurialAPI';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -33,24 +32,14 @@ const App: React.FC = () => {
                         <MercurialAPIProvider>
                           <ThemeProvider>
                             <Router>
-                              <div>
-                                <Switch>
-                                  <Route path="/dashboard" component={Layer} />
-                                  <Route path="/faucet" exact component={Faucet} />
-                                  {/* This next route is temporal, until we start using APIAuthContextProvider on all cases */}
-                                  <Route
-                                    path="/adminpanel"
-                                    render={(props) => (
-                                      <APIAuthContextProvider>
-                                        <ProtectedRoute role={Roles.ADMIN} path="/adminpanel" component={AdminPanel} />
-                                      </APIAuthContextProvider>
-                                    )}
-                                  />
-                                  <Route exact path="/">
-                                    <Redirect to="/dashboard" />
-                                  </Route>
-                                </Switch>
-                              </div>
+                              <Switch>
+                                <Route path="/dashboard" component={Layer} />
+                                <Route path="/faucet" exact component={Faucet} />
+                                <Route path="/adminpanel" component={AdminPanel} />
+                                <Route exact path="/">
+                                  <Redirect to="/dashboard" />
+                                </Route>
+                              </Switch>
                             </Router>
                           </ThemeProvider>
                         </MercurialAPIProvider>

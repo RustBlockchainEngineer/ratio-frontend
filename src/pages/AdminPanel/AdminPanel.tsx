@@ -22,6 +22,9 @@ import WhitelistAdminForm from '../WhitelistAdminForm';
 import CeilingsAdminForm from '../CeilingsAdminForm';
 import CollRatiosAdminForm from '../CollRatiosAdminForm';
 import LpTokenAdminForm from '../LpTokenAdminForm';
+import { AuthContextProvider as APIAuthContextProvider } from '../../contexts/authAPI';
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { Roles } from '../../constants';
 
 const AdminPanel = () => {
   const connection = useConnection();
@@ -85,15 +88,22 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="adminpanel">
-      <Switch>
-        <Route path="/adminpanel/fees" component={FeesAdminForm} exact />
-        <Route path="/adminpanel/whitelist" component={WhitelistAdminForm} exact />
-        <Route path="/adminpanel/ceilings" component={CeilingsAdminForm} exact />
-        <Route path="/adminpanel/collateralizationratios" component={CollRatiosAdminForm} exact />
-        <Route path="/adminpanel/lptoken" component={LpTokenAdminForm} exact />
-      </Switch>
-    </div>
+    <APIAuthContextProvider>
+      <div className="adminpanel">
+        <Switch>
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/fees" component={FeesAdminForm} exact />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/whitelist" component={WhitelistAdminForm} exact />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/ceilings" component={CeilingsAdminForm} exact />
+          <ProtectedRoute
+            role={Roles.ADMIN}
+            path="/adminpanel/collateralizationratios"
+            component={CollRatiosAdminForm}
+            exact
+          />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/lptoken" component={LpTokenAdminForm} exact />
+        </Switch>
+      </div>
+    </APIAuthContextProvider>
   );
 };
 

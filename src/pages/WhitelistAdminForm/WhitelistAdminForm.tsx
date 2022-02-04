@@ -1,18 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Form, InputGroup, Row, Table } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import Header from '../../components/Header';
-import Navbar from '../../components/Navbar';
-import { ThemeContext } from '../../contexts/ThemeContext';
-import { actionTypes } from '../../features/wallet';
 import { API_ENDPOINT, Roles } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
+import AdminFormLayout from '../AdminFormLayout';
 
 export default function WhitelistAdminForm() {
-  const theme = React.useContext(ThemeContext);
-  const { darkMode } = theme.state;
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const [collapseFlag, setCollapseFlag] = React.useState(false);
   const [version, setVersion] = React.useState(0);
   const [validated, setValidated] = useState(false);
   const defaultValues = {
@@ -36,18 +28,20 @@ export default function WhitelistAdminForm() {
   const { accessToken } = useAuthContextProvider();
 
   const fetchUsers = useCallback(async () => {
-    const response = await fetch(`${API_ENDPOINT}/users`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': JSON.stringify(accessToken),
-      },
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw await response.json();
+    if (accessToken) {
+      const response = await fetch(`${API_ENDPOINT}/users`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': accessToken,
+        },
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw await response.json();
+      }
+      return response.json();
     }
-    return response.json();
-  }, []);
+  }, [accessToken]);
 
   const [usersData, setUsersData] = useState();
 
@@ -68,19 +62,6 @@ export default function WhitelistAdminForm() {
     }
   }, [fetchUsers, version]);
 
-  const dispatch = useDispatch();
-
-  const onClickWalletBtn = () => {
-    dispatch({ type: actionTypes.CONNECTED_WALLET });
-  };
-
-  const clickMenuTrigger = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-  const onCollapseMenu = () => {
-    setCollapseFlag(!collapseFlag);
-  };
   const handleSubmit = async (evt: any) => {
     evt.preventDefault();
     const form = evt.currentTarget;
@@ -93,7 +74,7 @@ export default function WhitelistAdminForm() {
       body: JSON.stringify(values),
       headers: {
         'Content-Type': 'application/json',
-        'x-access-token': JSON.stringify(accessToken),
+        'x-access-token': accessToken,
       },
       method: 'POST',
     });
@@ -105,90 +86,77 @@ export default function WhitelistAdminForm() {
     return response.json();
   };
   return (
-    <div className="admin_form_page" data-theme={darkMode ? 'dark' : 'light'}>
-      <div className="admin_form_page_container">
-        <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
-        <Navbar
-          darkMode={darkMode}
-          onClickWalletBtn={onClickWalletBtn}
-          clickMenuItem={clickMenuTrigger}
-          open={menuOpen}
-          collapseFlag={collapseFlag}
-          setCollapseFlag={onCollapseMenu}
-        />
-        <div className="admin_form_page_content">
-          <h5 className="mt-3">Add new user:</h5>
-          <Form validated={validated} onSubmit={handleSubmit}>
-            <Row className="mb-3">
-              <Form.Group as={Col} xs="auto" md="6" controlId="wallet_address_id">
-                <Form.Label>Wallet address</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    name="wallet_address_id"
-                    type="text"
-                    required
-                    placeholder="Get solana address from user's wallet"
-                    value={values.wallet_address_id}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-              </Form.Group>
-              <Form.Group as={Col} xs="auto" md="3" controlId="name">
-                <Form.Label>User name</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    name="name"
-                    type="text"
-                    required
-                    placeholder="Joe Foe"
-                    value={values.name}
-                    onChange={handleChange}
-                  />
-                </InputGroup>
-              </Form.Group>
-              <Form.Group as={Col} xs="auto" md="3" controlId="role">
-                <Form.Label>User role</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    name="role"
-                    as="select"
-                    required
-                    aria-label="Select role"
-                    value={values.role}
-                    onChange={handleChange}
-                  >
-                    <option disabled>-Select option-</option>
-                    <option value={Roles.ADMIN}>Admin</option>
-                    <option value={Roles.USER}>User</option>
-                  </Form.Control>
-                </InputGroup>
-              </Form.Group>
-            </Row>
-            <Button variant="primary" type="submit">
-              Save
-            </Button>
-          </Form>
-          <h5 className="mt-3">Current users:</h5>
-          <Table className="mt-3" striped bordered hover size="sm">
-            <thead>
-              <tr>
-                <th>Wallet address</th>
-                <th>Name</th>
-                <th>Role</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(usersData as any)?.map((user: any) => (
-                <tr key={user.wallet_address_id}>
-                  <td>{user.wallet_address_id}</td>
-                  <td>{user.name}</td>
-                  <td>{user.role}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      </div>
-    </div>
+    <AdminFormLayout>
+      <h5 className="mt-3">Add new user:</h5>
+      <Form validated={validated} onSubmit={handleSubmit}>
+        <Row className="mb-3">
+          <Form.Group as={Col} xs="auto" md="6" controlId="wallet_address_id">
+            <Form.Label>Wallet address</Form.Label>
+            <InputGroup hasValidation>
+              <Form.Control
+                name="wallet_address_id"
+                type="text"
+                required
+                placeholder="Get solana address from user's wallet"
+                value={values.wallet_address_id}
+                onChange={handleChange}
+              />
+            </InputGroup>
+          </Form.Group>
+          <Form.Group as={Col} xs="auto" md="3" controlId="name">
+            <Form.Label>User name</Form.Label>
+            <InputGroup hasValidation>
+              <Form.Control
+                name="name"
+                type="text"
+                required
+                placeholder="Joe Foe"
+                value={values.name}
+                onChange={handleChange}
+              />
+            </InputGroup>
+          </Form.Group>
+          <Form.Group as={Col} xs="auto" md="3" controlId="role">
+            <Form.Label>User role</Form.Label>
+            <InputGroup hasValidation>
+              <Form.Control
+                name="role"
+                as="select"
+                required
+                aria-label="Select role"
+                value={values.role}
+                onChange={handleChange}
+              >
+                <option disabled>-Select option-</option>
+                <option value={Roles.ADMIN}>Admin</option>
+                <option value={Roles.USER}>User</option>
+              </Form.Control>
+            </InputGroup>
+          </Form.Group>
+        </Row>
+        <Button variant="primary" type="submit">
+          Save
+        </Button>
+      </Form>
+      <h5 className="mt-3">Current users:</h5>
+      <Table className="mt-3" striped bordered hover size="sm">
+        <thead>
+          <tr>
+            <th>Wallet address</th>
+            <th>Name</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(usersData as any)?.map((user: any) => (
+            <tr key={user.wallet_address_id}>
+              <td>{user.wallet_address_id}</td>
+              <td>{user.name}</td>
+              <td>{user.role}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </AdminFormLayout>
   );
 }

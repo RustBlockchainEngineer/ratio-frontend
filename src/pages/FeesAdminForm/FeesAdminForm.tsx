@@ -1,115 +1,130 @@
-import React, { useCallback } from 'react';
-import { Button, Form, InputGroup } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import Header from '../../components/Header';
-import Navbar from '../../components/Navbar';
-import { ThemeContext } from '../../contexts/ThemeContext';
-import { actionTypes } from '../../features/wallet';
+import { useCallback, useEffect, useState } from 'react';
+import { Button, Form, Row } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
+import AdminFormLayout from '../AdminFormLayout';
+
+interface Fees {
+  borrow_fee: number;
+  deposit_fee: number;
+  payback_fee: number;
+  reward_fee: number;
+  stake_fee: number;
+  swap_fee: number;
+  withdraw_fee: number;
+}
 
 export default function FeesAdminForm() {
-  const theme = React.useContext(ThemeContext);
-  const { darkMode } = theme.state;
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const [collapseFlag, setCollapseFlag] = React.useState(false);
-  const [model, setModel] = React.useState({
-    deposit: 0,
-    withdraw: 0,
-    borrow: 0,
-    payback: 0,
-    rewards: 0,
-  });
+  const [validated, setValidated] = useState(false);
+  const defaultValues: Fees = {
+    borrow_fee: 0,
+    deposit_fee: 0,
+    payback_fee: 0,
+    reward_fee: 0,
+    stake_fee: 0,
+    swap_fee: 0,
+    withdraw_fee: 0,
+  };
+  const [data, setData] = useState<Fees>(defaultValues);
+
+  const handleChange = (event: any) => {
+    setData((values) => ({
+      ...values,
+      [event.target.name]: event.target.value ?? 0,
+    }));
+  };
 
   const { accessToken } = useAuthContextProvider();
 
-  const fetchFees = useCallback(async (userAddress: string | undefined) => {
-    const response = await fetch(`${API_ENDPOINT}/auth/`, {
-      body: JSON.stringify({ accessToken }),
+  const parseJsonResponse = (result: any): any => {
+    if (Array.isArray(result)) {
+      let ratios: Fees = defaultValues;
+      for (let index = 0; index < result.length; index++) {
+        const element = result[index];
+        ratios = {
+          ...ratios,
+          [Object.keys(element)[0]]: Object.values(element)[0],
+        };
+      }
+      return ratios;
+    }
+    return result;
+  };
+
+  const fetchData = useCallback(async () => {
+    const response = await fetch(`${API_ENDPOINT}/ratioconfig/transfees/last`, {
       headers: {
         'Content-Type': 'application/json',
+        'x-access-token': JSON.stringify(accessToken),
       },
-      method: 'POST',
+      method: 'GET',
     });
     if (!response.ok) {
       throw await response.json();
     }
-    return response.json();
+    return parseJsonResponse(await response.json());
   }, []);
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    let active = true;
+    load();
+    return () => {
+      active = false;
+    };
 
-  const onClickWalletBtn = () => {
-    dispatch({ type: actionTypes.CONNECTED_WALLET });
-  };
+    async function load() {
+      const res = await fetchData();
+      if (!active) {
+        return;
+      }
+      setData(res);
+    }
+  }, [fetchData]);
 
-  const clickMenuTrigger = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-  const onCollapseMenu = () => {
-    setCollapseFlag(!collapseFlag);
-  };
-  const handleSubmit = (evt: any) => {
+  const handleSubmit = async (evt: any) => {
     evt.preventDefault();
-    //resetLastName();
+    const form = evt.currentTarget;
+    if (form.checkValidity() === false) {
+      evt.stopPropagation();
+      return;
+    }
+    setValidated(true);
+    const response = await fetch(`${API_ENDPOINT}/ratioconfig/transfees`, {
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': accessToken,
+      },
+      method: 'POST',
+    });
+    setValidated(false);
+    if (!response.ok) {
+      toast.error('An error ocurred while saving the fees');
+      throw await response.json();
+    }
+    setData(parseJsonResponse(await response.json()));
+    toast.info('Fees saved successfully');
+    return;
   };
   return (
-    <div className="admin_form_page" data-theme={darkMode ? 'dark' : 'light'}>
-      <div className="admin_form_page_container">
-        <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
-        <Navbar
-          darkMode={darkMode}
-          onClickWalletBtn={onClickWalletBtn}
-          clickMenuItem={clickMenuTrigger}
-          open={menuOpen}
-          collapseFlag={collapseFlag}
-          setCollapseFlag={onCollapseMenu}
-        />
-        <div className="admin_form_page_content">
-          <Form>
-            <p>Configure the application fees below:</p>
-            <Form.Group className="mb-3" controlId="deposit">
-              <Form.Label>Deposit</Form.Label>
-              <InputGroup>
-                <Form.Control name="deposit" type="number" step="0.01" min="0" max="100" placeholder="Fee %" />
-                <InputGroup.Text id="inputGroupAppend">%</InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="withdraw">
-              <Form.Label>Withdraw</Form.Label>
-              <InputGroup>
-                <Form.Control name="withdraw" type="number" step="0.01" min="0" max="100" placeholder="Fee %" />
-                <InputGroup.Text id="inputGroupAppend">%</InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="borrow">
-              <Form.Label>Borrow</Form.Label>
-              <InputGroup>
-                <Form.Control name="borrow" type="number" step="0.01" min="0" max="100" placeholder="Fee %" />
-                <InputGroup.Text id="inputGroupAppend">%</InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="payback">
-              <Form.Label>Pay back</Form.Label>
-              <InputGroup>
-                <Form.Control name="payback" type="number" step="0.01" min="0" max="100" placeholder="Fee %" />
-                <InputGroup.Text id="inputGroupAppend">%</InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="rewards">
-              <Form.Label>Rewards</Form.Label>
-              <InputGroup>
-                <Form.Control name="rewards" type="number" step="0.01" min="0" max="100" placeholder="Fee %" />
-                <InputGroup.Text id="inputGroupAppend">%</InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Save
-            </Button>
-          </Form>
-        </div>
-      </div>
-    </div>
+    <AdminFormLayout>
+      <h5 className="mt-3">Modify Fees Values:</h5>
+      <Form validated={validated} onSubmit={handleSubmit}>
+        <Row className="mb-3">
+          <AdminFormInput handleChange={handleChange} label="Borrow" name="borrow_fee" value={data?.borrow_fee} />
+          <AdminFormInput handleChange={handleChange} label="Deposit" name="deposit_fee" value={data?.deposit_fee} />
+          <AdminFormInput handleChange={handleChange} label="Payback" name="payback_fee" value={data?.payback_fee} />
+          <AdminFormInput handleChange={handleChange} label="Rewards" name="reward_fee" value={data?.reward_fee} />
+          <AdminFormInput handleChange={handleChange} label="Stake" name="stake_fee" value={data?.stake_fee} />
+          <AdminFormInput handleChange={handleChange} label="Swap" name="swap_fee" value={data?.swap_fee} />
+          <AdminFormInput handleChange={handleChange} label="Withdraw" name="withdraw_fee" value={data?.withdraw_fee} />
+        </Row>
+        <Button variant="primary" type="submit">
+          Save
+        </Button>
+      </Form>
+    </AdminFormLayout>
   );
 }
