@@ -56,7 +56,7 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
   setSlippage: (val: number) => {},
   connection: new Connection(DEFAULT.endpoint, 'recent'),
   sendConnection: new Connection(DEFAULT.endpoint, 'recent'),
-  env: ENDPOINTS[0].name,
+  env: ENDPOINTS[2].name,
   tokens: [],
   tokenMap: new Map<string, TokenInfo>(),
 });
