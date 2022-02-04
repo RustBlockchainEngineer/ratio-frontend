@@ -1,3 +1,3 @@
-import AdminFormInput from './AdminFormTextInput';
+import AdminFormInput from './AdminFormInput';
 
 export default AdminFormInput;

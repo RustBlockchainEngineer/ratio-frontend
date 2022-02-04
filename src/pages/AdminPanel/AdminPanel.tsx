@@ -25,6 +25,7 @@ import LpTokenAdminForm from '../LpTokenAdminForm';
 import { AuthContextProvider as APIAuthContextProvider } from '../../contexts/authAPI';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { Roles } from '../../constants';
+import GlobalParamsAdminForm from '../GlobalParamsAdminForm';
 
 const AdminPanel = () => {
   const connection = useConnection();
@@ -94,6 +95,7 @@ const AdminPanel = () => {
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/fees" component={FeesAdminForm} exact />
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/whitelist" component={WhitelistAdminForm} exact />
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/ceilings" component={CeilingsAdminForm} exact />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/globalparams" component={GlobalParamsAdminForm} exact />
           <ProtectedRoute
             role={Roles.ADMIN}
             path="/adminpanel/collateralizationratios"
