@@ -175,14 +175,14 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   return (
     <>
-      <div className="col col-xl-4 col-lg-6 col-md-12">
+      <div className="col col-xxl-4 col-lg-6 col-md-12">
         <div
           className={classNames('tokenpaircard mt-4', {
             'tokenpaircard--warning': hasUserReachedDebtLimit,
           })}
         >
           <div className="tokenpaircard__header">
-            <div>
+            <div className="d-flex align-items-start">
               <div className="d-flex align-items-center">
                 <img src={data.icons[0]} alt={'Token1'} />
                 <img src={data.icons[1]} alt={'Token2'} className="tokenpaircard__header-icon" />

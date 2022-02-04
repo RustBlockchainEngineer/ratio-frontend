@@ -54,6 +54,15 @@
 @include font-face('Poppins-Medium', '../assets/fonts/Poppins-Medium');
 @include font-face('Poppins-Regular', '../assets/fonts/Poppins-Regular');
 
+$grid-breakpoints: (
+  xs: 479px,
+  sm: 767px,
+  md: 991px,
+  lg: 1280px,
+  xl: 1350px,
+  xxl: 1539px
+);
+
 :root {
   /* Colors: */
   --unnamed-color-2e5fe2: #2e5fe2;
@@ -100,7 +109,7 @@
 }
 
 [data-theme='light'] {
-  --background: transparent;
+  --background: #ffffff;
   --nav-boxshadow: 10px 0px 40px #00000034;
   --primary-border: #dbe0e2;
   --secondary-border: 76, 100, 111;

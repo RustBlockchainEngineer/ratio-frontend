@@ -136,8 +136,12 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
   return (
     <div className={classNames('navbar-vertical', { 'navbar-vertical--collapse': collapseFlag }, { closed: open })}>
-      {isDefault && <img src={collapseFlag ? collapseLogo : darkMode ? darkLogo : logo} alt="logo" />}
-      <div className="mt-md-5">
+      <img
+        src={collapseFlag ? collapseLogo : darkMode ? darkLogo : logo}
+        alt="logo"
+        className="mt-lg-0 ml-lg-0 mt-4 ml-4"
+      />
+      <div className="mt-4">
         <NavbarItem
           icon={allVaultsIcon}
           name="All Vaults"

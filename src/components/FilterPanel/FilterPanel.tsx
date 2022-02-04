@@ -62,8 +62,8 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const dispatch = useDispatch();
   const theme = React.useContext(ThemeContext);
   const { darkMode } = theme.state;
-  const isDefault = useMediaQuery({ minWidth: 768 });
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const isDefault = useMediaQuery({ minWidth: 992 });
+  const isMobile = useMediaQuery({ maxWidth: 991 });
   const [compareVaults, setCompareVaults] = React.useState(false);
 
   const filter_data = useSelector(selectors.getFilterData);
@@ -107,8 +107,8 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   return (
     <div className="filterpanel">
       <h2>{label}</h2>
-      <div className="d-flex justify-content-between align-items-start">
-        <div className="d-flex align-items-start">
+      <div className="d-xl-flex justify-content-between align-items-start">
+        <div className="d-sm-flex align-items-center">
           {isMobile && <p className="mr-2 filterpanel__sortby">Search: </p>}
           <FilterSelect
             options={filter_options}
@@ -117,6 +117,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             placeholder="Search all vaults by token"
             isMulti
           />
+          {isMobile && <p className="filterpanel__sortby">Platform: </p>}
           <Select
             components={{ Option: CustomOption }}
             options={platformOptions}
@@ -137,7 +138,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             width={48}
           /> */}
         </div>
-        <div className="d-md-flex align-items-center ml-4">
+        <div className="d-md-flex align-items-center justify-content-end ml-sm-4 mt-xl-0 mt-sm-2">
           <>
             <p className="mr-2 filterpanel__sortby">Sort by </p>
             <Select

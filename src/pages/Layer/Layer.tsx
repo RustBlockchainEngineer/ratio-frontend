@@ -43,9 +43,9 @@ import 'react-toastify/dist/ReactToastify.css';
 const Layer = () => {
   const theme = React.useContext(ThemeContext);
   const { darkMode } = theme.state;
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  // const isTablet = useMediaQuery({ maxWidth: 991 });
   const isDefault = useMediaQuery({ minWidth: 768 });
-  const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 });
+  const isTabletOrMobile = useMediaQuery({ maxWidth: 991 });
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [collapseFlag, setCollapseFlag] = React.useState(false);
   const whitelist_data = useSelector(walletSelectors.getWhiteListData);
@@ -101,16 +101,16 @@ const Layer = () => {
     setCollapseFlag(!collapseFlag);
   };
 
-  if (isTabletOrMobile) {
-    return (
-      <div className="layer__mobile">
-        <div>
-          <img src={logoside} alt="logoside" />
-          <p>Mobile site coming Soon...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (isTabletOrMobile) {
+  //   return (
+  //     <div className="layer__mobile">
+  //       <div>
+  //         <img src={logoside} alt="logoside" />
+  //         <p>Mobile site coming Soon...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
@@ -144,23 +144,21 @@ const Layer = () => {
                 setCollapseFlag={onCollapseMenu}
               />
 
-              {(isDefault || !menuOpen) && (
-                <div>
-                  <Switch>
-                    <Route path="/dashboard/all-vaults" component={AllVaults} exact />
-                    <Route path="/dashboard/my-active-vaults" component={ActiveVaults} exact />
-                    <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
-                    <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
-                    <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
-                    <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
-                    <Route exact path="/dashboard">
-                      <Redirect to="/dashboard/all-vaults" />
-                    </Route>
-                  </Switch>
-                  <Footer darkMode={darkMode} />
-                </div>
-              )}
-              {isMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
+              <div>
+                <Switch>
+                  <Route path="/dashboard/all-vaults" component={AllVaults} exact />
+                  <Route path="/dashboard/my-active-vaults" component={ActiveVaults} exact />
+                  <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
+                  <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
+                  <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
+                  <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
+                  <Route exact path="/dashboard">
+                    <Redirect to="/dashboard/all-vaults" />
+                  </Route>
+                </Switch>
+                <Footer darkMode={darkMode} />
+              </div>
+              {isTabletOrMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
             </>
           ) : (
             <div className="layer__empty">
