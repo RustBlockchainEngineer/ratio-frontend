@@ -15,6 +15,7 @@ import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
 import linkIcon from '../../assets/images/link.svg';
+import { IoAlertCircleOutline } from 'react-icons/io5';
 import { sleep } from '@project-serum/common';
 import { useUpdateState } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
@@ -37,6 +38,21 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
   const [totalDebt, setTotalDebt] = React.useState(0);
+
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
+
+  React.useEffect(() => {
+    // replace this boolean value with a function to determine wether user limit reached
+    const userLimitReached = false;
+    // replace this boolean value with a function to determine wether global limit reached
+    const globalLimitReached = false;
+    if (userLimitReached) {
+      setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
+    }
+    if (globalLimitReached) {
+      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+    }
+  }, [wallet, connection]);
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -162,6 +178,16 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
               </div>
             </div>
           </div>
+          {hasUserReachedDebtLimit && (
+            <div className="tokenpaircard__table__warningBox">
+              <div>
+                <IoAlertCircleOutline size={20} />
+              </div>
+              <p>
+                <strong>USDr Limit Reached:</strong> {hasUserReachedDebtLimit}
+              </p>
+            </div>
+          )}
           <div className="mt-1 d-block">{renderModalButton()}</div>
         </td>
         <td>
