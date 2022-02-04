@@ -2,12 +2,21 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getPythProgramKeyForCluster, PythConnection } from "@pythnetwork/client";
 import { Connection, Cluster } from '@solana/web3.js';
-import { useConnectionConfig } from '../contexts/connection';
+import { ENV, useConnectionConfig } from '../contexts/connection';
 
+function getClusterFromEndpoint(env: ENV):Cluster{
+    switch(env){
+        case 'devnet': return 'devnet';
+        case 'testnet': return 'testnet';
+        case 'mainnet-beta' : return 'mainnet-beta';
+        default: return 'devnet';
+    }
+}
 
 export function usePyth(connection: Connection){
+    const env = useConnectionConfig().env;
     const [usdPrice,setPrice] = useState<any>({price: 'not defined', confidence:'not defined'});
-    const pythConnection = new PythConnection(connection,getPythProgramKeyForCluster('devnet'));
+    const pythConnection = new PythConnection(connection,getPythProgramKeyForCluster(getClusterFromEndpoint(env)));
 
     const handleOnPriceChange = useCallback((product,price) => {
          /**
@@ -26,7 +35,13 @@ export function usePyth(connection: Connection){
         pythConnection.onPriceChange((product,price) => {
             handleOnPriceChange(product,price);
         })
-    },[handleOnPriceChange]);
+
+        return function cleanup() {
+            //Stop listening to price changes events
+            pythConnection.stop()
+        }
+
+     },[handleOnPriceChange]);
 
     // Start listening for price change events.
     pythConnection.start();
