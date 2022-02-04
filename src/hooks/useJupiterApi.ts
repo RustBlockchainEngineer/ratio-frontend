@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { JUPITER_API } from '../utils/jupiter/constants';
-import { setIntervalAsync, clearIntervalAsync } from 'set-interval-async/dynamic'
+import { setIntervalAsync, clearIntervalAsync, SetIntervalAsyncTimer } from 'set-interval-async/dynamic'
 import { useRatioPriceFetchingFrequency } from './useRatioPriceFetchingFrequency';
 
 interface JupiterRoutePrice {
@@ -47,7 +47,7 @@ export function useJupiterRoute(inputMint: string, outputMint: string, amount = 
   const [result, setResult] = useState<any>({ data: 'DATA NOT LOADED YET' });
   const [error, setError] = useState<any>(null);
 
-  const endpoint = makeJupiterEndpoint(inputMint,outputMint,amount,slippage);
+  const endpoint = useMemo(() => makeJupiterEndpoint(inputMint,outputMint,amount,slippage),[inputMint,outputMint,amount,slippage]);
 
   useEffect(() => {
     let cancelRequest = false;
@@ -81,27 +81,29 @@ export function useJupiterPriceWithFrequency(inputMint: string, outputMint: stri
   const data = useRatioPriceFetchingFrequency();
   let priceIntervalFrequency: number;
 
-  if(data[1] === null){
+  /**
+   * use Ratio Price Fetching Frequency returns
+   * [frequency, errror]
+   * It checks for any error that it might occur.
+   */
+  if(data[1] === undefined || data[0] === undefined){
+    setError('useRatioPriceFetchingFrequency: unable to fetch [frequency, error]');
+  }else{
     priceIntervalFrequency = data[0];
   }
 
-  const endpoint = `${JUPITER_API}/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippage=${slippage}`;
+  const endpoint = makeJupiterEndpoint(inputMint,outputMint,amount,slippage);
 
   useEffect(() => {
     let cancelRequest = false;
+    let intervalID:SetIntervalAsyncTimer;
     async function fetchJupiterRoute(){
     try {
-      const intervalID = setIntervalAsync(async() => {
+          intervalID = setIntervalAsync(async() => {
           const res = await getJupiterRoute(endpoint); 
           if(cancelRequest) return;
           setResult(res);
         }, !isNaN(priceIntervalFrequency) ? priceIntervalFrequency * 1000 : 10000)
-        /**
-         * TO DISCUSS (WITH MARIAN)
-         * The behaviour of this clearInterval will make to stop the polling.
-         * My opinion is to not use it.
-         * await clearIntervalAsync(intervalID);
-         * */
       } catch (error) {
         if(cancelRequest) return;
         setError(error);
@@ -111,6 +113,7 @@ export function useJupiterPriceWithFrequency(inputMint: string, outputMint: stri
     fetchJupiterRoute();
 
     return function cleanup() {
+      clearIntervalAsync(intervalID);
       cancelRequest = true;
     };
 

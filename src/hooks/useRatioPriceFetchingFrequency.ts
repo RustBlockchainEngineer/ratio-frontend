@@ -25,9 +25,19 @@ import { API_ENDPOINT } from '../constants';
             body: JSON.stringify({ accessToken }),
           });
           const data = (await response.json());
-          const res = parseInt(data[2]?.price_interval);
-          if (cancelRequest) return;
-          setFrequency(res);
+          /**
+           * The api returns the following: 
+           * data[0]: max_usd
+           * data[1]: max_usdr
+           * data[2]: price_interval
+           */
+          if(data[2] === undefined){
+            setError('UNABLE TO FETCH PRICE INTERVAL');
+          }else{
+            const res = parseInt(data[2]?.price_interval);
+            if (cancelRequest) return;
+            setFrequency(res);
+          }
         } catch (error) {
           if (cancelRequest) return;
           setError(error);
