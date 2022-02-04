@@ -6,10 +6,10 @@ import { ENV, useConnectionConfig } from '../contexts/connection';
 
 function getClusterFromEndpoint(env: ENV):Cluster{
     switch(env){
-        case 'devnet': return 'devnet';
-        case 'testnet': return 'testnet';
-        case 'mainnet-beta' : return 'mainnet-beta';
-        default: return 'devnet';
+        case 'devnet':          return 'devnet';
+        case 'testnet':         return 'testnet';
+        case 'mainnet-beta' :   return 'mainnet-beta';
+        default:                return 'devnet';
     }
 }
 
