@@ -81,7 +81,7 @@ const DepositModal = ({ data }: any) => {
   };
   return (
     <div className="dashboardModal">
-      <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
+      <Button className="button--blue fillBtn" onClick={() => setShow(!show)}>
         Deposit
       </Button>
       <Modal
@@ -134,7 +134,7 @@ const DepositModal = ({ data }: any) => {
               valid={depositStatus}
               invalidStr={invalidStr}
             />
-            <Button className="button--fill bottomBtn" onClick={() => deposit()}>
+            <Button className="button--blue bottomBtn" onClick={() => deposit()}>
               Deposit & Lock Assets
             </Button>
           </div>

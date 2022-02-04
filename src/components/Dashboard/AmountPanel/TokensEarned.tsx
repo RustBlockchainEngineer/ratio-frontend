@@ -48,7 +48,7 @@ const TokensEarned = () => {
         </tbody>
       </Table>
       <div className="px-4">
-        <Button className="button--fill generate btn-block">Harvest</Button>
+        <Button className="button--blue generate btn-block">Harvest</Button>
       </div>
     </div>
   );

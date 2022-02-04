@@ -28,6 +28,12 @@ const NavbarItem = ({
   onItemClick,
 }: NavbarItemProps) => {
   const [expandStatus, setExpandStatus] = useState(false);
+
+  const changeExpandStatus = (e: any) => {
+    e.stopPropagation();
+    setExpandStatus(!expandStatus);
+  };
+
   return (
     <div className={classNames('navbarItem', active ? 'navbarItem--active' : '')}>
       <div
@@ -43,17 +49,17 @@ const NavbarItem = ({
         {expands && (
           <div>
             {expandStatus ? (
-              <IoIosArrowUp onClick={() => setExpandStatus(!expandStatus)} />
+              <IoIosArrowUp onClick={changeExpandStatus} />
             ) : (
-              <IoIosArrowDown onClick={() => setExpandStatus(!expandStatus)} />
+              <IoIosArrowDown onClick={changeExpandStatus} />
             )}
           </div>
         )}
       </div>
       <div className="container navbar-active-vaults">
         {expandStatus &&
-          expandData &&
-          expandData.map((item: any, index: number) => {
+          positionValues &&
+          positionValues.map((item: any, index: number) => {
             return (
               <div className="row navbarItem__expand" key={index}>
                 <div className="text-left col-md-6">
@@ -65,9 +71,7 @@ const NavbarItem = ({
                     delay={{ show: 100, hide: 100 }}
                     overlay={<Tooltip id="tooltip">Position Value</Tooltip>}
                   >
-                    <div className="navbarItem__expand-positionvalue">
-                      $ {positionValues && nFormatter(positionValues.find((i: any) => i.mint === item.mint).pv || 0, 2)}
-                    </div>
+                    <div className="navbarItem__expand-positionvalue">$ {item && nFormatter(item.pv || 0, 2)}</div>
                   </OverlayTrigger>
                 </div>
                 <div className="col-md-3">
@@ -76,9 +80,7 @@ const NavbarItem = ({
                     delay={{ show: 100, hide: 100 }}
                     overlay={<Tooltip id="tooltip">USDr minted</Tooltip>}
                   >
-                    <div className="navbarItem__expand-rewardsearned">
-                      {nFormatter(positionValues.find((i: any) => i.mint === item.mint).debt || 0, 2)}
-                    </div>
+                    <div className="navbarItem__expand-rewardsearned">$ {nFormatter(item.debt || 0, 2)}</div>
                   </OverlayTrigger>
                 </div>
               </div>

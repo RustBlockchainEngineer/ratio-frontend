@@ -91,7 +91,7 @@ const WithdrawModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
+      <Button className="gradientBtn" onClick={() => setShow(!show)}>
         Withdraw
       </Button>
       <Modal
@@ -152,7 +152,7 @@ const WithdrawModal = ({ data }: any) => {
               invalidStr={invalidStr}
             />
             <Button
-              className="button--fill bottomBtn"
+              className="button--blue bottomBtn"
               disabled={Number(data.usdrValue) !== 0}
               onClick={() => withdraw()}
             >
