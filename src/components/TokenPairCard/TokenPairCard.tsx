@@ -175,7 +175,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   return (
     <>
-      <div className="col col-xxl-4 col-lg-6 col-md-12">
+      <div className="col col-xxl-4 col-lg-6 col-m\d-12">
         <div
           className={classNames('tokenpaircard mt-4', {
             'tokenpaircard--warning': hasUserReachedDebtLimit,
@@ -184,8 +184,9 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
           <div className="tokenpaircard__header">
             <div className="d-flex align-items-start">
               <div className="d-flex align-items-center">
-                <img src={data.icons[0]} alt={'Token1'} />
-                <img src={data.icons[1]} alt={'Token2'} className="tokenpaircard__header-icon" />
+                <img src={data.icon.default} alt={'Token1'} />
+                {/* <img src={data.icons[0]} alt={'Token1'} />
+                <img src={data.icons[1]} alt={'Token2'} className="tokenpaircard__header-icon" /> */}
               </div>
               <div className="tokenpaircard__titleBox">
                 <div>
@@ -196,9 +197,9 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
             <div className="tokenpaircard__riskBox mt-2">
               <div className="text-right">
-                <div className="d-flex">
+                <div className="d-flex align-items-center">
                   <img src={smallRatioIcon} alt="smallRatio" />
-                  <p>Risk Rating</p>
+                  <p className="mx-1">Risk Rating</p>
                   <img src={liskLevelIcon} alt="lisklevel" />
                 </div>
                 <div className="d-flex justify-content-end">

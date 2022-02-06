@@ -198,6 +198,7 @@ const VaultDashboard = () => {
   useEffect(() => {
     setIsLoading(true);
     const result: any = allVaults.find((item: any) => item.mint === vault_mint);
+
     if (result) {
       setVaultData(result);
       setIsLoading(false);
@@ -321,6 +322,7 @@ const VaultDashboard = () => {
                 <ModalCard
                   mintAddress={vault_mint}
                   title="Tokens in Vault"
+                  icon={VaultData.icon}
                   icons={VaultData.icons}
                   tokenName={VaultData.title}
                   depositValue={depositValue}
@@ -352,6 +354,7 @@ const VaultDashboard = () => {
               <AmountPanel
                 collAmount={lpWalletBalance}
                 collAmountUSD={lpWalletBalanceUSD}
+                icon={VaultData.icon}
                 icons={VaultData.icons}
                 tokenName={VaultData.title}
                 usdrAmount={usdrWalletBalance}

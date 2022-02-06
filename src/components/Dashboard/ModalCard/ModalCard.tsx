@@ -30,6 +30,7 @@ interface ModalcardInterface {
 const ModalCard = ({
   mintAddress,
   title,
+  icon,
   icons,
   tokenName,
   type,
@@ -42,6 +43,7 @@ const ModalCard = ({
 }: any) => {
   const depositData = {
     mint: mintAddress,
+    icon: icon,
     icons: icons,
     title: tokenName,
     value: depositValue,
@@ -51,6 +53,7 @@ const ModalCard = ({
 
   const withdrawData = {
     mint: mintAddress,
+    icon: icon,
     icons: icons,
     title: tokenName,
     value: withdrawValue,
@@ -75,6 +78,8 @@ const ModalCard = ({
     usdrMint: MINTADDRESS['USDR'],
     riskLevel: riskLevel,
   };
+
+  console.log(icon);
   return (
     <div className="modalCard">
       <p className="modalCard__title mb-2">{title}</p>
@@ -82,8 +87,9 @@ const ModalCard = ({
         <div className="modalCard__header">
           <div className="d-flex align-items-start">
             <div>
-              {type === 'deposit_withdraw' && icons && <img src={icons[0]} alt={icons[0].toString()} />}
-              {icons && icons[1] && <img src={icons[1]} alt={icons[1].toString()} className="modalCard__header-icon" />}
+              {icon && <img src={icon.default} alt={'Token1'} />}
+              {/* {type === 'deposit_withdraw' && icons && <img src={icons[0]} alt={icons[0].toString()} />} */}
+              {/* {icons && icons[1] && <img src={icons[1]} alt={icons[1].toString()} className="modalCard__header-icon" />} */}
             </div>
             <div className="modalCard__header_tokenName">
               {/* <p>{data.tokenNames}</p> */}
