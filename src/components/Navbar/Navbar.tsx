@@ -54,9 +54,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const usdrMint = useMint(USDR_MINT_KEY);
   const prices = usePrices();
 
-  const { vaults } = useVaultsContextProvider();
-  const mints = useMemo(() => vaults?.map((item: LPair) => item.address_id) || [], [vaults]);
-  const all_vaults = useSelector(selectors.getAllVaults);
+  const { vaults: all_vaults } = useVaultsContextProvider();
+  const mints = useMemo(() => all_vaults?.map((item: LPair) => item.address_id) || [], [all_vaults]);
   const active_vaults = useSelector(selectors.getActiveVaults);
   const overview = useSelector(selectors.getOverview);
 
@@ -98,7 +97,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
         const { mint, lockedAmount, debt }: any = vault;
         const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
         const pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
-        const title = all_vaults.filter((vault: any) => vault['mint'] === mint)[0]['title'];
+        const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
         const vaultValue: any = {
           title,
           mint,

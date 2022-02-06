@@ -1,7 +1,8 @@
 import React from 'react';
 import { useFetchVaults, VaultsFetchingStatus } from '../hooks/useFetchVaults';
+import { LPair } from '../types/VaultTypes';
 
-export const VAULTS_CONTEXT_DEFAULT_VALUE = {
+export const VAULTS_CONTEXT_DEFAULT_VALUE: { status: VaultsFetchingStatus; vaults: LPair[]; error: any } = {
   status: VaultsFetchingStatus.NotAsked,
   vaults: [],
   error: undefined,
