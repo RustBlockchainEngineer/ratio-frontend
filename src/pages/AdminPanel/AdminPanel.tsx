@@ -16,6 +16,16 @@ import Header from '../../components/Header';
 import { useDispatch } from 'react-redux';
 import { actionTypes } from '../../features/wallet';
 import { ThemeContext } from '../../contexts/ThemeContext';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import FeesAdminForm from '../FeesAdminForm';
+import WhitelistAdminForm from '../WhitelistAdminForm';
+import CeilingsAdminForm from '../CeilingsAdminForm';
+import CollRatiosAdminForm from '../CollRatiosAdminForm';
+import LpTokenAdminForm from '../LpTokenAdminForm';
+import { AuthContextProvider as APIAuthContextProvider } from '../../contexts/authAPI';
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { Roles } from '../../constants';
+import GlobalParamsAdminForm from '../GlobalParamsAdminForm';
 
 const AdminPanel = () => {
   const connection = useConnection();
@@ -79,26 +89,23 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="adminpanel">
-      <div className="container">
-        <div className="d-flex align-items-center justify-content-between">
-          <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
-          {/* <Button className="button--fill mt-4">Connect Wallet</Button> */}
-        </div>
-        <h2>AdminPanel</h2>
-        <Button className="button--fill mt-4" onClick={onCreateProgramState} disabled={isCreated}>
-          Create Program State
-        </Button>
-        <form className="form-bg mt-4">
-          <div>
-            <CustomSelect options={TOKEN_VAULT_OPTIONS} onChange={onChangeLp} />
-          </div>
-          <Button className="button--fill mt-4" disabled={!mintAddress} onClick={onCreateTokenVault}>
-            Create LP Token
-          </Button>
-        </form>
+    <APIAuthContextProvider>
+      <div className="adminpanel">
+        <Switch>
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/fees" component={FeesAdminForm} exact />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/whitelist" component={WhitelistAdminForm} exact />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/ceilings" component={CeilingsAdminForm} exact />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/globalparams" component={GlobalParamsAdminForm} exact />
+          <ProtectedRoute
+            role={Roles.ADMIN}
+            path="/adminpanel/collateralizationratios"
+            component={CollRatiosAdminForm}
+            exact
+          />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/lptoken" component={LpTokenAdminForm} exact />
+        </Switch>
       </div>
-    </div>
+    </APIAuthContextProvider>
   );
 };
 

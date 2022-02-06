@@ -22,7 +22,7 @@ import { useUpdateState } from '../../contexts/auth';
 import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import highriskIcon from '../../assets/images/highrisk.svg';
-import { IoWarningOutline } from 'react-icons/io5';
+import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { MINTADDRESS } from '../../constants';
@@ -53,7 +53,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     // replace this boolean value with a function to determine wether user limit reached
     const userLimitReached = false;
     // replace this boolean value with a function to determine wether global limit reached
-    const globalLimitReached = true;
+    const globalLimitReached = false;
     if (userLimitReached) {
       setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
     }
@@ -249,10 +249,10 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             </div>
           )}
           {
-            /* TODO: fix this */ false && (
+            /* TODO: fix this */ hasUserReachedDebtLimit && (
               <div className="tokenpaircard__warningBox">
                 <div>
-                  <IoWarningOutline size={27} />
+                  <IoAlertCircleOutline size={23} />
                 </div>
                 <p>
                   <strong>USDr Limit Reached:</strong> {hasUserReachedDebtLimit}

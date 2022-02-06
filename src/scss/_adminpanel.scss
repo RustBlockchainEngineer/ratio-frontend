@@ -1,5 +1,4 @@
 .adminpanel {
-    margin-top: 5rem;
     h2 {
         margin-bottom: 0px;
         font-family: 'Poppins-Medium' !important;
@@ -16,20 +15,6 @@
         font-size: 14px;
         color: var(--unnamed-color-3c4760);
     }
-    .form-control {
-        padding: 10px 16px !important;
-        border: 1px solid rgba(#4c646f, 0.2) !important;
-        border-radius: 4px !important;
-        color: #3c4760 !important;
-        padding-right: 145px !important;
-        background-color: white !important;
-        width: 50% !important;
-        &:focus {
-          border: 1px solid rgba(#4c646f, 0.2) !important;
-          box-shadow: none !important;
-          background-color: transparent !important;
-        }
-    }
     .form-bg {
         padding: 1.5rem;
         margin-right: 0;
@@ -39,5 +24,4 @@
         border-top-right-radius: 0.25rem;
         border: 1px solid #dee2e6;
     }
-    
 }

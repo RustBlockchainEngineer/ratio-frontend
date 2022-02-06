@@ -31,7 +31,7 @@
 
   &--warning {
     box-shadow: 0px 2px 8px #f48c5780;
-    border: 2px solid #f48c57;
+    border: 2px solid #FF3131;
   }
 
   &__warningBox {
@@ -40,7 +40,19 @@
     align-items: flex-start;
     padding: 20px;
     padding-top: 0px;
-    color: #f48c57;
+    color: #FF3131;
+    p {
+      margin-bottom: 0px;
+      margin-left: 0.5rem;
+    }
+  }
+
+  &__table__warningBox {
+    //min-height: 70px;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 5px;
+    color: #FF3131;
     p {
       margin-bottom: 0px;
       margin-left: 0.5rem;
