@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { useEffect, useMemo, useState } from 'react';
 import { JUPITER_API } from '../utils/jupiter/constants';
-import { setIntervalAsync, clearIntervalAsync, SetIntervalAsyncTimer } from 'set-interval-async/dynamic'
+import { setIntervalAsync, clearIntervalAsync, SetIntervalAsyncTimer } from 'set-interval-async/dynamic';
 import { useRatioPriceFetchingFrequency } from './useRatioPriceFetchingFrequency';
 
 interface JupiterRoutePrice {
@@ -12,12 +12,11 @@ interface JupiterRoutePrice {
   priceImpactPct: string;
 }
 
-function makeJupiterEndpoint(inputMint: string, outputMint: string, amount: string, slippage: number):string{
+function makeJupiterEndpoint(inputMint: string, outputMint: string, amount: string, slippage: number): string {
   return `${JUPITER_API}/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippage=${slippage}`;
 }
 
-
-async function getJupiterRoute(endpoint: string){
+async function getJupiterRoute(endpoint: string) {
   let res;
   try {
     const response = await fetch(endpoint);
@@ -47,7 +46,10 @@ export function useJupiterRoute(inputMint: string, outputMint: string, amount = 
   const [result, setResult] = useState<any>({ data: 'DATA NOT LOADED YET' });
   const [error, setError] = useState<any>(null);
 
-  const endpoint = useMemo(() => makeJupiterEndpoint(inputMint,outputMint,amount,slippage),[inputMint,outputMint,amount,slippage]);
+  const endpoint = useMemo(
+    () => makeJupiterEndpoint(inputMint, outputMint, amount, slippage),
+    [inputMint, outputMint, amount, slippage]
+  );
 
   useEffect(() => {
     let cancelRequest = false;
@@ -75,8 +77,13 @@ export function useJupiterRoute(inputMint: string, outputMint: string, amount = 
  * Same function as before but with frequency enabled.
  * @returns : JupiterRoutePrice interface.
  */
-export function useJupiterPriceWithFrequency(inputMint: string, outputMint: string, amount = '1000000000', slippage = 0.5){
-  const [result,setResult] = useState<any>({data: 'DATA NOT LOADED YET'});
+export function useJupiterPriceWithFrequency(
+  inputMint: string,
+  outputMint: string,
+  amount = '1000000000',
+  slippage = 0.5
+) {
+  const [result, setResult] = useState<any>({ data: 'DATA NOT LOADED YET' });
   const [error, setError] = useState<any>(null);
   const data = useRatioPriceFetchingFrequency();
   let priceIntervalFrequency: number;
@@ -86,26 +93,29 @@ export function useJupiterPriceWithFrequency(inputMint: string, outputMint: stri
    * [frequency, errror]
    * It checks for any error that it might occur.
    */
-  if(data[1] === undefined || data[0] === undefined){
+  if (data[1] === undefined || data[0] === undefined) {
     setError('useRatioPriceFetchingFrequency: unable to fetch [frequency, error]');
-  }else{
+  } else {
     priceIntervalFrequency = data[0];
   }
 
-  const endpoint = makeJupiterEndpoint(inputMint,outputMint,amount,slippage);
+  const endpoint = makeJupiterEndpoint(inputMint, outputMint, amount, slippage);
 
   useEffect(() => {
     let cancelRequest = false;
-    let intervalID:SetIntervalAsyncTimer;
-    async function fetchJupiterRoute(){
-    try {
-          intervalID = setIntervalAsync(async() => {
-          const res = await getJupiterRoute(endpoint); 
-          if(cancelRequest) return;
-          setResult(res);
-        }, !isNaN(priceIntervalFrequency) ? priceIntervalFrequency * 1000 : 10000)
+    let intervalID: SetIntervalAsyncTimer;
+    async function fetchJupiterRoute() {
+      try {
+        intervalID = setIntervalAsync(
+          async () => {
+            const res = await getJupiterRoute(endpoint);
+            if (cancelRequest) return;
+            setResult(res);
+          },
+          !isNaN(priceIntervalFrequency) ? priceIntervalFrequency * 1000 : 10000
+        );
       } catch (error) {
-        if(cancelRequest) return;
+        if (cancelRequest) return;
         setError(error);
       }
     }
@@ -116,8 +126,7 @@ export function useJupiterPriceWithFrequency(inputMint: string, outputMint: stri
       clearIntervalAsync(intervalID);
       cancelRequest = true;
     };
-
   });
 
-  return [result,error];
+  return [result, error];
 }
