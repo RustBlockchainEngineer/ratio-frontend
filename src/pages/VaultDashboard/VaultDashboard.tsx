@@ -249,14 +249,17 @@ const VaultDashboard = () => {
 
   return (
     <>
-      {hasReachedDebtLimit && (
-        <Banner
-          title="USDr Debt Limit Reached:"
-          message="You have reached your overall USDr Debt Limit"
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
-      )}
+      {
+        /* TODO: fix this */
+        false && (
+          <Banner
+            title="USDr Debt Limit Reached:"
+            message="You have reached your overall USDr Debt Limit"
+            bannerIcon={BannerIcon.riskLevel}
+            className="debt-limit-reached"
+          />
+        )
+      }
       <div className="vaultdashboard">
         <div className="vaultdashboard__header">
           <div className="vaultdashboard__header_titleBox">
@@ -303,7 +306,7 @@ const VaultDashboard = () => {
           </div>
         </div>
         <div className="vaultdashboard__body row gutters">
-          <div className="col col-md-8">
+          <div className="col-xl-8">
             <div className="vaultdashboard__bodyleft row">
               {/* {priceCardData.map((item, index) => {
               return (
@@ -314,7 +317,7 @@ const VaultDashboard = () => {
                 </div>
               );
             })} */}
-              <div className="col col-lg-6 col-sm-12">
+              <div className="col-lg-6 col-md-12">
                 <ModalCard
                   mintAddress={vault_mint}
                   title="Tokens in Vault"
@@ -341,18 +344,22 @@ const VaultDashboard = () => {
               </div>
             </div>
             <div className="vaultdashboard__bodyleft row pt-0 mt-5">
-              <VaultHistoryTable />
+              <div className="col">
+                <VaultHistoryTable />
+              </div>
             </div>
           </div>
-          <div className="col col-md-4 ">
-            <div className="vaultdashboard__bodyright">
-              <AmountPanel
-                collAmount={lpWalletBalance}
-                collAmountUSD={lpWalletBalanceUSD}
-                icons={VaultData.icons}
-                tokenName={VaultData.title}
-                usdrAmount={usdrWalletBalance}
-              />
+          <div className="col-xl-4">
+            <div className="col">
+              <div className="vaultdashboard__bodyright">
+                <AmountPanel
+                  collAmount={lpWalletBalance}
+                  collAmountUSD={lpWalletBalanceUSD}
+                  icons={VaultData.icons}
+                  tokenName={VaultData.title}
+                  usdrAmount={usdrWalletBalance}
+                />
+              </div>
             </div>
           </div>
         </div>

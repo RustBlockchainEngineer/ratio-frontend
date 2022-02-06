@@ -76,7 +76,7 @@ const PaybackModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="button--fill fillBtn" onClick={() => setShow(!show)}>
+      <Button className="gradientBtn" onClick={() => setShow(!show)}>
         Pay Back
       </Button>
       <Modal
@@ -119,7 +119,7 @@ const PaybackModal = ({ data }: any) => {
             />
             {/* <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput /> */}
-            <Button className="button--fill bottomBtn" onClick={() => repay()}>
+            <Button className="button--blue bottomBtn" onClick={() => repay()}>
               Pay Back Debt
             </Button>
           </div>

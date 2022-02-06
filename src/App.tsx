@@ -17,6 +17,7 @@ import { MercurialAPIProvider } from './contexts/mercurialAPI';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Roles } from './constants/constants';
 import NotFound from './pages/NotFound';
+import { VaultsContextProvider } from './contexts/vaults';
 
 dotenv.config();
 const App: React.FC = () => {
@@ -30,28 +31,35 @@ const App: React.FC = () => {
                 <MarketProvider>
                   <MercurialAPIProvider>
                     <ThemeProvider>
-                      <Router>
-                        <div>
-                          <Switch>
-                            <Route path="/dashboard" component={Layer} />
-                            <Route path="/faucet" exact component={Faucet} />
-                            {/* This next route is temporal, until we start using APIAuthContextProvider on all cases */}
-                            <Route
-                              path="/adminpanel"
-                              exact
-                              render={(props) => (
-                                <APIAuthContextProvider>
-                                  <ProtectedRoute role={Roles.ADMIN} exact path="/adminpanel" component={AdminPanel} />
-                                </APIAuthContextProvider>
-                              )}
-                            />
-                            <Route exact path="/">
-                              <Redirect to="/dashboard" />
-                            </Route>
-                            <Route component={NotFound} />
-                          </Switch>
-                        </div>
-                      </Router>
+                      <VaultsContextProvider>
+                        <Router>
+                          <div>
+                            <Switch>
+                              <Route path="/dashboard" component={Layer} />
+                              <Route path="/faucet" exact component={Faucet} />
+                              {/* This next route is temporal, until we start using APIAuthContextProvider on all cases */}
+                              <Route
+                                path="/adminpanel"
+                                exact
+                                render={(props) => (
+                                  <APIAuthContextProvider>
+                                    <ProtectedRoute
+                                      role={Roles.ADMIN}
+                                      exact
+                                      path="/adminpanel"
+                                      component={AdminPanel}
+                                    />
+                                  </APIAuthContextProvider>
+                                )}
+                              />
+                              <Route exact path="/">
+                                <Redirect to="/dashboard" />
+                              </Route>
+                              <Route component={NotFound} />
+                            </Switch>
+                          </div>
+                        </Router>
+                      </VaultsContextProvider>
                     </ThemeProvider>
                   </MercurialAPIProvider>
                 </MarketProvider>

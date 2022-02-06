@@ -38,7 +38,7 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
       {/* {isTable && <img src={darkMode ? darkLogo : logo} alt="logo" />} */}
       {connected && <GuideModal />}
       {connected && (
-        <Button disabled={!connected} className="button--fill walletBtn mr-3" onClick={() => history.push('/faucet')}>
+        <Button disabled={!connected} className="button--blue walletBtn mr-3" onClick={() => history.push('/faucet')}>
           Faucet
         </Button>
       )}
@@ -59,7 +59,7 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
         <Button
           onClick={connected ? onClickWalletBtn : connect}
           // disabled={connected && disabled}
-          className="button--fill walletBtn"
+          className="button--blue walletBtn"
         >
           Connect Wallet
         </Button>

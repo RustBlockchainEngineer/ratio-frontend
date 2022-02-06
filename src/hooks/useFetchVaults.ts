@@ -13,11 +13,17 @@ import { LPair } from '../types/VaultTypes';
   Example usage: 
     const { status, error, vaults } = useFetchVaults();
 */
+export enum VaultsFetchingStatus {
+  NotAsked,
+  Loading,
+  Finish,
+  Error,
+}
 export const useFetchVaults = () => {
   const cache = useRef<LPair[]>([]);
 
   const initialState = {
-    status: 'idle',
+    status: VaultsFetchingStatus.NotAsked,
     error: null,
     vaults: [],
   };
@@ -25,11 +31,11 @@ export const useFetchVaults = () => {
   const [state, dispatch] = useReducer((state: any, action: any) => {
     switch (action.type) {
       case 'FETCHING':
-        return { ...initialState, status: 'fetching' };
+        return { ...initialState, status: VaultsFetchingStatus.Loading };
       case 'FETCHED':
-        return { ...initialState, status: 'fetched', vaults: action.payload };
+        return { ...initialState, status: VaultsFetchingStatus.Finish, vaults: action.payload };
       case 'FETCH_ERROR':
-        return { ...initialState, status: 'error', error: action.payload };
+        return { ...initialState, status: VaultsFetchingStatus.Error, error: action.payload };
       default:
         return state;
     }
@@ -37,18 +43,11 @@ export const useFetchVaults = () => {
 
   useEffect(() => {
     let cancelRequest = false;
-    const url = `${API_ENDPOINT}/lpairs`;
     if (!API_ENDPOINT || !API_ENDPOINT.trim()) return;
-
-    fetchData();
-
-    // We use the cancelrequest variable to avoid updating any component state if the component was cleaned up.
-    return function cleanup() {
-      cancelRequest = true;
-    };
+    const url = `${API_ENDPOINT}/lpairs`;
 
     // Gets the data for all the existent vaults. If a cached version is found, it gets returned.
-    async function fetchData() {
+    const fetchData = async () => {
       dispatch({ type: 'FETCHING' });
       if (cache.current && cache.current.length > 0) {
         const data = cache.current;
@@ -56,8 +55,13 @@ export const useFetchVaults = () => {
       } else {
         try {
           const response = await fetch(url);
-          const data: LPair[] = await response.json();
-          cache.current = data;
+          let data: LPair[] = [];
+
+          if (response.status === 200) {
+            data = await response.json();
+            cache.current = data;
+          }
+
           if (cancelRequest) return;
           dispatch({ type: 'FETCHED', payload: data });
         } catch (error: any) {
@@ -65,7 +69,14 @@ export const useFetchVaults = () => {
           dispatch({ type: 'FETCH_ERROR', payload: error.message });
         }
       }
-    }
+    };
+
+    fetchData();
+
+    // We use the cancelrequest variable to avoid updating any component state if the component was cleaned up.
+    return () => {
+      cancelRequest = true;
+    };
   }, [API_ENDPOINT]);
 
   return state;
