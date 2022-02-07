@@ -351,7 +351,7 @@ const VaultDashboard = () => {
               </div>
             </div>
           </div>
-          <div className="col col-md-4 ">
+          <div className="col col-lg-4 ">
             <div className="vaultdashboard__bodyright">
               <AmountPanel
                 collAmount={lpWalletBalance}
