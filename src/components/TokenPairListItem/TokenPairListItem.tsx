@@ -11,9 +11,9 @@ import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
-import { formatUSD } from '../../utils/utils';
+import { formatUSD, getDebtLimitForAllVaults } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
+import { getTokenVaultByMint, getUpdatedUserState, getUserState, getGlobalState } from '../../utils/ratio-lending';
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import { sleep } from '@project-serum/common';
@@ -35,6 +35,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const [expand, setExpand] = React.useState(false);
   const [userState, setUserState] = React.useState(null);
+  const [globalState, setGlobalState] = React.useState(null);
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
@@ -45,16 +46,32 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
 
   React.useEffect(() => {
-    // replace this boolean value with a function to determine wether user limit reached
-    const userLimitReached = false;
-    // replace this boolean value with a function to determine wether global limit reached
-    const globalLimitReached = false;
-    if (userLimitReached) {
-      setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
+    if (wallet && connection && globalState) {
+      getDebtLimitForAllVaults(connection, wallet, [data]).then((vaults: any) => {
+        const userLimitReached = vaults[0].hasReachedDebtLimit;
+        const globalLimitReached = (globalState as any)?.totalDebt
+          ? (globalState as any)?.totalDebt.toNumber() === (globalState as any)?.debtCeiling.toNumber()
+          : false;
+        if (userLimitReached) {
+          setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
+        } else if (globalLimitReached) {
+          setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+        } else {
+          setHasUserReachedDebtLimit('');
+        }
+      });
     }
-    if (globalLimitReached) {
-      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+  }, [wallet, connection]);
+
+  React.useEffect(() => {
+    if (wallet && wallet.publicKey) {
+      getGlobalState(connection, wallet).then((res) => {
+        setGlobalState(res);
+      });
     }
+    return () => {
+      setGlobalState(null);
+    };
   }, [wallet, connection]);
 
   React.useEffect(() => {

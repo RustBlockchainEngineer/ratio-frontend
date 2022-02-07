@@ -78,6 +78,7 @@ export const TOKEN_VAULT_OPTIONS = [
   },
 ];
 
+
 // This command makes an Lottery
 function getProgramInstance(connection: Connection, wallet: any) {
   // if (!wallet.publicKey) throw new WalletNotConnectedError();
@@ -93,6 +94,23 @@ function getProgramInstance(connection: Connection, wallet: any) {
   const program = new (anchor as any).Program(idl, programId, provider);
 
   return program;
+}
+
+export async function getGlobalState(connection: Connection, wallet: any) {
+  try {
+    const program = getProgramInstance(connection, wallet);
+    const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from(GLOBAL_STATE_TAG)],
+      program.programId
+    );
+    const globalState = await program.account.globalState.fetch(globalStateKey);
+    if (globalState) {
+      return globalState;
+    }
+  } catch (e) {
+    console.log('globalState was not created');
+  }
+  return null;
 }
 
 export async function isGlobalStateCreated(connection: Connection, wallet: any) {
