@@ -306,7 +306,7 @@ const VaultDashboard = () => {
           </div>
         </div>
         <div className="vaultdashboard__body row gutters">
-          <div className="col col-md-8">
+          <div className="col-xl-8">
             <div className="vaultdashboard__bodyleft row">
               {/* {priceCardData.map((item, index) => {
               return (
@@ -317,7 +317,7 @@ const VaultDashboard = () => {
                 </div>
               );
             })} */}
-              <div className="col col-lg-6 col-sm-12">
+              <div className="col-lg-6 col-md-12">
                 <ModalCard
                   mintAddress={vault_mint}
                   title="Tokens in Vault"
@@ -345,10 +345,12 @@ const VaultDashboard = () => {
               </div>
             </div>
             <div className="vaultdashboard__bodyleft row pt-0 mt-5">
-              <VaultHistoryTable />
+              <div className="col">
+                <VaultHistoryTable />
+              </div>
             </div>
           </div>
-          <div className="col col-md-4 ">
+          <div className="col col-lg-4 ">
             <div className="vaultdashboard__bodyright">
               <AmountPanel
                 mintAddress={vault_mint}

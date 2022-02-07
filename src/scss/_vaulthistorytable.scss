@@ -1,7 +1,5 @@
 .vaulthistorytable {
   width: 100%;
-  padding-left: 15px;
-  padding-right: 15px;
   @include respond-to(sm) {
     padding-left: 0px;
     padding-right: 0px;

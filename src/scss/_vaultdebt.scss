@@ -1,6 +1,11 @@
 .vaultdebt {
   margin-left: 2.1rem;
-  margin-top: 57px;
+  margin-top: 3.565rem;
+
+  @include respond-to(sm) {
+    margin-top: 5rem;
+  }
+
   .paybackusdr {
     min-width: 130px;
     margin-bottom: 16px;
