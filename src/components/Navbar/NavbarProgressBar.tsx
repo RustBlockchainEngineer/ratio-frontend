@@ -4,6 +4,9 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { nFormatter } from '../../utils/utils';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { ProgressBar } from 'react-bootstrap';
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
+import { getGlobalState } from '../../utils/ratio-lending';
 
 type NavbarProgressBarProps = {
   type: string;
@@ -14,43 +17,36 @@ const NavbarProgressBar = ({ type }: NavbarProgressBarProps) => {
   const [percentage, setPercentage] = useState(0);
   const [warning, setWarning] = useState(false);
 
-  const retrieveGlobalTVLData = async () => {
-    const currentTVL = 19; //to-do: pull actual value
-    const currentTVLlimit = 20; //to-do: pull actual value
-    setValue(currentTVL);
-    const percentageFull = ((currentTVL / currentTVLlimit) * 100).toFixed(2);
-    setPercentage(parseInt(percentageFull));
-    if (currentTVL / currentTVLlimit === 1) {
-      setWarning(true);
-    } else {
-      setWarning(false);
-    }
-  };
-
-  const retrieveGlobalUSDrData = async () => {
-    const currentUSDr = 9.86; //to-do: pull actual value
-    const currentUSDrlimit = 20; //to-do: pull actual value
-    setValue(currentUSDr);
-    const percentageFull = ((currentUSDr / currentUSDrlimit) * 100).toFixed(2);
-    setPercentage(parseInt(percentageFull));
-    if (currentUSDr / currentUSDrlimit === 1) {
-      setWarning(true);
-    } else {
-      setWarning(false);
-    }
-  };
+  const connection = useConnection();
+  const { wallet, connected } = useWallet();
 
   React.useEffect(() => {
-    if (type === 'TVL Cap') {
-      retrieveGlobalTVLData();
-      return;
-    } else if (type === 'USDr Debt') {
-      retrieveGlobalUSDrData();
-      return;
-    } else {
-      return;
+    if (wallet && wallet.publicKey) {
+      getGlobalState(connection, wallet).then((res) => {
+        if (res) {
+          let currentValue;
+          let maxValue;
+          if (type === 'TVL Cap') {
+            currentValue = res.tvl ? res.tvl.toNumber() : 1;
+            maxValue = res.tvlLimit ? res.tvlLimit.toNumber() : 20;
+          } else if (type === 'USDr Debt') {
+            currentValue = res.totalDebt ? res.totalDebt.toNumber() : 1;
+            maxValue = res.debtCeiling ? res.debtCeiling.toNumber() : 1;
+          } else {
+            return;
+          }
+          setValue(currentValue);
+          const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
+          setPercentage(parseInt(percentageFull));
+          if (currentValue / maxValue === 1) {
+            setWarning(true);
+          } else {
+            setWarning(false);
+          }
+        }
+      });
     }
-  }, [type]);
+  }, [wallet, connection]);
 
   return (
     <div
