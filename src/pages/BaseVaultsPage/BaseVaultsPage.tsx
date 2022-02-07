@@ -88,6 +88,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 icon: item.platform_icon,
               },
               risk: item.risk_rating,
+              item: item,
             };
           }
         })
