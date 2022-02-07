@@ -249,7 +249,7 @@ interface GetDebtLimit {
   tokenPrice: any | number;
 }
 
-const getRiskLevelNumber = (vaultMint: MintInfo) => {
+export const getRiskLevelNumber = (vaultMint: any) => {
   switch (vaultMint) {
     case MINTADDRESS['USDC-USDR']:
       return 0;
@@ -283,7 +283,8 @@ export const getDebtLimitForVault = async ({
   const debt = (userState as any)?.debt ?? 0;
 
   const lpLockedAmount = new TokenAmount(lockedCollBalance, collMint?.decimals);
-  const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), getRiskLevelNumber(vaultMint));
+  //need to incorperate risk rating here
+  const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()));
   const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
 
   const debtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
