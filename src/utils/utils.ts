@@ -12,7 +12,7 @@ import { TokenAccount } from './../models';
 import { getUserState } from '../utils/ratio-lending';
 import { TokenAmount } from '../utils/safe-math';
 import { getUSDrAmount } from '../utils/risk';
-import { cache, MintParser, useMint } from '../contexts/accounts';
+import { cache, MintParser } from '../contexts/accounts';
 
 export type KnownTokenMap = Map<string, TokenInfo>;
 

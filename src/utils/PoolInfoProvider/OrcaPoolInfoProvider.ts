@@ -17,6 +17,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
   depositLP(): boolean {
     // TODO Implement this function
 
+    alert('Orca: Deposit LP');
     console.error('Function not implemented yet');
 
     return true;
@@ -25,6 +26,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
   withdrawLP(): boolean {
     // TODO Implement this function
 
+    alert('Orca: Withdraw LP');
     console.error('Function not implemented yet');
 
     return true;
@@ -33,6 +35,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
   harvestReward(): boolean {
     // TODO Implement this function
 
+    alert('Orca: Harvest Reward');
     console.error('Function not implemented yet');
 
     return true;

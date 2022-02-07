@@ -29,6 +29,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
   depositLP(): boolean {
     // TODO Implement this function
 
+    alert('Raydium: Deposit LP');
     console.error('Function not implemented yet');
 
     return true;
@@ -37,6 +38,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
   withdrawLP(): boolean {
     // TODO Implement this function
 
+    alert('Raydium: Withdraw LP');
     console.error('Function not implemented yet');
 
     return true;
@@ -45,6 +47,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
   harvestReward(): boolean {
     // TODO Implement this function
 
+    alert('Raydium: Harvest Reward');
     console.error('Function not implemented yet');
 
     return true;

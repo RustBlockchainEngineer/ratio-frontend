@@ -14,6 +14,7 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
   depositLP(): boolean {
     // TODO Implement this function
 
+    alert('Saber: Deposit LP');
     console.error('Function not implemented yet');
 
     return true;
@@ -22,6 +23,7 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
   withdrawLP(): boolean {
     // TODO Implement this function
 
+    alert('Saber: Withdraw LP');
     console.error('Function not implemented yet');
 
     return true;
@@ -30,6 +32,7 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
   harvestReward(): boolean {
     // TODO Implement this function
 
+    alert('Saber: Harvest Reward');
     console.error('Function not implemented yet');
 
     return true;
