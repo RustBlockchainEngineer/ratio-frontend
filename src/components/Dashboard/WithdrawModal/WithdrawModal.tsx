@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
@@ -11,6 +11,8 @@ import { getTokenVaultByMint, withdrawCollateral } from '../../../utils/ratio-le
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
+import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
+import { useVaultsContextProvider } from '../../../contexts/vaults';
 
 type PairType = {
   mint: string;
@@ -28,7 +30,6 @@ const WithdrawModal = ({ data }: any) => {
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [vault, setVault] = React.useState({});
   const [userCollAccount, setUserCollAccount] = React.useState('');
   const collMint = useMint(data.mint);
 
@@ -36,6 +37,11 @@ const WithdrawModal = ({ data }: any) => {
   const { setUpdateStateFlag } = useUpdateState();
   const [withdrawStatus, setWithdrawStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
+
+  const { vaults } = useVaultsContextProvider();
+  const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
+
+  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -154,7 +160,7 @@ const WithdrawModal = ({ data }: any) => {
             <Button
               className="button--blue bottomBtn"
               disabled={Number(data.usdrValue) !== 0}
-              onClick={() => withdraw()}
+              onClick={() => poolInfoProviderFactory?.withdrawLP(connection, wallet)}
             >
               Withdraw Assets
             </Button>

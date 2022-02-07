@@ -28,3 +28,5 @@ yarn-error.log*
 .vscode/settings.json
 .localnet.sh.swp
 .eslintcache
+
+/test-ledger

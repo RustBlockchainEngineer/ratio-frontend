@@ -20,6 +20,7 @@ import { sleep } from '@project-serum/common';
 import { useUpdateState } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { MINTADDRESS } from '../../constants';
+import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
 const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -40,6 +41,8 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const [totalDebt, setTotalDebt] = React.useState(0);
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
+
+  const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
 
   React.useEffect(() => {
     // replace this boolean value with a function to determine wether user limit reached
@@ -140,7 +143,13 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const renderModalButton = () => {
     return (
       <div className="d-inline-flex">
-        <Button disabled={!connected} className="button button--blue generate mt-2">
+        <Button
+          disabled={!connected}
+          onClick={() => {
+            poolInfoProviderFactory?.harvestReward(connection, wallet);
+          }}
+          className="button button--blue generate mt-2"
+        >
           Harvest
         </Button>
         <div className="mx-1"></div>

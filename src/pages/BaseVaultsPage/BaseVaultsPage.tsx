@@ -10,15 +10,14 @@ import TokenPairCard from '../../components/TokenPairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
-import { useFetchVaults, VaultsFetchingStatus } from '../../hooks/useFetchVaults';
+import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { LPair } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { getDebtLimitForAllVaults } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
-import { useFillPlatformTvls } from '../../hooks/useFillPlatformTvls';
+import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
-import { useFillPlatformAPR } from '../../hooks/useFillPlatformAPR';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -40,10 +39,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   const { status, error, vaults } = useVaultsContextProvider();
 
-  // TODO : try to create a useFillPlatformWithRatioValues, with this boths hooks
-  const vaultsWithPlatTvl = useFillPlatformTvls(vaults);
-
-  const vaultsWithPlatAPR = useFillPlatformAPR(vaultsWithPlatTvl);
+  const vaultsWithPlatformInformation = useFillPlatformInformation(vaults);
 
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
@@ -85,7 +81,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               icon: require(`../../assets/images/tokens/${item.address_id}.png`),
               title: item.symbol,
               tvl: item.platform_tvl,
-              apr: item.platform_apr,
+              apr: item.platform_ratio_apr,
               earned_rewards: item.earned_rewards,
               platform: {
                 link: item.platform_site,
@@ -93,6 +89,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 icon: item.platform_icon,
               },
               risk: item.risk_rating,
+              item: item,
             };
           }
         })
@@ -115,8 +112,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }
 
   useEffect(() => {
-    setFactorial(factorialOf(vaultsWithPlatAPR, filter_data, sort_data, view_data, platform_data));
-  }, [vaultsWithPlatAPR, connected, filter_data, sort_data, view_data, platform_data, overview]);
+    setFactorial(factorialOf(vaultsWithPlatformInformation, filter_data, sort_data, view_data, platform_data));
+  }, [vaultsWithPlatformInformation, connected, filter_data, sort_data, view_data, platform_data, overview]);
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
 

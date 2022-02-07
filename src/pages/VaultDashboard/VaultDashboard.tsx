@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
@@ -29,7 +29,6 @@ import {
 import { PublicKey } from '@solana/web3.js';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
-import { getFaucetState } from '../../utils/ratio-faucet';
 import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
 import { getRiskLevel } from '../../libs/helper';
@@ -57,7 +56,7 @@ const priceCardData = [
 
 const VaultDashboard = () => {
   const history = useHistory();
-  const { mint: vault_mint } = useParams<{ mint?: string }>();
+  const { mint: vault_mint } = useParams<{ mint: string }>();
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
@@ -352,6 +351,7 @@ const VaultDashboard = () => {
           <div className="col col-md-4 ">
             <div className="vaultdashboard__bodyright">
               <AmountPanel
+                mintAddress={vault_mint}
                 collAmount={lpWalletBalance}
                 collAmountUSD={lpWalletBalanceUSD}
                 icon={VaultData.icon}

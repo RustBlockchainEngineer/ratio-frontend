@@ -1,3 +1,5 @@
+import { LPair } from '../types/VaultTypes';
+
 export type PairType = {
   id: number;
   mint: string;
@@ -13,6 +15,7 @@ export type PairType = {
   earned_rewards: number;
   details: string;
   riskPercentage: number;
+  item: LPair;
 };
 
 export interface TokenPairCardProps {

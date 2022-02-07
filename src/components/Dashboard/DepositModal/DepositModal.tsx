@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
@@ -13,6 +13,8 @@ import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
+import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
+import { useVaultsContextProvider } from '../../../contexts/vaults';
 
 type PairType = {
   mint: string;
@@ -29,6 +31,11 @@ const DepositModal = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const collMint = useMint(data.mint);
+
+  const { vaults } = useVaultsContextProvider();
+  const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
+
+  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
   const collAccount = useAccountByMint(data.mint);
   const [depositAmount, setDepositAmount] = React.useState(0);
@@ -134,7 +141,10 @@ const DepositModal = ({ data }: any) => {
               valid={depositStatus}
               invalidStr={invalidStr}
             />
-            <Button className="button--blue bottomBtn" onClick={() => deposit()}>
+            <Button
+              className="button--blue bottomBtn"
+              onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
+            >
               Deposit & Lock Assets
             </Button>
           </div>
