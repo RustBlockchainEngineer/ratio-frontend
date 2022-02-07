@@ -37,6 +37,7 @@ const WithdrawModal = ({ data }: any) => {
   const { setUpdateStateFlag } = useUpdateState();
   const [withdrawStatus, setWithdrawStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
@@ -152,6 +153,7 @@ const WithdrawModal = ({ data }: any) => {
               onTextChange={(value) => {
                 setWithdrawAmount(Number(value));
                 setWithdrawStatus(false);
+                setButtonDisabled(false);
               }}
               maxValue={data.value}
               valid={withdrawStatus}
@@ -159,7 +161,7 @@ const WithdrawModal = ({ data }: any) => {
             />
             <Button
               className="button--blue bottomBtn"
-              disabled={Number(data.usdrValue) !== 0}
+              disabled={withdrawAmount <= 0 || buttonDisabled}
               onClick={() => poolInfoProviderFactory?.withdrawLP(connection, wallet)}
             >
               Withdraw Assets

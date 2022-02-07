@@ -33,6 +33,7 @@ const PaybackModal = ({ data }: any) => {
   const { setUpdateStateFlag } = useUpdateState();
   const [paybackStatus, setPaybackStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -112,6 +113,7 @@ const PaybackModal = ({ data }: any) => {
               onTextChange={(value) => {
                 setPayBackAmount(Number(value));
                 setPaybackStatus(false);
+                setButtonDisabled(false);
               }}
               maxValue={data.usdrValue}
               valid={paybackStatus}
@@ -119,7 +121,11 @@ const PaybackModal = ({ data }: any) => {
             />
             {/* <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput /> */}
-            <Button className="button--blue bottomBtn" onClick={() => repay()}>
+            <Button
+              disabled={paybackAmount <= 0 || buttonDisabled}
+              className="button--blue bottomBtn"
+              onClick={() => repay()}
+            >
               Pay Back Debt
             </Button>
           </div>

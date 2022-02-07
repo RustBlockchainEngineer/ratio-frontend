@@ -44,6 +44,7 @@ const DepositModal = ({ data }: any) => {
   const { setUpdateStateFlag } = useUpdateState();
   const [depositStatus, setDepositStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   useEffect(() => {
     setDidMount(true);
@@ -136,13 +137,14 @@ const DepositModal = ({ data }: any) => {
               onTextChange={(value) => {
                 setDepositAmount(Number(value));
                 setDepositStatus(false);
+                setButtonDisabled(false);
               }}
               maxValue={data.value}
               valid={depositStatus}
               invalidStr={invalidStr}
             />
             <Button
-              disabled={depositAmount <= 0}
+              disabled={depositAmount <= 0 || buttonDisabled}
               className="button--blue bottomBtn"
               onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
             >
