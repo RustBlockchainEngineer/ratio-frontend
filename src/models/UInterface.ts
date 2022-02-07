@@ -2,6 +2,7 @@ export type PairType = {
   id: number;
   mint: string;
   icons: Array<string>;
+  icon: any;
   icon1?: string;
   icon2?: string;
   title: string;

@@ -26,8 +26,9 @@ const WalletBalances = ({ data }: any) => {
         <tbody>
           <tr>
             <td className="name">
-              <img src={data.icons ? data.icons[0] : null} alt="TokenA" style={{ width: 32 }} />
-              <img src={data.icons ? data.icons[1] : null} alt="TokenB" style={{ width: 32 }} className="lastToken" />
+              {data.icon && <img src={data.icon.default} alt="icon" className="amountPanel__icon" />}
+              {/* <img src={data.icons ? data.icons[0] : null} alt="TokenA" style={{ width: 32 }} />
+              <img src={data.icons ? data.icons[1] : null} alt="TokenB" style={{ width: 32 }} className="lastToken" /> */}
               {data.tokenName === 'USDC-USDR' ? 'USDC-USDr' : data.tokenName}
             </td>
             <td>{data.collAmount.toFixed(2)}</td>

@@ -67,6 +67,9 @@
     &--action {
       width: 10rem;
     }
+    &__icon {
+      height: 40px;
+    }
     .expand_arrow {
       cursor: pointer;
       color: var(--unnamed-color-4c646f);
