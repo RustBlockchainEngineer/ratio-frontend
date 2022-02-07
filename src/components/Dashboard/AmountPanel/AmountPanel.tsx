@@ -11,7 +11,7 @@ const AmountPanel = (data: any) => {
     <div className="amountPanel">
       <WalletBalances data={data} />
       <div className="pb-4">
-        <TokensEarned />
+        <TokensEarned data={data} />
         {/* <LossCalculator />
           <SystemInfo /> */}
       </div>

@@ -26,6 +26,7 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { MINTADDRESS } from '../../constants';
+import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
 const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -48,6 +49,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const [totalDebt, setTotalDebt] = React.useState(0);
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
+
+  const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
 
   React.useEffect(() => {
     // replace this boolean value with a function to determine wether user limit reached
@@ -141,7 +144,13 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
     return (
       <div className="col">
         <div className="d-flex">
-          <Button disabled={!connected} className="button button--blue generate mt-2">
+          <Button
+            disabled={!connected}
+            className="button button--blue generate mt-2"
+            onClick={() => {
+              poolInfoProviderFactory?.harvestReward();
+            }}
+          >
             Harvest
           </Button>
           <div className="mx-1"></div>
