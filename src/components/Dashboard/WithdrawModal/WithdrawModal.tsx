@@ -160,7 +160,7 @@ const WithdrawModal = ({ data }: any) => {
             <Button
               className="button--blue bottomBtn"
               disabled={Number(data.usdrValue) !== 0}
-              onClick={() => poolInfoProviderFactory?.withdrawLP()}
+              onClick={() => poolInfoProviderFactory?.withdrawLP(connection, wallet)}
             >
               Withdraw Assets
             </Button>

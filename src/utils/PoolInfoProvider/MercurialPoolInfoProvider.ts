@@ -1,6 +1,7 @@
 import { LPair } from '../../types/VaultTypes';
 import { GenericInfoProvider } from './GenericInfoProvider';
 import { randomInteger } from '../utils';
+import { Connection } from '@solana/web3.js';
 
 export class MercurialPoolInfoProvider extends GenericInfoProvider {
   getTVLbyVault(vault: LPair): number {
@@ -14,7 +15,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return vaultInfo?.tvl as number;
   }
 
-  depositLP(): boolean {
+  depositLP(connection: Connection, wallet: any): boolean {
     // TODO Implement this function
 
     alert('Mercurial: Deposit LP');
@@ -23,7 +24,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  withdrawLP(): boolean {
+  withdrawLP(connection: Connection, wallet: any): boolean {
     // TODO Implement this function
 
     alert('Mercurial: Withdraw LP');
@@ -32,7 +33,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  harvestReward(): boolean {
+  harvestReward(connection: Connection, wallet: any): boolean {
     // TODO Implement this function
 
     alert('Mercurial: Harvest Reward');

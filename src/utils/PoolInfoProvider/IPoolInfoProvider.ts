@@ -1,15 +1,16 @@
 import { LPair } from '../../types/VaultTypes';
+import { Connection } from '@solana/web3.js';
 
 export interface IPoolInfoProvider {
   getTVLbyVault(vault: LPair): number;
 
   getRatioAPRbyVault(vault: LPair): Promise<number>;
 
-  depositLP(): boolean;
+  depositLP(connection: Connection, wallet: any): boolean;
 
-  withdrawLP(): boolean;
+  withdrawLP(connection: Connection, wallet: any): boolean;
 
-  harvestReward(): boolean;
+  harvestReward(connection: Connection, wallet: any): boolean;
 
   getRewards(): number;
 }

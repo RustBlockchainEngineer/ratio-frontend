@@ -141,7 +141,10 @@ const DepositModal = ({ data }: any) => {
               valid={depositStatus}
               invalidStr={invalidStr}
             />
-            <Button className="button--blue bottomBtn" onClick={() => poolInfoProviderFactory?.depositLP()}>
+            <Button
+              className="button--blue bottomBtn"
+              onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
+            >
               Deposit & Lock Assets
             </Button>
           </div>

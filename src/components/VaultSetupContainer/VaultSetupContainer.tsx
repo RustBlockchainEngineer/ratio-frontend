@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import moment from 'moment';
 
@@ -29,6 +29,8 @@ import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
 import { useUpdateState } from '../../contexts/auth';
 import { IoIosArrowRoundForward } from 'react-icons/io';
+import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import { useVaultsContextProvider } from '../../contexts/vaults';
 
 const VaultSetupContainer = ({ data }: any) => {
   console.log(data);
@@ -57,6 +59,11 @@ const VaultSetupContainer = ({ data }: any) => {
 
   const [mintStatus, setMintStatus] = React.useState(false);
   const [lockStatus, setLockStatus] = React.useState(false);
+
+  const { vaults } = useVaultsContextProvider();
+  const vaultFound = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
+
+  const poolInfoProviderFactory = useGetPoolInfoProvider(vaultFound);
 
   React.useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
@@ -225,7 +232,7 @@ const VaultSetupContainer = ({ data }: any) => {
           </strong>
         </div>
         <div>
-          <Button className="button--fill setup" onClick={() => depositLP()}>
+          <Button className="button--fill setup" onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}>
             Set up vault
           </Button>
         </div>

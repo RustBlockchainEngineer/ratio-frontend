@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
@@ -34,6 +34,8 @@ import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
 import { useUpdateState } from '../../contexts/auth';
+import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import { useVaultsContextProvider } from '../../contexts/vaults';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -64,6 +66,11 @@ const LockVaultModal = ({ data }: any) => {
 
   const [mintStatus, setMintStatus] = React.useState(false);
   const [lockStatus, setLockStatus] = React.useState(false);
+
+  const { vaults } = useVaultsContextProvider();
+  const vaultFound = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
+
+  const poolInfoProviderFactory = useGetPoolInfoProvider(vaultFound);
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
@@ -230,7 +237,10 @@ const LockVaultModal = ({ data }: any) => {
               valid={lockStatus}
               invalidStr="Insufficient funds!"
             />
-            <Button className="button--fill lockBtn" onClick={() => depositLP()}>
+            <Button
+              className="button--fill lockBtn"
+              onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
+            >
               Deposit Assets
             </Button>
           </div>

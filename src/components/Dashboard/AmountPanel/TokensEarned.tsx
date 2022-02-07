@@ -6,14 +6,18 @@ import RAY from '../../../assets/images/RAY.svg';
 import SOL from '../../../assets/images/SOL.svg';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
+import { useConnection } from '../../../contexts/connection';
+import { useWallet } from '../../../contexts/wallet';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mintAddress as string)), [vaults]);
 
+  const connection = useConnection();
+  const { wallet } = useWallet();
+
   const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
-  console.log('Pool', poolInfoProviderFactory, data);
   return (
     <div>
       <h4>Tokens Earned</h4>
@@ -59,7 +63,7 @@ const TokensEarned = ({ data }: any) => {
         <Button
           className="button--blue generate btn-block"
           onClick={() => {
-            poolInfoProviderFactory?.harvestReward();
+            poolInfoProviderFactory?.harvestReward(connection, wallet);
           }}
         >
           Harvest

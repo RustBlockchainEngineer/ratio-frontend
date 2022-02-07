@@ -146,7 +146,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
         <Button
           disabled={!connected}
           onClick={() => {
-            poolInfoProviderFactory?.harvestReward();
+            poolInfoProviderFactory?.harvestReward(connection, wallet);
           }}
           className="button button--blue generate mt-2"
         >
