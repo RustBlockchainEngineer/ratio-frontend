@@ -78,6 +78,9 @@
     align-items: center;
     img {
       width: 400px;
+      @include respond-to(sm) {
+        width: 300px;
+      }
     }
     h4 {
       font-size: 18px;

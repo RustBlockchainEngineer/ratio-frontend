@@ -117,7 +117,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             placeholder="Search all vaults by token"
             isMulti
           />
-          {isMobile && <p className="filterpanel__sortby">Platform: </p>}
+          {isMobile && <p className="filterpanel__sortby ml-sm-3">Platform: </p>}
           <Select
             components={{ Option: CustomOption }}
             options={platformOptions}
@@ -138,7 +138,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             width={48}
           /> */}
         </div>
-        <div className="d-md-flex align-items-center justify-content-end ml-sm-4 mt-xl-0 mt-sm-2">
+        <div className="d-md-flex align-items-center justify-content-start ml-sm-0 mt-xl-0 mt-sm-2">
           <>
             <p className="mr-2 filterpanel__sortby">Sort by </p>
             <Select
