@@ -6,6 +6,7 @@
 
 .navbar-vertical {
   width: 300px;
+  min-height: 700px;
   box-shadow: var(--nav-boxshadow);
   text-align: center;
   padding-top: 3rem;
@@ -24,7 +25,8 @@
   }
 
   @include respond-to(md) {
-    position: absolute;
+    position: fixed;
+    z-index: 10000;
     padding-top: 0px;
     text-align: left;
     top: 0px;
@@ -75,6 +77,9 @@
       color: var(--unnamed-color-4c646f);
     }
     // right: 0;
+    @include respond-to(md) {
+      display: none;
+    }
   }
   &__connectedBox {
     position: absolute;

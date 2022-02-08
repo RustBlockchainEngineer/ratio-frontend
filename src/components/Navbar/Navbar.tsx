@@ -138,7 +138,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       <img
         src={collapseFlag ? collapseLogo : darkMode ? darkLogo : logo}
         alt="logo"
-        className="mt-lg-0 ml-lg-0 mt-4 ml-4"
+        className="mt-md-0 ml-md-0 mt-4 ml-4"
       />
       <div className="mt-4">
         <NavbarItem

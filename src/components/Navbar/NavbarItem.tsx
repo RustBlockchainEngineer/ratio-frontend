@@ -46,7 +46,7 @@ const NavbarItem = ({
           <img src={icon} alt="icon" />
           {!collapseFlag && <p className="ml-3">{name}</p>}
         </div>
-        {expands && (
+        {expands && !collapseFlag && (
           <div>
             {expandStatus ? (
               <IoIosArrowUp onClick={changeExpandStatus} />
@@ -58,14 +58,15 @@ const NavbarItem = ({
       </div>
       <div className="container navbar-active-vaults">
         {expandStatus &&
+          !collapseFlag &&
           positionValues &&
           positionValues.map((item: any, index: number) => {
             return (
-              <div className="row navbarItem__expand" key={index}>
-                <div className="text-left col-md-6">
+              <div className="row navbarItem__expand no-gutters" key={index}>
+                <div className="text-left col-6">
                   <p className="navbarItem__expand-name">{item.title}</p>
                 </div>
-                <div className="col-md-3">
+                <div className="col-3">
                   <OverlayTrigger
                     placement="top"
                     delay={{ show: 100, hide: 100 }}
@@ -74,7 +75,7 @@ const NavbarItem = ({
                     <div className="navbarItem__expand-positionvalue">$ {item && nFormatter(item.pv || 0, 2)}</div>
                   </OverlayTrigger>
                 </div>
-                <div className="col-md-3">
+                <div className="col-3">
                   <OverlayTrigger
                     placement="top"
                     delay={{ show: 100, hide: 100 }}
