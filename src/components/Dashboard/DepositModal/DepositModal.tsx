@@ -94,7 +94,10 @@ const DepositModal = ({ data }: any) => {
       </Button>
       <Modal
         show={show}
-        onHide={() => setShow(false)}
+        onHide={() => {
+          setButtonDisabled(true);
+          setShow(false);
+        }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -102,7 +105,14 @@ const DepositModal = ({ data }: any) => {
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
-            <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
+            <IoMdClose
+              size={32}
+              className="dashboardModal__modal__header-close"
+              onClick={() => {
+                setButtonDisabled(true);
+                setShow(false);
+              }}
+            />
             <div>
               {data.icons ? (
                 <>
