@@ -48,8 +48,8 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
 
   abstract getRewards(): number;
 
-  async postTransactionToApi(txSignature: string, wallet:any,authToken: any) : Promise<any> {
-    const response = await postWithAuthToRatioApi({},`${wallet?.publicKey}${txSignature}`,authToken);
+  async postTransactionToApi(txSignature: string, wallet: any, authToken: any): Promise<any> {
+    const response = await postWithAuthToRatioApi({}, `${wallet?.publicKey}${txSignature}`, authToken);
     return response;
   }
 }
