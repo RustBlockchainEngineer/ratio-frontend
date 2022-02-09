@@ -65,6 +65,7 @@ const MintUSDrModal = ({ data }: any) => {
 
   const [mintStatus, setMintStatus] = React.useState(false);
   const [lockStatus, setLockStatus] = React.useState(false);
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
@@ -222,12 +223,17 @@ const MintUSDrModal = ({ data }: any) => {
               onTextChange={(value) => {
                 setBorrowAmount(Number(value));
                 setMintStatus(false);
+                setButtonDisabled(false);
               }}
               maxValue={maxUSDrAmount}
               valid={mintStatus}
               invalidStr="Amount is invalid to mint USDr!"
             />
-            <Button className="button--fill lockBtn" onClick={() => mintUSDr()}>
+            <Button
+              disabled={borrowAmount <= 0 || buttonDisabled}
+              className="button--fill lockBtn"
+              onClick={() => mintUSDr()}
+            >
               Mint USDr
             </Button>
           </div>

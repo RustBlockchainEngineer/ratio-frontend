@@ -38,6 +38,7 @@ const GenerateModal = ({ data }: any) => {
   const { setUpdateStateFlag } = useUpdateState();
   const [mintStatus, setMintStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && data.mint) {
@@ -103,7 +104,10 @@ const GenerateModal = ({ data }: any) => {
       </Button>
       <Modal
         show={show}
-        onHide={() => setShow(false)}
+        onHide={() => {
+          setShow(false);
+          setButtonDisabled(true);
+        }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -111,7 +115,14 @@ const GenerateModal = ({ data }: any) => {
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
-            <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
+            <IoMdClose
+              size={32}
+              className="dashboardModal__modal__header-close"
+              onClick={() => {
+                setButtonDisabled(true);
+                setShow(false);
+              }}
+            />
             <div>
               <img src={data.icons[0]} alt={data.icons[0].toString()} />
             </div>
@@ -132,6 +143,7 @@ const GenerateModal = ({ data }: any) => {
               onTextChange={(value) => {
                 setBorrowAmount(Number(value));
                 setMintStatus(false);
+                setButtonDisabled(false);
               }}
               maxValue={data.usdrValue}
               valid={mintStatus}
@@ -143,7 +155,11 @@ const GenerateModal = ({ data }: any) => {
             <p className="dashboardModal__modal__body-red">
               There will be a 2% stability fee associated with this transaction.
             </p> */}
-            <Button className="button--blue bottomBtn" onClick={() => borrow()}>
+            <Button
+              disabled={borrowAmount <= 0 || buttonDisabled}
+              className="button--blue bottomBtn"
+              onClick={() => borrow()}
+            >
               Mint USDr
             </Button>
           </div>

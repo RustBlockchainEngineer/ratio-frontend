@@ -48,9 +48,9 @@ const CustomInput = ({
   };
 
   const setMaxValue = () => {
-    setValue(appendValueStr ? appendValueStr : '1000');
-    setHasValueChanged(false);
-    onTextChange && onTextChange(appendValueStr ? appendValueStr : '1000');
+    setValue(appendValueStr ? appendValueStr : '0');
+    setHasValueChanged(true);
+    onTextChange && onTextChange(appendValueStr ? appendValueStr : '0');
   };
 
   return (

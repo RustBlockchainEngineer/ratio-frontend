@@ -37,6 +37,7 @@ const WithdrawModal = ({ data }: any) => {
   const { setUpdateStateFlag } = useUpdateState();
   const [withdrawStatus, setWithdrawStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
@@ -102,7 +103,10 @@ const WithdrawModal = ({ data }: any) => {
       </Button>
       <Modal
         show={show}
-        onHide={() => setShow(false)}
+        onHide={() => {
+          setButtonDisabled(true);
+          setShow(false);
+        }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -110,7 +114,14 @@ const WithdrawModal = ({ data }: any) => {
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
-            <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
+            <IoMdClose
+              size={32}
+              className="dashboardModal__modal__header-close"
+              onClick={() => {
+                setButtonDisabled(true);
+                setShow(false);
+              }}
+            />
             <div>
               {data.icons ? (
                 <>
@@ -152,6 +163,7 @@ const WithdrawModal = ({ data }: any) => {
               onTextChange={(value) => {
                 setWithdrawAmount(Number(value));
                 setWithdrawStatus(false);
+                setButtonDisabled(false);
               }}
               maxValue={data.value}
               valid={withdrawStatus}
@@ -159,7 +171,7 @@ const WithdrawModal = ({ data }: any) => {
             />
             <Button
               className="button--blue bottomBtn"
-              disabled={Number(data.usdrValue) !== 0}
+              disabled={withdrawAmount <= 0 || buttonDisabled}
               onClick={() => poolInfoProviderFactory?.withdrawLP(connection, wallet)}
             >
               Withdraw Assets

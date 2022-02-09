@@ -44,6 +44,7 @@ const DepositModal = ({ data }: any) => {
   const { setUpdateStateFlag } = useUpdateState();
   const [depositStatus, setDepositStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   useEffect(() => {
     setDidMount(true);
@@ -93,7 +94,10 @@ const DepositModal = ({ data }: any) => {
       </Button>
       <Modal
         show={show}
-        onHide={() => setShow(false)}
+        onHide={() => {
+          setButtonDisabled(true);
+          setShow(false);
+        }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -101,7 +105,14 @@ const DepositModal = ({ data }: any) => {
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
-            <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
+            <IoMdClose
+              size={32}
+              className="dashboardModal__modal__header-close"
+              onClick={() => {
+                setButtonDisabled(true);
+                setShow(false);
+              }}
+            />
             <div>
               {data.icons ? (
                 <>
@@ -136,12 +147,14 @@ const DepositModal = ({ data }: any) => {
               onTextChange={(value) => {
                 setDepositAmount(Number(value));
                 setDepositStatus(false);
+                setButtonDisabled(false);
               }}
               maxValue={data.value}
               valid={depositStatus}
               invalidStr={invalidStr}
             />
             <Button
+              disabled={depositAmount <= 0 || buttonDisabled}
               className="button--blue bottomBtn"
               onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
             >

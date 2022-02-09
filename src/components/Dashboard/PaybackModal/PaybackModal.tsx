@@ -33,6 +33,7 @@ const PaybackModal = ({ data }: any) => {
   const { setUpdateStateFlag } = useUpdateState();
   const [paybackStatus, setPaybackStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -81,7 +82,10 @@ const PaybackModal = ({ data }: any) => {
       </Button>
       <Modal
         show={show}
-        onHide={() => setShow(false)}
+        onHide={() => {
+          setShow(false);
+          setButtonDisabled(true);
+        }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -89,7 +93,14 @@ const PaybackModal = ({ data }: any) => {
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
-            <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => setShow(false)} />
+            <IoMdClose
+              size={32}
+              className="dashboardModal__modal__header-close"
+              onClick={() => {
+                setButtonDisabled(true);
+                setShow(false);
+              }}
+            />
             <div>
               <img src={data.icons[0]} alt={data.icons[0].toString()} />
             </div>
@@ -112,6 +123,7 @@ const PaybackModal = ({ data }: any) => {
               onTextChange={(value) => {
                 setPayBackAmount(Number(value));
                 setPaybackStatus(false);
+                setButtonDisabled(false);
               }}
               maxValue={data.usdrValue}
               valid={paybackStatus}
@@ -119,7 +131,11 @@ const PaybackModal = ({ data }: any) => {
             />
             {/* <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput /> */}
-            <Button className="button--blue bottomBtn" onClick={() => repay()}>
+            <Button
+              disabled={paybackAmount <= 0 || buttonDisabled}
+              className="button--blue bottomBtn"
+              onClick={() => repay()}
+            >
               Pay Back Debt
             </Button>
           </div>
