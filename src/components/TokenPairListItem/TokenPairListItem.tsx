@@ -61,7 +61,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
         }
       });
     }
-  }, [wallet, connection]);
+  }, [wallet, connection, globalState]);
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
