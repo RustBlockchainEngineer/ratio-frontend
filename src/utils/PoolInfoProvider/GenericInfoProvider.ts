@@ -2,6 +2,7 @@ import { LPair, LPairAPRLast } from '../../types/VaultTypes';
 import { IPoolInfoProvider } from './IPoolInfoProvider';
 import { API_ENDPOINT } from '../../constants';
 import { Connection } from '@solana/web3.js';
+import { postWithAuthToRatioApi } from '../ratioApi';
 
 const ratioAPRCache: {
   [key: string]: any;
@@ -46,4 +47,9 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
   abstract harvestReward(connection: Connection, wallet: any): boolean;
 
   abstract getRewards(): number;
+
+  async postTransactionToApi(txSignature: string, wallet:any,authToken: any) : Promise<any> {
+    const response = await postWithAuthToRatioApi({},`${wallet?.publicKey}${txSignature}`,authToken);
+    return response;
+  }
 }
