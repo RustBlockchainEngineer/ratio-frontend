@@ -94,23 +94,32 @@
   }
   &__bodyleft {
     margin-top: 0rem;
-    padding-left: 3rem !important;
+    padding-left: 4rem;
+    @include respond-to(xxl) {
+      padding-right: 4rem;
+      
+    }
     @include respond-to(lg) {
-      padding: 0rem 0rem !important;
-      // .col-sm-12 {
-      //   padding-left: 0px;
-      //   padding-right: 0px;
-      // }
+      padding-right: 1rem;
+      padding-left: 1rem;
+      
     }
   }
   &__bodyright {
     margin-bottom: 50px;
-    padding: 0px 0px !important;
-    margin-left: 15px;
-    margin-right: 15px;
     margin-top: 2rem;
     border: 1px solid rgba(#214769, 0.2);
     border-radius: 25px;
+    margin-right: 4rem;
+    @include respond-to(xxl) {
+      margin-left: 5rem;
+      margin-right: 5rem;
+    }
+    @include respond-to(lg) {
+      margin-right: 2rem;
+      margin-left: 2rem;
+      
+    }
     @include respond-to(sm) {
       border: 1px solid rgba(#214769, 0.2);
       border-radius: 25px;

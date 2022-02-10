@@ -63,7 +63,6 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const theme = React.useContext(ThemeContext);
   const { darkMode } = theme.state;
   const isDefault = useMediaQuery({ minWidth: 992 });
-  const isMobile = useMediaQuery({ maxWidth: 991 });
   const [compareVaults, setCompareVaults] = React.useState(false);
 
   const filter_data = useSelector(selectors.getFilterData);
@@ -107,9 +106,8 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   return (
     <div className="filterpanel">
       <h2>{label}</h2>
-      <div className="d-xl-flex justify-content-between align-items-start">
-        <div className="d-sm-flex align-items-center">
-          {isMobile && <p className="mr-2 filterpanel__sortby">Search: </p>}
+      <div className="d-flex flex-wrap justify-content-between align-items-start filterpanel__gap">
+        <div className="d-flex flex-wrap align-items-center filterpanel__gap">
           <FilterSelect
             options={filter_options}
             onFilterChange={onFilterChange}
@@ -117,14 +115,13 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             placeholder="Search all vaults by token"
             isMulti
           />
-          {isMobile && <p className="filterpanel__sortby ml-sm-3">Platform: </p>}
           <Select
             components={{ Option: CustomOption }}
             options={platformOptions}
             value={platform_data}
             onChange={onPlatformChange}
             classNamePrefix="platform-select"
-            // defaultValue={{ value: 'apr', label: 'APR' }}
+            defaultValue={platformOptions[0]}
           />
           {/* <Switch
             onChange={handleCompareVaults}
@@ -138,27 +135,24 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             width={48}
           /> */}
         </div>
-        <div className="d-md-flex align-items-center justify-content-start ml-sm-0 mt-xl-0 mt-sm-2">
+        <div className="d-flex flex-wrap align-items-center justify-content-start filterpanel__gap">
           <>
-            <p className="mr-2 filterpanel__sortby">Sort by </p>
             <Select
-              className="less-right-margin"
               options={optionsSortBy}
               value={sort_data}
               onChange={onSortChange}
               classNamePrefix="react-select"
-              defaultValue={{ value: 'apr', label: 'APR' }}
+              defaultValue={optionsSortBy[0]}
             />
           </>
           <>
-            <p className="mr-2 filterpanel__viewby">View by </p>
             <Select
               className="more-width"
               options={optionsViewBy}
               value={view_data}
               onChange={onViewChange}
               classNamePrefix="react-select"
-              defaultValue={{ value: 'ascending', label: 'Ascending' }}
+              defaultValue={optionsViewBy[0]}
             />
           </>
           {isDefault && (

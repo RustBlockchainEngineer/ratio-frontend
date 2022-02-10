@@ -19,9 +19,16 @@
     color: var(--unnamed-color-3c4760);
   }
 
+  &__name {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
   &__icon {
     height: 40px;
-    margin-right: 0.2rem;
+    display: block;
   }
 
   .lastToken {

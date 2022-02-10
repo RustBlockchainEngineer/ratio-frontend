@@ -305,8 +305,8 @@ const VaultDashboard = () => {
             {/*</div>*/}
           </div>
         </div>
-        <div className="vaultdashboard__body row gutters">
-          <div className="col-xl-8">
+        <div className="vaultdashboard__body row no-gutters">
+          <div className="col-xxl-8">
             <div className="vaultdashboard__bodyleft row">
               {/* {priceCardData.map((item, index) => {
               return (
@@ -350,7 +350,7 @@ const VaultDashboard = () => {
               </div>
             </div>
           </div>
-          <div className="col col-lg-4 ">
+          <div className="col col-xxl-4 ">
             <div className="vaultdashboard__bodyright">
               <AmountPanel
                 mintAddress={vault_mint}

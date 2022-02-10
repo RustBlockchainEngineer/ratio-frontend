@@ -55,15 +55,6 @@
 @include font-face('Poppins-Medium', '../assets/fonts/Poppins-Medium');
 @include font-face('Poppins-Regular', '../assets/fonts/Poppins-Regular');
 
-$grid-breakpoints: (
-  xs: 0px,
-  sm: 767px,
-  md: 991px,
-  lg: 1280px,
-  xl: 1350px,
-  xxl: 1539px
-);
-
 :root {
   /* Colors: */
   --unnamed-color-2e5fe2: #2e5fe2;
