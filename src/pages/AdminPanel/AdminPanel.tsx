@@ -1,4 +1,4 @@
-import { Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import FeesAdminForm from '../FeesAdminForm';
 import WhitelistAdminForm from '../WhitelistAdminForm';
 import CollRatiosAdminForm from '../CollRatiosAdminForm';
@@ -6,6 +6,7 @@ import { AuthContextProvider as APIAuthContextProvider } from '../../contexts/au
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { Roles } from '../../constants';
 import GlobalParamsAdminForm from '../GlobalParamsAdminForm';
+import NotFound from '../NotFound';
 
 const AdminPanel = () => {
   return (
@@ -21,6 +22,10 @@ const AdminPanel = () => {
             component={CollRatiosAdminForm}
             exact
           />
+          <Route exact path="/adminpanel">
+            <Redirect to="/adminpanel/globalparams" />
+          </Route>
+          <Route component={NotFound} />
         </Switch>
       </div>
     </APIAuthContextProvider>

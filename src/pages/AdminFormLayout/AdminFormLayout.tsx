@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Header from '../../components/Header';
-import Navbar from '../../components/Navbar';
+import AdminNavbar from '../../components/AdminNavbar';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import { actionTypes } from '../../features/wallet';
 import { ToastContainer } from 'react-toastify';
@@ -29,7 +29,7 @@ export default function AdminFormLayout(props: any) {
     <div className="admin_form_page" data-theme={darkMode ? 'dark' : 'light'}>
       <div className="admin_form_page_container">
         <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
-        <Navbar
+        <AdminNavbar
           darkMode={darkMode}
           onClickWalletBtn={onClickWalletBtn}
           clickMenuItem={clickMenuTrigger}
