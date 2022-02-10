@@ -125,11 +125,13 @@ export async function getGlobalState(connection: Connection, wallet: any) {
     const globalState = await program.account.globalState.fetch(globalStateKey);
     if (globalState) {
       return globalState;
+    } else {
+      throw new Error (`Global state doesn't exist`)
     }
   } catch (e) {
     console.log('globalState was not created');
+    throw e;
   }
-  return false;
 }
 
 // This command makes an Lottery
