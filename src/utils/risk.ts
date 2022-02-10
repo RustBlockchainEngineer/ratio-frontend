@@ -13,10 +13,10 @@ enum RiskRating {
 
 export function getUSDrAmount(risk: number, amount: number, riskLevel = 'AAA') {
   const riskRating = RiskRating[riskLevel as unknown as RiskRating];
-  return amount * (Number(riskRating) / 100);
+  return amount / (Number(riskRating) / 100);
 }
 
 export function getLPAmount(risk: number, amount: number, riskLevel = 'AAA') {
   const riskRating = RiskRating[riskLevel as unknown as RiskRating];
-  return amount / (Number(riskRating) / 100);
+  return amount * (Number(riskRating) / 100);
 }
