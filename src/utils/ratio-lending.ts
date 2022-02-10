@@ -274,7 +274,7 @@ export async function borrowUSDr(
   return 'User borrowed ' + amount / Math.pow(10, USD_DECIMALS) + ' USD , transaction id = ' + tx;
 }
 
-export async function getTokenVaultByMint(connection: Connection, mint: string) {
+export async function getTokenVaultAndAddressByMint(connection: Connection, mint: string) {
   const program = getProgramInstance(connection, null);
 
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
@@ -283,10 +283,20 @@ export async function getTokenVaultByMint(connection: Connection, mint: string) 
   );
   try {
     const tokenVault = await program.account.tokenVault.fetch(tokenVaultKey);
-    return tokenVault;
+    return {tokenVault,tokenVaultKey};
   } catch (e) {
     return null;
   }
+}
+
+export async function getTokenVaultByMint(connection: Connection, mint: string): Promise<any|undefined> {
+  const res = await getTokenVaultAndAddressByMint(connection,mint);
+  return res?.tokenVault;
+}
+
+export async function getTokenVaultAddressByMint(connection: Connection, mint: string) : Promise<PublicKey|undefined> {
+  const res = await getTokenVaultAndAddressByMint(connection,mint);
+  return res?.tokenVaultKey;
 }
 
 export async function createTokenVault(
@@ -353,6 +363,8 @@ export async function createTokenVault(
     return 'created token vault successfully';
   } catch (e) {
     console.log("can't create token vault");
+    console.error(e);
+    return false;
   }
 }
 

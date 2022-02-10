@@ -1,3 +1,5 @@
+import { TransportStatusError } from '@ledgerhq/hw-transport';
+import { ElementType } from 'react';
 import { Col, Form, InputGroup } from 'react-bootstrap';
 
 export default function AdminFormInput({
@@ -9,6 +11,9 @@ export default function AdminFormInput({
   xs = 'auto',
   type = 'text',
   handleChange,
+  required = true,
+  as,
+  children,
 }: {
   label: string;
   value: any;
@@ -18,6 +23,9 @@ export default function AdminFormInput({
   xs?: string;
   type?: string;
   handleChange: any;
+  required?: boolean;
+  as?: ElementType<any>;
+  children?: any;
 }) {
   return (
     <Form.Group as={Col} xs={xs} md={md} controlId={name}>
@@ -26,11 +34,14 @@ export default function AdminFormInput({
         <Form.Control
           name={name}
           type={type}
-          required
+          required={required}
           placeholder={placeholder}
           value={value}
+          as={as}
           onChange={handleChange}
-        />
+        >
+          {children}
+        </Form.Control>
       </InputGroup>
     </Form.Group>
   );

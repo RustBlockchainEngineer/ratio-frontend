@@ -127,7 +127,9 @@ export default function WhitelistAdminForm() {
                 value={values.role}
                 onChange={handleChange}
               >
-                <option disabled>-Select option-</option>
+                <option value="" disabled>
+                  -Select option-
+                </option>
                 <option value={Roles.ADMIN}>Admin</option>
                 <option value={Roles.USER}>User</option>
               </Form.Control>
