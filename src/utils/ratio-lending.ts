@@ -106,40 +106,6 @@ export async function getGlobalState(connection: Connection, wallet: any) {
     const globalState = await program.account.globalState.fetch(globalStateKey);
     if (globalState) {
       return globalState;
-    }
-  } catch (e) {
-    console.log('globalState was not created');
-  }
-  return null;
-}
-
-export async function isGlobalStateCreated(connection: Connection, wallet: any) {
-  try {
-    const program = getProgramInstance(connection, wallet);
-    const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_STATE_TAG)],
-      program.programId
-    );
-    const globalState = await program.account.globalState.fetch(globalStateKey);
-    if (globalState) {
-      return true;
-    }
-  } catch (e) {
-    console.log('globalState was not created');
-  }
-  return false;
-}
-
-export async function getGlobalState(connection: Connection, wallet: any) {
-  try {
-    const program = getProgramInstance(connection, wallet);
-    const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_STATE_TAG)],
-      program.programId
-    );
-    const globalState = await program.account.globalState.fetch(globalStateKey);
-    if (globalState) {
-      return globalState;
     } else {
       throw new Error (`Global state doesn't exist`)
     }

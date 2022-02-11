@@ -17,6 +17,8 @@ export type PairType = {
   details: string;
   riskPercentage: number;
   item: LPair;
+  hasReachedUserDebtLimit: boolean;
+  hasReachedGlobalDebtLimit: boolean;
 };
 
 export interface TokenPairCardProps {
