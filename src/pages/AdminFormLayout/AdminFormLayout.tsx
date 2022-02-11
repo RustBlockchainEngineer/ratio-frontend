@@ -31,7 +31,6 @@ export default function AdminFormLayout(props: any) {
         <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
         <AdminNavbar
           darkMode={darkMode}
-          onClickWalletBtn={onClickWalletBtn}
           clickMenuItem={clickMenuTrigger}
           open={menuOpen}
           collapseFlag={collapseFlag}
