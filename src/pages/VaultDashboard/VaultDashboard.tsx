@@ -24,16 +24,19 @@ import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import {
   getUserState,
+  getGlobalState,
   // USDR_MINT_KEY, TOKEN_VAULT_OPTIONS, getUsdrMintKey,
   getUpdatedUserState,
 } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
+import { getRiskLevelNumber } from '../../utils/utils';
+import { getFaucetState } from '../../utils/ratio-faucet';
 import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
 import { getRiskLevel } from '../../libs/helper';
-import { getUSDrAmount } from '../../utils/risk';
+import { getUSDrAmount, getLPAmount } from '../../utils/risk';
 import { useUpdateState } from '../../contexts/auth';
 import Breadcrumb from '../../components/Breadcrumb';
 import { Banner, BannerIcon } from '../../components/Banner';
@@ -69,7 +72,9 @@ const VaultDashboard = () => {
   const collAccount = useAccountByMint(vault_mint as string);
   const usdrAccount = useAccountByMint(MINTADDRESS['USDR']);
 
-  const [userState, setUserState] = useState(null);
+  const [userState, setUserState] = useState<any>(null);
+  const [globalState, setGlobalState] = useState<any>(null);
+
   const [VaultData, setVaultData] = useState<any>({});
 
   const [lpWalletBalance, setLpWalletBalance] = useState(0);
@@ -108,6 +113,22 @@ const VaultDashboard = () => {
   }, [vault_mint, wallet, connected]);
 
   useEffect(() => {
+    if (connected) {
+      setIsLoading(true);
+      getGlobalState(connection, wallet).then((res) => {
+        if (res) {
+          setIsLoading(false);
+          setGlobalState(res);
+        }
+      });
+    }
+
+    return () => {
+      setGlobalState(null);
+    };
+  }, [wallet, connected]);
+
+  useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
       const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
       setLpWalletBalance(Number(tokenAmount.fixed()));
@@ -128,37 +149,52 @@ const VaultDashboard = () => {
   }, [wallet, usdrAccount, connection, usdrMint]);
 
   useEffect(() => {
-    if (tokenPrice && collMint) {
-      const initLPAmount = Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice;
-      const tmpMaxDeposit = Math.min(initLPAmount, lpWalletBalance).toFixed(collMint?.decimals);
+    if (tokenPrice && collMint && lpWalletBalance && globalState && VaultData) {
+      //ternary operators are used here while the globalState paramters do not exist
+      const globalDebt = globalState?.totalDebt ? globalState?.totalDebt.toNumber() : 0;
+      const globalDebtLimit = globalState?.debtCeiling ? globalState?.debtCeiling.toNumber() : 1000;
+      const remainingGlobalDebt = globalDebtLimit - globalDebt;
+      //we might want to chnage this and instead pull the risk rating from the contract once the featrue is ready
+      const riskLevel = VaultData.risk ? VaultData.risk : 'AAA';
+      //calculate the amount of LP of the current token that is needed to mint the remaining global debt
+      const remainingGlobalDebtLP = getLPAmount(100, remainingGlobalDebt, riskLevel) / tokenPrice;
+      //set the max amount of depositable LP to be equal to either the amount of lp the user holds, or the global limit
+      const tmpMaxDeposit = Math.min(remainingGlobalDebtLP, lpWalletBalance).toFixed(collMint?.decimals);
       console.log('deposit', tmpMaxDeposit);
       setDepositValue(Number(tmpMaxDeposit));
-
       setLpWalletBalanceUSD(tokenPrice * lpWalletBalance);
     }
     return () => {
       setDepositValue(0);
     };
-  }, [lpWalletBalance, tokenPrice, collMint]);
+  }, [lpWalletBalance, tokenPrice, collMint, globalState, VaultData]);
 
   useEffect(() => {
-    if (userState && tokenPrice && collMint && usdrMint) {
-      const debt = (userState as any)?.debt ?? 0;
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
-      const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), getRiskLevelNumber());
+    if (userState && tokenPrice && collMint && usdrMint && globalState && VaultData) {
+      //calculate reminaing usdr debt the user can mint based on their current deposited LP
+      const debt = userState?.debt ?? 0;
+      const lpLockedAmount = new TokenAmount(userState?.lockedCollBalance, collMint?.decimals);
+      //we might want to chnage this and instead pull the risk rating from the contract once the featrue is ready
+      const riskLevel = VaultData.risk ? VaultData.risk : 'AAA';
+      const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), riskLevel);
       const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
-
-      const debtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
-
-      // TODO: we should change how we evaluate the debt limit, we have a task for this here https://ratiofinance.atlassian.net/jira/software/c/projects/RFM/boards/1?modal=detail&selectedIssue=RFM-671&quickFilter=1
-      setHasReachedDebtLimit(debtLimit <= 0 && +debt > 0);
-      setGenerateValue(debtLimit);
+      const userDebtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
+      //calculate remaining global debt
+      const globalDebt = globalState?.totalDebt ? globalState?.totalDebt.toNumber() : 0;
+      const globalDebtLimit = globalState?.debtCeiling ? globalState?.debtCeiling.toNumber() : 1000;
+      const remainingGlobalDebt = globalDebtLimit - globalDebt;
+      //compare the two debt limits and set the overall debt limit to be equal to the smaller value
+      const overalldebtLimit = Math.min(remainingGlobalDebt, userDebtLimit);
+      console.log('mint', overalldebtLimit);
+      //this only captures wether the user debt limit has been hit
+      setHasReachedDebtLimit(overalldebtLimit <= 0 && +debt > 0);
+      setGenerateValue(overalldebtLimit);
     }
     return () => {
       setHasReachedDebtLimit(false);
       setGenerateValue(0);
     };
-  }, [tokenPrice, userState, usdrMint, collMint]);
+  }, [tokenPrice, userState, globalState, usdrMint, collMint, VaultData]);
 
   useEffect(() => {
     if (userState && collMint) {
@@ -214,27 +250,6 @@ const VaultDashboard = () => {
       });
     }
   }, [updateStateFlag]);
-
-  const getRiskLevelNumber = () => {
-    switch (vault_mint) {
-      case MINTADDRESS['USDC-USDR']:
-        return 0;
-        break;
-      case MINTADDRESS['ETH-SOL']:
-        return 1;
-        break;
-      case MINTADDRESS['ATLAS-RAY']:
-        return 2;
-        break;
-      case MINTADDRESS['SAMO-RAY']:
-        return 3;
-        break;
-
-      default:
-        break;
-    }
-    return 10;
-  };
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
@@ -332,7 +347,7 @@ const VaultDashboard = () => {
                   withdrawValue={withdrawValue}
                   debtValue={debtValue}
                   type="deposit_withdraw"
-                  riskLevel={getRiskLevelNumber()}
+                  riskLevel={getRiskLevelNumber(vault_mint)}
                 />
               </div>
               <div className="col col-lg-6 col-sm-12">
@@ -344,7 +359,7 @@ const VaultDashboard = () => {
                   debtValue={debtValue}
                   generateValue={generateValue}
                   type="borrow_payback"
-                  riskLevel={getRiskLevelNumber()}
+                  riskLevel={getRiskLevelNumber(vault_mint)}
                 />
               </div>
             </div>

@@ -115,6 +115,25 @@ export async function isGlobalStateCreated(connection: Connection, wallet: any) 
   return false;
 }
 
+export async function getGlobalState(connection: Connection, wallet: any) {
+  try {
+    const program = getProgramInstance(connection, wallet);
+    const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from(GLOBAL_STATE_TAG)],
+      program.programId
+    );
+    const globalState = await program.account.globalState.fetch(globalStateKey);
+    if (globalState) {
+      return globalState;
+    } else {
+      throw new Error (`Global state doesn't exist`)
+    }
+  } catch (e) {
+    console.log('globalState was not created');
+    throw e;
+  }
+}
+
 // This command makes an Lottery
 export async function createGlobalState(connection: Connection, wallet: any) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
@@ -276,7 +295,6 @@ export async function borrowUSDr(
 
 export async function getTokenVaultByMint(connection: Connection, mint: string) {
   const program = getProgramInstance(connection, null);
-
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TOKEN_VAULT_TAG), new PublicKey(mint).toBuffer()],
     program.programId
