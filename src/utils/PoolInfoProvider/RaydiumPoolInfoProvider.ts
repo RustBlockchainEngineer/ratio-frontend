@@ -10,6 +10,9 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
     }
     let vaultInfo = this.poolInfoCache[vault.symbol];
     if (!vaultInfo) {
+      vaultInfo = this.poolInfoCache[vault.symbol.split('-').reverse().join('-')];
+    }
+    if (!vaultInfo) {
       vaultInfo = Object.values(this.poolInfoCache).find((item: any) => {
         const poolTokens = (item.token_id as string).split('-');
         if (poolTokens.length !== vault.lpasset?.length) {
