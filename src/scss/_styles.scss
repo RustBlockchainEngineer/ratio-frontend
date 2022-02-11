@@ -48,6 +48,7 @@
 @import './breadcrumb';
 @import './errorPage';
 @import './adminFormPage';
+@import './_walletBalance';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Bold', '../assets/fonts/Poppins-Bold');

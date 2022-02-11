@@ -1,6 +1,7 @@
 .pricecard {
   border: 1px solid var(--unnamed-color-f9fbfe);
   border-radius: 16px;
+  margin-top: 2.5rem;
   @include respond-to(sm) {
     margin-top: 15px;
   }
@@ -45,6 +46,7 @@
   }
   &__body {
     padding: 1.5rem;
+    padding-bottom: 1.7rem;
     background-color: var(--unnamed-color-f8f9f9);
     border-top: 1px solid rgba(#4c646f, 0.2);
     border-bottom-right-radius: 16px;

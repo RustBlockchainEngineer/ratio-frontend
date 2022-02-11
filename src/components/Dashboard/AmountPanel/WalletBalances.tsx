@@ -11,9 +11,9 @@ import { USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 
-const WalletBalances = ({ data }: any) => {
+const WalletBalances = ({ data, icon, tokenName, collAmount, collAmountUSD, usdrAmount }: any) => {
   return (
-    <div>
+    <div className="walletbalance">
       <h4>Wallet Balances</h4>
       <Table striped hover>
         <thead>
@@ -25,21 +25,21 @@ const WalletBalances = ({ data }: any) => {
         </thead>
         <tbody>
           <tr>
-            <td className="amountPanel__name">
-              {data.icon && <img src={data.icon.default} alt="icon" className="amountPanel__icon" />}
+            <td className="walletbalance__name">
+              {icon && <img src={icon.default} alt="icon" className="walletbalance__icon" />}
               {/* <img src={data.icons ? data.icons[0] : null} alt="TokenA" style={{ width: 32 }} />
               <img src={data.icons ? data.icons[1] : null} alt="TokenB" style={{ width: 32 }} className="lastToken" /> */}
-              {data.tokenName === 'USDC-USDR' ? 'USDC-USDr' : data.tokenName}
+              {tokenName === 'USDC-USDR' ? 'USDC-USDr' : tokenName}
             </td>
-            <td>{data.collAmount.toFixed(2)}</td>
-            <td className="text-right">$ {data.collAmountUSD.toFixed(2)}</td>
+            <td className="align-middle">{collAmount?.toFixed(2)}</td>
+            <td className="text-right align-middle">$ {collAmountUSD?.toFixed(2)}</td>
           </tr>
           <tr>
             <td>
               <img src={USDr} alt="RAY" style={{ width: 32 }} /> USDr
             </td>
-            <td>{data.usdrAmount.toFixed(2)}</td>
-            <td className="text-right">${data.usdrAmount.toFixed(2)}</td>
+            <td className="align-middle">{usdrAmount?.toFixed(2)}</td>
+            <td className="text-right align-middle">${usdrAmount?.toFixed(2)}</td>
           </tr>
         </tbody>
       </Table>
