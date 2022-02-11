@@ -2,8 +2,8 @@ export enum ERiskLevel {
   EXTREME = 'DDD',
   HIGH = 'DD',
   MEDIUM = 'AA',
-  LOW = 'AAA',
-  VERY_LOW = 'A',
+  LOW = 'A',
+  VERY_LOW = 'AAA',
 }
 
 export const getRiskLevel = (c: number) => {

@@ -14,6 +14,7 @@ import PriceCard from '../../components/Dashboard/PriceCard';
 import ModalCard from '../../components/Dashboard/ModalCard';
 import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
 import AmountPanel from '../../components/Dashboard/AmountPanel';
+import WalletBalances from '../../components/Dashboard/AmountPanel/WalletBalances';
 
 import share from '../../assets/images/share.svg';
 import rayIcon from '../../assets/images/RAY.svg';
@@ -320,18 +321,21 @@ const VaultDashboard = () => {
             {/*</div>*/}
           </div>
         </div>
-        <div className="vaultdashboard__body row gutters">
-          <div className="col-xl-8">
+        <div className="vaultdashboard__body row no-gutters">
+          <div className="col-xxl-8">
             <div className="vaultdashboard__bodyleft row">
-              {/* {priceCardData.map((item, index) => {
-              return (
-                <div key={item.title} className="col col-md-12 col-sm-12">
-                  <ComingSoon enable={index === 1}>
-                    <PriceCard data={{ currentPrice: '$' + tokenPrice.toFixed(2) }} comingsoon={false} />
-                  </ComingSoon>
-                </div>
-              );
-            })} */}
+              <PriceCard data={priceCardData[0]} tokenName={VaultData.title} />
+              <div className="col-lg-6">
+                <WalletBalances
+                  mintAddress={vault_mint}
+                  collAmount={lpWalletBalance}
+                  collAmountUSD={lpWalletBalanceUSD}
+                  icon={VaultData.icon}
+                  icons={VaultData.icons}
+                  tokenName={VaultData.title}
+                  usdrAmount={usdrWalletBalance}
+                />
+              </div>
               <div className="col-lg-6 col-md-12">
                 <ModalCard
                   mintAddress={vault_mint}
@@ -365,7 +369,7 @@ const VaultDashboard = () => {
               </div>
             </div>
           </div>
-          <div className="col col-lg-4 ">
+          <div className="col col-xxl-4 ">
             <div className="vaultdashboard__bodyright">
               <AmountPanel
                 mintAddress={vault_mint}

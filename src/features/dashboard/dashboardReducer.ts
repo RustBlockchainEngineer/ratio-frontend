@@ -21,7 +21,7 @@ const initialState = {
   all_vaults: [],
   active_vaults: [],
   overview: {},
-  platform_data: { value: 'ALL', label: 'All' },
+  platform_data: { value: 'ALL', label: 'All platforms' },
 };
 
 export default (state = initialState, action: dashboardActionTypes) => {
