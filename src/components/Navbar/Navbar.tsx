@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
-import NavbarItem from '../NavbarItem';
-import NavbarProgressBar from './NavbarProgressBar';
+import NavbarItem from './../NavbarItem/NavbarItem';
+import { NavbarProgressBar, ProgressBarType } from './NavbarProgressBar';
 import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
@@ -190,8 +190,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
                 <h6>USDr Minted</h6>
                 <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
-              <NavbarProgressBar type="TVL Cap" />
-              <NavbarProgressBar type="USDr Debt" />
+              <NavbarProgressBar type={ProgressBarType.TVL} />
+              <NavbarProgressBar type={ProgressBarType.USDr} />
             </div>
           ) : null
         ) : (
