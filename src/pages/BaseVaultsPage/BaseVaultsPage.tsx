@@ -4,6 +4,8 @@ import { useWallet } from '../../contexts/wallet';
 import { PairType } from '../../models/UInterface';
 import { selectors, actionTypes } from '../../features/dashboard';
 
+import { getRiskLevelNumber } from '../../libs/helper';
+
 import FilterPanel from '../../components/FilterPanel';
 import ComparingFooter from '../../components/ComparingFooter';
 import TokenPairCard from '../../components/TokenPairCard';
@@ -55,7 +57,9 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   };
 
   function dynamicSort(sortProperty: string, viewProperty: string) {
-    const sortOrder = viewProperty === 'ascending' ? 1 : -1;
+    let sortOrder = viewProperty === 'ascending' ? 1 : -1;
+    sortOrder = sortProperty === 'risk' ? 1 : -1;
+
     return function (a: any, b: any) {
       const result = a[sortProperty] < b[sortProperty] ? -1 : a[sortProperty] > b[sortProperty] ? 1 : 0;
       return result * sortOrder;
@@ -89,6 +93,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 icon: item.platform_icon,
               },
               risk: item.risk_rating,
+              riskLevel: getRiskLevelNumber(item.risk_rating),
               item: item,
             };
           }
