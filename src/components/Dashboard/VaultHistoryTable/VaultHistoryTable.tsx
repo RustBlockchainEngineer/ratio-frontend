@@ -1,12 +1,23 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import share from '../../../assets/images/share.svg';
 import { useAuthContextProvider } from '../../../contexts/authAPI';
+import { useWallet } from '../../../contexts/wallet';
+import { useFetchVaultTxRatioApi } from '../../../hooks/useFetchRatioApi';
 import { getFromRatioApi } from '../../../utils/ratioApi/index';
+
+///transaction/:wallet_id/:signature
 
 const VaultHistoryTable = () => {
   const { accessToken } = useAuthContextProvider();
-  const txHistoryData = 
+  const { publicKey } = useWallet();
+  const wallet = publicKey?.toString();
+  const txHistoryData = useFetchVaultTxRatioApi(
+    wallet,
+    '3XRJiw4CjkcrtDPuGsLnC4AYimS5xc7YMkTxbtMzQK5GqZ65U2YvGWNUoXaUmLoepVG3NwkiAuX7cmuEtqPrMwTb',
+    accessToken);
+  console.log(txHistoryData);
   return (
     <div className="vaulthistorytable">
       <h4>Vault History</h4>
