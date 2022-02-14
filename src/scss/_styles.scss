@@ -48,21 +48,13 @@
 @import './breadcrumb';
 @import './errorPage';
 @import './adminFormPage';
+@import './_walletBalance';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Bold', '../assets/fonts/Poppins-Bold');
 @include font-face('Poppins-Light', '../assets/fonts/Poppins-Light');
 @include font-face('Poppins-Medium', '../assets/fonts/Poppins-Medium');
 @include font-face('Poppins-Regular', '../assets/fonts/Poppins-Regular');
-
-$grid-breakpoints: (
-  xs: 0px,
-  sm: 767px,
-  md: 991px,
-  lg: 1280px,
-  xl: 1350px,
-  xxl: 1539px
-);
 
 :root {
   /* Colors: */
