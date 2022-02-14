@@ -58,7 +58,7 @@ export default function VaultCreationAdminForm() {
     symbol: '',
     collateralization_ratio: 0,
     liquidation_ratio: 0,
-    risk_rating: 0,
+    risk_rating: -1,
     lpasset: [],
   };
   const [data, setData] = useState<LPCreationData>(defaultValues);
@@ -104,11 +104,6 @@ export default function VaultCreationAdminForm() {
       [event.target.name]: event.target.value ?? 0,
     }));
   };
-  useEffect(() => {
-    getFaucetState(connection, wallet).then((faucetState) => {
-      setLpMintAddress(faucetState.mintEthSolLp.toBase58());
-    });
-  }, []);
 
   const getOrCreateTokenVault = async (
     connection: Connection,
@@ -247,7 +242,7 @@ export default function VaultCreationAdminForm() {
               name="risk_rating"
               value={data?.risk_rating?.toString() ?? ''}
             >
-              <option key="" disabled value="">
+              <option key="" disabled value="-1">
                 -Select option-
               </option>
               {Object.keys(RISK_RATING)
@@ -315,6 +310,7 @@ export default function VaultCreationAdminForm() {
           <tbody>
             {vaults?.map((item) => (
               <tr key={item.address_id}>
+                <td>{item.address_id}</td>
                 <td>{item.symbol}</td>
                 <td>{item.collateralization_ratio}</td>
                 <td>{item.created_on}</td>

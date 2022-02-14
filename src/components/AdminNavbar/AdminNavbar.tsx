@@ -73,6 +73,13 @@ const AdminNavbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseF
             onItemClick={onItemClick}
             collapseFlag={collapseFlag}
           />
+          <NavbarItem
+            name="Vaults"
+            active={navIndex === '/adminpanel/vaults'}
+            navIndex="/adminpanel/vaults"
+            onItemClick={onItemClick}
+            collapseFlag={collapseFlag}
+          />
         </div>
         <div>
           {!connected && (
