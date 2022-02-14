@@ -18,9 +18,9 @@ const CustomSelect = ({ options, onChange }: CustomSelectProps) => {
     const { children, innerProps, data } = props;
     return (
       <div className="customSelect__option">
-        <div {...innerProps} className="px-3 py-2">
+        <div {...innerProps} className="px-6 py-2">
           <img src={data.icon[0]} alt={children} />
-          {data.icon[1] && <img src={data.icon[1]} alt={children} className="secondIcon" />}
+          {/* {data.icon[1] && <img src={data.icon[1]} alt={children} className="secondIcon" />} */}
           <span className="ml-3">{children}</span>
         </div>
       </div>
@@ -31,7 +31,7 @@ const CustomSelect = ({ options, onChange }: CustomSelectProps) => {
     return (
       <components.Control {...rest}>
         <img src={selectProps?.value?.icon[0]} alt={children} />{' '}
-        {selectProps?.value?.icon[1] && <img src={selectProps?.value?.icon[1]} alt={children} className="secondIcon" />}{' '}
+        {/* {selectProps?.value?.icon[1] && <img src={selectProps?.value?.icon[1]} alt={children} className="secondIcon" />}{' '} */}
         {children}
       </components.Control>
     );
