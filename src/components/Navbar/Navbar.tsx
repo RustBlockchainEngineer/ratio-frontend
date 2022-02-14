@@ -4,22 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
-import NavbarItem from './NavbarItem';
-import NavbarProgressBar from './NavbarProgressBar';
+import NavbarItem from './../NavbarItem/NavbarItem';
+import { NavbarProgressBar, ProgressBarType } from './NavbarProgressBar';
 import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 import collapseLogo from '../../assets/images/image-logo.svg';
 import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
-import instaBuyIcon from '../../assets/images/insta-buy-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
-import archivedVaultsIcon from '../../assets/images/archived-vaults-icon.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import { useUpdateState } from '../../contexts/auth';
 import { useConnection } from '../../contexts/connection';
 import { getUserOverview, USDR_MINT_KEY } from '../../utils/ratio-lending';
-import { Left } from 'react-bootstrap/lib/Media';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { sleep } from '../../utils/utils';
@@ -39,7 +36,6 @@ type NavbarProps = {
 
 const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }: NavbarProps) => {
   const dispatch = useDispatch();
-  const isDefault = useMediaQuery({ minWidth: 768 });
   const location = useLocation();
   const history = useHistory();
   const [navIndex, setNavIndex] = useState(location.pathname);
@@ -194,8 +190,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
                 <h6>USDr Minted</h6>
                 <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
-              <NavbarProgressBar type="TVL Cap" />
-              <NavbarProgressBar type="USDr Debt" />
+              <NavbarProgressBar type={ProgressBarType.TVL} />
+              <NavbarProgressBar type={ProgressBarType.USDr} />
             </div>
           ) : null
         ) : (

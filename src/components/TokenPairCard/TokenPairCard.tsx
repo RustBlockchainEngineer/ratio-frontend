@@ -184,7 +184,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   return (
     <>
-      <div className="col col-xxl-4 col-lg-6 col-m\d-12">
+      <div className="col-xxl-4 col-md-6 col-sm-12">
         <div
           className={classNames('tokenpaircard mt-4', {
             'tokenpaircard--warning': hasUserReachedDebtLimit,
@@ -192,11 +192,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
         >
           <div className="tokenpaircard__header">
             <div className="d-flex align-items-start">
-              <div className="d-flex align-items-center">
-                <img src={data.icon.default} alt={'Token1'} />
-                {/* <img src={data.icons[0]} alt={'Token1'} />
-                <img src={data.icons[1]} alt={'Token2'} className="tokenpaircard__header-icon" /> */}
-              </div>
+              <img src={data.icon.default} alt={'Token1'} className="tokenpaircard__header-icon" />{' '}
               <div className="tokenpaircard__titleBox">
                 <div>
                   <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
@@ -204,14 +200,14 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
                 <p>TVL {printTvl()}</p>
               </div>
             </div>
-            <div className="tokenpaircard__riskBox mt-2">
+            <div className="tokenpaircard__riskBox">
               <div className="text-right">
                 <div className="d-flex align-items-center">
                   <img src={smallRatioIcon} alt="smallRatio" />
-                  <p className="mx-1">Risk Rating</p>
+                  <p className="mx-1">Rating</p>
                   <img src={liskLevelIcon} alt="lisklevel" />
                 </div>
-                <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-start">
                   <h6 className={classNames('ml-1', data.risk)}>{data.risk} </h6>
                 </div>
               </div>

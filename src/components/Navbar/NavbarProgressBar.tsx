@@ -4,70 +4,79 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { nFormatter } from '../../utils/utils';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { ProgressBar } from 'react-bootstrap';
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
+import { getGlobalState } from '../../utils/ratio-lending';
 
 type NavbarProgressBarProps = {
-  type: string;
+  type: ProgressBarType;
 };
 
-const NavbarProgressBar = ({ type }: NavbarProgressBarProps) => {
+export enum ProgressBarType {
+  TVL = 'TVL Cap',
+  USDr = 'USDr Debt',
+}
+
+export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
   const [currentValue, setValue] = useState(0);
   const [percentage, setPercentage] = useState(0);
   const [warning, setWarning] = useState(false);
+  const [globalState, setGlobalState] = useState<any>(null);
 
-  const retrieveGlobalTVLData = async () => {
-    const currentTVL = 19; //to-do: pull actual value
-    const currentTVLlimit = 20; //to-do: pull actual value
-    setValue(currentTVL);
-    const percentageFull = ((currentTVL / currentTVLlimit) * 100).toFixed(2);
-    setPercentage(parseInt(percentageFull));
-    if (currentTVL / currentTVLlimit === 1) {
-      setWarning(true);
-    } else {
-      setWarning(false);
-    }
-  };
-
-  const retrieveGlobalUSDrData = async () => {
-    const currentUSDr = 9.86; //to-do: pull actual value
-    const currentUSDrlimit = 20; //to-do: pull actual value
-    setValue(currentUSDr);
-    const percentageFull = ((currentUSDr / currentUSDrlimit) * 100).toFixed(2);
-    setPercentage(parseInt(percentageFull));
-    if (currentUSDr / currentUSDrlimit === 1) {
-      setWarning(true);
-    } else {
-      setWarning(false);
-    }
-  };
+  const connection = useConnection();
+  const { wallet, connected } = useWallet();
 
   React.useEffect(() => {
-    if (type === 'TVL Cap') {
-      retrieveGlobalTVLData();
+    if (wallet && wallet.publicKey) {
+      getGlobalState(connection, wallet).then((res) => {
+        if (!res) {
+          return;
+        }
+        setGlobalState(res);
+      });
+    }
+    return () => {
+      setGlobalState(null);
+    };
+  }, [wallet, connection]);
+
+  React.useEffect(() => {
+    if (!wallet || !wallet.publicKey || !globalState) {
       return;
-    } else if (type === 'USDr Debt') {
-      retrieveGlobalUSDrData();
-      return;
+    }
+    let currentValue;
+    let maxValue;
+    if (data.type === ProgressBarType.TVL) {
+      currentValue = globalState.tvl ? globalState.tvl.toNumber() : 1;
+      maxValue = globalState.tvlLimit ? globalState.tvlLimit.toNumber() : 20;
+    } else if (data.type === ProgressBarType.USDr) {
+      currentValue = globalState.totalDebt ? globalState.totalDebt.toNumber() : 1;
+      maxValue = globalState.debtCeiling ? globalState.debtCeiling.toNumber() : 1;
     } else {
       return;
     }
-  }, [type]);
+    setValue(currentValue);
+    const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
+    setPercentage(parseInt(percentageFull));
+    setWarning(currentValue / maxValue === 1);
+  }, [wallet, connection, globalState]);
 
   return (
     <div
       className={classNames(
         'navbarprogressbar',
         { 'navbarprogressbar--warning': warning },
-        { 'navbarprogressbar--tvl': type === 'TVL Cap' && !warning },
-        { 'navbarprogressbar--usdr': type === 'USDr Debt' && !warning }
+        { 'navbarprogressbar--tvl': data.type === ProgressBarType.TVL && !warning },
+        { 'navbarprogressbar--usdr': data.type === ProgressBarType.USDr && !warning }
       )}
     >
       <div className={classNames('navbarprogressbar__header')}>
         <div>
-          <p>{type}</p>
+          <p>{data.type}</p>
         </div>
         <div className={classNames('detailBox')}>
           <p className={classNames('detailBox__value')}>
-            {type === 'TVL Cap' && '$'}
+            {data.type === ProgressBarType.TVL && '$'}
             {currentValue.toFixed(2)}
           </p>
           <p className={classNames('detailBox__percentage')}>{percentage.toFixed(0)}%</p>

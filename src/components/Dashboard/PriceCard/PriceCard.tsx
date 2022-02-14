@@ -14,41 +14,42 @@ interface PricecardInterface {
 
 type PriceCardProps = {
   data: PricecardInterface;
-  comingsoon?: boolean;
+  tokenName: string;
 };
 
-const PriceCard = ({ data, comingsoon }: PriceCardProps) => {
+const PriceCard = ({ data, tokenName }: PriceCardProps) => {
   return (
-    <div className="pricecard">
-      {/* <div className="pricecard__header">
-        <div className="pricecard__title">
-          <p>{data.title}</p>
-          {data.titleIcon && <img src={risklevel} alt="risklevel" />}
-        </div>
-        <div className="pricecard__value">
-          <h3>{data.mainValue}</h3>
-          {data.mainUnit && <p>{data.mainUnit}</p>}
-        </div>
-      </div> */}
-      <div className="pricecard__header">
-        {data.currentPrice && (
-          <div>
-            <label>Current LP Token Price</label>
-            <p>{data.currentPrice}</p>
+    <div className="col-lg-6 ">
+      <div className="pricecard">
+        <div className="pricecard__header">
+          <div className="pricecard__title">
+            <p>Collateralization Ratio</p>
+            <img src={risklevel} alt="risklevel" />
           </div>
-        )}
-        {data.minimumRatio && (
-          <div className="d-flex justify-content-between">
-            <div>
-              <label>Minimum Ratio</label>
-              <p>{data.minimumRatio}</p>
-            </div>
-            <div>
-              <label>Stability Fee</label>
-              <p className="text-right">{data.stabilityFee}</p>
-            </div>
+          <div className="pricecard__value">
+            <h3>{data.mainValue}</h3>
           </div>
-        )}
+        </div>
+        <div className="pricecard__body">
+          {data.currentPrice && (
+            <div>
+              <label>Current {tokenName} LP Token Price</label>
+              <p>{data.currentPrice}</p>
+            </div>
+          )}
+          {data.minimumRatio && (
+            <div className="d-flex justify-content-between">
+              <div>
+                <label>Minimum Ratio</label>
+                <p>{data.minimumRatio}</p>
+              </div>
+              <div>
+                <label>Stability Fee</label>
+                <p className="text-right">{data.stabilityFee}</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

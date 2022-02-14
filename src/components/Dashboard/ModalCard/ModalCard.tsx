@@ -79,7 +79,6 @@ const ModalCard = ({
     riskLevel: riskLevel,
   };
 
-  console.log(icon);
   return (
     <div className="modalCard">
       <p className="modalCard__title mb-2">{title}</p>

@@ -1,0 +1,58 @@
+.walletbalance {
+    border: 1px solid var(--unnamed-color-f9fbfe);
+    border-radius: 16px;
+    margin-top: 2.5rem;
+    h4 {
+        font-family: 'Poppins-Medium';
+        font-size: 18px;
+        color: var(--unnamed-color-3c4760);
+        margin-top: 1.5rem;
+        margin-left: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    h5 {
+        font-family: 'Poppins-SemiBold';
+        font-size: 14px;
+        color: var(--unnamed-color-002332);
+    }
+
+    h6 {
+        font-size: 14px;
+        color: var(--unnamed-color-3c4760);
+    }
+    &__name {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    &__icon {
+        height: 40px;
+        display: block;
+    }
+
+    table td {
+        font-family: 'Poppins-SemiBold';
+        font-size: 14px;
+        color: var(--unnamed-color-3c4760);
+    }
+
+    .table {
+        margin-bottom: 0px;
+    }
+
+    table td,
+    .table th {
+        border-top: 0px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        }
+    .table th {
+        padding-bottom: 0.5rem;
+        color: var(--unnamed-color-3c4760);
+        font-weight: 400;
+        font-size: 12px;
+    }
+}
