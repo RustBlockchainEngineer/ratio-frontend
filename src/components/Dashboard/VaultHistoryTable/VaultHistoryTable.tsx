@@ -1,23 +1,31 @@
-/* eslint-disable prettier/prettier */
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import share from '../../../assets/images/share.svg';
 import { useAuthContextProvider } from '../../../contexts/authAPI';
 import { useWallet } from '../../../contexts/wallet';
-import { useFetchVaultTxRatioApi } from '../../../hooks/useFetchRatioApi';
-import { getFromRatioApi } from '../../../utils/ratioApi/index';
+import { useFetchVaultTxHistoryRatioApi } from '../../../hooks/useFetchRatioApi';
 
-///transaction/:wallet_id/:signature
-
-const VaultHistoryTable = ({mintAddress}: any) => {
+const VaultHistoryTable = ({ mintAddress }: any) => {
   const { accessToken } = useAuthContextProvider();
   const { publicKey } = useWallet();
   const wallet = publicKey?.toString();
-  const txHistoryData = useFetchVaultTxRatioApi(
-    wallet,
-    '3XRJiw4CjkcrtDPuGsLnC4AYimS5xc7YMkTxbtMzQK5GqZ65U2YvGWNUoXaUmLoepVG3NwkiAuX7cmuEtqPrMwTb',
-    accessToken);
-  console.log(txHistoryData);
+
+  const txHistory = useFetchVaultTxHistoryRatioApi(wallet, mintAddress, accessToken);
+
+  const vaultHistory = txHistory.map((tx) => {
+    return (
+      <tr>
+        <td className="w-50">{tx?.date}</td>
+        <td className="activity">{tx?.txType}</td>
+        <td className="activity">{tx?.status}</td>
+        <td className="tx_hash text-right">
+          `${tx?.txSignature?.slice(31, 35)}...`
+          <img src={share} alt="share" />
+        </td>
+      </tr>
+    );
+  });
+
   return (
     <div className="vaulthistorytable">
       <h4>Vault History</h4>
@@ -31,32 +39,7 @@ const VaultHistoryTable = ({mintAddress}: any) => {
               <th className="text-right">Tx Signature</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td className="date">04/23/2021, 10:08am</td>
-              <td className="activity">Confirmed</td>
-              <td className="tx_hash text-right">
-                5dco…
-                <img src={share} alt="share" />
-              </td>
-            </tr>
-            <tr>
-              <td className="date">04/23/2021, 10:08am</td>
-              <td className="activity">Pending</td>
-              <td className="tx_hash text-right">
-                5dco…
-                <img src={share} alt="share" />
-              </td>
-            </tr>
-            <tr>
-              <td className="date">04/23/2021, 10:08am</td>
-              <td className="activity">Rejected</td>
-              <td className="tx_hash text-right">
-                5dco…
-                <img src={share} alt="share" />
-              </td>
-            </tr>
-          </tbody>
+          <tbody>{vaultHistory}</tbody>
         </Table>
       </div>
     </div>

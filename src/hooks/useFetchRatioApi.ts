@@ -1,34 +1,38 @@
 /* eslint-disable prettier/prettier */
 import { useEffect, useMemo, useState } from 'react';
 import { API_ENDPOINT } from '../constants/constants';
+import { useConnectionConfig } from '../contexts/connection';
 
-// /transaction/:wallet_id/:signature
 function makeRatioApiEndpointTxSignature(walletId: string, txSignature: string) : string {
     return `${API_ENDPOINT}/transaction/${walletId}/${txSignature}`;
 }
 
-// {{base_url}}/transaction/:wallet_id/detail/:address_id
-/** 
-[
-    {
-            "transaction_id": string,
-            "wallet_address_id": string,
-            "address_id": string,
-            "amount": number,
-            "transaction_type": TRANS_TYPE,
-            "transaction_dt": timestamp,
-            "sawp_group": string,
-            "conversion_rate": number,
-            "base_address_id": string
-        },...
-]
-**/
 function makeRatioApiEndpointTxHistory(walletId: string, addressId: string) : string {
     return `${API_ENDPOINT}/transaction/${walletId}/detail/${addressId}`;
 }
 
-function makeSolanaExplorerLink(txSignature: string, cluster: string) : string {
+function makeSolanaExplorerLink(txSignature: string, cluster = 'devnet') : string {
     return `https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`;
+}
+
+function formatDate(timestamp = ''):string{
+    const date = new Date(parseInt(timestamp));
+    const formatDate = `${date.getDate()}/${(date.getMonth()+1)}/${date.getFullYear()}`;
+    const timeDate = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    return formatDate + " " + timeDate;
+}
+
+function formatTxHistory(transactions: [], cluster: string):void[]{
+    const formattedTxs = transactions.map((tx: any)=>{
+        const txData: {
+            [k: string]: any;
+          } = {};
+          txData['date'] = formatDate(tx?.transaction_dt);
+          txData['txType'] = tx?.transaction_type;
+          txData['status'] = tx?.status;
+          txData['txSignature'] = makeSolanaExplorerLink(tx?.transaction_id,cluster);
+    });
+    return formattedTxs;
 }
 
 
@@ -69,10 +73,11 @@ export function useFetchVaultTxRatioApi(walletId = '', txSignature: string, auth
 
 }
 
-// /transaction/:wallet_id
-export function useFetchVaultTxHistoryRatioApi(walletId: string, mintAddress: string, authToken: any){
+// {{base_url}}/transaction/:wallet_id/detail/:address_id
+export function useFetchVaultTxHistoryRatioApi(walletId = '', mintAddress: string, authToken: any){
     const [result, setResult] = useState<any>({ data: 'DATA NOT LOADED YET' });
     const [error, setError] = useState<any>(null);
+    const cluster = useConnectionConfig()?.env;
 
     useEffect(() => {
         let cancelRequest = false;
@@ -87,12 +92,9 @@ export function useFetchVaultTxHistoryRatioApi(walletId: string, mintAddress: st
                       method: 'GET',
                 });
                 const result = await res.json();
-                console.log('RESULT');
-                console.log(result);
                 if(cancelRequest) return;
-                setResult({
-
-                });
+                const formattedTxData = formatTxHistory(result,cluster);
+                setResult(formattedTxData);
             } catch (error) {
                 if(cancelRequest) return;
                 setError(cancelRequest);

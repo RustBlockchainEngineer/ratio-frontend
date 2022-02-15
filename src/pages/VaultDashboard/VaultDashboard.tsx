@@ -363,7 +363,7 @@ const VaultDashboard = () => {
             </div>
             <div className="vaultdashboard__bodyleft row pt-0 mt-5">
               <div className="col">
-                <VaultHistoryTable mintAddress={vault_mint}/>
+                <VaultHistoryTable mintAddress={vault_mint} />
               </div>
             </div>
           </div>
