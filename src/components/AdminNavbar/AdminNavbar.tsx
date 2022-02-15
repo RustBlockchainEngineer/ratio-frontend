@@ -80,6 +80,13 @@ const AdminNavbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseF
             onItemClick={onItemClick}
             collapseFlag={collapseFlag}
           />
+          <NavbarItem
+            name="Admin tasks"
+            active={navIndex === '/adminpanel/tasks'}
+            navIndex="/adminpanel/tasks"
+            onItemClick={onItemClick}
+            collapseFlag={collapseFlag}
+          />
         </div>
         <div>
           {!connected && (

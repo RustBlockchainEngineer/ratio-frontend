@@ -4,6 +4,17 @@ import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
+import {
+  setBorrowFee,
+  setDepositFee,
+  setPaybackFee,
+  setRewardsFee,
+  setStakeFee,
+  setSwapFee,
+  setWithdrawFee,
+} from '../../utils/admin-contract-calls';
 import AdminFormLayout from '../AdminFormLayout';
 
 interface Fees {
@@ -16,6 +27,29 @@ interface Fees {
   withdraw_fee: number;
 }
 
+// Tracks if a certain field has been changed.
+interface FeesChanged {
+  borrow_fee: boolean;
+  deposit_fee: boolean;
+  payback_fee: boolean;
+  reward_fee: boolean;
+  stake_fee: boolean;
+  swap_fee: boolean;
+  withdraw_fee: boolean;
+}
+export interface IIndexable {
+  [key: string]: any;
+}
+const ContractUpdatersMap = {
+  borrow_fee: setBorrowFee,
+  deposit_fee: setDepositFee,
+  payback_fee: setPaybackFee,
+  reward_fee: setRewardsFee,
+  stake_fee: setStakeFee,
+  swap_fee: setSwapFee,
+  withdraw_fee: setWithdrawFee,
+};
+
 export default function FeesAdminForm() {
   const [validated, setValidated] = useState(false);
   const defaultValues: Fees = {
@@ -27,12 +61,26 @@ export default function FeesAdminForm() {
     swap_fee: 0,
     withdraw_fee: 0,
   };
+  const defaultValuesTrackers: FeesChanged = {
+    borrow_fee: false,
+    deposit_fee: false,
+    payback_fee: false,
+    reward_fee: false,
+    stake_fee: false,
+    swap_fee: false,
+    withdraw_fee: false,
+  };
   const [data, setData] = useState<Fees>(defaultValues);
+  const [changedTracker, setChangedTracker] = useState<FeesChanged>(defaultValuesTrackers);
 
   const handleChange = (event: any) => {
     setData((values) => ({
       ...values,
       [event.target.name]: event.target.value ?? 0,
+    }));
+    setChangedTracker((values) => ({
+      ...values,
+      [event.target.name]: true,
     }));
   };
 
@@ -83,14 +131,21 @@ export default function FeesAdminForm() {
     }
   }, [fetchData]);
 
-  const handleSubmit = async (evt: any) => {
-    evt.preventDefault();
-    const form = evt.currentTarget;
-    if (form.checkValidity() === false) {
-      evt.stopPropagation();
-      return;
-    }
-    setValidated(true);
+  const connection = useConnection();
+  const gWallet = useWallet();
+  const wallet = gWallet.wallet;
+
+  const updateContractValues = async () => {
+    await Promise.all(
+      Object.keys(data)
+        .filter((item) => (changedTracker as IIndexable)[item])
+        .map(async (item) => {
+          await (ContractUpdatersMap as IIndexable)[item](connection, wallet, Number((data as IIndexable)[item]));
+        })
+    );
+  };
+
+  const updateDatabaseValues = async () => {
     const response = await fetch(`${API_ENDPOINT}/ratioconfig/transfees`, {
       body: JSON.stringify(data),
       headers: {
@@ -105,7 +160,25 @@ export default function FeesAdminForm() {
       throw await response.json();
     }
     setData(parseJsonResponse(await response.json()));
-    toast.info('Fees saved successfully');
+  };
+
+  const handleSubmit = async (evt: any) => {
+    evt.preventDefault();
+    const form = evt.currentTarget;
+    if (form.checkValidity() === false) {
+      evt.stopPropagation();
+      return;
+    }
+    setValidated(true);
+    try {
+      await updateContractValues();
+      await updateDatabaseValues();
+      setChangedTracker(defaultValuesTrackers);
+      toast.info('Fees saved successfully');
+    } catch (error: unknown) {
+      toast.error('There was an error when saving the values');
+      throw error;
+    }
     return;
   };
   return (

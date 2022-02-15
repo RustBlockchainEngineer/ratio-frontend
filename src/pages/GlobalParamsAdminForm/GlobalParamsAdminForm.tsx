@@ -1,29 +1,54 @@
+import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Form, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
+import { setGlobalDebtCeiling, setGlobalTvlLimit, setUserDebtCeiling } from '../../utils/admin-contract-calls';
+import { getCurrentSuperOwner } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 
 interface GlobalParams {
-  max_usd: number;
-  max_usdr: number;
-  max_deposit_cap: number;
-  max_borrow: number;
+  global_max_usdr: number;
+  user_max_usdr: number;
+  global_max_deposit: number;
   price_interval: number;
 }
+const ContractUpdatersMap = {
+  global_max_usdr: setGlobalDebtCeiling,
+  user_max_usdr: setUserDebtCeiling,
+  global_max_deposit: setGlobalTvlLimit,
+  price_interval: async () => {}, // There's no update on the contact side for this property
+};
 
 export default function GlobalParamsAdminForm() {
   const [validated, setValidated] = useState(false);
   const defaultValues: GlobalParams = {
-    max_usd: 0,
-    max_usdr: 0,
-    max_deposit_cap: 0,
-    max_borrow: 0,
+    global_max_usdr: 0,
+    user_max_usdr: 0,
+    global_max_deposit: 0,
     price_interval: 0,
   };
   const [data, setData] = useState<GlobalParams>(defaultValues);
+  const [superOwner, setSuperOwner] = useState<string>();
+  const connection = useConnection();
+  const gWallet = useWallet();
+  const wallet = gWallet.wallet;
+
+  useEffect(() => {
+    let active = true;
+    getCurrentSuperOwner(connection, wallet).then((result: PublicKey) => {
+      if (active && result) {
+        setSuperOwner(result.toBase58());
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [connection, wallet]);
 
   const handleChange = (event: any) => {
     setData((values) => ({
@@ -50,7 +75,7 @@ export default function GlobalParamsAdminForm() {
   };
 
   const fetchData = useCallback(async () => {
-    const response = await fetch(`${API_ENDPOINT}/ratioconfig/general`, {
+    const response = await fetch(`${API_ENDPOINT}/ratioconfig/general/last`, {
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': JSON.stringify(accessToken),
@@ -108,16 +133,29 @@ export default function GlobalParamsAdminForm() {
     <AdminFormLayout>
       <h5 className="mt-3">Modify Global Parameters Values:</h5>
       <Form validated={validated} onSubmit={handleSubmit}>
+        <div className="text-right">
+          <label>Current superowner:&nbsp;</label>
+          <span>{superOwner}</span>
+        </div>
         <Row className="mb-3">
-          <AdminFormInput handleChange={handleChange} label="Max Borrow" name="max_borrow" value={data?.max_borrow} />
           <AdminFormInput
             handleChange={handleChange}
-            label="Max Deposit cap"
-            name="max_deposit_cap"
-            value={data?.max_deposit_cap}
+            label="Global max usdr"
+            name="global_max_usdr"
+            value={data?.global_max_usdr}
           />
-          <AdminFormInput handleChange={handleChange} label="Max USD" name="max_usd" value={data?.max_usd} />
-          <AdminFormInput handleChange={handleChange} label="Max USDR" name="max_usdr" value={data?.max_usdr} />
+          <AdminFormInput
+            handleChange={handleChange}
+            label="User max usdr"
+            name="user_max_usdr"
+            value={data?.user_max_usdr}
+          />
+          <AdminFormInput
+            handleChange={handleChange}
+            label="Global max deposit"
+            name="global_max_deposit"
+            value={data?.global_max_deposit}
+          />
           <AdminFormInput
             handleChange={handleChange}
             label="Price interval"
