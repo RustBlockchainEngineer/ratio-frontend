@@ -82,7 +82,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                   ? getCoinPicSymbol(item.token_symbole)
                   : item.token_icon
               ),
-              icon: require(`../../assets/images/tokens/${item.address_id}.png`),
+              icon: item.icon,
               title: item.symbol,
               tvl: item.platform_tvl,
               apr: item.platform_ratio_apr,

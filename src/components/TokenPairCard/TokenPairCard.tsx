@@ -192,7 +192,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
         >
           <div className="tokenpaircard__header">
             <div className="d-flex align-items-start">
-              <img src={data.icon.default} alt={'Token1'} className="tokenpaircard__header-icon" />{' '}
+              <img src={data.icon} alt={'Token1'} className="tokenpaircard__header-icon" />{' '}
               <div className="tokenpaircard__titleBox">
                 <div>
                   <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
