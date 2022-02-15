@@ -25,6 +25,7 @@ import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
+import BN from 'bn.js';
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
@@ -108,6 +109,7 @@ export async function isGlobalStateCreated(connection: Connection, wallet: any) 
     );
     const globalState = await program.account.globalState.fetch(globalStateKey);
     if (globalState) {
+      console.log('globalState.authority', globalState.authority.toBase58());
       return true;
     }
   } catch (e) {
@@ -184,10 +186,11 @@ export async function createGlobalState(connection: Connection, wallet: any) {
 
 export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
   const program = getProgramInstance(connection, wallet);
-  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
-    program.programId
-  );
+  
+  const tokenVaultKey = await getTokenVaultAddressByPublicKeyMint(connection, mintCollKey);
+  if(!tokenVaultKey){
+    return null;
+  }
   const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
@@ -299,10 +302,10 @@ export async function borrowUSDr(
 }
 
 
-export async function getTokenVaultAndAddressByMint(connection: Connection, mint: string) {
+export async function getTokenVaultAndAddressByPublicKeyMint(connection: Connection, mint: PublicKey) {
   const program = getProgramInstance(connection, null);
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), new PublicKey(mint).toBuffer()],
+    [Buffer.from(TOKEN_VAULT_TAG), mint.toBuffer()],
     program.programId
   );
   try {
@@ -312,6 +315,9 @@ export async function getTokenVaultAndAddressByMint(connection: Connection, mint
     return null;
   }
 }
+export async function getTokenVaultAndAddressByMint(connection: Connection, mint: string) {
+  return getTokenVaultAndAddressByPublicKeyMint(connection, new PublicKey(mint));
+}
 
 export async function getTokenVaultByMint(connection: Connection, mint: string): Promise<any|undefined> {
   const res = await getTokenVaultAndAddressByMint(connection,mint);
@@ -320,6 +326,11 @@ export async function getTokenVaultByMint(connection: Connection, mint: string):
 
 export async function getTokenVaultAddressByMint(connection: Connection, mint: string) : Promise<PublicKey|undefined> {
   const res = await getTokenVaultAndAddressByMint(connection,mint);
+  return res?.tokenVaultKey;
+}
+
+export async function getTokenVaultAddressByPublicKeyMint(connection: Connection, mint: PublicKey) : Promise<PublicKey|undefined> {
+  const res = await getTokenVaultAndAddressByPublicKeyMint(connection,mint);
   return res?.tokenVaultKey;
 }
 
@@ -338,8 +349,6 @@ export async function createTokenVault(
     program.programId
   );
   const globalState = await program.account.globalState.fetch(globalStateKey);
-  console.log('Global State', globalState);
-  console.log('Super Owner', globalState.superOwner.toString());
 
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
@@ -351,12 +360,6 @@ export async function createTokenVault(
     program.programId
   );
   console.log('tokenCollKey', tokenCollKey.toBase58());
-  // try {
-  //   const tokenVault = await program.account.tokenVault.fetch(tokenVaultKey);
-  //   console.log('fetched tokenVault', tokenVault);
-  //   console.log('This token vault was already created!');
-  //   return 'already created';
-  // } catch (e) {}
   console.log(
     'payer',
     wallet.publicKey.toString(),
@@ -378,8 +381,8 @@ export async function createTokenVault(
     await program.rpc.createTokenVault(
       tokenVaultNonce, 
       tokenCollNonce, 
-      riskLevel, 
-      isDual,
+      new BN(riskLevel), 
+      new BN(isDual),
       {
         accounts: {
           authority: wallet.publicKey,

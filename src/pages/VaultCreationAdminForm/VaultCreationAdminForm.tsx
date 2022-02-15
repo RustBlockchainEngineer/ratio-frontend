@@ -11,7 +11,6 @@ import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useWallet } from '../../contexts/wallet';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { Platform, RISK_RATING } from '../../types/VaultTypes';
-import { getFaucetState } from '../../utils/ratio-faucet';
 import {
   createGlobalState,
   createTokenVault,
@@ -24,12 +23,14 @@ import LPAssetAdditionModal, { LPAssetCreationData } from './LPAssetAdditionModa
 interface LPCreationData {
   address_id: string | null;
   page_url: string | null;
+  icon: string | null;
   platform_id: string | null;
+  platform_symbol: string | null;
   pool_size: number | null;
   symbol: string | null;
   collateralization_ratio: number | null;
   liquidation_ratio: number | null;
-  risk_rating: RISK_RATING | null;
+  risk_rating: string | null;
   lpasset: LPAssetCreationData[];
 }
 
@@ -53,12 +54,14 @@ export default function VaultCreationAdminForm() {
   const defaultValues: LPCreationData = {
     address_id: '',
     page_url: '',
+    icon: '',
     platform_id: '',
+    platform_symbol: '',
     pool_size: 0,
     symbol: '',
     collateralization_ratio: 0,
     liquidation_ratio: 0,
-    risk_rating: -1,
+    risk_rating: '',
     lpasset: [],
   };
   const [data, setData] = useState<LPCreationData>(defaultValues);
@@ -108,14 +111,15 @@ export default function VaultCreationAdminForm() {
   const getOrCreateTokenVault = async (
     connection: Connection,
     lpMintAddress: string,
-    risk_rating: RISK_RATING | undefined | null
+    risk_rating: string | null
   ): Promise<PublicKey | undefined> => {
     let vaultProgramAddress = await getTokenVaultAddressByMint(connection, lpMintAddress);
     if (vaultProgramAddress) {
       toast.info('Token vault program already exists');
     } else {
       try {
-        const result = await createTokenVault(connection, wallet, new PublicKey(lpMintAddress), risk_rating?.valueOf());
+        const riskRatingValue: number = RISK_RATING[risk_rating as keyof typeof RISK_RATING];
+        const result = await createTokenVault(connection, wallet, new PublicKey(lpMintAddress), riskRatingValue);
         if (!result) {
           toast.error('There was an error when creating the token vault program');
           return;
@@ -195,6 +199,7 @@ export default function VaultCreationAdminForm() {
               handleChange={handleChange}
               label="Collateralization ratio"
               name="collateralization_ratio"
+              type="number"
               required={false}
               value={data?.collateralization_ratio}
             />
@@ -202,6 +207,7 @@ export default function VaultCreationAdminForm() {
               handleChange={handleChange}
               label="Liquidation ratio"
               name="liquidation_ratio"
+              type="number"
               required={false}
               value={data?.liquidation_ratio}
             />
@@ -211,6 +217,13 @@ export default function VaultCreationAdminForm() {
               required={false}
               name="page_url"
               value={data?.page_url}
+            />
+            <AdminFormInput
+              handleChange={handleChange}
+              label="Icon url"
+              required={false}
+              name="icon"
+              value={data?.icon}
             />
             <AdminFormInput
               handleChange={handleChange}
@@ -230,8 +243,16 @@ export default function VaultCreationAdminForm() {
             </AdminFormInput>
             <AdminFormInput
               handleChange={handleChange}
+              label="Platform's symbol"
+              required={true}
+              name="platform_symbol"
+              value={data?.platform_symbol}
+            />
+            <AdminFormInput
+              handleChange={handleChange}
               label="Pool size"
               name="pool_size"
+              type="number"
               required={false}
               value={data?.pool_size}
             />
@@ -242,7 +263,7 @@ export default function VaultCreationAdminForm() {
               name="risk_rating"
               value={data?.risk_rating?.toString() ?? ''}
             >
-              <option key="" disabled value="-1">
+              <option key="" disabled value="">
                 -Select option-
               </option>
               {Object.keys(RISK_RATING)
@@ -275,9 +296,9 @@ export default function VaultCreationAdminForm() {
                 )}
                 {data.lpasset.length > 0 &&
                   data.lpasset.map((item) => (
-                    <tr>
-                      <td>{item.token_address_id}</td>
-                      <td>{item.token_pool_size}</td>
+                    <tr key={item.token_address_id}>
+                      <td key={item.token_address_id}>{item.token_address_id}</td>
+                      <td key={item.token_pool_size}>{item.token_pool_size}</td>
                     </tr>
                   ))}
               </tbody>

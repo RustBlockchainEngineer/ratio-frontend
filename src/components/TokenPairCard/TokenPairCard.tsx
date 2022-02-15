@@ -78,8 +78,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const updateVaultValues = async () => {
     const tokenVault = await getTokenVaultByMint(connection, data.mint);
-    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
-    const debtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
+    const tvlAmount = new TokenAmount((tokenVault as any)?.totalColl ?? 0, collMint?.decimals);
+    const debtAmount = new TokenAmount((tokenVault as any)?.totalDebt ?? 0, usdrMint?.decimals);
 
     setTVL(Number(tvlAmount.fixed()));
     setTotalDebt(Number(debtAmount.fixed()));
