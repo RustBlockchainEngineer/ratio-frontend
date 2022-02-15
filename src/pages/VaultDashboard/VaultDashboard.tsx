@@ -160,7 +160,6 @@ const VaultDashboard = () => {
       const remainingGlobalDebtLP = getLPAmount(100, remainingGlobalDebt, riskLevel) / tokenPrice;
       //set the max amount of depositable LP to be equal to either the amount of lp the user holds, or the global limit
       const tmpMaxDeposit = Math.min(remainingGlobalDebtLP, lpWalletBalance).toFixed(collMint?.decimals);
-      console.log('deposit', tmpMaxDeposit);
       setDepositValue(Number(tmpMaxDeposit));
       setLpWalletBalanceUSD(tokenPrice * lpWalletBalance);
     }
@@ -185,7 +184,6 @@ const VaultDashboard = () => {
       const remainingGlobalDebt = globalDebtLimit - globalDebt;
       //compare the two debt limits and set the overall debt limit to be equal to the smaller value
       const overalldebtLimit = Math.min(remainingGlobalDebt, userDebtLimit);
-      console.log('mint', overalldebtLimit);
       //this only captures wether the user debt limit has been hit
       setHasReachedDebtLimit(overalldebtLimit <= 0 && +debt > 0);
       setGenerateValue(overalldebtLimit);
@@ -365,7 +363,7 @@ const VaultDashboard = () => {
             </div>
             <div className="vaultdashboard__bodyleft row pt-0 mt-5">
               <div className="col">
-                <VaultHistoryTable />
+                <VaultHistoryTable mintAddress={vault_mint}/>
               </div>
             </div>
           </div>

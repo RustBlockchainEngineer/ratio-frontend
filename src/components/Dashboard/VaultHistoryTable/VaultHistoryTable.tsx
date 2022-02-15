@@ -9,7 +9,7 @@ import { getFromRatioApi } from '../../../utils/ratioApi/index';
 
 ///transaction/:wallet_id/:signature
 
-const VaultHistoryTable = () => {
+const VaultHistoryTable = ({mintAddress}: any) => {
   const { accessToken } = useAuthContextProvider();
   const { publicKey } = useWallet();
   const wallet = publicKey?.toString();
