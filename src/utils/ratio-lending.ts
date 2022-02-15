@@ -144,7 +144,7 @@ export async function getGlobalState(connection: Connection, wallet: any) {
 export async function getCurrentSuperOwner(connection: Connection, wallet: any) : Promise<PublicKey> {
   try {
     const globalState = await getGlobalState(connection, wallet);
-    return globalState.superOwner;
+    return globalState.authority;
   } catch (e) {
     console.error('Error while fetching the super owner');
     throw e;
