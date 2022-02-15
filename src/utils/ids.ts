@@ -16,7 +16,7 @@ export const SWAP_PROGRAM_ID = new PublicKey('SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6
 
 export const STABLE_POOL_PROGRAM_ID = new PublicKey('BRryWAy5a9yZsruQEKJpRfKGyQy7DeBtZ1JZnDuVhVjF');
 
-export const FAUCET_PROGRAM_ID = new PublicKey('7YVa3g284KuyHYNNHnbR9nRkXQFKpFtrhUym7X7My6UR');
+export const FAUCET_PROGRAM_ID = new PublicKey('3chSENGkpMbCHJqhDqjYxW29EjvD4v1fJcS9N7uWD4Hu');
 
 export const PROGRAM_IDS = [
   {

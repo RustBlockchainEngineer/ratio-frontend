@@ -51,37 +51,34 @@ const GLOBAL_DEBT_CEILING = 15_000_000;
 
 export const TOKEN_VAULT_OPTIONS = [
   {
-    value: 'USDC-USDR',
-    label: 'wtUST-USDC test LP',
-    icon: [`https://sdk.raydium.io/icons/${getTokenBySymbol('USDC')?.mintAddress}.png`, usdrIcon],
-    mintAddress: '3ZmQRcaKCmz9WF5L3noi6tZHhbY3ZmyujqyhTViWuffn',
+    value: 'wtUST-USDC',
+    label: 'wtUST-USDC LP',
+    icon: [`https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh/logo.png`],
+    mintAddress: '6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh',
   },
   {
-    value: 'ETH-SOL',
-    label: 'USDC-USDT test LP',
+    value: 'USDC-USDT',
+    label: 'USDC-USDT LP',
     icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('ETH')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('SOL')?.mintAddress}.png`,
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/BkpqyoDe5mwN6DiH1MYSJ1G4AbhPuiZsycjjYfQcWK9P/logo.png`,
     ],
-    mintAddress: '6MBRfPbzejwVpADXq3LCotZetje3N16m5Yn7LCs2ffU4',
+    mintAddress: 'BkpqyoDe5mwN6DiH1MYSJ1G4AbhPuiZsycjjYfQcWK9P',
   },
   {
-    value: 'ATLAS-RAY',
-    label: 'UST-3Pool test LP',
+    value: 'wUST-USDC-USDT',
+    label: 'UST-3Pool LP',
     icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('ATLAS')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/ASnVcQxNRosGw8crN8E4ScnDncBfnR1eJPyzucKsM4Vm/logo.png`,
     ],
-    mintAddress: 'ECe1Hak68wLS44NEwBVNtZDMxap1bX3jPCoAnDLFWDHz',
+    mintAddress: 'ASnVcQxNRosGw8crN8E4ScnDncBfnR1eJPyzucKsM4Vm',
   },
   {
-    value: 'SAMO-RAY',
-    label: 'USDC-CASH test LP',
+    value: 'USDC-CASH',
+    label: 'USDC-CASH LP',
     icon: [
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('SAMO')?.mintAddress}.png`,
-      `https://sdk.raydium.io/icons/${getTokenBySymbol('RAY')?.mintAddress}.png`,
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2gsojBCyZUgqXEj5vR41sKat3JyG11nXSsgzMErY9EVL/logo.png`,
     ],
-    mintAddress: 'GGaUYeET8HXK34H2D1ieh4YYQPhkWcfWBZ4rdp6iCZtG',
+    mintAddress: '2gsojBCyZUgqXEj5vR41sKat3JyG11nXSsgzMErY9EVL',
   },
 ];
 

@@ -1,5 +1,4 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
@@ -16,12 +15,10 @@ import ActiveVaults from '../ActiveVaults';
 import InstaBuyLp from '../InstaBuyLP';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import VaultSetup from '../VaultSetup';
 import VaultDashboard from '../VaultDashboard';
 import CompareVaults from '../CompareVaults';
 
 import { actionTypes } from '../../features/wallet';
-import { walletSelectors } from '../../features/wallet';
 import logoside from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 import telegram from '../../assets/images/telegram.svg';
@@ -31,61 +28,53 @@ import telegramDark from '../../assets/images/telegram-dark.svg';
 import twitterDark from '../../assets/images/twitter-dark.svg';
 import mediumDark from '../../assets/images/medium-dark.svg';
 
-import { getTokenBySymbol } from '../../utils/tokens';
-import { getTokenIcon } from '../../utils/utils';
-import { WRAPPED_SOL_MINT } from '../../utils/ids';
-import { useConnectionConfig } from '../../contexts/connection';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-// const isMobile = useMediaQuery({ maxWidth: 767 })
+import { API_ENDPOINT } from '../../constants/constants';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
 
 const Layer = () => {
-  const theme = React.useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
   const { darkMode } = theme.state;
-  // const isTablet = useMediaQuery({ maxWidth: 991 });
-  const isDefault = useMediaQuery({ minWidth: 768 });
   const isTabletOrMobile = useMediaQuery({ maxWidth: 991 });
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const [collapseFlag, setCollapseFlag] = React.useState(false);
-  const whitelist_data = useSelector(walletSelectors.getWhiteListData);
-  const { tokenMap } = useConnectionConfig();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [collapseFlag, setCollapseFlag] = useState(false);
   const history = useHistory();
-
-  const { isLoading, data } = useFetch<any>('https://api.ratio.finance/api/whitelist');
-
-  const [enable, setEnable] = React.useState(false);
   const { connected, publicKey } = useWallet();
+  const NOT_FOUND_STATUS_CODE = 404;
 
-  type whitelistProps = {
-    id: number;
-    address: any;
-    created_at: string;
-    updated_at: string;
-    name: string;
-  };
+  const [enable, setEnable] = useState(false);
+  const {
+    isLoading,
+    data: userData,
+    error,
+  } = useFetch<boolean>(`${API_ENDPOINT}/users/auth/${publicKey}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+    depends: [!!publicKey],
+  });
 
-  React.useEffect(() => {
-    if (data?.length > 0) {
-      dispatch({ type: actionTypes.SET_WHITELIST, payload: data });
-    }
-  }, [data]);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (connected) {
-      const filtered = whitelist_data.filter((item: whitelistProps) => {
-        return item.address === publicKey?.toString();
-      });
-      if (filtered?.length > 0) {
-        setEnable(true);
-      } else {
+      if (isLoading) {
+        setEnable(false);
+        return;
+      }
+      if (!isLoading && (error?.status === NOT_FOUND_STATUS_CODE || userData === false)) {
         setEnable(false);
         toast('Please add your address to whitelist.');
+        return;
       }
+      setEnable(!isLoading && !error && (userData ?? false));
     } else {
       history.push('/dashboard');
     }
-  }, [connected, publicKey]);
+    return () => {
+      setEnable(false);
+    };
+  }, [userData]);
 
   const dispatch = useDispatch();
 
@@ -101,17 +90,6 @@ const Layer = () => {
     setCollapseFlag(!collapseFlag);
   };
 
-  // if (isTabletOrMobile) {
-  //   return (
-  //     <div className="layer__mobile">
-  //       <div>
-  //         <img src={logoside} alt="logoside" />
-  //         <p>Mobile site coming Soon...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
       <ToastContainer
@@ -125,6 +103,11 @@ const Layer = () => {
         draggable={false}
         pauseOnHover
       />
+      {isLoading && (
+        <div className="text-center">
+          <LoadingSpinner className="spinner-border-lg text-info" />
+        </div>
+      )}
       {!isLoading && (
         <div
           className={classNames('layer_container', {

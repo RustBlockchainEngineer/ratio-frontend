@@ -34,7 +34,7 @@ type FilterPanelProps = {
 
 const optionsSortBy = [
   { value: 'apr', label: 'APR' },
-  { value: 'risk', label: 'RISK' },
+  { value: 'riskLevel', label: 'RISK' },
   { value: 'tvl', label: 'TVL' },
 ];
 
