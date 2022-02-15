@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { LPair, LPairAPRLast } from '../../types/VaultTypes';
 import { IPoolInfoProvider } from './IPoolInfoProvider';
 import { API_ENDPOINT } from '../../constants';
@@ -48,8 +49,9 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
 
   abstract getRewards(): number;
 
-  async postTransactionToApi(txSignature: string, wallet: any, authToken: any): Promise<any> {
-    const response = await postWithAuthToRatioApi({}, `${wallet?.publicKey}${txSignature}`, authToken);
+  async postTransactionToApi(txSignature: string, txType: string, wallet: any, authToken: any): Promise<any> {
+    // /transaction/:wallet_id/add
+    const response = await postWithAuthToRatioApi({ signature: txSignature, transaction_type: txType }, `/transaction/${wallet?.publicKey}/add`, authToken);
     return response;
   }
 }
