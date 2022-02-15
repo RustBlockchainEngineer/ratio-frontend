@@ -7,6 +7,7 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 import { Roles } from '../../constants';
 import GlobalParamsAdminForm from '../GlobalParamsAdminForm';
 import NotFound from '../NotFound';
+import AdminTasksForm from '../AdminTasksForm';
 
 const AdminPanel = () => {
   return (
@@ -16,6 +17,7 @@ const AdminPanel = () => {
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/fees" component={FeesAdminForm} exact />
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/whitelist" component={WhitelistAdminForm} exact />
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/globalparams" component={GlobalParamsAdminForm} exact />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/tasks" component={AdminTasksForm} exact />
           <ProtectedRoute
             role={Roles.ADMIN}
             path="/adminpanel/collateralizationratios"

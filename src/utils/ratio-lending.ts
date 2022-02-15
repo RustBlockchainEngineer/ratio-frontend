@@ -131,6 +131,16 @@ export async function getGlobalState(connection: Connection, wallet: any) {
   }
 }
 
+export async function getCurrentSuperOwner(connection: Connection, wallet: any) : Promise<PublicKey> {
+  try {
+    const globalState = await getGlobalState(connection, wallet);
+    return globalState.superOwner;
+  } catch (e) {
+    console.error('Error while fetching the super owner');
+    throw e;
+  }
+}
+
 // This command makes an Lottery
 export async function createGlobalState(connection: Connection, wallet: any) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();

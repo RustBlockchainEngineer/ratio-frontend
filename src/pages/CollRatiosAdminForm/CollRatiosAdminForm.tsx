@@ -4,20 +4,11 @@ import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
+import { CollateralizationRatios } from '../../types/admin-types';
+import { setCollateralRatio } from '../../utils/admin-contract-calls';
 import AdminFormLayout from '../AdminFormLayout';
-
-interface CollateralizationRatios {
-  cr_aaa_ratio: number;
-  cr_aa_ratio: number;
-  cr_a_ratio: number;
-  cr_bbb_ratio: number;
-  cr_bb_ratio: number;
-  cr_b_ratio: number;
-  cr_ccc_ratio: number;
-  cr_cc_ratio: number;
-  cr_c_ratio: number;
-  cr_d_ratio: number;
-}
 
 export default function CollRatiosAdminForm() {
   const [validated, setValidated] = useState(false);
@@ -89,14 +80,11 @@ export default function CollRatiosAdminForm() {
     }
   }, [fetchData]);
 
-  const handleSubmit = async (evt: any) => {
-    evt.preventDefault();
-    const form = evt.currentTarget;
-    if (form.checkValidity() === false) {
-      evt.stopPropagation();
-      return;
-    }
-    setValidated(true);
+  const connection = useConnection();
+  const gWallet = useWallet();
+  const wallet = gWallet.wallet;
+
+  const updateDatabaseValues = async () => {
     const response = await fetch(`${API_ENDPOINT}/ratioconfig/collateralratio`, {
       body: JSON.stringify(data),
       headers: {
@@ -111,6 +99,18 @@ export default function CollRatiosAdminForm() {
       throw await response.json();
     }
     setData(parseJsonResponse(await response.json()));
+  };
+
+  const handleSubmit = async (evt: any) => {
+    evt.preventDefault();
+    const form = evt.currentTarget;
+    if (form.checkValidity() === false) {
+      evt.stopPropagation();
+      return;
+    }
+    setValidated(true);
+    await setCollateralRatio(connection, wallet, data);
+    await updateDatabaseValues();
     toast.info('Ratios saved successfully');
     return;
   };
