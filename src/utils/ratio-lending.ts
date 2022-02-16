@@ -78,7 +78,6 @@ export const TOKEN_VAULT_OPTIONS = [
   },
 ];
 
-
 // This command makes an Lottery
 function getProgramInstance(connection: Connection, wallet: any) {
   // if (!wallet.publicKey) throw new WalletNotConnectedError();
@@ -96,14 +95,19 @@ function getProgramInstance(connection: Connection, wallet: any) {
   return program;
 }
 
+async function retrieveGlobalState(connection: Connection, wallet: any) { 
+  const program = getProgramInstance(connection, wallet);
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    program.programId
+  );
+  const globalState = await program.account.globalState.fetch(globalStateKey);
+  return globalState
+}
+
 export async function getGlobalState(connection: Connection, wallet: any) {
   try {
-    const program = getProgramInstance(connection, wallet);
-    const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_STATE_TAG)],
-      program.programId
-    );
-    const globalState = await program.account.globalState.fetch(globalStateKey);
+    const globalState = await retrieveGlobalState(connection,wallet);
     if (globalState) {
       return globalState;
     } else {
@@ -123,6 +127,14 @@ export async function getCurrentSuperOwner(connection: Connection, wallet: any) 
     console.error('Error while fetching the super owner');
     throw e;
   }
+}
+
+export async function isGlobalStateCreated(connection: Connection, wallet: any) {
+  const globalState = await retrieveGlobalState(connection,wallet);
+  if (globalState) {
+    return true;
+  }
+  return false;
 }
 
 // This command makes an Lottery

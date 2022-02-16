@@ -148,10 +148,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }, [wallet, connection]);
 
   React.useEffect(() => {
-    let active = true;
     if (!connected && !connection && !wallet && !vaults.length && !globalState) {
       return;
     }
+    let active = true;
     getDebtLimitForAllVaults(connection, wallet, vaults).then((userVaults: any) => {
       if (!active) {
         return;

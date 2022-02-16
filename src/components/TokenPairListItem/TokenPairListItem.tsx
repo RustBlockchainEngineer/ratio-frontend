@@ -11,7 +11,7 @@ import { TokenPairCardProps } from '../../models/UInterface';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
-import { formatUSD, getDebtLimitForAllVaults } from '../../utils/utils';
+import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
 import linkIcon from '../../assets/images/link.svg';
