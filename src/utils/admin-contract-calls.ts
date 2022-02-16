@@ -16,20 +16,21 @@ export async function getCurrentEmergencyState(
 export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, value: PublicKey) {
   console.error('changeSuperOwner yet not implemented');
 }
-export async function setGlobalTvlLimit(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setGlobalTvlLimit yet not implemented');
+export async function setGlobalTvlLimit(connection: Connection, wallet: WalletAdapter | undefined, limit: number) {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  try {
+    await program.rpc.setGlobalTvlLimit(limit, {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+  }
 }
-
-/** 
-#[access_control(is_admin(&ctx.accounts.global_state, &ctx.accounts.payer))]
-pub fn set_vault_debt_ceiling(
-    ctx: Context<SetVaultDebtCeiling>,
-    ceiling: u64,
-) -> ProgramResult {
-    ctx.accounts.set(ceiling)
-}
-**/
-
 export async function setGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined, ceiling: number) {
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
@@ -78,7 +79,19 @@ export async function setCollateralRatio(
   wallet: WalletAdapter | undefined,
   values: CollateralizationRatios
 ) {
-  console.error('setCollateralRatio yet not implemented');
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  try {
+    await program.rpc.setCollateralRatio(values, {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+  }
 }
 export async function setHarvestFee(
   connection: Connection,
@@ -86,7 +99,7 @@ export async function setHarvestFee(
   feeNum: number,
   feeDeno: number
 ): Promise<boolean> {
-  const program = getProgramInstance(connection, wallet);
+  const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
   try {
     await program.rpc.setHarvestFee(feeNum, feeDeno, {
