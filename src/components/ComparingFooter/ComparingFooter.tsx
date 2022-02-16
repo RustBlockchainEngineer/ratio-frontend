@@ -25,8 +25,8 @@ const ComparingFooter = ({ list }: ComparingFooterProps) => {
                 <img src={item.icons[1]} alt="icon" className="comparingFooter__vaults--icon2" /> */}
               </div>
               <div>
-                <h5>{item.title}</h5>
-                <h6>{item.tvl}</h6>
+                <h5>{item?.title}</h5>
+                <h6>{item?.tvl}</h6>
               </div>
             </div>
           );

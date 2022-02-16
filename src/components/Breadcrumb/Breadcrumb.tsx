@@ -51,7 +51,7 @@ const Breadcrumb = ({ VaultData, availableVaults }: any) => {
       </p>
       <Dropdown onToggle={onToggle} show={isOpen}>
         <Dropdown.Toggle id="dropdown-basic">
-          {VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault
+          {VaultData?.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault
         </Dropdown.Toggle>
 
         <Dropdown.Menu>

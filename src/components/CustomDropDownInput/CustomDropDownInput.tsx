@@ -60,7 +60,7 @@ const CustomDropDownInput = () => {
             return (
               <Dropdown.Item key={item.id} eventKey={item.id} onSelect={(eventKey: any) => setToken(eventKey)}>
                 <img src={item.icons} alt={item.icons.toString()} />
-                {item.title}
+                {item?.title}
               </Dropdown.Item>
             );
           })}

@@ -35,7 +35,7 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
       <div className="col col-xl-4 col-lg-6 col-md-12">
         <div
           className={classNames('activepaircard mt-4', {
-            'activepaircard--warning': data.warning,
+            'activepaircard--warning': data?.warning,
           })}
         >
           <div className="activepaircard__header">
@@ -46,11 +46,11 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
               </div>
               <div
                 className={classNames('activepaircard__titleBox', {
-                  'activepaircard__titleBox--warning': data.warning,
+                  'activepaircard__titleBox--warning': data?.warning,
                 })}
               >
-                <h6>{data.title}</h6>
-                <p>{data.tvl}</p>
+                <h6>{data?.title}</h6>
+                <p>{data?.tvl}</p>
               </div>
             </div>
             <div className="activepaircard__riskBox">
@@ -79,19 +79,19 @@ const ActivePairCard = ({ data }: ActiveCardProps) => {
           <div className="activepaircard__aprBox">
             <div className="d-flex justify-content-between">
               <h6>APR:</h6>
-              <h6 className="semiBold">{data.apr}%</h6>
+              <h6 className="semiBold">{data?.apr}%</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Owed:</h6>
-              <h6 className="semiBold">{data.owed}</h6>
+              <h6 className="semiBold">{data?.owed}</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Available to Mint:</h6>
-              <h6 className="semiBold">{data.mint}</h6>
+              <h6 className="semiBold">{data?.mint}</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>Liquidation Price:</h6>
-              <h6 className="semiBold">{data.price}</h6>
+              <h6 className="semiBold">{data?.price}</h6>
             </div>
           </div>
           <div className="activepaircard__btnBox d-flex">
