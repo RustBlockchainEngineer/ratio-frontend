@@ -23,10 +23,10 @@ const CompareCard = ({ label, list, type }: CompareCardProps) => {
                   <h5>{index + 1}</h5>
                   {/* <img src={vault.icons[0]} alt="icon" className="compareCard__list--icon1" />
                   <img src={vault.icons[1]} alt="icon" className="compareCard__list--icon2" /> */}
-                  <h6>{vault.title}</h6>
+                  <h6>{vault?.title}</h6>
                 </div>
-                {type === 'TVL' && <h5>{vault.tvl}</h5>}
-                {type === 'APY' && <h5>{vault.apr}%</h5>}
+                {type === 'TVL' && <h5>{vault?.tvl}</h5>}
+                {type === 'APY' && <h5>{vault?.apr}%</h5>}
                 {type === 'RISK' && <h5 className={getRiskLevel(vault.risk)}>{getRiskLevel(vault.risk)}</h5>}
               </div>
               <div className="compareCard__list__platform">
