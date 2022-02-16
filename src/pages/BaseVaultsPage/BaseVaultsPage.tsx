@@ -78,37 +78,39 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
     if (d !== undefined) {
       const p = filterData(d, filter_data, platform_data)
+        .filter((item: LPair) =>
+          showOnlyActive
+            ? Object.keys(overview.activeVaults).indexOf(item.address_id) > -1
+            : overview.activeVaults
+            ? Object.keys(overview.activeVaults).indexOf(item.address_id) === -1
+            : item
+        )
         .map((item: LPair, index: any) => {
-          if (
-            showOnlyActive === false ||
-            (showOnlyActive && Object.keys(overview.activeVaults).indexOf(item.address_id) > -1)
-          ) {
-            return {
-              id: index,
-              mint: item.address_id, //MINTADDRESS[key]
-              icons: item.lpasset?.map((item) =>
-                item.token_icon?.trim() === '' || item.token_icon === undefined
-                  ? getCoinPicSymbol(item.token_symbole)
-                  : item.token_icon
-              ),
-              icon: require(`../../assets/images/tokens/${item.address_id}.png`),
-              title: item.symbol,
-              tvl: item.platform_tvl,
-              apr: item.platform_ratio_apr,
-              earned_rewards: item.earned_rewards,
-              platform: {
-                link: item.platform_site,
-                name: item.platform_name,
-                icon: item.platform_icon,
-              },
-              risk: item.risk_rating,
-              riskLevel: getRiskLevelNumber(item.risk_rating),
-              item: item,
-              hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
-            };
-          }
-        })
-        .filter(Boolean);
+          return {
+            id: index,
+            mint: item.address_id, //MINTADDRESS[key]
+            icons: item.lpasset?.map((item) =>
+              item.token_icon?.trim() === '' || item.token_icon === undefined
+                ? getCoinPicSymbol(item.token_symbole)
+                : item.token_icon
+            ),
+            icon: require(`../../assets/images/tokens/${item.address_id}.png`),
+            title: item.symbol,
+            tvl: item.platform_tvl,
+            apr: item.platform_ratio_apr,
+            earned_rewards: item.earned_rewards,
+            platform: {
+              link: item.platform_site,
+              name: item.platform_name,
+              icon: item.platform_icon,
+            },
+            risk: item.risk_rating,
+            riskLevel: getRiskLevelNumber(item.risk_rating),
+            item: item,
+            hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
+          };
+        });
+      // .filter(Boolean);
       let x;
       if (platform_data.value !== 'ALL') {
         x = p.filter((item: any) => item.platform.name === platform_data.value);
