@@ -102,14 +102,14 @@ async function retrieveGlobalState(connection: Connection, wallet: any) {
     program.programId
   );
   const globalState = await program.account.globalState.fetch(globalStateKey);
-  return globalState
+  return { globalState, globalStateKey };
 }
 
 export async function getGlobalState(connection: Connection, wallet: any) {
   try {
-    const globalState = await retrieveGlobalState(connection,wallet);
+    const { globalState, globalStateKey } = await retrieveGlobalState(connection,wallet);
     if (globalState) {
-      return {globalState,globalStateKey};
+      return { globalState, globalStateKey };
     } else {
       throw new Error (`Global state doesn't exist`)
     }
@@ -302,12 +302,8 @@ export async function getTokenVaultByMint(connection: Connection, mint: string) 
     [Buffer.from(TOKEN_VAULT_TAG), new PublicKey(mint).toBuffer()],
     program.programId
   );
-  try {
-    const tokenVault = await program.account.tokenVault.fetch(tokenVaultKey);
-    return tokenVault;
-  } catch (e) {
-    return null;
-  }
+  const tokenVault = await program.account.tokenVault.fetch(tokenVaultKey);
+  return { tokenVault, tokenVaultKey }; 
 }
 
 export async function createTokenVault(

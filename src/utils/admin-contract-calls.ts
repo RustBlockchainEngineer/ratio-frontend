@@ -1,7 +1,7 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
 import { CollateralizationRatios } from '../types/admin-types';
-import { getCurrentSuperOwner, getGlobalState, getProgramInstance, defaultPrograms } from './ratio-lending';
+import { getGlobalState, getProgramInstance, getTokenVaultByMint } from './ratio-lending';
 
 export async function toggleEmergencyState(connection: Connection, wallet: WalletAdapter | undefined) {
   console.error('toggleEmergencyState yet not implemented');
@@ -19,9 +19,57 @@ export async function changeSuperOwner(connection: Connection, wallet: WalletAda
 export async function setGlobalTvlLimit(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setGlobalTvlLimit yet not implemented');
 }
-export async function setGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setGlobalDebtCeiling yet not implemented');
+
+/** 
+#[access_control(is_admin(&ctx.accounts.global_state, &ctx.accounts.payer))]
+pub fn set_vault_debt_ceiling(
+    ctx: Context<SetVaultDebtCeiling>,
+    ceiling: u64,
+) -> ProgramResult {
+    ctx.accounts.set(ceiling)
 }
+**/
+
+export async function setGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined, ceiling: number) {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  try {
+    await program.rpc.setGlobalDebtCeiling(ceiling, {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+  }
+}
+export async function setVaultDebtCeiling(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  ceiling: number,
+  mintCollKey: PublicKey
+) {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  const { tokenVaultKey } = await getTokenVaultByMint(connection, mintCollKey.toString());
+
+  try {
+    await program.rpc.setVaultDebtcCeiling(ceiling, {
+      accounts: {
+        payer: wallet?.publicKey,
+        tokenVault: tokenVaultKey,
+        globalState: globalStateKey,
+        mintColl: mintCollKey,
+      },
+    });
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+  }
+}
+
 export async function setUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setUserDebtCeiling yet not implemented');
 }
@@ -32,7 +80,6 @@ export async function setCollateralRatio(
 ) {
   console.error('setCollateralRatio yet not implemented');
 }
-
 export async function setHarvestFee(
   connection: Connection,
   wallet: WalletAdapter | undefined,
@@ -48,14 +95,13 @@ export async function setHarvestFee(
         globalState: globalStateKey,
       },
     });
-  } catch (e) {
+  } catch (error) {
     console.log('ERROR');
-    console.log(e);
+    console.log(error);
     return false;
   }
   return true;
 }
-
 export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setBorrowFee yet not implemented');
 }
