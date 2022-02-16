@@ -38,7 +38,7 @@ export const TOKEN_VAULT_POOL_TAG = 'token-vault-pool';
 
 export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
-const defaultPrograms = {
+export const defaultPrograms = {
   systemProgram: SystemProgram.programId,
   tokenProgram: TOKEN_PROGRAM_ID,
   rent: SYSVAR_RENT_PUBKEY,
@@ -79,7 +79,7 @@ export const TOKEN_VAULT_OPTIONS = [
 ];
 
 // This command makes an Lottery
-function getProgramInstance(connection: Connection, wallet: any) {
+export function getProgramInstance(connection: Connection, wallet: any) {
   // if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   const provider = new anchor.Provider(connection, wallet, anchor.Provider.defaultOptions());
@@ -121,7 +121,7 @@ export async function getGlobalState(connection: Connection, wallet: any) {
     );
     const globalState = await program.account.globalState.fetch(globalStateKey);
     if (globalState) {
-      return globalState;
+      return {globalState,globalStateKey};
     } else {
       throw new Error (`Global state doesn't exist`)
     }
@@ -133,7 +133,7 @@ export async function getGlobalState(connection: Connection, wallet: any) {
 
 export async function getCurrentSuperOwner(connection: Connection, wallet: any) : Promise<PublicKey> {
   try {
-    const globalState = await getGlobalState(connection, wallet);
+    const {globalState} = await getGlobalState(connection, wallet);
     return globalState.superOwner;
   } catch (e) {
     console.error('Error while fetching the super owner');

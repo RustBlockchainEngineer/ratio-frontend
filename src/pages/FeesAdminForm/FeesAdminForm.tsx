@@ -9,8 +9,8 @@ import { useWallet } from '../../contexts/wallet';
 import {
   setBorrowFee,
   setDepositFee,
+  setHarvestFee,
   setPaybackFee,
-  setRewardsFee,
   setStakeFee,
   setSwapFee,
   setWithdrawFee,
@@ -44,7 +44,7 @@ const ContractUpdatersMap = {
   borrow_fee: setBorrowFee,
   deposit_fee: setDepositFee,
   payback_fee: setPaybackFee,
-  reward_fee: setRewardsFee,
+  harvest_fee: setHarvestFee,
   stake_fee: setStakeFee,
   swap_fee: setSwapFee,
   withdraw_fee: setWithdrawFee,

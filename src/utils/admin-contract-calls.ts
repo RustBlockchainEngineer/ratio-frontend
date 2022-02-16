@@ -1,6 +1,7 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
 import { CollateralizationRatios } from '../types/admin-types';
+import { getCurrentSuperOwner, getGlobalState, getProgramInstance, defaultPrograms } from './ratio-lending';
 
 export async function toggleEmergencyState(connection: Connection, wallet: WalletAdapter | undefined) {
   console.error('toggleEmergencyState yet not implemented');
@@ -31,9 +32,30 @@ export async function setCollateralRatio(
 ) {
   console.error('setCollateralRatio yet not implemented');
 }
-export async function setRewardsFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setRewardsFee yet not implemented');
+
+export async function setHarvestFee(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  feeNum: number,
+  feeDeno: number
+): Promise<boolean> {
+  const program = getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  try {
+    await program.rpc.setHarvestFee(feeNum, feeDeno, {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+  } catch (e) {
+    console.log('ERROR');
+    console.log(e);
+    return false;
+  }
+  return true;
 }
+
 export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setBorrowFee yet not implemented');
 }
