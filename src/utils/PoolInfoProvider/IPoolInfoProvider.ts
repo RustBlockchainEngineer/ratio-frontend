@@ -12,5 +12,5 @@ export interface IPoolInfoProvider {
 
   harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean>;
 
-  getRewards(vault: LPair): number;
+  getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number>;
 }
