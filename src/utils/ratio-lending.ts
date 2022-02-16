@@ -3,7 +3,7 @@ import idl from './ratio-lending-idl.json';
 
 import { AccountLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from '@project-serum/anchor';
-const {BN} = anchor;
+const { BN } = anchor;
 import {
   Connection,
   Keypair,
@@ -27,7 +27,7 @@ import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
 
-export declare type PlatformType = 0| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export const TYPE_ID_RAYDIUM: PlatformType = 0;
 export const TYPE_ID_ORCA: PlatformType = 1;
 export const TYPE_ID_SABER: PlatformType = 2;
@@ -37,13 +37,13 @@ export const TYPE_ID_UNKNOWN: PlatformType = 4;
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
 export const USDR_MINT_KEY = 'GHY2oA1hsLn8qYFZDz9GFy4hSUwtdVfkcSkhKHYr7XKd';
-export const GLOBAL_STATE_TAG = "global-state-seed";
+export const GLOBAL_STATE_TAG = 'global-state-seed';
 export const TOKEN_VAULT_TAG = 'token-vault-seed';
 export const USER_TROVE_TAG = 'user-trove';
 export const USD_MINT_TAG = 'usd-mint';
 export const USER_USD_TOKEN_TAG = 'usd-token';
 export const TOKEN_VAULT_POOL_TAG = 'token-vault-pool';
-export const USER_TROVE_POOL_TAG = "user-trove-pool";
+export const USER_TROVE_POOL_TAG = 'user-trove-pool';
 
 export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
@@ -58,7 +58,9 @@ export const TOKEN_VAULT_OPTIONS = [
   {
     value: 'wtUST-USDC',
     label: 'wtUST-USDC LP',
-    icon: [`https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh/logo.png`],
+    icon: [
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh/logo.png`,
+    ],
     mintAddress: '6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh',
   },
   {
@@ -104,23 +106,23 @@ export function getProgramInstance(connection: Connection, wallet: any) {
   return program;
 }
 
-async function retrieveGlobalState(connection: Connection, wallet: any) { 
+async function retrieveGlobalState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
   const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_STATE_TAG)],
     program.programId
   );
   const globalState = await program.account.globalState.fetch(globalStateKey);
-  return globalState
+  return globalState;
 }
 
 export async function getGlobalState(connection: Connection, wallet: any) {
   try {
-    const globalState = await retrieveGlobalState(connection,wallet);
+    const globalState = await retrieveGlobalState(connection, wallet);
     if (globalState) {
       return globalState;
     } else {
-      throw new Error (`Global state doesn't exist`)
+      throw new Error(`Global state doesn't exist`);
     }
   } catch (e) {
     console.log('globalState was not created');
@@ -128,7 +130,7 @@ export async function getGlobalState(connection: Connection, wallet: any) {
   }
 }
 
-export async function getCurrentSuperOwner(connection: Connection, wallet: any) : Promise<PublicKey> {
+export async function getCurrentSuperOwner(connection: Connection, wallet: any): Promise<PublicKey> {
   try {
     const globalState = await getGlobalState(connection, wallet);
     return globalState.superOwner;
@@ -139,7 +141,7 @@ export async function getCurrentSuperOwner(connection: Connection, wallet: any) 
 }
 
 export async function isGlobalStateCreated(connection: Connection, wallet: any) {
-  const globalState = await retrieveGlobalState(connection,wallet);
+  const globalState = await retrieveGlobalState(connection, wallet);
   if (globalState) {
     return true;
   }
@@ -325,7 +327,7 @@ export async function createTokenVault(
   mintCollKey: PublicKey = WSOL_MINT_KEY,
   riskLevel = 0,
   isDual = false,
-  platformType: PlatformType,
+  platformType: PlatformType
 ) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
@@ -372,20 +374,14 @@ export async function createTokenVault(
     '\n'
   );
   try {
-    await program.rpc.createTokenVault(
-      tokenVaultNonce, 
-      riskLevel,
-      isDual,
-      new BN(100_000_000_000_000),
-      platformType,
-      {
-        accounts: {
-          authority: wallet.publicKey,
-          tokenVault: tokenVaultKey,
-          globalState: globalStateKey,
-          mintColl: mintCollKey,
-          ...defaultPrograms,
-        },
+    await program.rpc.createTokenVault(tokenVaultNonce, riskLevel, isDual, new BN(100_000_000_000_000), platformType, {
+      accounts: {
+        authority: wallet.publicKey,
+        tokenVault: tokenVaultKey,
+        globalState: globalStateKey,
+        mintColl: mintCollKey,
+        ...defaultPrograms,
+      },
     });
     return 'created token vault successfully';
   } catch (e) {
@@ -409,7 +405,7 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
   );
   const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(USER_TROVE_POOL_TAG), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId,
+    program.programId
   );
 
   try {
@@ -420,11 +416,7 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
   } catch (e) {}
 
   try {
-    await program.rpc.createUserTrove(
-      userTroveNonce, 
-      userTroveTokenVaultNonce, 
-      new BN(0),
-      {
+    await program.rpc.createUserTrove(userTroveNonce, userTroveTokenVaultNonce, new BN(0), {
       accounts: {
         tokenVault: tokenVaultKey,
         userTrove: userTroveKey,

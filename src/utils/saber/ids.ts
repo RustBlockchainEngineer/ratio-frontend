@@ -11,22 +11,20 @@ export async function getDevnetPools() {
     const name = poolsData[i]?.name;
     const swapAddress = poolsData[i]?.swap?.config?.swapAccount;
     const quarryAddress = poolsData[i]?.quarry;
-    if(name === 'USDC-CASH'){
+    if (name === 'USDC-CASH') {
       swapPools.push({
         name: 'USDC-CASH Mine',
         swapAddress: 'Gq1DjhsqjXTuCN8493XAgsU9fCzC1eGQ8iwL8CTYuFer',
         quarryAddress: 'BTimzTk51pcKxDQLRR3iFs4dLVY9WyKgRBmnd1rZLN6n',
-    
-      })
+      });
     } else {
       swapPools.push({
         name,
         swapAddress,
         quarryAddress,
-      });  
+      });
     }
   }
-  
 
   return swapPools;
 }
