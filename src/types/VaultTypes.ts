@@ -38,6 +38,7 @@ export interface LPair {
   address_id: string;
   symbol: string;
   page_url: string;
+  icon: string;
   pool_size: number;
   platform_tvl: number;
   platform_ratio_apr: number;
@@ -49,6 +50,7 @@ export interface LPair {
   earned_rewards?: number;
   liquidation_ratio: number;
   risk_rating: RISK_RATING;
+  has_reached_user_debt_limit: boolean;
   created_on?: number;
   updated_on: number;
   lpasset?: LPAsset[];
@@ -65,4 +67,12 @@ export enum PoolProvider {
   'RAYDIUM' = 'RAYDIUM',
   'SABER' = 'SABER',
   'MERCURIAL' = 'MERCURIAL',
+}
+
+export interface Token {
+  address_id: string;
+  symbol: string;
+  icon: string;
+  created_on?: number;
+  updated_on?: number;
 }

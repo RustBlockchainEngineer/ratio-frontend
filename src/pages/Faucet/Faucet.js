@@ -59,19 +59,19 @@ const Faucet = () => {
     setFaucetStatus('minting ...');
     let tx;
     try {
-      if (option.value === 'USDC-USDR') {
+      if (option.value === 'wtUST-USDC') {
         tx = await faucetUsdcUsdrLp(connection, wallet);
-      } else if (option.value === 'ETH-SOL') {
+      } else if (option.value === 'USDC-USDT') {
         tx = await faucetEthSolLp(connection, wallet);
-      } else if (option.value === 'ATLAS-RAY') {
+      } else if (option.value === 'UST-3Pool') {
         tx = await faucetAtlasRayLp(connection, wallet);
-      } else if (option.value === 'SAMO-RAY') {
+      } else if (option.value === 'USDC-CASH') {
         tx = await faucetSamoRayLp(connection, wallet);
       } else {
         setFaucetStatus('Please select a faucet token.');
         return;
       }
-      setFaucetStatus('You have minted $10 worth of ' + option.value + ' LP tokens');
+      setFaucetStatus('You have minted $100 worth of ' + option.value + ' LP tokens');
     } catch (e) {
       console.log(e);
       setFaucetStatus('Error occured! please check your transaction.');
