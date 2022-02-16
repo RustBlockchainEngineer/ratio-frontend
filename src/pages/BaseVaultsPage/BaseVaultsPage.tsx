@@ -16,6 +16,7 @@ import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { LPair } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { getDebtLimitForAllVaults } from '../../utils/utils';
+import { getGlobalState } from '../../utils/ratio-lending';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
@@ -30,7 +31,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const view_data = useSelector(selectors.getViewData);
   const platform_data = useSelector(selectors.getPlatformData);
   const overview = useSelector(selectors.getOverview);
-  const [factorial, setFactorial] = useState([]);
+  const [factorial, setFactorial] = useState<any>([]);
+  const [globalState, setGlobalState] = React.useState(null);
+  const [vaultsDebtData, setVaultsDebtData] = React.useState<any>([]);
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
+  const [hasReachedGlobalDebtLimit, setHasReachedGlobalDebtLimit] = React.useState(false);
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
@@ -42,6 +47,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const { status, error, vaults } = useVaultsContextProvider();
 
   const vaultsWithPlatformInformation = useFillPlatformInformation(vaults);
+
+  const [vaultsWithAllData, setVaultsWithAllData] = useState<any>(vaults);
 
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
@@ -95,6 +102,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               risk: item.risk_rating,
               riskLevel: getRiskLevelNumber(item.risk_rating),
               item: item,
+              hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
             };
           }
         })
@@ -117,22 +125,65 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }
 
   useEffect(() => {
-    setFactorial(factorialOf(vaultsWithPlatformInformation, filter_data, sort_data, view_data, platform_data));
-  }, [vaultsWithPlatformInformation, connected, filter_data, sort_data, view_data, platform_data, overview]);
-
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
+    setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
+  }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
 
   React.useEffect(() => {
-    if (connected && connection && wallet && factorial.length) {
-      getDebtLimitForAllVaults(connection, wallet, factorial).then((vaults: any) => {
-        const reducer = (sum: any, currentValue: any) => sum || currentValue.hasReachedDebtLimit;
-        const hasReachedDebtLimitReduced: boolean = vaults.reduce(reducer, false);
-
-        setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
-        //In case a cleanup function needs to be added, consider that setting state to default values might race against other pages that use this same base page.
+    let active = true;
+    if (wallet && wallet.publicKey) {
+      getGlobalState(connection, wallet).then((res: any) => {
+        if (!active) {
+          return;
+        }
+        setGlobalState(res);
+        setHasReachedGlobalDebtLimit(
+          res?.totalDebt ? res?.totalDebt.toNumber() === res?.debtCeiling.toNumber() : false
+        );
       });
     }
-  }, [connected, connection, wallet, factorial]);
+    return () => {
+      active = false;
+    };
+  }, [wallet, connection]);
+
+  React.useEffect(() => {
+    if (!connected && !connection && !wallet && !vaults.length && !globalState) {
+      return;
+    }
+    let active = true;
+    getDebtLimitForAllVaults(connection, wallet, vaults).then((userVaults: any) => {
+      if (!active) {
+        return;
+      }
+      const reducer = (sum: any, currentValue: any) => sum || currentValue.hasReachedDebtLimit;
+      const hasReachedDebtLimitReduced: boolean = userVaults.reduce(reducer, false);
+      setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
+      setVaultsDebtData(userVaults);
+    });
+    return () => {
+      active = false;
+    };
+  }, [connected, connection, wallet, vaults]);
+
+  React.useEffect(() => {
+    let vaultsWithData: any = vaults;
+    if (vaultsWithPlatformInformation.length) {
+      vaultsWithData = vaultsWithPlatformInformation;
+    }
+    vaultsWithData = vaultsWithData.map((item: any) => {
+      return {
+        ...item,
+        has_reached_user_debt_limit: vaultsDebtData.length
+          ? vaultsDebtData.find((userVault: any) => userVault.title === item.symbol).hasReachedDebtLimit
+          : false,
+      };
+    });
+    setVaultsWithAllData(vaultsWithData);
+    return () => {
+      setVaultsWithAllData([]);
+    };
+    //In case a cleanup function needs to be added, consider that setting state to default values might race against other pages that use this same base page.
+  }, [hasReachedGlobalDebtLimit, vaultsWithPlatformInformation, vaults, vaultsDebtData]);
 
   const showContent = (vtype: string) => {
     const onCompareVault = (data: PairType, status: boolean) => {
@@ -148,7 +199,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       return (
         <div className="row">
           {factorial.map((item: any) => {
-            return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+            return (
+              <TokenPairCard
+                data={item}
+                key={item.id}
+                onCompareVault={onCompareVault}
+                isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
+              />
+            );
           })}
         </div>
       );
@@ -165,7 +223,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           </thead>
           <tbody>
             {factorial.map((item: any) => {
-              return <TokenPairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+              return (
+                <TokenPairListItem
+                  data={item}
+                  key={item.id}
+                  onCompareVault={onCompareVault}
+                  isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
+                />
+              );
             })}
           </tbody>
         </table>
