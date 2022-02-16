@@ -78,8 +78,8 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const updateVaultValues = async () => {
     const tokenVault = await getTokenVaultByMint(connection, data.mint);
-    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
-    const debtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
+    const tvlAmount = new TokenAmount((tokenVault as any)?.totalColl, collMint?.decimals);
+    const debtAmount = new TokenAmount((tokenVault as any)?.totalDebt, usdrMint?.decimals);
 
     setTVL(Number(tvlAmount.fixed()));
     setTotalDebt(Number(debtAmount.fixed()));
@@ -146,7 +146,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
         <div className="d-flex">
           <Button
             disabled={!connected}
-            className="button button--blue generate mt-2"
+            className="button button--blue tokenpaircard__generate mt-2"
             onClick={() => {
               poolInfoProviderFactory?.harvestReward(connection, wallet);
             }}
@@ -154,7 +154,11 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
             Harvest
           </Button>
           <div className="mx-1"></div>
-          <Button disabled={!connected} className="button button--blue generate mt-2" onClick={showDashboard}>
+          <Button
+            disabled={!connected}
+            className="button button--blue tokenpaircard__generate mt-2"
+            onClick={showDashboard}
+          >
             Open Vault
           </Button>
         </div>
