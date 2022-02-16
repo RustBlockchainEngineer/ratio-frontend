@@ -67,3 +67,11 @@ export enum PoolProvider {
   'SABER' = 'SABER',
   'MERCURIAL' = 'MERCURIAL',
 }
+
+export interface Token {
+  address_id: string;
+  symbol: string;
+  icon: string;
+  created_on?: number;
+  updated_on?: number;
+}

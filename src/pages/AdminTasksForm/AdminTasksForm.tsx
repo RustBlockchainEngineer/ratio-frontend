@@ -9,7 +9,7 @@ import { getCurrentSuperOwner } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 
 export default function AdminTasksForm() {
-  const [superOwner, setSuperOwner] = useState<string>();
+  const [superOwner, setSuperOwner] = useState<string>('');
   const [superOwnerChanged, setSuperOwnerChanged] = useState(false);
   const [validated, setValidated] = useState(false);
   const [emergencyState, setEmergencyState] = useState('Unknown');

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useReducer } from 'react';
+import { useEffect, useRef, useReducer, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { LPair } from '../types/VaultTypes';
 
@@ -21,6 +21,7 @@ export enum VaultsFetchingStatus {
 }
 export const useFetchVaults = () => {
   const cache = useRef<LPair[]>([]);
+  const [update, setUpdate] = useState(true);
 
   const initialState = {
     status: VaultsFetchingStatus.NotAsked,
@@ -49,7 +50,7 @@ export const useFetchVaults = () => {
     // Gets the data for all the existent vaults. If a cached version is found, it gets returned.
     const fetchData = async () => {
       dispatch({ type: 'FETCHING' });
-      if (cache.current && cache.current.length > 0) {
+      if (cache.current && cache.current.length > 0 && update === false) {
         const data = cache.current;
         dispatch({ type: 'FETCHED', payload: data });
       } else {
@@ -69,6 +70,7 @@ export const useFetchVaults = () => {
           dispatch({ type: 'FETCH_ERROR', payload: error.message });
         }
       }
+      setUpdate(false);
     };
 
     fetchData();
@@ -77,7 +79,14 @@ export const useFetchVaults = () => {
     return () => {
       cancelRequest = true;
     };
-  }, [API_ENDPOINT]);
+  }, [API_ENDPOINT, update]);
 
-  return state;
+  const forceUpdate = () => {
+    setUpdate(true);
+  };
+
+  return {
+    ...state,
+    forceUpdate: forceUpdate,
+  };
 };

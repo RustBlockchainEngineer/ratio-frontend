@@ -6,6 +6,7 @@ import { AuthContextProvider as APIAuthContextProvider } from '../../contexts/au
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { Roles } from '../../constants';
 import GlobalParamsAdminForm from '../GlobalParamsAdminForm';
+import VaultCreationAdminForm from '../VaultCreationAdminForm';
 import NotFound from '../NotFound';
 import AdminTasksForm from '../AdminTasksForm';
 
@@ -16,6 +17,7 @@ const AdminPanel = () => {
         <Switch>
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/fees" component={FeesAdminForm} exact />
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/whitelist" component={WhitelistAdminForm} exact />
+          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/vaults" component={VaultCreationAdminForm} exact />
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/globalparams" component={GlobalParamsAdminForm} exact />
           <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/tasks" component={AdminTasksForm} exact />
           <ProtectedRoute
