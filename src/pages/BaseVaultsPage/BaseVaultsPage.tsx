@@ -69,11 +69,9 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }
 
   function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
-    console.log(d);
     if (d !== undefined && d.length > 0) {
       const p = filterData(d, filter_data, platform_data)
         .filter((item: LPair) => {
-          console.log(item, overview);
           if (showOnlyActive) {
             return Object.keys(overview?.activeVaults).indexOf(item?.address_id) > -1;
           } else return Object.keys(overview?.activeVaults).indexOf(item?.address_id) === -1;
