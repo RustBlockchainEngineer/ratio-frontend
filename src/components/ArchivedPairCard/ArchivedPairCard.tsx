@@ -33,32 +33,32 @@ const ArchivedPairCard = ({ data }: ArchivedCardProps) => {
                 <img src={data.icons[1]} alt={data.icons[1].toString()} className="archivedpaircard__header-icon" />
               </div>
               <div className={classNames('archivedpaircard__titleBox')}>
-                <h6>{data.title}</h6>
-                <p>{data.tvl}</p>
+                <h6>{data?.title}</h6>
+                <p>{data?.tvl}</p>
               </div>
             </div>
             <div className="archivedpaircard__riskBox">
               <div className="d-flex justify-content-end align-items-center mt-1">
-                <h6>{data.risk}</h6>
+                <h6>{data?.risk}</h6>
               </div>
             </div>
           </div>
           <div className="archivedpaircard__aprBox">
             <div className="d-flex justify-content-between">
               <h6>APR:</h6>
-              <h6 className="semiBold">{data.apr}%</h6>
+              <h6 className="semiBold">{data?.apr}%</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Owed:</h6>
-              <h6 className="semiBold">{data.owed}</h6>
+              <h6 className="semiBold">{data?.owed}</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Available to Mint:</h6>
-              <h6 className="semiBold danger">{data.mint}</h6>
+              <h6 className="semiBold danger">{data?.mint}</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>Liquidation Price:</h6>
-              <h6 className="semiBold">{data.price}</h6>
+              <h6 className="semiBold">{data?.price}</h6>
             </div>
           </div>
           <div className="archivedpaircard__warningBox mt-4">

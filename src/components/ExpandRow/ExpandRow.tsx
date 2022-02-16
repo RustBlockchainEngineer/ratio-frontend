@@ -17,7 +17,7 @@ const ExpandContent = (data: any) => {
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
+      getUserState(connection, wallet, new PublicKey(data?.mint)).then((res) => {
         setUserState(res);
       });
     }
@@ -41,7 +41,7 @@ const ExpandContent = (data: any) => {
       <div className="d-flex justify-content-between">
         <div>
           Position value:
-          <p>$ {positionValue.toFixed(2)}</p>
+          <p>$ {positionValue?.toFixed(2)}</p>
           {/* <div className="tokenpaircard__detailBox__content--tokens">
               <img src={row.icons[0]} alt="RayIcon" />
               RAY: $4200

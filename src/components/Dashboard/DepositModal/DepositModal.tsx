@@ -30,10 +30,10 @@ const DepositModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const collMint = useMint(data.mint);
+  const collMint = useMint(data?.mint);
 
   const { vaults } = useVaultsContextProvider();
-  const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
+  const vault = useMemo(() => vaults.find((vault) => vault?.address_id === (data.mint as string)), [vaults]);
 
   const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
@@ -59,7 +59,7 @@ const DepositModal = ({ data }: any) => {
   const deposit = () => {
     console.log('Depositing', depositAmount, data.value);
     console.log(data.mint);
-    if (!(depositAmount && data.value >= depositAmount)) {
+    if (!(depositAmount && data?.value >= depositAmount)) {
       setDepositStatus(true);
       setInvalidStr('Insufficient funds to deposit!');
       return;
@@ -73,7 +73,7 @@ const DepositModal = ({ data }: any) => {
       connection,
       wallet,
       depositAmount * Math.pow(10, collMint?.decimals),
-      collAccount.pubkey.toString(),
+      collAccount?.pubkey?.toString(),
       new PublicKey(data.mint)
     )
       .then(() => {
