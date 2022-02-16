@@ -83,7 +83,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           ) {
             return {
               id: index,
-              mint: item.address_id, //MINTADDRESS[key]
+              // mint: item.address_id, //MINTADDRESS[key]
+              mint:
+                item.address_id === 'AZFu6w1oj7t9QSgcBhpHdVmSp39QLuk6dMcqkqJ1cHXP'
+                  ? '2y3JStod54SRoPC6a9LvAb7iRz4cjbF1N4eNeXsHCKhS'
+                  : item.address_id, //MINTADDRESS[key]
               icons: item.lpasset?.map((item) =>
                 item.token_icon?.trim() === '' || item.token_icon === undefined
                   ? getCoinPicSymbol(item.token_symbole)

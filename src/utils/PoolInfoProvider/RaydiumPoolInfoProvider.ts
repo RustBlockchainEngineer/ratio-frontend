@@ -30,7 +30,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
     return vaultInfo?.tvl as number;
   }
 
-  depositLP(connection: Connection, wallet: any): boolean {
+  depositLP(connection: Connection, wallet: any, vault: LPair, amount: number): boolean {
     // TODO Implement this function
 
     alert('Raydium: Deposit LP');
@@ -39,7 +39,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  withdrawLP(connection: Connection, wallet: any): boolean {
+  withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number): boolean {
     // TODO Implement this function
 
     alert('Raydium: Withdraw LP');
@@ -48,7 +48,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  harvestReward(connection: Connection, wallet: any): boolean {
+  harvestReward(connection: Connection, wallet: any, vault: LPair): boolean {
     // TODO Implement this function
 
     alert('Raydium: Harvest Reward');

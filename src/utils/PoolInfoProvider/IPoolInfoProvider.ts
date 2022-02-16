@@ -6,11 +6,11 @@ export interface IPoolInfoProvider {
 
   getRatioAPRbyVault(vault: LPair): Promise<number>;
 
-  depositLP(connection: Connection, wallet: any): boolean;
+  depositLP(connection: Connection, wallet: any, vault: LPair, amount: number, tokenAccount: string): Promise<boolean>;
 
-  withdrawLP(connection: Connection, wallet: any): boolean;
+  withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number, tokenAccount: string): Promise<boolean>;
 
-  harvestReward(connection: Connection, wallet: any): boolean;
+  harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean>;
 
-  getRewards(): number;
+  getRewards(vault: LPair): number;
 }
