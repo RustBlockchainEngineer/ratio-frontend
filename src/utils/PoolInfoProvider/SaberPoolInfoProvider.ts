@@ -3,7 +3,13 @@ import { GenericInfoProvider } from './GenericInfoProvider';
 import { randomInteger } from '../utils';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { getUserState } from '../ratio-lending';
-import { createSaberUserTrove, depositToSaber, harvestFromSaber, withdrawFromSaber } from '../saber/saber-utils';
+import {
+  calculateReward,
+  createSaberUserTrove,
+  depositToSaber,
+  harvestFromSaber,
+  withdrawFromSaber,
+} from '../saber/saber-utils';
 
 export class SaberPoolInfoProvider extends GenericInfoProvider {
   getTVLbyVault(vault: LPair): number {
@@ -53,11 +59,13 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  getRewards(): number {
+  async getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number> {
     // TODO Implement this function
+    if (vault) {
+      const amount = await calculateReward(connection, wallet, new PublicKey(vault.address_id));
 
-    console.error('Function not implemented yet');
-
-    return randomInteger(1, 100);
+      return amount;
+    }
+    return 0;
   }
 }

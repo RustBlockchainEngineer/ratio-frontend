@@ -24,6 +24,7 @@ import {
   Connection,
 } from '@solana/web3.js';
 import { findMinerAddress, QuarrySDK, QUARRY_ADDRESSES } from '@quarryprotocol/quarry-sdk';
+import { Token as SToken } from '@saberhq/token-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { createAssociatedTokenAccount, findAssociatedTokenAddress } from '../raydium/web3';
 import { getOneFilteredTokenAccountsByOwner, sendTransaction } from '../web3';
@@ -403,7 +404,49 @@ export async function harvestFromSaber(
   return txHash;
 }
 
-async function getTokenAmount(account: PublicKey) {
-  const { amount } = await serumCmn.getTokenAccount(anchor.getProvider(), account);
-  return amount;
+export async function calculateReward(connection: Connection, wallet: any, mintCollKey: PublicKey) {
+  const program = getProgramInstance(connection, wallet);
+
+  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    program.programId
+  );
+  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    program.programId
+  );
+  const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_TROVE_POOL_TAG), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
+    program.programId
+  );
+  const [userMinerKey, userMinerBump] = await findMinerAddress(saberFarmQuarry, userTroveKey);
+
+  const [userMinerVaultKey, userMinerVaultBump] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
+    program.programId
+  );
+
+  const sdk: QuarrySDK = QuarrySDK.load({
+    provider: program.provider,
+  });
+  const rewarder = await sdk.mine.loadRewarderWrapper(saberFarmRewarder);
+
+  const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
+
+  const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
+  const quarry = await rewarder.getQuarry(poolMintToken);
+
+  const miner = await quarry.getMiner(userTroveKey);
+  const payroll = quarry.payroll;
+
+  const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
+
+  const expectedWagesEarned = payroll.calculateRewardsEarned(
+    currentTimeStamp,
+    miner.balance,
+    miner.rewardsPerTokenPaid,
+    miner.rewardsEarned
+  );
+  console.log('Saber farming', expectedWagesEarned.toString());
+  return Math.ceil(expectedWagesEarned.toString() * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
 }
