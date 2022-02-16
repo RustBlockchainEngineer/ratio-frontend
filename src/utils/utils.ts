@@ -306,21 +306,20 @@ export const getDebtLimitForAllVaults = async (connection: Connection, wallet: a
 
   const debtLimitForAllVaults = await Promise.all(
     vaults.map(async (vault: any) => {
-      const collMint = await getMint(connection, vault.mint);
+      const collMint = await getMint(connection, vault.address_id);
 
       const params: GetDebtLimit = {
         connection,
         wallet,
         collMint,
         usdrMint,
-        vaultMint: vault.mint,
+        vaultMint: vault.address_id,
         tokenPrice: Number(process.env.REACT_APP_LP_TOKEN_PRICE), // TODO: fix this LP Token Price
       };
 
       const debtLimit = await getDebtLimitForVault(params);
       return {
-        id: vault.id,
-        title: vault.title,
+        title: vault.symbol,
         ...debtLimit,
       };
     })

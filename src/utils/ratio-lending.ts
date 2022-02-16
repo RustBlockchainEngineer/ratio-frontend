@@ -100,36 +100,19 @@ function getProgramInstance(connection: Connection, wallet: any) {
   return program;
 }
 
-export async function isGlobalStateCreated(connection: Connection, wallet: any) {
-  try {
-    const program = getProgramInstance(connection, wallet);
-    const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_STATE_TAG)],
-      program.programId
-    );
-    const globalState = await program.account.globalState.fetch(globalStateKey);
-    if (globalState) {
-      console.log('globalState.authority', globalState.authority.toBase58());
-      return true;
-    }
-  } catch (e) {
-    console.log('globalState was not created');
-  }
-  return false;
+async function retrieveGlobalState(connection: Connection, wallet: any) { 
+  const program = getProgramInstance(connection, wallet);
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    program.programId
+  );
+  const globalState = await program.account.globalState.fetch(globalStateKey);
+  return globalState
 }
 
 export async function getGlobalState(connection: Connection, wallet: any) {
   try {
-    const program = getProgramInstance(connection, wallet);
-    const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_STATE_TAG)],
-      program.programId
-    );
-    
-    console.log("program.programId =", program.programId.toBase58());
-    console.log("globalStateKey =", globalStateKey.toBase58());
-
-    const globalState = await program.account.globalState.fetch(globalStateKey);
+    const globalState = await retrieveGlobalState(connection,wallet);
     if (globalState) {
       return globalState;
     } else {
@@ -148,6 +131,19 @@ export async function getCurrentSuperOwner(connection: Connection, wallet: any) 
   } catch (e) {
     console.error('Error while fetching the super owner');
     throw e;
+  }
+}
+
+export async function isGlobalStateCreated(connection: Connection, wallet: any) {
+  try {
+    const globalState = await retrieveGlobalState(connection,wallet);
+    if (globalState) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.log('globalState was not created');
+    return false;
   }
 }
 

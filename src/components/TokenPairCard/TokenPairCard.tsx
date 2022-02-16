@@ -28,7 +28,7 @@ import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { MINTADDRESS } from '../../constants';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
-const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
+const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
   const history = useHistory();
 
   const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
@@ -53,17 +53,17 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
 
   React.useEffect(() => {
-    // replace this boolean value with a function to determine wether user limit reached
-    const userLimitReached = false;
-    // replace this boolean value with a function to determine wether global limit reached
-    const globalLimitReached = false;
-    if (userLimitReached) {
+    if (data.hasReachedUserDebtLimit) {
       setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
-    }
-    if (globalLimitReached) {
+    } else if (isGlobalDebtLimitReached) {
       setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+    } else {
+      setHasUserReachedDebtLimit('');
     }
-  }, [wallet, connection]);
+    return () => {
+      setHasUserReachedDebtLimit('');
+    };
+  }, [data]);
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
