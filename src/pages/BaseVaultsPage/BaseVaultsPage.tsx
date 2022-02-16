@@ -72,8 +72,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
     if (d !== undefined) {
       const p = filterData(d, filter_data, platform_data)
         .filter((item: LPair) => {
-          if (showOnlyActive) return Object.keys(overview.activeVaults).indexOf(item.address_id) > -1;
-          else return Object.keys(overview.activeVaults).indexOf(item.address_id) === -1;
+          if (showOnlyActive) return Object.keys(overview.activeVaults)?.indexOf(item.address_id) > -1;
+          else return Object.keys(overview.activeVaults)?.indexOf(item.address_id) === -1;
         })
         .map((item: LPair, index: any) => {
           return {
