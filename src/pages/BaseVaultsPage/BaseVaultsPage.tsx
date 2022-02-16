@@ -103,7 +103,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               riskLevel: getRiskLevelNumber(item.risk_rating),
               item: item,
               hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
-              hasReachedGlobalDebtLimit: item.has_reached_global_debt_limit,
             };
           }
         })
@@ -177,7 +176,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
         has_reached_user_debt_limit: vaultsDebtData.length
           ? vaultsDebtData.find((userVault: any) => userVault.title === item.symbol).hasReachedDebtLimit
           : false,
-        has_reached_global_debt_limit: hasReachedGlobalDebtLimit, //globalLimitReached,
       };
     });
     setVaultsWithAllData(vaultsWithData);
@@ -201,7 +199,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       return (
         <div className="row">
           {factorial.map((item: any) => {
-            return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+            return (
+              <TokenPairCard
+                data={item}
+                key={item.id}
+                onCompareVault={onCompareVault}
+                isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
+              />
+            );
           })}
         </div>
       );
@@ -218,7 +223,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           </thead>
           <tbody>
             {factorial.map((item: any) => {
-              return <TokenPairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+              return (
+                <TokenPairListItem
+                  data={item}
+                  key={item.id}
+                  onCompareVault={onCompareVault}
+                  isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
+                />
+              );
             })}
           </tbody>
         </table>

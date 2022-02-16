@@ -22,7 +22,7 @@ import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { MINTADDRESS } from '../../constants';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
-const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
+const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
   const history = useHistory();
 
   const tokenPrice = usePrice(data.mint);
@@ -47,7 +47,7 @@ const TokenPairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   React.useEffect(() => {
     if (data.hasReachedUserDebtLimit) {
       setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
-    } else if (data.hasReachedGlobalDebtLimit) {
+    } else if (isGlobalDebtLimitReached) {
       setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
     } else {
       setHasUserReachedDebtLimit('');

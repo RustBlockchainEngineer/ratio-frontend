@@ -18,10 +18,10 @@ export type PairType = {
   riskPercentage: number;
   item: LPair;
   hasReachedUserDebtLimit: boolean;
-  hasReachedGlobalDebtLimit: boolean;
 };
 
 export interface TokenPairCardProps {
   data: PairType;
   onCompareVault: (data: PairType, status: boolean) => void;
+  isGlobalDebtLimitReached: boolean;
 }

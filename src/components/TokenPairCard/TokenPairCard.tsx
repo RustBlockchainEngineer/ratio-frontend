@@ -28,7 +28,7 @@ import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { MINTADDRESS } from '../../constants';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
-const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
+const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
   const history = useHistory();
 
   const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
@@ -55,7 +55,7 @@ const TokenPairCard = ({ data, onCompareVault }: TokenPairCardProps) => {
   React.useEffect(() => {
     if (data.hasReachedUserDebtLimit) {
       setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
-    } else if (data.hasReachedGlobalDebtLimit) {
+    } else if (isGlobalDebtLimitReached) {
       setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
     } else {
       setHasUserReachedDebtLimit('');

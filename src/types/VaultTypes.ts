@@ -50,7 +50,6 @@ export interface LPair {
   liquidation_ratio: number;
   risk_rating: RISK_RATING;
   has_reached_user_debt_limit: boolean;
-  has_reached_global_debt_limit: boolean;
   created_on?: number;
   updated_on: number;
   lpasset?: LPAsset[];
