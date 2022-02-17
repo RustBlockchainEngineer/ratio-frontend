@@ -1,7 +1,8 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
 import { CollateralizationRatios } from '../types/admin-types';
-import { getGlobalState, getProgramInstance, getTokenVaultByMint } from './ratio-lending';
+import { defaultPrograms, getGlobalState, getProgramInstance, getTokenVaultByMint } from './ratio-lending';
+import BN from 'bn.js';
 
 export async function toggleEmergencyState(connection: Connection, wallet: WalletAdapter | undefined) {
   console.error('toggleEmergencyState yet not implemented');
@@ -22,7 +23,7 @@ export async function setGlobalTvlLimit(connection: Connection, wallet: WalletAd
   try {
     await program.rpc.setGlobalTvlLimit(limit, {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
@@ -37,7 +38,7 @@ export async function setGlobalDebtCeiling(connection: Connection, wallet: Walle
   try {
     await program.rpc.setGlobalDebtCeiling(ceiling, {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
@@ -59,7 +60,7 @@ export async function setVaultDebtCeiling(
   try {
     await program.rpc.setVaultDebtcCeiling(ceiling, {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         tokenVault: tokenVaultKey,
         globalState: globalStateKey,
         mintColl: mintCollKey,
@@ -84,7 +85,7 @@ export async function setCollateralRatio(
   try {
     await program.rpc.setCollateralRatio(values, {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
@@ -102,15 +103,16 @@ export async function setHarvestFee(
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
   try {
-    await program.rpc.setHarvestFee(feeNum, feeDeno, {
+    await program.rpc.setHarvestFee(new BN(feeNum), new BN(feeDeno), {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
   } catch (error) {
     console.log('ERROR');
     console.log(error);
+    throw error;
     return false;
   }
   return true;
