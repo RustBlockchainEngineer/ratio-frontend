@@ -287,7 +287,7 @@ const VaultDashboard = () => {
                     <img src={share} alt="share" />
                   </Link>
                 )}
-                <RiskLevel level={getRiskLevel(VaultData.risk)} />
+                <RiskLevel level={VaultData.risk} />
               </div>
               <div>
                 <VaultDebt data={vauldDebtData} />
