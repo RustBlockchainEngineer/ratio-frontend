@@ -158,7 +158,7 @@ const DepositModal = ({ data }: any) => {
               className="button--blue bottomBtn"
               onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
             >
-              Deposit & Lock Assets
+              Deposit LP
             </Button>
           </div>
         </Modal.Body>
