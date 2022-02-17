@@ -146,7 +146,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
         <Button
           disabled={!connected}
           onClick={() => {
-            poolInfoProviderFactory?.harvestReward(connection, wallet);
+            poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
           }}
           className="button button--blue generate mt-2"
         >

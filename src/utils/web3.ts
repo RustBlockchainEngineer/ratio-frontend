@@ -109,7 +109,7 @@ export async function getOneFilteredTokenAccountsByOwner(
     const tokenAccountList: any = tokenAccountList1.value.map((item: any) => {
       return item.pubkey;
     });
-    let tokenAccount;
+    let tokenAccount = '';
     for (const item of tokenAccountList) {
       if (item !== null) {
         tokenAccount = item;
@@ -119,6 +119,7 @@ export async function getOneFilteredTokenAccountsByOwner(
   } catch {
     return '';
   }
+  return '';
 }
 
 export async function createTokenAccountIfNotExist(

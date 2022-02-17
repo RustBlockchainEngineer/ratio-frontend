@@ -78,8 +78,13 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
 
   const updateVaultValues = async () => {
     const tokenVault = await getTokenVaultByMint(connection, data.mint);
-    const tvlAmount = new TokenAmount((tokenVault as any)?.totalColl ?? 0, collMint?.decimals);
-    const debtAmount = new TokenAmount((tokenVault as any)?.totalDebt ?? 0, usdrMint?.decimals);
+
+    if (!tokenVault) {
+      return;
+    }
+
+    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
+    const debtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
 
     setTVL(Number(tvlAmount.fixed()));
     setTotalDebt(Number(debtAmount.fixed()));
@@ -93,6 +98,9 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     do {
       await sleep(1000);
       const tokenVault = getTokenVaultByMint(connection, data.mint);
+      if (!tokenVault) {
+        return;
+      }
       tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
       totalDebtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
     } while (oriTvl === Number(tvlAmount.fixed()) || oriTotalDebt === Number(totalDebtAmount.fixed()));
@@ -148,7 +156,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
             disabled={!connected}
             className="button button--blue generate mt-2"
             onClick={() => {
-              poolInfoProviderFactory?.harvestReward(connection, wallet);
+              poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
             }}
           >
             Harvest

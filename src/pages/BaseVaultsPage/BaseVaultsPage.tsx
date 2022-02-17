@@ -21,6 +21,7 @@ import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
+import { SABER_TOKEN_NEW, SABER_TOKEN_OLD } from '../../utils/constant-test';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -83,7 +84,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           ) {
             return {
               id: index,
-              mint: item.address_id, //MINTADDRESS[key]
+              // mint: item.address_id, //MINTADDRESS[key]
+              mint: item.address_id === SABER_TOKEN_OLD ? SABER_TOKEN_NEW : item.address_id, //MINTADDRESS[key]
               icons: item.lpasset?.map((item) =>
                 item.token_icon?.trim() === '' || item.token_icon === undefined
                   ? getCoinPicSymbol(item.token_symbole)
