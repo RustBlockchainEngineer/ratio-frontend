@@ -15,15 +15,10 @@ import { PhantomWalletAdapter } from '../wallet-adapters/phantom';
 const ASSETS_URL = 'https://raw.githubusercontent.com/solana-labs/oyster/main/assets/wallets/';
 export const WALLET_PROVIDERS = [
   {
-    name: 'Sollet',
-    url: 'https://www.sollet.io',
-    icon: `${ASSETS_URL}sollet.svg`,
-  },
-  {
-    name: 'Solong',
-    url: 'https://solongwallet.com',
-    icon: `${ASSETS_URL}solong.png`,
-    adapter: SolongWalletAdapter,
+    name: 'Phantom',
+    url: 'https://phantom.app/',
+    icon: `https://raydium.io/_nuxt/img/phantom.d9e3c61.png`,
+    adapter: PhantomWalletAdapter,
   },
   {
     name: 'Solflare',
@@ -31,9 +26,9 @@ export const WALLET_PROVIDERS = [
     icon: `${ASSETS_URL}solflare.svg`,
   },
   {
-    name: 'MathWallet',
-    url: 'https://mathwallet.org',
-    icon: `${ASSETS_URL}mathwallet.svg`,
+    name: 'Sollet',
+    url: 'https://www.sollet.io',
+    icon: `${ASSETS_URL}sollet.svg`,
   },
   {
     name: 'Ledger',
@@ -42,10 +37,15 @@ export const WALLET_PROVIDERS = [
     adapter: LedgerWalletAdapter,
   },
   {
-    name: 'Phantom',
-    url: 'https://phantom.app/',
-    icon: `https://raydium.io/_nuxt/img/phantom.d9e3c61.png`,
-    adapter: PhantomWalletAdapter,
+    name: 'Solong',
+    url: 'https://solongwallet.com',
+    icon: `${ASSETS_URL}solong.png`,
+    adapter: SolongWalletAdapter,
+  },
+  {
+    name: 'MathWallet',
+    url: 'https://mathwallet.org',
+    icon: `${ASSETS_URL}mathwallet.svg`,
   },
 ];
 
