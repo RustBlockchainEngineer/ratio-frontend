@@ -232,10 +232,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               <tr>
                 <th scope="col">Asset</th>
                 <th scope="col">APR</th>
-                <th scope="col">USDr Debt</th>
+                <th scope="col">Platform</th>
+                {/* <th scope="col">USDr Debt</th>
                 <th scope="col">Positoin Value</th>
                 <th scope="col">Rewards earned</th>
-                <th scope="col">Ratio TVL</th>
+                <th scope="col">Ratio TVL</th> */}
                 <th scope="col">Risk Rating</th>
                 <th scope="col"></th>
               </tr>

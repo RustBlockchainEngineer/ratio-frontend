@@ -271,7 +271,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
             )
           }
           <div className="tokenpaircard__detailBox">
-            {isOpen && (
+            {/* {isOpen && (
               <div className="tokenpaircard__detailBox__content">
                 <div className="d-flex justify-content-between">
                   <div>
@@ -294,11 +294,11 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
-            <div className="tokenpaircard__detailBox__toggle" onClick={() => setOpen(!isOpen)} aria-hidden="true">
+            {/* <div className="tokenpaircard__detailBox__toggle" onClick={() => setOpen(!isOpen)} aria-hidden="true">
               Position Overview {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -179,23 +179,16 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
     <>
       <tr>
         <td scope="row">
-          <div className="align-items-center">
-            <div className="d-flex ">
-              <div className="d-flex align-items-center">
-                <img src={data.icon} alt={'Token1'} className="allvaults__table__icon" />
+          <div>
+            <div className="d-flex align-items-start">
+              <div className="d-flex">
+                <img src={data.icon.default} alt={'Token1'} className="allvaults__table__icon" />
                 {/* <img src={data.icons[0]} alt={data.icons[0].toString()} className="activepaircard__header-icon0" />
                 <img src={data.icons[1]} alt={data.icons[1].toString()} className="activepaircard__header-icon1" /> */}
               </div>
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 <p>TVL {printTvl()}</p>
-                <a href={data.platform.link} target="_blank" rel="noreferrer">
-                  <div className="d-inline-flex align-items-center mt-1 position-relative">
-                    <img src={data.platform.icon} />
-                    <p className="semiBold ml-1">{data.platform.name}</p>
-                    <img src={linkIcon} alt="linkIcon" className="activepaircard__titleBox--linkIcon" />
-                  </div>
-                </a>
               </div>
             </div>
           </div>
@@ -218,6 +211,17 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
         </td>
         <td>
           <div className="tokenpaircard__table__td">
+            <a href={data.platform.link} target="_blank" rel="noreferrer">
+              <div className="d-inline-flex align-items-center mt-1 position-relative">
+                <img src={data.platform.icon} />
+                <p className="semiBold ml-1">{data.platform.name}</p>
+                <img src={linkIcon} alt="linkIcon" className="activepaircard__titleBox--linkIcon" />
+              </div>
+            </a>
+          </div>
+        </td>
+        {/* <td>
+          <div className="tokenpaircard__table__td">
             <h6 className="semiBold">{formatUSD.format(Number(totalDebt.toFixed(2)))}</h6>
           </div>
         </td>
@@ -235,7 +239,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
           <div className="tokenpaircard__table__td">
             <h6 className="semiBold">{formatUSD.format(tvlUSD)}</h6>
           </div>
-        </td>
+        </td> */}
         <td>
           <div className="d-flex justify-content-between align-items-start">
             <div className="tokenpaircard__table__td">
@@ -253,7 +257,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
             </div> */}
           </div>
         </td>
-        <td>
+        <td className="text-right">
           <div className="tokenpaircard__table__td">{renderModalButton()}</div>
         </td>
       </tr>
