@@ -156,7 +156,7 @@ const GenerateModal = ({ data }: any) => {
               There will be a 2% stability fee associated with this transaction.
             </p> */}
             <Button
-              disabled={borrowAmount <= 0 || buttonDisabled}
+              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount)}
               className="button--blue bottomBtn"
               onClick={() => borrow()}
             >

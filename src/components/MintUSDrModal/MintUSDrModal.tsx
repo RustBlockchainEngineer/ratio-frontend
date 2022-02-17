@@ -230,7 +230,7 @@ const MintUSDrModal = ({ data }: any) => {
               invalidStr="Amount is invalid to mint USDr!"
             />
             <Button
-              disabled={borrowAmount <= 0 || buttonDisabled}
+              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount)}
               className="button--fill lockBtn"
               onClick={() => mintUSDr()}
             >
