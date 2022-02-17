@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import Axios from 'axios';
 import { access } from 'fs';
+import { SABER_QUARRY_NEW } from '../constant-test';
 
 export const SWAP_PROGRAM_ID = 'SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ';
 
@@ -15,7 +16,7 @@ export async function getDevnetPools() {
       swapPools.push({
         name: 'USDC-CASH Mine',
         swapAddress: 'Gq1DjhsqjXTuCN8493XAgsU9fCzC1eGQ8iwL8CTYuFer',
-        quarryAddress: 'BTimzTk51pcKxDQLRR3iFs4dLVY9WyKgRBmnd1rZLN6n',
+        quarryAddress: SABER_QUARRY_NEW,
       });
     } else {
       swapPools.push({

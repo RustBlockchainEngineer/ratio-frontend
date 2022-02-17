@@ -355,7 +355,7 @@ export async function createTokenVault(
   mintCollKey: PublicKey = WSOL_MINT_KEY,
   riskLevel = 0,
   isDual = false,
-  platformType: PlatformType = TYPE_ID_SABER,
+  platformType: PlatformType = TYPE_ID_UNKNOWN,
 ) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 

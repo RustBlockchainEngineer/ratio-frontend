@@ -443,10 +443,10 @@ export async function calculateReward(connection: Connection, wallet: any, mintC
 
   const expectedWagesEarned = payroll.calculateRewardsEarned(
     currentTimeStamp,
-    miner.balance,
-    miner.rewardsPerTokenPaid,
-    miner.rewardsEarned
+    miner?.balance as anchor.BN,
+    miner?.rewardsPerTokenPaid as anchor.BN,
+    miner?.rewardsEarned as anchor.BN
   );
   console.log('Saber farming', expectedWagesEarned.toString());
-  return Math.ceil(expectedWagesEarned.toString() * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
+  return Math.ceil(parseFloat(expectedWagesEarned.toString()) * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
 }
