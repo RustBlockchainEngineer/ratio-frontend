@@ -132,7 +132,7 @@ const PaybackModal = ({ data }: any) => {
             {/* <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput /> */}
             <Button
-              disabled={paybackAmount <= 0 || buttonDisabled}
+              disabled={paybackAmount <= 0 || buttonDisabled || isNaN(paybackAmount)}
               className="button--blue bottomBtn"
               onClick={() => repay()}
             >

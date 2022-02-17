@@ -171,7 +171,7 @@ const WithdrawModal = ({ data }: any) => {
             />
             <Button
               className="button--blue bottomBtn"
-              disabled={withdrawAmount <= 0 || buttonDisabled}
+              disabled={withdrawAmount <= 0 || buttonDisabled || isNaN(withdrawAmount)}
               onClick={() => poolInfoProviderFactory?.withdrawLP(connection, wallet)}
             >
               Withdraw Assets
