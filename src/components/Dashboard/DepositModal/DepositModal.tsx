@@ -34,8 +34,7 @@ const DepositModal = ({ data }: any) => {
   const collMint = useMint(data?.mint);
 
   const { vaults } = useVaultsContextProvider();
-  const vault = useMemo(() => vaults.find((vault) => vault?.address_id === (data.mint as string)), [vaults]);
-
+  const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
   const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
   const collAccount = useAccountByMint(data.mint);
