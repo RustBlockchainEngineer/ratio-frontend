@@ -1,6 +1,7 @@
 import { useEffect, useRef, useReducer, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { LPair } from '../types/VaultTypes';
+import { SABER_TOKEN_NEW, SABER_TOKEN_OLD } from '../utils/constant-test';
 
 /* 
   This custom hook allows to get the Vaults information from the API. There's also a status value that is returned, and that can take the following values: 
@@ -34,6 +35,13 @@ export const useFetchVaults = () => {
       case 'FETCHING':
         return { ...initialState, status: VaultsFetchingStatus.Loading };
       case 'FETCHED':
+        // eslint-disable-next-line no-case-declarations
+        const idx = action.payload.findIndex((vault: any) => {
+          return vault.address_id === SABER_TOKEN_OLD;
+        });
+        if (idx >= 0) {
+          action.payload[idx].address_id = SABER_TOKEN_NEW;
+        }
         return { ...initialState, status: VaultsFetchingStatus.Finish, vaults: action.payload };
       case 'FETCH_ERROR':
         return { ...initialState, status: VaultsFetchingStatus.Error, error: action.payload };

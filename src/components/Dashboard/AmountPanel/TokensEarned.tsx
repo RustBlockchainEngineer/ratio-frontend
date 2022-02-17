@@ -8,6 +8,7 @@ import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
+import { LPair } from '../../../types/VaultTypes';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -63,7 +64,7 @@ const TokensEarned = ({ data }: any) => {
         <Button
           className="button--blue generate btn-block"
           onClick={() => {
-            poolInfoProviderFactory?.harvestReward(connection, wallet);
+            poolInfoProviderFactory?.harvestReward(connection, wallet, vault as LPair);
           }}
         >
           Harvest

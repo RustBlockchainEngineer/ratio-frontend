@@ -570,8 +570,8 @@ export class Market extends MarketSerum {
   public eventQueue: PublicKey | null = null;
   public bids: PublicKey | null = null;
   public asks: PublicKey | null = null;
-  public baseLotSize: number = 0;
-  public quoteLotSize: number = 0;
+  public baseLotSize = 0;
+  public quoteLotSize = 0;
   private _decoded: any;
   public quoteMint: PublicKey | null = null;
   public baseMint: PublicKey | null = null;
