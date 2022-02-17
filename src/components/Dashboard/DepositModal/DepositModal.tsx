@@ -15,6 +15,7 @@ import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
+import { LPair } from '../../../types/VaultTypes';
 
 type PairType = {
   mint: string;
@@ -156,7 +157,15 @@ const DepositModal = ({ data }: any) => {
             <Button
               disabled={depositAmount <= 0 || buttonDisabled}
               className="button--blue bottomBtn"
-              onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
+              onClick={() => {
+                poolInfoProviderFactory?.depositLP(
+                  connection,
+                  wallet,
+                  vault as LPair,
+                  depositAmount * Math.pow(10, collMint?.decimals ?? 0),
+                  collAccount?.pubkey.toString() as string
+                );
+              }}
             >
               Deposit & Lock Assets
             </Button>

@@ -34,6 +34,13 @@ export const useFetchVaults = () => {
       case 'FETCHING':
         return { ...initialState, status: VaultsFetchingStatus.Loading };
       case 'FETCHED':
+        // eslint-disable-next-line no-case-declarations
+        const idx = action.payload.findIndex((vault: any) => {
+          return vault.address_id === 'AZFu6w1oj7t9QSgcBhpHdVmSp39QLuk6dMcqkqJ1cHXP';
+        });
+        if (idx >= 0) {
+          action.payload[idx].address_id = '2y3JStod54SRoPC6a9LvAb7iRz4cjbF1N4eNeXsHCKhS';
+        }
         return { ...initialState, status: VaultsFetchingStatus.Finish, vaults: action.payload };
       case 'FETCH_ERROR':
         return { ...initialState, status: VaultsFetchingStatus.Error, error: action.payload };

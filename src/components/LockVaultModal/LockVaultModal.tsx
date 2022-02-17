@@ -36,6 +36,7 @@ import { sleep } from '../../utils/utils';
 import { useUpdateState } from '../../contexts/auth';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
+import { LPair } from '../../types/VaultTypes';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -239,7 +240,15 @@ const LockVaultModal = ({ data }: any) => {
             />
             <Button
               className="button--fill lockBtn"
-              onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}
+              onClick={() => {
+                poolInfoProviderFactory?.depositLP(
+                  connection,
+                  wallet,
+                  vault as LPair,
+                  lockAmount * Math.pow(10, collMint?.decimals ?? 0),
+                  collAccount?.pubkey.toString() as string
+                );
+              }}
             >
               Deposit Assets
             </Button>

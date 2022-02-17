@@ -15,7 +15,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
     return vaultInfo?.tvl as number;
   }
 
-  depositLP(connection: Connection, wallet: any): boolean {
+  depositLP(connection: Connection, wallet: any, vault: LPair): boolean {
     // TODO Implement this function
 
     alert('Orca: Deposit LP');
@@ -24,7 +24,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  withdrawLP(connection: Connection, wallet: any): boolean {
+  withdrawLP(connection: Connection, wallet: any, vault: LPair): boolean {
     // TODO Implement this function
 
     alert('Orca: Withdraw LP');
@@ -33,7 +33,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  harvestReward(connection: Connection, wallet: any): boolean {
+  harvestReward(connection: Connection, wallet: any, vault: LPair): boolean {
     // TODO Implement this function
 
     alert('Orca: Harvest Reward');

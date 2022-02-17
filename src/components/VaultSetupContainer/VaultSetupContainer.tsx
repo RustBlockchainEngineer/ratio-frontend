@@ -31,6 +31,7 @@ import { useUpdateState } from '../../contexts/auth';
 import { IoIosArrowRoundForward } from 'react-icons/io';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
+import { LPair } from '../../types/VaultTypes';
 
 const VaultSetupContainer = ({ data }: any) => {
   console.log(data);
@@ -232,7 +233,18 @@ const VaultSetupContainer = ({ data }: any) => {
           </strong>
         </div>
         <div>
-          <Button className="button--fill setup" onClick={() => poolInfoProviderFactory?.depositLP(connection, wallet)}>
+          <Button
+            className="button--fill setup"
+            onClick={() =>
+              poolInfoProviderFactory?.depositLP(
+                connection,
+                wallet,
+                vaultFound as LPair,
+                lockAmount,
+                collAccount?.pubkey.toString() as string
+              )
+            }
+          >
             Set up vault
           </Button>
         </div>
