@@ -3,11 +3,6 @@
   "name": "stable_pool",
   "constants": [
     {
-      "name": "DEFAULT_FEE_DENOMINATOR",
-      "type": "u64",
-      "value": "1000"
-    },
-    {
       "name": "RISK_TYPE_COUNT",
       "type": "u8",
       "value": "10"
@@ -23,7 +18,7 @@
       "name": "createGlobalState",
       "accounts": [
         {
-          "name": "superOwner",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -127,6 +122,10 @@
         {
           "name": "debtCeiling",
           "type": "u64"
+        },
+        {
+          "name": "platformType",
+          "type": "u8"
         }
       ]
     },
@@ -140,7 +139,7 @@
         },
         {
           "name": "globalState",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         }
       ],
@@ -563,6 +562,11 @@
           "isSigner": false
         },
         {
+          "name": "priceFeed",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "userTrove",
           "isMut": true,
           "isSigner": false
@@ -667,696 +671,6 @@
         {
           "name": "amount",
           "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "createRaydiumV5RewardVaults",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "rewardMintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveRewardTokenA",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "rewardMintB",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveRewardTokenB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "userTroveRewardTokenANonce",
-          "type": "u8"
-        },
-        {
-          "name": "userTroveRewardTokenBNonce",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "depositRaydiumV5Collateral",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveTokenColl",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTokenColl",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveRewardTokenA",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveRewardTokenB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumProgramId",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolId",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveAssociatedInfoAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolLpAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolRewardTokenAAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolRewardTokenBAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userRewardTokenAAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userRewardTokenBAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "withdrawRaydiumV5Collateral",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveTokenColl",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTokenColl",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveRewardTokenA",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveRewardTokenB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumProgramId",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolId",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveAssociatedInfoAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolLpAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolRewardTokenAAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolRewardTokenBAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userRewardTokenAAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userRewardTokenBAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "createRaydiumUserAccount",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumProgramId",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "raydiumPoolId",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTroveAssociatedInfoAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "userTroveNonce",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "createOrcaVault",
-      "accounts": [
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "orcaVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "baseMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "lpMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "ddMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "isDd",
-          "type": "u8"
-        },
-        {
-          "name": "orcaVaultNonce",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "initOrcaFarm",
-      "accounts": [
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "globalFarm",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioUserFarm",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioOrcaAuthority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaFarmProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "ratioAuthorityBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "depositOrcaLp",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "ratioAuthority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "ratioOrcaVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioBaseTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioPoolTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "poolTokenMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioRewardTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "globalFarm",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioUserFarm",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaRewardVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaBaseVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaFarmProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        },
-        {
-          "name": "ratioAuthorityBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "withdrawOrcaLp",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "ratioAuthority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "ratioOrcaVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userBaseTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioPoolTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "poolTokenMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userRewardTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "globalFarm",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioUserFarm",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaRewardVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaBaseVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaFarmProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        },
-        {
-          "name": "ratioAuthorityBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "harvestFromOrca",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "ratioAuthority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userRewardTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "globalFarm",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ratioUserFarm",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaRewardVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaBaseVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "orcaFarmProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "ratioAuthorityBump",
-          "type": "u8"
         }
       ]
     },
@@ -1732,6 +1046,128 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "createPriceFeed",
+      "accounts": [
+        {
+          "name": "globalState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenVault",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "priceFeed",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintColl",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mintA",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mintB",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mintC",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultA",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultB",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultC",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "pairCount",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "updatePriceFeed",
+      "accounts": [
+        {
+          "name": "priceFeed",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintColl",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultA",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultB",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultC",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -1778,11 +1214,11 @@
           },
           {
             "name": "feeNum",
-            "type": "u64"
+            "type": "u128"
           },
           {
             "name": "feeDeno",
-            "type": "u64"
+            "type": "u128"
           },
           {
             "name": "collPerRisklv",
@@ -1937,60 +1373,67 @@
       }
     },
     {
-      "name": "RatioOrcaVault",
+      "name": "PriceFeed",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "baseMint",
+            "name": "mintColl",
             "type": "publicKey"
           },
           {
-            "name": "lpMint",
+            "name": "mintA",
             "type": "publicKey"
           },
           {
-            "name": "ddMint",
+            "name": "mintB",
             "type": "publicKey"
           },
           {
-            "name": "isDd",
+            "name": "mintC",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultA",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultB",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultC",
+            "type": "publicKey"
+          },
+          {
+            "name": "decimalsA",
             "type": "u8"
+          },
+          {
+            "name": "decimalsB",
+            "type": "u8"
+          },
+          {
+            "name": "decimalsC",
+            "type": "u8"
+          },
+          {
+            "name": "pairCount",
+            "type": "u8"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "lastUpdatedTime",
+            "type": "u64"
           }
         ]
       }
     }
   ],
   "types": [
-    {
-      "name": "OrcaInstrunction",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "InitGlobalFarm"
-          },
-          {
-            "name": "InitUserFarm"
-          },
-          {
-            "name": "ConvertTokens"
-          },
-          {
-            "name": "RevertTokens"
-          },
-          {
-            "name": "Harvest"
-          },
-          {
-            "name": "RemoveRewards"
-          },
-          {
-            "name": "SetEmissionsPerSecond"
-          }
-        ]
-      }
-    },
     {
       "name": "RiskLevel",
       "type": {
@@ -2025,6 +1468,20 @@
           },
           {
             "name": "D"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlatformType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Saber"
+          },
+          {
+            "name": "Unknown"
           }
         ]
       }
@@ -2105,6 +1562,16 @@
       "code": 6014,
       "name": "InvalidTransferAmount",
       "msg": "Transfer amount is invalid"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidPlatformType",
+      "msg": "Invalid platform type"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidSaberPlatform",
+      "msg": "Invalid saber platform"
     }
   ],
   "metadata": {

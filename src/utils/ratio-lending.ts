@@ -943,39 +943,6 @@ export async function setUserDebtCeiling(
   console.log('tx id->', tx);
   return 'Set User Debt Ceiling to' + newDebtCeiling + ', transaction id = ' + tx;
 }
-
-export async function setHarvestFee(
-  connection: Connection,
-  wallet: any,
-  fee_rate: number,         // i.e. 0.1
-  fee_deno = 0
-) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  // FIXME
-  const FEE_DENO = program.constants.DEFAULT_FEE_DENOMINATOR;
-  const transaction = new Transaction();
-  const signers: Keypair[] = [];
-  const ix = await program.instruction.setHarvestFee(
-    new anchor.BN(fee_rate * FEE_DENO),
-    FEE_DENO,
-    {
-      accounts: {
-        payer: wallet.publicKey,
-        globalState: globalStateKey
-      },
-    }
-  );
-  transaction.add(ix);
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
-  console.log('tx id->', tx);
-  return 'Set Harvest Fee to' + fee_rate + ', transaction id = ' + tx;
-}
-
 export async function toggleEmergencyState(
   connection: Connection,
   wallet: any,

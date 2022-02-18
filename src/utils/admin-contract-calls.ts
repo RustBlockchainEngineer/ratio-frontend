@@ -103,12 +103,14 @@ export async function setHarvestFee(
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
   try {
-    await program.rpc.setHarvestFee(new BN(feeNum), new BN(feeDeno), {
+    const tx = await program.rpc.setHarvestFee(new BN(feeNum), new BN(feeDeno), {
       accounts: {
-        authority: wallet?.publicKey,
+        payer: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
+    console.log('----- TX HARVEST FEE ------');
+    console.log(tx);
   } catch (error) {
     console.log('ERROR');
     console.log(error);
