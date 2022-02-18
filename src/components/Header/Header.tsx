@@ -13,6 +13,7 @@ import { useWallet } from '../../contexts/wallet';
 
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
+import { useConnection } from '../../contexts/connection';
 
 type HeaderProps = {
   onClickWalletBtn: () => void;
@@ -22,6 +23,7 @@ type HeaderProps = {
 const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
   const history = useHistory();
   const { connected, connect, wallet } = useWallet();
+  const connection = useConnection();
   const [hover, setHover] = React.useState(false);
   // const { onClick, children, disabled, allowWalletChange, ...rest } = props
 
