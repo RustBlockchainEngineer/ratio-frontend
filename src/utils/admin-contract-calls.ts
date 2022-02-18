@@ -17,34 +17,50 @@ export async function getCurrentEmergencyState(
 export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, value: PublicKey) {
   console.error('changeSuperOwner yet not implemented');
 }
-export async function setGlobalTvlLimit(connection: Connection, wallet: WalletAdapter | undefined, limit: number) {
+export async function setGlobalTvlLimit(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  limit: number
+): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
   try {
-    await program.rpc.setGlobalTvlLimit(limit, {
+    const tx = await program.rpc.setGlobalTvlLimit(new BN(limit), {
       accounts: {
-        authority: wallet?.publicKey,
+        payer: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
+    console.log('------ TX GLOBAL TVL LIMIT --------');
+    console.log(tx);
+    return true;
   } catch (error) {
     console.log('ERROR');
     console.log(error);
+    throw error;
   }
 }
-export async function setGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined, ceiling: number) {
+export async function setGlobalDebtCeiling(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  ceiling: number
+): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
   try {
-    await program.rpc.setGlobalDebtCeiling(ceiling, {
+    const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
       accounts: {
-        authority: wallet?.publicKey,
+        payer: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
+    console.log('----- TX GLOBAL DEBT CEILING ------');
+    console.log(tx);
+    return true;
   } catch (error) {
     console.log('ERROR');
     console.log(error);
+    throw error;
   }
 }
 export async function setVaultDebtCeiling(
@@ -52,46 +68,89 @@ export async function setVaultDebtCeiling(
   wallet: WalletAdapter | undefined,
   ceiling: number,
   mintCollKey: PublicKey
-) {
+): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
   const { tokenVaultKey } = await getTokenVaultByMint(connection, mintCollKey.toString());
 
   try {
-    await program.rpc.setVaultDebtcCeiling(ceiling, {
+    const tx = await program.rpc.setVaultDebtcCeiling(new BN(ceiling), {
       accounts: {
-        authority: wallet?.publicKey,
-        tokenVault: tokenVaultKey,
+        payer: wallet?.publicKey,
         globalState: globalStateKey,
         mintColl: mintCollKey,
+        vault: tokenVaultKey,
       },
     });
+    console.log('---- TX VAULT DEBT CEILING ------');
+    console.log(tx);
+    return true;
   } catch (error) {
     console.log('ERROR');
     console.log(error);
+    throw error;
   }
 }
 
-export async function setUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setUserDebtCeiling yet not implemented');
+/**
+ * TO DEFINE FOR WHAT USER SHOULD BE SET THAT.
+ */
+export async function setUserDebtCeiling(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  value: number,
+  user: PublicKey,
+  mintCollKey: PublicKey
+): Promise<boolean> {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  /**
+   * try {
+    const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
+      accounts: {
+        payer: wallet?.publicKey,
+        user:
+        globalState: globalStateKey,
+
+      },
+    });
+    console.log('----- TX GLOBAL DEBT CEILING ------');
+    console.log(tx);
+    return true;
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
+  **/
+  return true;
 }
 export async function setCollateralRatio(
   connection: Connection,
   wallet: WalletAdapter | undefined,
   values: CollateralizationRatios
-) {
+): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
+  const bigNumberValues = Object.values(values)?.map((value: string) => {
+    return new BN(parseFloat(value));
+  });
+  console.log('BIG NUMBER VALUES');
+  console.log(bigNumberValues);
   try {
-    await program.rpc.setCollateralRatio(values, {
+    const tx = await program.rpc.setCollaterialRatio(bigNumberValues, {
       accounts: {
-        authority: wallet?.publicKey,
+        payer: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
+    console.log('----- TX COLLATERAL RATIO ------');
+    console.log(tx);
+    return true;
   } catch (error) {
     console.log('ERROR');
     console.log(error);
+    throw error;
   }
 }
 export async function setHarvestFee(
@@ -115,7 +174,6 @@ export async function setHarvestFee(
     console.log('ERROR');
     console.log(error);
     throw error;
-    return false;
   }
   return true;
 }

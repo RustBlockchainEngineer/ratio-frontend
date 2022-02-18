@@ -781,35 +781,6 @@ export async function withdrawCollateral(
 
   return 'User withdrawed ' + amount / Math.pow(10, 9) + ' SOL, transaction id = ' + tx;
 }
-
-export async function setGlobalDebtCeiling(
-  connection: Connection,
-  wallet: any,
-  newGlobalDebtCeiling: number
-) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const transaction = new Transaction();
-  const signers: Keypair[] = [];
-  const ix = await program.instruction.setGlobalDebtCeiling(
-    new anchor.BN(newGlobalDebtCeiling),
-    {
-      accounts: {
-        payer: wallet.publicKey,
-        globalState: globalStateKey
-      },
-    }
-  );
-  transaction.add(ix);
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
-  console.log('tx id->', tx);
-  return 'Set Global Debt Ceiling to' + newGlobalDebtCeiling + ', transaction id = ' + tx;
-}
-
 export async function setVaultDebtCeiling(
   connection: Connection,
   wallet: any,
@@ -969,41 +940,4 @@ export async function changeSuperOwner(
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
   return 'Set Super Owner to' + newOwner.toBase58() + ', transaction id = ' + tx;
-}
-
-
-export async function setCollaterialRatio(
-  connection: Connection,
-  wallet: any,
-  ratios: Array<number>,  // i.e. [99.634534, 90.0005, 70.345444, ...]
-  ratio_deno = 0,
-) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
-  if (ratios.length !== 10) throw new Error("Ratio Length Mismatch");
-
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const transaction = new Transaction();
-  const signers: Keypair[] = [];
-
-  // FIXME
-  const RATIO_DENO = program.constants.RATIO_DENOMINATOR;
-  const RATIO_ARRAY = ratios.map((r) => new anchor.BN(r * RATIO_DENO));
-  
-  const ix = await program.instruction.setCollaterialRatio(
-    RATIO_ARRAY,
-    {
-      accounts: {
-        payer: wallet.publicKey,
-        globalState: globalStateKey
-      },
-    }
-  );
-  transaction.add(ix);
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
-  console.log('tx id->', tx);
-  return 'Set Collateral Ratio to' + ratios.toString() + ', transaction id = ' + tx;
 }
