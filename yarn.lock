@@ -2061,10 +2061,10 @@
     assert "^2.0.0"
     buffer "^6.0.1"
 
-"@quarryprotocol/quarry-sdk@^1.10.6":
-  version "1.11.12"
-  resolved "https://registry.yarnpkg.com/@quarryprotocol/quarry-sdk/-/quarry-sdk-1.11.12.tgz#2c500bef2d9c5a2d9b8f169886f313445c3fcac7"
-  integrity sha512-8WAuruvFqSxrvtE7l89xtjYHmasUa45rLzjP4eqpLilWMj4/4Eylka30DrCr5HK/qeHR6YzyEtsMtHESxSB8Gg==
+"@quarryprotocol/quarry-sdk@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@quarryprotocol/quarry-sdk/-/quarry-sdk-2.0.1.tgz#c297e30a549b7f5a08f2cf924c0d260a7b41505c"
+  integrity sha512-Yavy9rpFJlONez/SU1eLCgDP8q3mb0a33KturHABeWro9Afi1svCOaZnl2c9KLs4B0WnUrD06b4N7gKq+W3bWQ==
   dependencies:
     tiny-invariant "^1.2.0"
     tslib "^2.3.1"
