@@ -1,6 +1,8 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
 import { CollateralizationRatios } from '../types/admin-types';
+import { defaultPrograms, getGlobalState, getProgramInstance, getTokenVaultByMint } from './ratio-lending';
+import BN from 'bn.js';
 
 export async function toggleEmergencyState(connection: Connection, wallet: WalletAdapter | undefined) {
   console.error('toggleEmergencyState yet not implemented');
@@ -15,24 +17,165 @@ export async function getCurrentEmergencyState(
 export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, value: PublicKey) {
   console.error('changeSuperOwner yet not implemented');
 }
-export async function setGlobalTvlLimit(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setGlobalTvlLimit yet not implemented');
+export async function setGlobalTvlLimit(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  limit: number
+): Promise<boolean> {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  try {
+    const tx = await program.rpc.setGlobalTvlLimit(new BN(limit), {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    console.log('------ TX GLOBAL TVL LIMIT --------');
+    console.log(tx);
+    return true;
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
 }
-export async function setGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setGlobalDebtCeiling yet not implemented');
+export async function setGlobalDebtCeiling(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  ceiling: number
+): Promise<boolean> {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  try {
+    const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    console.log('----- TX GLOBAL DEBT CEILING ------');
+    console.log(tx);
+    return true;
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
 }
-export async function setUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setUserDebtCeiling yet not implemented');
+export async function setVaultDebtCeiling(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  ceiling: number,
+  mintCollKey: PublicKey
+): Promise<boolean> {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  const { tokenVaultKey } = await getTokenVaultByMint(connection, mintCollKey.toString());
+
+  try {
+    const tx = await program.rpc.setVaultDebtcCeiling(new BN(ceiling), {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+        mintColl: mintCollKey,
+        vault: tokenVaultKey,
+      },
+    });
+    console.log('---- TX VAULT DEBT CEILING ------');
+    console.log(tx);
+    return true;
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
+}
+
+/**
+ * TO DEFINE FOR WHAT USER SHOULD BE SET THAT.
+ */
+export async function setUserDebtCeiling(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  value: number,
+  user: PublicKey,
+  mintCollKey: PublicKey
+): Promise<boolean> {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  /**
+   * try {
+    const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
+      accounts: {
+        payer: wallet?.publicKey,
+        user:
+        globalState: globalStateKey,
+
+      },
+    });
+    console.log('----- TX GLOBAL DEBT CEILING ------');
+    console.log(tx);
+    return true;
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
+  **/
+  return true;
 }
 export async function setCollateralRatio(
   connection: Connection,
   wallet: WalletAdapter | undefined,
   values: CollateralizationRatios
-) {
-  console.error('setCollateralRatio yet not implemented');
+): Promise<boolean> {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  const bigNumberValues = Object.values(values)?.map((value: string) => {
+    return new BN(parseFloat(value));
+  });
+  console.log('BIG NUMBER VALUES');
+  console.log(bigNumberValues);
+  try {
+    const tx = await program.rpc.setCollaterialRatio(bigNumberValues, {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    console.log('----- TX COLLATERAL RATIO ------');
+    console.log(tx);
+    return true;
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
 }
-export async function setRewardsFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setRewardsFee yet not implemented');
+export async function setHarvestFee(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  feeNum: number,
+  feeDeno: number
+): Promise<boolean> {
+  const program = await getProgramInstance(connection, wallet);
+  const { globalStateKey } = await getGlobalState(connection, wallet);
+  try {
+    const tx = await program.rpc.setHarvestFee(new BN(feeNum), new BN(feeDeno), {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    console.log('----- TX HARVEST FEE ------');
+    console.log(tx);
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
+  return true;
 }
 export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setBorrowFee yet not implemented');

@@ -1,17 +1,19 @@
+/* eslint-disable prettier/prettier */
+import { Connection } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Form, Row } from 'react-bootstrap';
+import { Button, Form, FormGroup, InputGroup, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
-import { useWallet } from '../../contexts/wallet';
+import { useWallet, WalletAdapter } from '../../contexts/wallet';
 import { IIndexable } from '../../types/admin-types';
 import {
   setBorrowFee,
   setDepositFee,
+  setHarvestFee,
   setPaybackFee,
-  setRewardsFee,
   setStakeFee,
   setSwapFee,
   setWithdrawFee,
@@ -26,6 +28,8 @@ interface Fees {
   stake_fee: number;
   swap_fee: number;
   withdraw_fee: number;
+  harvest_fee: number;
+  harvest_fee_deno: number;
 }
 
 // Tracks if a certain field has been changed.
@@ -37,15 +41,26 @@ interface FeesChanged {
   stake_fee: boolean;
   swap_fee: boolean;
   withdraw_fee: boolean;
+  harvest_fee_deno: boolean;
+  harvest_fee: boolean;
 }
 const ContractUpdatersMap = {
-  borrow_fee: setBorrowFee,
-  deposit_fee: setDepositFee,
-  payback_fee: setPaybackFee,
-  reward_fee: setRewardsFee,
-  stake_fee: setStakeFee,
-  swap_fee: setSwapFee,
-  withdraw_fee: setWithdrawFee,
+  borrow_fee:   async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
+                  await setBorrowFee(connection, wallet, Number(data?.borrow_fee)),
+  deposit_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
+                  await setDepositFee(connection, wallet, Number(data?.deposit_fee)),
+  payback_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
+                  await setPaybackFee(connection, wallet, Number(data?.payback_fee)),
+  harvest_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
+                  await setHarvestFee(connection, wallet, Number(data?.harvest_fee), Number(data?.harvest_fee_deno)),
+  harvest_fee_deno: async() => {},
+  stake_fee:    async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
+                  await setStakeFee(connection, wallet, Number(data?.borrow_fee)),
+  swap_fee:     async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
+                  await setSwapFee(connection, wallet, Number(data?.borrow_fee)),
+  withdraw_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
+                  await setWithdrawFee(connection, wallet, Number(data?.borrow_fee)),
+                  
 };
 
 export default function FeesAdminForm() {
@@ -58,6 +73,8 @@ export default function FeesAdminForm() {
     stake_fee: 0,
     swap_fee: 0,
     withdraw_fee: 0,
+    harvest_fee_deno: 0,
+    harvest_fee: 0,
   };
   const defaultValuesTrackers: FeesChanged = {
     borrow_fee: false,
@@ -67,6 +84,8 @@ export default function FeesAdminForm() {
     stake_fee: false,
     swap_fee: false,
     withdraw_fee: false,
+    harvest_fee_deno: false,
+    harvest_fee: false,
   };
   const [data, setData] = useState<Fees>(defaultValues);
   const [changedTracker, setChangedTracker] = useState<FeesChanged>(defaultValuesTrackers);
@@ -138,7 +157,7 @@ export default function FeesAdminForm() {
       Object.keys(data)
         .filter((item) => (changedTracker as IIndexable)[item])
         .map(async (item) => {
-          await (ContractUpdatersMap as IIndexable)[item](connection, wallet, Number((data as IIndexable)[item]));
+          await (ContractUpdatersMap as IIndexable)[item](connection, wallet, data);
         })
     );
   };
@@ -191,6 +210,23 @@ export default function FeesAdminForm() {
           <AdminFormInput handleChange={handleChange} label="Stake" name="stake_fee" value={data?.stake_fee} />
           <AdminFormInput handleChange={handleChange} label="Swap" name="swap_fee" value={data?.swap_fee} />
           <AdminFormInput handleChange={handleChange} label="Withdraw" name="withdraw_fee" value={data?.withdraw_fee} />
+          <FormGroup>
+            <Form.Label>{"Harvest"}</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  name={"harvest_fee"}
+                  placeholder={"fee_num"}
+                  value={data?.harvest_fee}
+                  onChange={handleChange}
+                />
+                <Form.Control
+                  name={"harvest_fee_deno"}
+                  placeholder={"fee_deno"}
+                  value={data?.harvest_fee_deno}
+                  onChange={handleChange}
+                />
+              </InputGroup>
+          </FormGroup>
         </Row>
         <Button variant="primary" type="submit">
           Save
