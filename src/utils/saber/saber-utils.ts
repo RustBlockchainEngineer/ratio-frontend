@@ -1,6 +1,7 @@
 import * as anchor from '@project-serum/anchor';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as serumCmn from '@project-serum/common';
+import BN from 'bn.js';
 
 import {
   getProgramInstance,
@@ -28,6 +29,7 @@ import { Token as SToken } from '@saberhq/token-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { createAssociatedTokenAccount, findAssociatedTokenAddress } from '../raydium/web3';
 import { getOneFilteredTokenAccountsByOwner, sendTransaction } from '../web3';
+import { WalletAdapter } from '../../contexts/wallet';
 import {
   FEE_OWNER,
   SABER_MINTER,
@@ -48,7 +50,7 @@ const saberFarmQuarry = new anchor.web3.PublicKey('BTimzTk51pcKxDQLRR3iFs4dLVY9W
 
 export async function createSaberTokenVault(
   connection: Connection,
-  wallet: any,
+  wallet: WalletAdapter,
   mintCollKey: PublicKey = WSOL_MINT_KEY,
   riskLevel = 0
 ) {
@@ -87,6 +89,8 @@ export async function createSaberTokenVault(
     return 'created token vault successfully';
   } catch (e) {
     console.log("can't create token vault");
+    console.log('program:', program);
+    console.error(e);
   }
 }
 export async function createSaberUserTrove(connection: Connection, wallet: any, mintCollKey: PublicKey) {

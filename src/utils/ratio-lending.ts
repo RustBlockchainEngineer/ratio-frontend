@@ -26,11 +26,12 @@ import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
+import { createSaberTokenVault } from './saber/saber-utils';
 
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export const TYPE_ID_RAYDIUM: PlatformType = 0;
 export const TYPE_ID_ORCA: PlatformType = 1;
-export const TYPE_ID_SABER: PlatformType = 2;
+export const TYPE_ID_SABER: PlatformType = 0;
 export const TYPE_ID_MERCURIAL: PlatformType = 3;
 export const TYPE_ID_UNKNOWN: PlatformType = 4;
 
@@ -176,7 +177,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
     console.log('globalState', globalState);
     return 'already created';
   } catch (e) {
-    console.log(e);
+    console.log("Global state didn't exist");
   }
   try {
     await program.rpc.createGlobalState(
@@ -186,7 +187,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
       new anchor.BN(GLOBAL_DEBT_CEILING),
       {
         accounts: {
-          superOwner: wallet.publicKey,
+          authority: wallet.publicKey,
           globalState: globalStateKey,
           mintUsd: mintUsdKey,
           ...defaultPrograms,
@@ -195,6 +196,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
     );
   } catch (e) {
     console.log("can't create global state");
+    console.error(e);
   }
   return 'created global state';
 }
@@ -354,56 +356,16 @@ export async function createTokenVault(
   wallet: any,
   mintCollKey: PublicKey = WSOL_MINT_KEY,
   riskLevel = 0,
-  isDual = false,
-  platformType: PlatformType = TYPE_ID_UNKNOWN,
+  platform = "SABER",
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
-
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const globalState = await program.account.globalState.fetch(globalStateKey);
-
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
-    program.programId
-  );
-  console.log('tokenVaultKey', tokenVaultKey.toBase58());
-  const [tokenCollKey, tokenCollNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_POOL_TAG), tokenVaultKey.toBuffer()],
-    program.programId
-  );
-  console.log('tokenCollKey', tokenCollKey.toBase58());
-  console.log(
-    'payer',
-    wallet.publicKey.toString(),
-    '\n',
-    'tokenVaultKey',
-    tokenVaultKey.toString(),
-    '\n',
-    'globalStateKey',
-    globalStateKey.toString(),
-    '\n',
-    'mintCollKey',
-    mintCollKey.toString(),
-    '\n',
-    'tokenCollKey',
-    tokenCollKey.toString(),
-    '\n'
-  );
   try {
-    await program.rpc.createTokenVault(tokenVaultNonce, riskLevel, isDual, new BN(100_000_000_000_000), platformType, {
-      accounts: {
-        authority: wallet.publicKey,
-        tokenVault: tokenVaultKey,
-        globalState: globalStateKey,
-        mintColl: mintCollKey,
-        ...defaultPrograms,
-      },
-    });
-    return 'created token vault successfully';
+    switch (platform) {
+      case "SABER":
+        return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
+      default:
+        console.error('Platform vault creation yet not implemented');
+        break;
+    }
   } catch (e) {
     console.log("can't create token vault");
   }

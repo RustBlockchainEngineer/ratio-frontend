@@ -119,7 +119,18 @@ export default function VaultCreationAdminForm() {
     } else {
       try {
         const riskRatingValue: number = RISK_RATING[risk_rating as keyof typeof RISK_RATING];
-        const result = await createTokenVault(connection, wallet, new PublicKey(lpMintAddress), riskRatingValue);
+        const platformName: string | undefined = platforms.find((item) => item.id === data.platform_id)?.name;
+        if (!platformName) {
+          toast.error('Platform needs to be selected to create a vault');
+          return;
+        }
+        const result = await createTokenVault(
+          connection,
+          wallet,
+          new PublicKey(lpMintAddress),
+          riskRatingValue,
+          platformName
+        );
         if (!result) {
           toast.error('There was an error when creating the token vault program');
           return;
