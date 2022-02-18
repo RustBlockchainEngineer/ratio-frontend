@@ -60,36 +60,36 @@ const GLOBAL_DEBT_CEILING = 15_000_000;
 
 export const TOKEN_VAULT_OPTIONS = [
   {
-    value: 'wtUST-USDC',
-    label: 'wtUST-USDC LP',
+    value: 'USDC-CASH',
+    label: 'USDC-CASH LP',
     icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh/logo.png`,
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T/logo.png`,
     ],
-    mintAddress: '6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh',
+    mintAddress: 'FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T',
+  },
+  {
+    value: 'USDC-PAI',
+    label: 'USDC-PAI LP',
+    icon: [
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh/logo.png`,
+    ],
+    mintAddress: '7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh',
   },
   {
     value: 'USDC-USDT',
     label: 'USDC-USDT LP',
     icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/BkpqyoDe5mwN6DiH1MYSJ1G4AbhPuiZsycjjYfQcWK9P/logo.png`,
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg/logo.png`,
     ],
-    mintAddress: 'BkpqyoDe5mwN6DiH1MYSJ1G4AbhPuiZsycjjYfQcWK9P',
+    mintAddress: 'HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg',
   },
   {
-    value: 'wUST-USDC-USDT',
-    label: 'UST-3Pool LP',
+    value: 'USDT-CASH',
+    label: 'USDT-CASH LP',
     icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/ASnVcQxNRosGw8crN8E4ScnDncBfnR1eJPyzucKsM4Vm/logo.png`,
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd/logo.png`,
     ],
-    mintAddress: 'ASnVcQxNRosGw8crN8E4ScnDncBfnR1eJPyzucKsM4Vm',
-  },
-  {
-    value: 'USDC-CASH',
-    label: 'USDC-CASH LP',
-    icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2gsojBCyZUgqXEj5vR41sKat3JyG11nXSsgzMErY9EVL/logo.png`,
-    ],
-    mintAddress: '2gsojBCyZUgqXEj5vR41sKat3JyG11nXSsgzMErY9EVL',
+    mintAddress: '9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd',
   },
 ];
 
