@@ -139,7 +139,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       <div className="mt-4">
         <NavbarItem
           icon={allVaultsIcon}
-          name="All Vaults"
+          name="Available Vaults"
           active={navIndex === '/dashboard/all-vaults'}
           navIndex="/dashboard/all-vaults"
           onItemClick={onItemClick}
