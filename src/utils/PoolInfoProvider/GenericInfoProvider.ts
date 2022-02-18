@@ -41,17 +41,33 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
 
   abstract getTVLbyVault(vault: LPair): number;
 
-  abstract depositLP(connection: Connection, wallet: any): boolean;
+  abstract depositLP(
+    connection: Connection,
+    wallet: any,
+    vault: LPair,
+    amount: number,
+    tokenAccount: string
+  ): Promise<boolean>;
 
-  abstract withdrawLP(connection: Connection, wallet: any): boolean;
+  abstract withdrawLP(
+    connection: Connection,
+    wallet: any,
+    vault: LPair,
+    amount: number,
+    tokenAccount: string
+  ): Promise<boolean>;
 
-  abstract harvestReward(connection: Connection, wallet: any): boolean;
+  abstract harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean>;
 
-  abstract getRewards(): number;
+  abstract getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number>;
 
   async postTransactionToApi(txSignature: string, txType: string, wallet: any, authToken: any): Promise<any> {
     // /transaction/:wallet_id/add
-    const response = await postWithAuthToRatioApi({ signature: txSignature, transaction_type: txType }, `/transaction/${wallet?.publicKey}/add`, authToken);
+    const response = await postWithAuthToRatioApi(
+      { signature: txSignature, transaction_type: txType },
+      `/transaction/${wallet?.publicKey}/add`,
+      authToken
+    );
     return response;
   }
 }

@@ -146,7 +146,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
         <Button
           disabled={!connected}
           onClick={() => {
-            poolInfoProviderFactory?.harvestReward(connection, wallet);
+            poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
           }}
           className="button button--blue tokenpaircard__generate"
         >
@@ -182,7 +182,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
           <div>
             <div className="d-flex align-items-start">
               <div className="d-flex">
-                <img src={data.icon.default} alt={'Token1'} className="allvaults__table__icon" />
+                <img src={data.icon} alt={'Token1'} className="allvaults__table__icon" />
                 {/* <img src={data.icons[0]} alt={data.icons[0].toString()} className="activepaircard__header-icon0" />
                 <img src={data.icons[1]} alt={data.icons[1].toString()} className="activepaircard__header-icon1" /> */}
               </div>

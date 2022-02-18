@@ -26,7 +26,7 @@ const WalletBalances = ({ data, icon, tokenName, collAmount, collAmountUSD, usdr
         <tbody>
           <tr>
             <td className="walletbalance__name">
-              {icon && <img src={icon.default} alt="icon" className="walletbalance__icon" />}
+              {icon && <img src={icon} alt="icon" className="walletbalance__icon" />}
               {/* <img src={data.icons ? data.icons[0] : null} alt="TokenA" style={{ width: 32 }} />
               <img src={data.icons ? data.icons[1] : null} alt="TokenB" style={{ width: 32 }} className="lastToken" /> */}
               {tokenName === 'USDC-USDR' ? 'USDC-USDr' : tokenName}

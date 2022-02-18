@@ -5,6 +5,8 @@ import { useRaydiumPoolsInfo } from './useRaydiumPoolInfo';
 import { useSaberPoolsInfo } from './useSaberPoolInfo';
 import { getFactory } from '../utils/PoolInfoProvider/PoolInfoProviderFactory';
 import { LPair } from '../types/VaultTypes';
+import { useConnection } from '../contexts/connection';
+import { useWallet } from '../contexts/wallet';
 
 /* 
   This custom hook allows to fill the platforms tvl information for each of the vaults received, depending on the platform related to the vault. 
@@ -18,6 +20,9 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
   const { pools: orcaPools } = useOrcaPoolsInfo();
   const { pools: saberPools } = useSaberPoolsInfo();
   const { pools: mercurialPools } = useMercurialPoolsInfo();
+
+  const connection = useConnection();
+  const { wallet, connected } = useWallet();
 
   //Initialize the provider factory with the pools information of all the supported platforms.
   const poolInfoProviderFactory = useMemo(
@@ -34,7 +39,9 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
         //Obtain the tvl for the vault specific platform.
         item.platform_tvl = poolInfoProviderFactory.getProviderForVault(item).getTVLbyVault(item);
         item.platform_ratio_apr = await poolInfoProviderFactory.getProviderForVault(item).getRatioAPRbyVault(item);
-        item.earned_rewards = poolInfoProviderFactory.getProviderForVault(item).getRewards();
+        item.earned_rewards = await poolInfoProviderFactory
+          .getProviderForVault(item)
+          .getRewards(connection, wallet, item);
         return item;
       });
 

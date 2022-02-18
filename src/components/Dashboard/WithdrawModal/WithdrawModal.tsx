@@ -13,6 +13,7 @@ import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
+import { LPair } from '../../../types/VaultTypes';
 
 type PairType = {
   mint: string;
@@ -172,7 +173,15 @@ const WithdrawModal = ({ data }: any) => {
             <Button
               className="button--blue bottomBtn"
               disabled={withdrawAmount <= 0 || buttonDisabled}
-              onClick={() => poolInfoProviderFactory?.withdrawLP(connection, wallet)}
+              onClick={() =>
+                poolInfoProviderFactory?.withdrawLP(
+                  connection,
+                  wallet,
+                  vault as LPair,
+                  withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
+                  userCollAccount
+                )
+              }
             >
               Withdraw Assets
             </Button>

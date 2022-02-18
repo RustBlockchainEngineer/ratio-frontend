@@ -23,6 +23,7 @@ import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
+import { SABER_TOKEN_NEW, SABER_TOKEN_OLD } from '../../utils/constant-test';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -94,7 +95,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 ? getCoinPicSymbol(item.token_symbole)
                 : item.token_icon
             ),
-            icon: require(`../../assets/images/tokens/${item.address_id}.png`),
+            icon: item.icon,
             title: item.symbol,
             tvl: item.platform_tvl,
             apr: item.platform_ratio_apr,

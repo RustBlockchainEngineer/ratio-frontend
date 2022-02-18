@@ -150,7 +150,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             disabled={!connected}
             className="button button--blue activepaircard__generate mt-2"
             onClick={() => {
-              poolInfoProviderFactory?.harvestReward(connection, wallet);
+              poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
             }}
           >
             Harvest
@@ -175,7 +175,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
           <div className="activepaircard__header">
             <div className="d-flex">
               <div>
-                <img src={data.icon.default} alt={'Token1'} className="tokenpaircard__header-icon" />{' '}
+                <img src={data.icon} alt={'Token1'} className="tokenpaircard__header-icon" />{' '}
               </div>
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title}</h6>

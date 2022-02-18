@@ -3,11 +3,6 @@
   "name": "stable_pool",
   "constants": [
     {
-      "name": "DEFAULT_FEE_DENOMINATOR",
-      "type": "u64",
-      "value": "1000"
-    },
-    {
       "name": "RISK_TYPE_COUNT",
       "type": "u8",
       "value": "10"
@@ -127,6 +122,10 @@
         {
           "name": "debtCeiling",
           "type": "u64"
+        },
+        {
+          "name": "platformType",
+          "type": "u8"
         }
       ]
     },
@@ -140,7 +139,7 @@
         },
         {
           "name": "globalState",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         }
       ],
@@ -1778,11 +1777,11 @@
           },
           {
             "name": "feeNum",
-            "type": "u64"
+            "type": "u128"
           },
           {
             "name": "feeDeno",
-            "type": "u64"
+            "type": "u128"
           },
           {
             "name": "collPerRisklv",
@@ -2028,6 +2027,29 @@
           }
         ]
       }
+    },
+    {
+      "name": "PlatformType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Raydium"
+          },
+          {
+            "name": "Orca"
+          },
+          {
+            "name": "Saber"
+          },
+          {
+            "name": "Mercurial"
+          },
+          {
+            "name": "Unknown"
+          }
+        ]
+      }
     }
   ],
   "errors": [
@@ -2105,9 +2127,16 @@
       "code": 6014,
       "name": "InvalidTransferAmount",
       "msg": "Transfer amount is invalid"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidPlatformType",
+      "msg": "Invalid platform type"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidSaberPlatform",
+      "msg": "Invalid saber platform"
     }
-  ],
-  "metadata": {
-    "address": "BRryWAy5a9yZsruQEKJpRfKGyQy7DeBtZ1JZnDuVhVjF"
-  }
+  ]
 }
