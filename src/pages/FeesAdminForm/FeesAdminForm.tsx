@@ -6,6 +6,7 @@ import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
+import { IIndexable } from '../../types/admin-types';
 import {
   setBorrowFee,
   setDepositFee,
@@ -36,9 +37,6 @@ interface FeesChanged {
   stake_fee: boolean;
   swap_fee: boolean;
   withdraw_fee: boolean;
-}
-export interface IIndexable {
-  [key: string]: any;
 }
 const ContractUpdatersMap = {
   borrow_fee: setBorrowFee,
