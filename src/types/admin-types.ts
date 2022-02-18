@@ -10,3 +10,7 @@ export interface CollateralizationRatios {
   cr_c_ratio: number;
   cr_d_ratio: number;
 }
+
+export interface IIndexable {
+  [key: string]: any;
+}

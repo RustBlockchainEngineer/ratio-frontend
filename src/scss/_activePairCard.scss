@@ -7,10 +7,10 @@
     padding: 0.8rem 0rem;
     width: 100%;
   }
-  .generate {
+  &__generate {
     font-family: 'Poppins-Medium';
     font-size: 15px;
-    padding: 0.9rem 0rem;
+    padding: 0.7rem 1.5rem;
     width: 100%;
   }
   // height: calc(100% - 26px);
@@ -40,12 +40,6 @@
   }
   &__titleBox {
     margin-left: 1rem;
-    &--warning {
-      h6,
-      p {
-        color: #f48c57 !important;
-      }
-    }
     h6 {
       font-family: 'Poppins-SemiBold';
       font-size: 1rem;
@@ -55,6 +49,15 @@
       font-family: 'Poppins-Regular';
       font-size: 12px;
       color: var(--unnamed-color-3c4760);
+    }
+    img {
+      width: 18px;
+    }
+    &--linkIcon {
+      width: 5px !important;
+      position: absolute;
+      top: 6px;
+      right: -10px;
     }
   }
   &__riskBox {
@@ -96,7 +99,8 @@
   }
   &__btnBox {
     margin: 0px;
-    padding: 20px 10px;
+    padding: 1.25rem 0.625rem;
+    padding-top: 0.9rem;
   }
   &__warningBox {
     min-height: 70px;
@@ -111,34 +115,31 @@
     }
   }
   &__detailBox {
-    &__content {
-      padding: 20px;
-      padding-top: 0px;
-      color: var(--unnamed-color-4c646f);
-      p {
-        font-family: 'Poppins-SemiBold';
-        color: var(--unnamed-color-002332);
-      }
-      &--tokens {
-        margin-top: 10px;
-        img {
-          width: 20px;
-          margin-right: 5px;
-        }
-        font-size: 12px;
-        font-family: 'Poppins-Regular';
-      }
+    background: var(--unnamed-color-171A23);
+    padding: 20px;
+    color: var(--unnamed-color-4c646f);
+    border-bottom: 1px solid rgba(var(--secondary-border), 0.2);
+    h6 {
+      font-size: 16px;
+      color: var(--unnamed-color-3c4760);
+      margin-bottom: 0px;
+      font-family: 'Poppins-Medium';
     }
-    &__toggle {
-      cursor: pointer;
-      text-align: center;
-      padding-top: 16px;
-      padding-bottom: 16px;
-      color: var(--unnamed-color-4c646f);
-      border: 1px solid rgba(var(--secondary-border), 0.2);
-      &:hover {
-        text-decoration: underline;
+    .semiBold {
+      font-family: 'Poppins-SemiBold';
+    }
+    p {
+      font-family: 'Poppins-SemiBold';
+      color: var(--unnamed-color-002332);
+    }
+    &--tokens {
+      margin-top: 10px;
+      img {
+        width: 20px;
+        margin-right: 5px;
       }
+      font-size: 12px;
+      font-family: 'Poppins-Regular';
     }
   }
 }

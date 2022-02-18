@@ -59,10 +59,10 @@
     }
   }
   
-  .generate {
+  &__generate {
     font-family: 'Poppins-Medium';
     font-size: 15px;
-    padding: 0.8rem 0rem;
+    padding: 0.7rem 1.5rem;
     width: 100%;
   }
   &__header {
@@ -72,7 +72,7 @@
     flex-wrap: wrap;
     gap: 12px;
     &-icon {
-      height: 40px;
+      width: 3.75rem;
       background-color: white;
      
     }
@@ -93,6 +93,9 @@
       font-family: 'Poppins-Regular';
       font-size: 12px;
       color: var(--unnamed-color-3c4760);
+    }
+    img {
+      width: 12px;
     }
   }
   &__riskBox {
@@ -134,7 +137,7 @@
     padding: 20px;
     display: flex;
     justify-content: space-between;
-    background-color: var(--primary-border);
+    background-color: var(--unnamed-color-171A23);
     border-top: 1px solid rgba(#4c646f, 0.2);
     border-bottom: 1px solid rgba(#4c646f, 0.2);
     position: relative;
@@ -174,7 +177,8 @@
   }
   &__btnBox {
     margin: 0px;
-    padding: 20px 10px;
+    padding: 1.25rem 0.625rem;
+    padding-top: 0.9rem;
     &--checked {
       background-color: rgba(#e5f7e9, 0.5);
     }

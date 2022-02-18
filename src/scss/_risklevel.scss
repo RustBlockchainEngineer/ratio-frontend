@@ -31,42 +31,7 @@
       margin-left: 4px;
     }
   }
-  &-DDD {
-    border: 1px solid #ff3131;
-    background-color: rgba(#ff3131, 0.1);
-    p {
-      color: #ff3131;
-    }
-  }
-  &-DD {
-    border: 1px solid #ff3131;
-    background-color: rgba(#ff3131, 0.1);
-    p {
-      color: #ff3131;
-    }
-  }
-  &-AAA {
-    border: 1px solid #f48c57;
-    background-color: rgba(#f48c57, 0.1);
-    p {
-      color: #f48c57;
-    }
-  }
-  &-A {
-    border: 1px solid #07b127;
-    background-color: rgba(#07b127, 0.1);
-    p {
-      color: #07b127;
-    }
-  }
-  &-AA {
-    border: 1px solid #07b127;
-    background-color: rgba(#07b127, 0.1);
-    p {
-      color: #07b127;
-    }
-  }
-  &-DDD {
+  &-DDD, &-DD, &-D {
     color: #ff3131 !important;
     border: 1px solid #ff3131;
     background-color: rgba(#ff3131, 0.1);
@@ -74,7 +39,8 @@
       color: #ff3131;
     }
   }
-  &-DD {
+
+  &-CCC, &-CC, &-C {
     color: #ff3131 !important;
     border: 1px solid #ff3131;
     background-color: rgba(#ff3131, 0.1);
@@ -82,7 +48,8 @@
       color: #ff3131;
     }
   }
-  &-AAA {
+
+  &-AAA, &-AA, &-A {
     color: #07b127 !important;
     border: 1px solid #07b127;
     background-color: rgba(#07b127, 0.1);
@@ -90,4 +57,13 @@
       color: #07b127;
     }
   }
+  &-BBB, &-BB, &-B {
+    color: #f48c57 !important;
+    border: 1px solid #f48c57;
+    background-color: rgba(#f48c57, 0.1);
+    p {
+      color: #f48c57;
+    }
+  }
+
 }

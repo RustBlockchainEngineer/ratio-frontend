@@ -3,6 +3,7 @@ import idl from './ratio-lending-idl.json';
 
 import { AccountLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from '@project-serum/anchor';
+const { BN } = anchor;
 import {
   Connection,
   Keypair,
@@ -25,18 +26,25 @@ import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
-import BN from 'bn.js';
+import { createSaberTokenVault } from './saber/saber-utils';
+
+export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export const TYPE_ID_RAYDIUM: PlatformType = 0;
+export const TYPE_ID_ORCA: PlatformType = 1;
+export const TYPE_ID_SABER: PlatformType = 0;
+export const TYPE_ID_MERCURIAL: PlatformType = 3;
+export const TYPE_ID_UNKNOWN: PlatformType = 4;
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
 export const USDR_MINT_KEY = 'GHY2oA1hsLn8qYFZDz9GFy4hSUwtdVfkcSkhKHYr7XKd';
 export const GLOBAL_STATE_TAG = 'global-state-seed';
 export const TOKEN_VAULT_TAG = 'token-vault-seed';
-export const USER_TROVE_TAG = 'user-trove-seed';
+export const USER_TROVE_TAG = 'user-trove';
 export const USD_MINT_TAG = 'usd-mint';
 export const USER_USD_TOKEN_TAG = 'usd-token';
 export const TOKEN_VAULT_POOL_TAG = 'token-vault-pool';
-export const USER_TROVE_POOL_TAG = "user-trove-pool";
+export const USER_TROVE_POOL_TAG = 'user-trove-pool';
 
 export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
@@ -52,34 +60,36 @@ const GLOBAL_DEBT_CEILING = 15_000_000;
 
 export const TOKEN_VAULT_OPTIONS = [
   {
-    value: 'wtUST-USDC',
-    label: 'wtUST-USDC LP',
-    icon: [`https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh/logo.png`],
-    mintAddress: '6rJSjCEVxovip8GBUw6P7tsQprzFPET3uTohCXXQqkBh',
+    value: 'USDC-CASH',
+    label: 'USDC-CASH LP',
+    icon: [
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T/logo.png`,
+    ],
+    mintAddress: 'FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T',
+  },
+  {
+    value: 'USDC-PAI',
+    label: 'USDC-PAI LP',
+    icon: [
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh/logo.png`,
+    ],
+    mintAddress: '7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh',
   },
   {
     value: 'USDC-USDT',
     label: 'USDC-USDT LP',
     icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/BkpqyoDe5mwN6DiH1MYSJ1G4AbhPuiZsycjjYfQcWK9P/logo.png`,
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg/logo.png`,
     ],
-    mintAddress: 'BkpqyoDe5mwN6DiH1MYSJ1G4AbhPuiZsycjjYfQcWK9P',
+    mintAddress: 'HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg',
   },
   {
-    value: 'wUST-USDC-USDT',
-    label: 'UST-3Pool LP',
+    value: 'USDT-CASH',
+    label: 'USDT-CASH LP',
     icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/ASnVcQxNRosGw8crN8E4ScnDncBfnR1eJPyzucKsM4Vm/logo.png`,
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd/logo.png`,
     ],
-    mintAddress: 'ASnVcQxNRosGw8crN8E4ScnDncBfnR1eJPyzucKsM4Vm',
-  },
-  {
-    value: 'USDC-CASH',
-    label: 'USDC-CASH LP',
-    icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2gsojBCyZUgqXEj5vR41sKat3JyG11nXSsgzMErY9EVL/logo.png`,
-    ],
-    mintAddress: '2gsojBCyZUgqXEj5vR41sKat3JyG11nXSsgzMErY9EVL',
+    mintAddress: '9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd',
   },
 ];
 
@@ -100,7 +110,7 @@ export function getProgramInstance(connection: Connection, wallet: any) {
   return program;
 }
 
-async function retrieveGlobalState(connection: Connection, wallet: any) { 
+async function retrieveGlobalState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
   const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_STATE_TAG)],
@@ -116,7 +126,7 @@ export async function getGlobalState(connection: Connection, wallet: any) {
     if (globalState) {
       return { globalState, globalStateKey };
     } else {
-      throw new Error (`Global state doesn't exist`)
+      throw new Error(`Global state doesn't exist`);
     }
   } catch (e) {
     console.log('globalState was not created');
@@ -124,7 +134,7 @@ export async function getGlobalState(connection: Connection, wallet: any) {
   }
 }
 
-export async function getCurrentSuperOwner(connection: Connection, wallet: any) : Promise<PublicKey> {
+export async function getCurrentSuperOwner(connection: Connection, wallet: any): Promise<PublicKey> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
     return globalState.authority;
@@ -167,7 +177,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
     console.log('globalState', globalState);
     return 'already created';
   } catch (e) {
-    console.log(e);
+    console.log("Global state didn't exist");
   }
   try {
     await program.rpc.createGlobalState(
@@ -177,7 +187,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
       new anchor.BN(GLOBAL_DEBT_CEILING),
       {
         accounts: {
-          superOwner: wallet.publicKey,
+          authority: wallet.publicKey,
           globalState: globalStateKey,
           mintUsd: mintUsdKey,
           ...defaultPrograms,
@@ -186,6 +196,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
     );
   } catch (e) {
     console.log("can't create global state");
+    console.error(e);
   }
   return 'created global state';
 }
@@ -345,60 +356,16 @@ export async function createTokenVault(
   wallet: any,
   mintCollKey: PublicKey = WSOL_MINT_KEY,
   riskLevel = 0,
-  isDual = 0
+  platform = "SABER",
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
-
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const globalState = await program.account.globalState.fetch(globalStateKey);
-
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
-    program.programId
-  );
-  console.log('tokenVaultKey', tokenVaultKey.toBase58());
-  const [tokenCollKey, tokenCollNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_POOL_TAG), tokenVaultKey.toBuffer()],
-    program.programId
-  );
-  console.log('tokenCollKey', tokenCollKey.toBase58());
-  console.log(
-    'payer',
-    wallet.publicKey.toString(),
-    '\n',
-    'tokenVaultKey',
-    tokenVaultKey.toString(),
-    '\n',
-    'globalStateKey',
-    globalStateKey.toString(),
-    '\n',
-    'mintCollKey',
-    mintCollKey.toString(),
-    '\n',
-    'tokenCollKey',
-    tokenCollKey.toString(),
-    '\n'
-  );
   try {
-    await program.rpc.createTokenVault(
-      tokenVaultNonce, 
-      tokenCollNonce, 
-      new BN(riskLevel), 
-      new BN(isDual),
-      {
-        accounts: {
-          authority: wallet.publicKey,
-          tokenVault: tokenVaultKey,
-          globalState: globalStateKey,
-          mintColl: mintCollKey,
-          ...defaultPrograms,
-        },
-    });
-    return 'created token vault successfully';
+    switch (platform) {
+      case "SABER":
+        return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
+      default:
+        console.error('Platform vault creation yet not implemented');
+        break;
+    }
   } catch (e) {
     console.log("can't create token vault");
   }
@@ -409,18 +376,20 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
 
   const program = getProgramInstance(connection, wallet);
 
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
     program.programId
   );
+
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
-  const [tokenCollKey, tokenCollNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_POOL_TAG), userTroveKey.toBuffer()],
-    program.programId,
+  const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_TROVE_POOL_TAG), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
+    program.programId
   );
+
   try {
     const userTrove = await program.account.userTrove.fetch(userTroveKey);
     console.log('fetched userTrove', userTrove);
@@ -429,12 +398,14 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
   } catch (e) {}
 
   try {
-    await program.rpc.createUserTrove(userTroveNonce, tokenVaultNonce, {
+    await program.rpc.createUserTrove(userTroveNonce, userTroveTokenVaultNonce, new BN(0), {
       accounts: {
-        authority: wallet.publicKey,
-        userTrove: userTroveKey,
-        tokenColl: tokenCollKey,
         tokenVault: tokenVaultKey,
+        userTrove: userTroveKey,
+
+        authority: wallet.publicKey,
+
+        tokenColl: userTroveTokenVaultKey,
         mintColl: mintCollKey,
         ...defaultPrograms,
       },

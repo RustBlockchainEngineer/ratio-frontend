@@ -8,6 +8,7 @@ import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
 import { useWallet, WalletAdapter } from '../../contexts/wallet';
+import { IIndexable } from '../../types/admin-types';
 import {
   setBorrowFee,
   setDepositFee,
@@ -42,9 +43,6 @@ interface FeesChanged {
   withdraw_fee: boolean;
   harvest_fee_deno: boolean;
   harvest_fee: boolean;
-}
-export interface IIndexable {
-  [key: string]: any;
 }
 const ContractUpdatersMap = {
   borrow_fee:   async (connection: Connection, wallet: WalletAdapter, data: Fees) => 

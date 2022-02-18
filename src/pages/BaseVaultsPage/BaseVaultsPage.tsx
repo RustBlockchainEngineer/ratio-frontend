@@ -9,6 +9,7 @@ import { getRiskLevelNumber } from '../../libs/helper';
 import FilterPanel from '../../components/FilterPanel';
 import ComparingFooter from '../../components/ComparingFooter';
 import TokenPairCard from '../../components/TokenPairCard';
+import ActivePairCard from '../../components/ActivePairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 
 import { getCoinPicSymbol } from '../../utils/helper';
@@ -21,6 +22,8 @@ import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
+import ActivePairListItem from '../../components/ActivePairListItem';
+import { SABER_TOKEN_NEW, SABER_TOKEN_OLD } from '../../utils/constant-test';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -76,37 +79,39 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
     if (d !== undefined) {
       const p = filterData(d, filter_data, platform_data)
+        .filter((item: LPair) =>
+          showOnlyActive
+            ? Object.keys(overview.activeVaults).indexOf(item.address_id) > -1
+            : overview.activeVaults
+            ? Object.keys(overview.activeVaults).indexOf(item.address_id) === -1
+            : item
+        )
         .map((item: LPair, index: any) => {
-          if (
-            showOnlyActive === false ||
-            (showOnlyActive && Object.keys(overview.activeVaults).indexOf(item.address_id) > -1)
-          ) {
-            return {
-              id: index,
-              mint: item.address_id, //MINTADDRESS[key]
-              icons: item.lpasset?.map((item) =>
-                item.token_icon?.trim() === '' || item.token_icon === undefined
-                  ? getCoinPicSymbol(item.token_symbole)
-                  : item.token_icon
-              ),
-              icon: item.icon,
-              title: item.symbol,
-              tvl: item.platform_tvl,
-              apr: item.platform_ratio_apr,
-              earned_rewards: item.earned_rewards,
-              platform: {
-                link: item.platform_site,
-                name: item.platform_name,
-                icon: item.platform_icon,
-              },
-              risk: item.risk_rating,
-              riskLevel: getRiskLevelNumber(item.risk_rating),
-              item: item,
-              hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
-            };
-          }
-        })
-        .filter(Boolean);
+          return {
+            id: index,
+            mint: item.address_id, //MINTADDRESS[key]
+            icons: item.lpasset?.map((item) =>
+              item.token_icon?.trim() === '' || item.token_icon === undefined
+                ? getCoinPicSymbol(item.token_symbole)
+                : item.token_icon
+            ),
+            icon: item.icon,
+            title: item.symbol,
+            tvl: item.platform_tvl,
+            apr: item.platform_ratio_apr,
+            earned_rewards: item.earned_rewards,
+            platform: {
+              link: item.platform_site,
+              name: item.platform_name,
+              icon: item.platform_icon,
+            },
+            risk: item.risk_rating,
+            riskLevel: getRiskLevelNumber(item.risk_rating),
+            item: item,
+            hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
+          };
+        });
+      // .filter(Boolean);
       let x;
       if (platform_data.value !== 'ALL') {
         x = p.filter((item: any) => item.platform.name === platform_data.value);
@@ -199,14 +204,24 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       return (
         <div className="row">
           {factorial.map((item: any) => {
-            return (
-              <TokenPairCard
-                data={item}
-                key={item.id}
-                onCompareVault={onCompareVault}
-                isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
-              />
-            );
+            if (showOnlyActive === false)
+              return (
+                <TokenPairCard
+                  data={item}
+                  key={item.id}
+                  onCompareVault={onCompareVault}
+                  isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
+                />
+              );
+            else
+              return (
+                <ActivePairCard
+                  data={item}
+                  key={item.id}
+                  onCompareVault={onCompareVault}
+                  isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
+                />
+              );
           })}
         </div>
       );
@@ -214,23 +229,51 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       return (
         <table className="table allvaults__table">
           <thead>
-            <tr>
-              <th scope="col">Asset</th>
-              <th scope="col">Platform</th>
-              <th scope="col">APR</th>
-              <th scope="col">Risk Rating</th>
-            </tr>
+            {showOnlyActive === false ? (
+              <tr>
+                <th scope="col">Asset</th>
+                <th scope="col">APR</th>
+                <th scope="col">Platform</th>
+                {/* <th scope="col">USDr Debt</th>
+                <th scope="col">Positoin Value</th>
+                <th scope="col">Rewards earned</th>
+                <th scope="col">Ratio TVL</th> */}
+                <th scope="col">Risk Rating</th>
+                <th scope="col"></th>
+              </tr>
+            ) : (
+              <tr>
+                <th scope="col">Asset</th>
+                <th scope="col">APR</th>
+                <th scope="col">USDr Debt</th>
+                <th scope="col">USDr Available to Mint</th>
+                <th scope="col">Positoin Value</th>
+                <th scope="col">Rewards earned</th>
+                <th scope="col">Risk Rating</th>
+                <th scope="col"></th>
+              </tr>
+            )}
           </thead>
           <tbody>
             {factorial.map((item: any) => {
-              return (
-                <TokenPairListItem
-                  data={item}
-                  key={item.id}
-                  onCompareVault={onCompareVault}
-                  isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
-                />
-              );
+              if (showOnlyActive === false)
+                return (
+                  <TokenPairListItem
+                    data={item}
+                    key={item.id}
+                    onCompareVault={onCompareVault}
+                    isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
+                  />
+                );
+              else
+                return (
+                  <ActivePairListItem
+                    data={item}
+                    key={item.id}
+                    onCompareVault={onCompareVault}
+                    isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
+                  />
+                );
             })}
           </tbody>
         </table>

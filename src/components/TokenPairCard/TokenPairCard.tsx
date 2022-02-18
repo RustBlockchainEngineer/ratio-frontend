@@ -78,8 +78,13 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
 
   const updateVaultValues = async () => {
     const tokenVault = await getTokenVaultByMint(connection, data.mint);
-    const tvlAmount = new TokenAmount((tokenVault as any)?.totalColl ?? 0, collMint?.decimals);
-    const debtAmount = new TokenAmount((tokenVault as any)?.totalDebt ?? 0, usdrMint?.decimals);
+
+    if (!tokenVault) {
+      return;
+    }
+
+    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
+    const debtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
 
     setTVL(Number(tvlAmount.fixed()));
     setTotalDebt(Number(debtAmount.fixed()));
@@ -93,6 +98,9 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     do {
       await sleep(1000);
       const tokenVault = getTokenVaultByMint(connection, data.mint);
+      if (!tokenVault) {
+        return;
+      }
       tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
       totalDebtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
     } while (oriTvl === Number(tvlAmount.fixed()) || oriTotalDebt === Number(totalDebtAmount.fixed()));
@@ -146,15 +154,19 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
         <div className="d-flex">
           <Button
             disabled={!connected}
-            className="button button--blue generate mt-2"
+            className="button button--blue tokenpaircard__generate mt-2"
             onClick={() => {
-              poolInfoProviderFactory?.harvestReward(connection, wallet);
+              poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
             }}
           >
             Harvest
           </Button>
           <div className="mx-1"></div>
-          <Button disabled={!connected} className="button button--blue generate mt-2" onClick={showDashboard}>
+          <Button
+            disabled={!connected}
+            className="button button--blue tokenpaircard__generate mt-2"
+            onClick={showDashboard}
+          >
             Open Vault
           </Button>
         </div>
@@ -267,7 +279,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
             )
           }
           <div className="tokenpaircard__detailBox">
-            {isOpen && (
+            {/* {isOpen && (
               <div className="tokenpaircard__detailBox__content">
                 <div className="d-flex justify-content-between">
                   <div>
@@ -290,11 +302,11 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
-            <div className="tokenpaircard__detailBox__toggle" onClick={() => setOpen(!isOpen)} aria-hidden="true">
+            {/* <div className="tokenpaircard__detailBox__toggle" onClick={() => setOpen(!isOpen)} aria-hidden="true">
               Position Overview {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
