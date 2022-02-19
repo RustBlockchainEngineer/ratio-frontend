@@ -2,7 +2,7 @@
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js';
 import { StableSwap, loadExchangeInfoFromSwapAccount } from '@saberhq/stableswap-sdk';
 import { getDevnetPools, getMainnetPools } from './saber/ids';
-import { SABER_QUARRY_NEW } from './constant-test';
+// import { SABER_QUARRY_NEW } from './saber/constants';
 
 export async function loadSaberSwap(conn: Connection, swapAccount: PublicKey) {
   const stableSwapProgram = await StableSwap.load(conn, swapAccount);
@@ -42,18 +42,18 @@ export async function getSaberSwapPoolsInfo(conn: Connection, connEnv: string) {
     const swapAccount = new PublicKey(pools[i].swapAddress);
     const poolAddr = pools[i].quarryAddress;
 
-    if (poolAddr === SABER_QUARRY_NEW) {
-      swapPoolsInfo[`${pools[i].name}`] = {
-        poolAddr,
-        tokenAName: 'Token A',
-        tokenAAddress: 'EJwZgeZrdC8TXTQbQBoL6bfuAnFUUy1PVCMB4DYPzVaS',
-        tokenAAmount: '1000',
-        tokenBName: 'Token B',
-        tokenBAddress: 'EJwZgeZrdC8TXTQbQBoL6bfuAnFUUy1PVCMB4DYPzVaS',
-        tokenBAmount: '1000',
-        tvl: '20',
-      };
-    } else {
+    // if (poolAddr === SABER_QUARRY_NEW) {
+    //   swapPoolsInfo[`${pools[i].name}`] = {
+    //     poolAddr,
+    //     tokenAName: 'Token A',
+    //     tokenAAddress: 'EJwZgeZrdC8TXTQbQBoL6bfuAnFUUy1PVCMB4DYPzVaS',
+    //     tokenAAmount: '1000',
+    //     tokenBName: 'Token B',
+    //     tokenBAddress: 'EJwZgeZrdC8TXTQbQBoL6bfuAnFUUy1PVCMB4DYPzVaS',
+    //     tokenBAmount: '1000',
+    //     tvl: '20',
+    //   };
+    // } else {
       const { tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount, tvl } =
         await getSaberSwapPoolInfo(conn, swapAccount);
 
@@ -67,7 +67,7 @@ export async function getSaberSwapPoolsInfo(conn: Connection, connEnv: string) {
         tokenBAmount,
         tvl,
       };
-    }
+    // }
   }
   return swapPoolsInfo;
 }

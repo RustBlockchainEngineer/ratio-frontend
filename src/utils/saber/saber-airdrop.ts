@@ -44,7 +44,7 @@ import { isMainThread } from 'worker_threads';
 import { BN } from '@project-serum/anchor';
 import { getProgramInstance } from '../ratio-lending';
 import { sendTransaction } from '../web3';
-import { SABER_REWARDER } from '../constant-test';
+import { SABER_REWARDER } from './constants';
 import { TransactionInstructions } from '@saberhq/stableswap-sdk/dist/cjs/util/instructions';
 
 chaiUse(chaiAsPromised);

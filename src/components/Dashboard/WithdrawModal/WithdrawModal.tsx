@@ -78,13 +78,14 @@ const WithdrawModal = ({ data }: any) => {
       setInvalidStr('Invalid  User Collateral account to withdraw!');
       return;
     }
-    withdrawCollateral(
-      connection,
-      wallet,
-      withdrawAmount * Math.pow(10, collMint?.decimals),
-      userCollAccount,
-      new PublicKey(data.mint)
-    )
+    poolInfoProviderFactory
+      ?.withdrawLP(
+        connection,
+        wallet,
+        vault as LPair,
+        withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
+        userCollAccount
+      )
       .then(() => {
         setUpdateStateFlag(true);
       })
@@ -173,15 +174,7 @@ const WithdrawModal = ({ data }: any) => {
             <Button
               className="button--blue bottomBtn"
               disabled={withdrawAmount <= 0 || buttonDisabled}
-              onClick={() =>
-                poolInfoProviderFactory?.withdrawLP(
-                  connection,
-                  wallet,
-                  vault as LPair,
-                  withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
-                  userCollAccount
-                )
-              }
+              onClick={() => withdraw()}
             >
               Withdraw Assets
             </Button>

@@ -1,7 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { MINTADDRESS } from '../../../constants';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
 import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';

@@ -17,7 +17,7 @@ import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
+import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useUpdateState } from '../../contexts/auth';
 import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
@@ -25,7 +25,6 @@ import highriskIcon from '../../assets/images/highrisk.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { MINTADDRESS } from '../../constants';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
 const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
@@ -38,7 +37,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
 
   const collMint = useMint(data.mint);
   const tokenPrice = usePrice(data.mint);
-  const usdrMint = useMint(MINTADDRESS['USDR']);
+  const usdrMint = useMint(USDR_MINT_KEY);
 
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);

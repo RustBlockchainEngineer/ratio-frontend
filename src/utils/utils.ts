@@ -7,9 +7,9 @@ import { MintInfo } from '@solana/spl-token';
 import { Connection, PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import { TokenInfo } from '@solana/spl-token-registry';
-import { WAD, ZERO, MINTADDRESS } from '../constants';
+import { WAD, ZERO, LP_PAIR_MINT_KEYS } from '../constants';
 import { TokenAccount } from './../models';
-import { getUserState } from '../utils/ratio-lending';
+import { getUserState, USDR_MINT_KEY } from '../utils/ratio-lending';
 import { TokenAmount } from '../utils/safe-math';
 import { getUSDrAmount } from '../utils/risk';
 import { cache, MintParser } from '../contexts/accounts';
@@ -251,16 +251,16 @@ interface GetDebtLimit {
 
 export const getRiskLevelNumber = (vaultMint: any) => {
   switch (vaultMint) {
-    case MINTADDRESS['USDC-USDR']:
+    case LP_PAIR_MINT_KEYS['USDC-USDR']:
       return 0;
       break;
-    case MINTADDRESS['ETH-SOL']:
+    case LP_PAIR_MINT_KEYS['ETH-SOL']:
       return 1;
       break;
-    case MINTADDRESS['ATLAS-RAY']:
+    case LP_PAIR_MINT_KEYS['ATLAS-RAY']:
       return 2;
       break;
-    case MINTADDRESS['SAMO-RAY']:
+    case LP_PAIR_MINT_KEYS['SAMO-RAY']:
       return 3;
       break;
 
@@ -302,7 +302,7 @@ export const getMint = async (connection: Connection, key: any) => {
 };
 
 export const getDebtLimitForAllVaults = async (connection: Connection, wallet: any, vaults: any) => {
-  const usdrMint = await getMint(connection, MINTADDRESS['USDR']);
+  const usdrMint = await getMint(connection, USDR_MINT_KEY);
 
   const debtLimitForAllVaults = await Promise.all(
     vaults.map(async (vault: any) => {

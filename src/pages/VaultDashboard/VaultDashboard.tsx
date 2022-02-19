@@ -3,9 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { useLocation } from 'react-router-dom';
-
-import { MINTADDRESS } from '../../constants';
-
 import ComingSoon from '../../components/ComingSoon';
 import RiskLevel from '../../components/Dashboard/RiskLevel';
 import SpeedoMetor from '../../components/Dashboard/SpeedoMeter';
@@ -27,6 +24,7 @@ import {
   getGlobalState,
   // USDR_MINT_KEY, TOKEN_VAULT_OPTIONS, getUsdrMintKey,
   getUpdatedUserState,
+  USDR_MINT_KEY,
 } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
@@ -66,11 +64,11 @@ const VaultDashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const collMint = useMint(vault_mint as string);
-  const usdrMint = useMint(MINTADDRESS['USDR']);
+  const usdrMint = useMint(USDR_MINT_KEY);
   const tokenPrice = usePrice(vault_mint as string);
 
   const collAccount = useAccountByMint(vault_mint as string);
-  const usdrAccount = useAccountByMint(MINTADDRESS['USDR']);
+  const usdrAccount = useAccountByMint(USDR_MINT_KEY);
 
   const [userState, setUserState] = useState<any>(null);
   const [globalState, setGlobalState] = useState<any>(null);
@@ -90,7 +88,7 @@ const VaultDashboard = () => {
   const allVaults = useSelector(selectors.getAllVaults);
   const [vauldDebtData, setVaultDebtData] = useState({
     mint: vault_mint,
-    usdrMint: MINTADDRESS['USDR'],
+    usdrMint: USDR_MINT_KEY,
     usdrValue: 0,
   });
 
@@ -214,7 +212,7 @@ const VaultDashboard = () => {
       if (vault_mint) {
         setVaultDebtData({
           mint: vault_mint,
-          usdrMint: MINTADDRESS['USDR'],
+          usdrMint: USDR_MINT_KEY,
           usdrValue: Number(tmpDebtValue),
         });
       }
@@ -223,7 +221,7 @@ const VaultDashboard = () => {
     return () => {
       setVaultDebtData({
         mint: vault_mint,
-        usdrMint: MINTADDRESS['USDR'],
+        usdrMint: USDR_MINT_KEY,
         usdrValue: 0,
       });
     };

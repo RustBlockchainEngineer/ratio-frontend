@@ -23,19 +23,18 @@ import {
   LAMPORTS_PER_SOL,
   Connection,
 } from '@solana/web3.js';
-import { findMinerAddress, QuarrySDK, QUARRY_ADDRESSES } from '@quarryprotocol/quarry-sdk';
+import {
+  findMinerAddress,
+  findMinterAddress,
+  findQuarryAddress,
+  QuarrySDK,
+  QUARRY_ADDRESSES,
+} from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { createAssociatedTokenAccount, findAssociatedTokenAddress } from '../raydium/web3';
 import { getOneFilteredTokenAccountsByOwner, sendTransaction } from '../web3';
-import {
-  FEE_OWNER,
-  SABER_MINTER,
-  SABER_MINT_WRAPPER,
-  SABER_CLAIM_ACCOUNT,
-  SABER_REWARDER,
-  SABER_REWARD_MINT,
-} from '../constant-test';
+import { FEE_OWNER, SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_MINT } from './constants';
 
 const defaultAccounts = {
   tokenProgram: TOKEN_PROGRAM_ID,
@@ -43,8 +42,6 @@ const defaultAccounts = {
   systemProgram: SystemProgram.programId,
   rent: anchor.web3.SYSVAR_RENT_PUBKEY,
 };
-
-const saberFarmQuarry = new anchor.web3.PublicKey('BTimzTk51pcKxDQLRR3iFs4dLVY9WyKgRBmnd1rZLN6n');
 
 export async function createSaberTokenVault(
   connection: Connection,
@@ -139,12 +136,7 @@ export async function createSaberUserTrove(connection: Connection, wallet: any, 
     },
   });
 
-  const sdk: QuarrySDK = QuarrySDK.load({
-    provider: program.provider,
-  });
-  const rewarder = await sdk.mine.loadRewarderWrapper(SABER_REWARDER);
-
-  const quarryKey = await rewarder.getQuarryKeyForMint(mintCollKey);
+  const [quarryKey] = await findQuarryAddress(SABER_REWARDER, mintCollKey);
 
   const [userMinerKey, userMinerBump] = await findMinerAddress(quarryKey, userTroveKey);
 
@@ -159,7 +151,7 @@ export async function createSaberUserTrove(connection: Connection, wallet: any, 
       userTrove: userTroveKey,
       payer: wallet.publicKey,
       miner: userMinerKey,
-      quarry: saberFarmQuarry,
+      quarry: quarryKey,
       rewarder: SABER_REWARDER,
       minerVault: userMinerVaultKey,
       tokenMint: mintCollKey,
@@ -202,12 +194,8 @@ export async function depositToSaber(
     [Buffer.from(USER_TROVE_POOL_TAG), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
-  const sdk: QuarrySDK = QuarrySDK.load({
-    provider: program.provider,
-  });
-  const rewarder = await sdk.mine.loadRewarderWrapper(SABER_REWARDER);
+  const [quarryKey] = await findQuarryAddress(SABER_REWARDER, mintCollKey);
 
-  const quarryKey = await rewarder.getQuarryKeyForMint(mintCollKey);
   const [userMinerKey, userMinerBump] = await findMinerAddress(quarryKey, userTroveKey);
 
   const [userMinerVaultKey, userMinerVaultBump] = await anchor.web3.PublicKey.findProgramAddress(
@@ -227,7 +215,7 @@ export async function depositToSaber(
         tokenProgram: TOKEN_PROGRAM_ID,
       },
       saberFarm: {
-        quarry: saberFarmQuarry,
+        quarry: quarryKey,
         miner: userMinerKey,
         minerVault: userMinerVaultKey,
       },
@@ -326,13 +314,12 @@ export async function harvestFromSaber(
     [Buffer.from(USER_TROVE_POOL_TAG), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
-
   const sdk: QuarrySDK = QuarrySDK.load({
     provider: program.provider,
   });
   const rewarder = await sdk.mine.loadRewarderWrapper(SABER_REWARDER);
 
-  const quarryKey = await rewarder.getQuarryKeyForMint(mintCollKey);
+  const [quarryKey] = await findQuarryAddress(SABER_REWARDER, mintCollKey);
 
   const [userMinerKey, userMinerBump] = await findMinerAddress(quarryKey, userTroveKey);
 
@@ -394,6 +381,8 @@ export async function harvestFromSaber(
     );
   }
 
+  const [minter] = await findMinterAddress(SABER_MINT_WRAPPER, SABER_REWARDER, QUARRY_ADDRESSES.MintWrapper);
+
   const ix = await program.instruction.harvestFromSaber({
     accounts: {
       ratioHarvester: {
@@ -410,7 +399,7 @@ export async function harvestFromSaber(
         ...defaultAccounts,
       },
       saberFarm: {
-        quarry: saberFarmQuarry,
+        quarry: quarryKey,
         miner: userMinerKey,
         minerVault: userMinerVaultKey,
       },
@@ -421,14 +410,14 @@ export async function harvestFromSaber(
       mintWrapper: SABER_MINT_WRAPPER,
       mintWrapperProgram: QUARRY_ADDRESSES.MintWrapper,
 
-      minter: SABER_MINTER,
+      minter: minter,
       rewardsTokenMint: SABER_REWARD_MINT,
-      claimFeeTokenAccount: SABER_CLAIM_ACCOUNT,
+      claimFeeTokenAccount: rewarder.rewarderData.claimFeeTokenAccount,
     },
   });
   tx.add(ix);
   const txHash = await sendTransaction(connection, wallet, tx, []);
-
+  console.log('Harvest finished', txHash);
   return txHash;
 }
 
@@ -459,12 +448,19 @@ export async function calculateReward(connection: Connection, wallet: any, mintC
 
   const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
 
-  const expectedWagesEarned = payroll.calculateRewardsEarned(
-    currentTimeStamp,
-    miner?.balance as anchor.BN,
-    miner?.rewardsPerTokenPaid as anchor.BN,
-    miner?.rewardsEarned as anchor.BN
-  );
-  console.log('Saber farming', expectedWagesEarned.toString());
-  return Math.ceil(parseFloat(expectedWagesEarned.toString()) * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
+  let expectedWagesEarned = 0;
+  try {
+    expectedWagesEarned = (
+      await payroll.calculateRewardsEarned(
+        currentTimeStamp,
+        miner?.balance as anchor.BN,
+        miner?.rewardsPerTokenPaid as anchor.BN,
+        miner?.rewardsEarned as anchor.BN
+      )
+    ).toNumber();
+  } catch (e) {
+    // console.log(e);
+  }
+  console.log(`Saber farming reward for  ${mintCollKey}`, expectedWagesEarned);
+  return Math.ceil(expectedWagesEarned * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
 }
