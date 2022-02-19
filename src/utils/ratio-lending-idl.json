@@ -164,7 +164,7 @@
         },
         {
           "name": "globalState",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         }
       ],
@@ -185,7 +185,7 @@
         },
         {
           "name": "globalState",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -320,7 +320,7 @@
         },
         {
           "name": "globalState",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         }
       ],
@@ -1575,6 +1575,6 @@
     }
   ],
   "metadata": {
-    "address": "BRryWAy5a9yZsruQEKJpRfKGyQy7DeBtZ1JZnDuVhVjF"
+    "address": "rT22BzUhpVDPtkheuc7DgMWBNNteWyuWfJ7Ao2e44FD"
   }
 }
