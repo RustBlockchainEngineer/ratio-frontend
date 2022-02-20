@@ -2,14 +2,13 @@ import raydiumIcon from '../assets/images/raydium.svg';
 import orcaIcon from '../assets/images/orca.svg';
 import mercurialIcon from '../assets/images/mercurial.svg';
 import saberIcon from '../assets/images/saber.svg';
-import { SABER_TOKEN_NEW } from '../utils/constant-test';
+// import { SABER_TOKEN_NEW } from '../utils/saber/constants';
 
-export const MINTADDRESS: any = {
-  USDR: '6EJAff7wySn7TMeGLH8Nk7XCZ9uYdkrYiiM5qA4sKR8i',
+export const LP_PAIR_MINT_KEYS: any = {
   'USDC-USDR': '7M2dxU1tavGpKX47baKCsspBjZ5Rcthcun8DDouSU49x',
   'ETH-SOL': '8Tddz1epzDM5nvEaYc5uPtmgu3DCRabRxsnfXu6yUneD',
   'ATLAS-RAY': '4sGmJRR53TLUo6S1ovFChdEuEssjymPNuEaaDQacuKws',
-  'SAMO-RAY': SABER_TOKEN_NEW,
+  'SAMO-RAY': '4sGmJRR53TLUo6S1ovFChdEuEssjymPNuEaaDQacuKws',
 };
 
 export const APR: any = {

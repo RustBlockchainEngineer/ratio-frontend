@@ -4,16 +4,13 @@ import PaybackModal from '../PaybackModal';
 import WithdrawModal from '../WithdrawModal';
 import GenerateModal from '../GenerateModal';
 import Button from '../../Button';
-
-import { MINTADDRESS } from '../../../constants';
-
 import usdrIcon from '../../../assets/images/USDr.png';
 import rayIcon from '../../../assets/images/RAY.svg';
 import solIcon from '../../../assets/images/SOL.svg';
 import { getFaucetState } from '../../../utils/ratio-faucet';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { getUsdrMintKey } from '../../../utils/ratio-lending';
+import { getUsdrMintKey, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 
 interface ModalcardInterface {
@@ -47,7 +44,7 @@ const ModalCard = ({
     icons: icons,
     title: tokenName,
     value: depositValue,
-    usdrMint: MINTADDRESS['USDR'],
+    usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
   };
 
@@ -58,7 +55,7 @@ const ModalCard = ({
     title: tokenName,
     value: withdrawValue,
     usdrValue: debtValue,
-    usdrMint: MINTADDRESS['USDR'],
+    usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
   };
   const paybackData = {
@@ -66,7 +63,7 @@ const ModalCard = ({
     icons: [usdrIcon],
     title: tokenName,
     usdrValue: debtValue,
-    usdrMint: MINTADDRESS['USDR'],
+    usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
   };
 
@@ -75,7 +72,7 @@ const ModalCard = ({
     icons: [usdrIcon],
     title: tokenName,
     usdrValue: generateValue,
-    usdrMint: MINTADDRESS['USDR'],
+    usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
   };
 

@@ -14,6 +14,7 @@ import { useWallet } from '../../contexts/wallet';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 import { useConnection } from '../../contexts/connection';
+import { airdropSaberLP } from '../../utils/saber/saber-airdrop';
 
 type HeaderProps = {
   onClickWalletBtn: () => void;
@@ -35,6 +36,11 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
     }
   }, [connected]);
 
+  const airdrop = async () => {
+    const mintKey = await airdropSaberLP(connection, wallet);
+    console.log('New mint', mintKey);
+  };
+
   return (
     <div className="header d-flex">
       {/* {isTable && <img src={darkMode ? darkLogo : logo} alt="logo" />} */}
@@ -42,6 +48,11 @@ const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
       {connected && (
         <Button disabled={!connected} className="button--blue walletBtn mr-3" onClick={() => history.push('/faucet')}>
           Faucet
+        </Button>
+      )}
+      {connected && (
+        <Button disabled={!connected} className="button--blue walletBtn mr-3" onClick={airdrop}>
+          Airdrop
         </Button>
       )}
       <SwitchButton />

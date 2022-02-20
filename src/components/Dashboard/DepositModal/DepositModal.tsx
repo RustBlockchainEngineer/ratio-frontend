@@ -69,13 +69,14 @@ const DepositModal = ({ data }: any) => {
       setInvalidStr('Invalid  User Collateral account to deposit!');
       return;
     }
-    depositCollateral(
-      connection,
-      wallet,
-      depositAmount * Math.pow(10, collMint?.decimals),
-      collAccount?.pubkey?.toString(),
-      new PublicKey(data.mint)
-    )
+    poolInfoProviderFactory
+      ?.depositLP(
+        connection,
+        wallet,
+        vault as LPair,
+        depositAmount * Math.pow(10, collMint?.decimals ?? 0),
+        collAccount?.pubkey.toString() as string
+      )
       .then(() => {
         setUpdateStateFlag(true);
       })
@@ -156,15 +157,7 @@ const DepositModal = ({ data }: any) => {
             <Button
               disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount)}
               className="button--blue bottomBtn"
-              onClick={() => {
-                poolInfoProviderFactory?.depositLP(
-                  connection,
-                  wallet,
-                  vault as LPair,
-                  depositAmount * Math.pow(10, collMint?.decimals ?? 0),
-                  collAccount?.pubkey.toString() as string
-                );
-              }}
+              onClick={() => deposit()}
             >
               Deposit LP
             </Button>

@@ -37,7 +37,6 @@ export const TYPE_ID_UNKNOWN: PlatformType = 4;
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
-export const USDR_MINT_KEY = 'GHY2oA1hsLn8qYFZDz9GFy4hSUwtdVfkcSkhKHYr7XKd';
 export const GLOBAL_STATE_TAG = 'global-state-seed';
 export const TOKEN_VAULT_TAG = 'token-vault-seed';
 export const USER_TROVE_TAG = 'user-trove';
@@ -48,6 +47,7 @@ export const USER_TROVE_POOL_TAG = 'user-trove-pool';
 
 export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
+export const USDR_MINT_KEY = 'CLXs35GtmoD2e4MwMeAbNsuQF4YKPW2EgzgNWZVpqLu2';
 export const defaultPrograms = {
   systemProgram: SystemProgram.programId,
   tokenProgram: TOKEN_PROGRAM_ID,
@@ -371,7 +371,7 @@ export async function createTokenVault(
   }
 }
 
-export async function createUserTrove(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
+export async function createUserTrove(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY, debtCeil = 100_000_000_000) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -398,7 +398,7 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
   } catch (e) {}
 
   try {
-    await program.rpc.createUserTrove(userTroveNonce, userTroveTokenVaultNonce, new BN(0), {
+    await program.rpc.createUserTrove(userTroveNonce, userTroveTokenVaultNonce, new BN(debtCeil), {
       accounts: {
         tokenVault: tokenVaultKey,
         userTrove: userTroveKey,
@@ -629,10 +629,9 @@ export async function lockAndMint(
   */
 }
 
-export async function getUsdrMintKey(connection: Connection, wallet: any) {
-  const program = getProgramInstance(connection, null);
+export async function getUsdrMintKey() {
 
-  const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(USD_MINT_TAG)], program.programId);
+  const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(USD_MINT_TAG)], STABLE_POOL_PROGRAM_ID);
   return mintUsdKey.toBase58();
 }
 

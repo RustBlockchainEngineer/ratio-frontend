@@ -23,7 +23,6 @@ import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
-import { SABER_TOKEN_NEW, SABER_TOKEN_OLD } from '../../utils/constant-test';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
