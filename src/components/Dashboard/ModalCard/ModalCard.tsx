@@ -83,7 +83,7 @@ const ModalCard = ({
         <div className="modalCard__header">
           <div className="d-flex align-items-start">
             <div>
-              {icon && <img src={icon.default} alt={'Token1'} />}
+              {icon && <img src={icon} alt={'Token1'} />}
               {/* {type === 'deposit_withdraw' && icons && <img src={icons[0]} alt={icons[0].toString()} />} */}
               {/* {icons && icons[1] && <img src={icons[1]} alt={icons[1].toString()} className="modalCard__header-icon" />} */}
             </div>

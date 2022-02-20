@@ -45,7 +45,7 @@
     "@project-serum/serum": "^0.13.55",
     "@project-serum/sol-wallet-adapter": "^0.2.5",
     "@pythnetwork/client": "^2.5.3",
-    "@quarryprotocol/quarry-sdk": "^1.10.6",
+    "@quarryprotocol/quarry-sdk": "^2.0.1",
     "@saberhq/anchor-contrib": "1.12.37",
     "@saberhq/stableswap-sdk": "^1.10.3",
     "@solana/buffer-layout": "^4.0.0",

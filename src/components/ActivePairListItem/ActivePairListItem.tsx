@@ -19,9 +19,10 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import { sleep } from '@project-serum/common';
 import { useUpdateState } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
+import { MINTADDRESS } from '../../constants';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
-const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
+const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
 
   const tokenPrice = usePrice(data.mint);
@@ -30,7 +31,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
   const collMint = useMint(data.mint);
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
 
-  const usdrMint = useMint(USDR_MINT_KEY);
+  const usdrMint = useMint(MINTADDRESS['USDR']);
 
   const [expand, setExpand] = React.useState(false);
   const [userState, setUserState] = React.useState(null);
@@ -44,17 +45,17 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
   const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
 
   React.useEffect(() => {
-    if (data.hasReachedUserDebtLimit) {
+    // replace this boolean value with a function to determine wether user limit reached
+    const userLimitReached = false;
+    // replace this boolean value with a function to determine wether global limit reached
+    const globalLimitReached = false;
+    if (userLimitReached) {
       setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
-    } else if (isGlobalDebtLimitReached) {
-      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
-    } else {
-      setHasUserReachedDebtLimit('');
     }
-    return () => {
-      setHasUserReachedDebtLimit('');
-    };
-  }, [data]);
+    if (globalLimitReached) {
+      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+    }
+  }, [wallet, connection]);
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -147,14 +148,14 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
           onClick={() => {
             poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
           }}
-          className="button button--blue tokenpaircard__generate"
+          className="button button--blue activepaircard__generate"
         >
           Harvest
         </Button>
         <div className="mx-1"></div>
         <Button
           disabled={!connected}
-          className="button button--blue tokenpaircard__generate mt-2"
+          className="button button--blue activepaircard__generate mt-2"
           onClick={showDashboard}
         >
           Open Vault
@@ -178,9 +179,9 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
     <>
       <tr>
         <td scope="row">
-          <div>
-            <div className="d-flex align-items-start">
-              <div className="d-flex">
+          <div className="align-items-center">
+            <div className="d-flex ">
+              <div className="d-flex align-items-start">
                 <img src={data.icon} alt={'Token1'} className="allvaults__table__icon" />
                 {/* <img src={data.icons[0]} alt={data.icons[0].toString()} className="activepaircard__header-icon0" />
                 <img src={data.icons[1]} alt={data.icons[1].toString()} className="activepaircard__header-icon1" /> */}
@@ -188,6 +189,13 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 <p>TVL {printTvl()}</p>
+                <a href={data.platform.link} target="_blank" rel="noreferrer">
+                  <div className="d-inline-flex align-items-center mt-1 position-relative">
+                    <img src={data.platform.icon} />
+                    <p className="semiBold ml-1">{data.platform.name}</p>
+                    <img src={linkIcon} alt="linkIcon" className="activepaircard__titleBox--linkIcon" />
+                  </div>
+                </a>
               </div>
             </div>
           </div>
@@ -201,7 +209,6 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
               </p>
             </div>
           )}
-          {/* <div className="mt-1 d-block">{renderModalButton()}</div> */}
         </td>
         <td>
           <div className="tokenpaircard__table__td">
@@ -210,20 +217,10 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <a href={data.platform.link} target="_blank" rel="noreferrer">
-              <div className="d-inline-flex align-items-center mt-1 position-relative">
-                <img src={data.platform.icon} />
-                <p className="semiBold ml-1">{data.platform.name}</p>
-                <img src={linkIcon} alt="linkIcon" className="activepaircard__titleBox--linkIcon" />
-              </div>
-            </a>
-          </div>
-        </td>
-        {/* <td>
-          <div className="tokenpaircard__table__td">
             <h6 className="semiBold">{formatUSD.format(Number(totalDebt.toFixed(2)))}</h6>
           </div>
         </td>
+        <td></td>
         <td>
           <div className="tokenpaircard__table__td">
             <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
@@ -235,57 +232,20 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
           </div>
         </td>
         <td>
-          <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{formatUSD.format(tvlUSD)}</h6>
-          </div>
-        </td> */}
-        <td>
           <div className="d-flex justify-content-between align-items-start">
             <div className="tokenpaircard__table__td">
-              <h5>Ratio Risk Rating:</h5>
-              <div className="d-flex mt-2">
-                <h6 className={classNames('ml-2 mt-1', data.risk)}>{data.risk} </h6>
+              <div className="d-flex">
+                <h6 className={classNames('ml-2', data.risk)}>{data.risk} </h6>
               </div>
             </div>
-            {/* <div className="mt-1 expand_arrow">
-              {expand ? (
-                <IoIosArrowUp size={20} onClick={showExpand} />
-              ) : (
-                <IoIosArrowDown size={20} onClick={showExpand} />
-              )}
-            </div> */}
           </div>
         </td>
-        <td className="text-right">
+        <td>
           <div className="tokenpaircard__table__td">{renderModalButton()}</div>
         </td>
       </tr>
-      {/* {expand && (
-        <tr>
-          <td colSpan={4}>
-            <div className="tokenpaircard__detailBox__content d-flex justify-content-between">
-              <div>
-                Position value
-                <p>$ {positionValue.toFixed(2)}</p>
-              </div>
-              <div>
-                Rewards Earned
-                <p>{formatUSD.format(data.earned_rewards)}</p>
-              </div>
-              <div>
-                USDr Debt
-                <p>{formatUSD.format(Number(totalDebt.toFixed(2)))}</p>
-              </div>
-              <div>
-                Ratio TVL
-                <p>{formatUSD.format(tvlUSD)}</p>
-              </div>
-            </div>
-          </td>
-        </tr>
-      )} */}
     </>
   );
 };
 
-export default TokenPairListItem;
+export default ActivePairListItem;

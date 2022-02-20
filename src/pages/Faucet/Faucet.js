@@ -59,13 +59,13 @@ const Faucet = () => {
     setFaucetStatus('minting ...');
     let tx;
     try {
-      if (option.value === 'wtUST-USDC') {
+      if (option.value === TOKEN_VAULT_OPTIONS[0].value) {
         tx = await faucetUsdcUsdrLp(connection, wallet);
-      } else if (option.value === 'USDC-USDT') {
+      } else if (option.value === TOKEN_VAULT_OPTIONS[1].value) {
         tx = await faucetEthSolLp(connection, wallet);
-      } else if (option.value === 'UST-3Pool') {
+      } else if (option.value === TOKEN_VAULT_OPTIONS[2].value) {
         tx = await faucetAtlasRayLp(connection, wallet);
-      } else if (option.value === 'USDC-CASH') {
+      } else if (option.value === TOKEN_VAULT_OPTIONS[3].value) {
         tx = await faucetSamoRayLp(connection, wallet);
       } else {
         setFaucetStatus('Please select a faucet token.');

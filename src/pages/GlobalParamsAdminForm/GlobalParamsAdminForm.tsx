@@ -7,6 +7,7 @@ import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
+import { IIndexable } from '../../types/admin-types';
 import { setGlobalDebtCeiling, setGlobalTvlLimit, setUserDebtCeiling } from '../../utils/admin-contract-calls';
 import { getCurrentSuperOwner } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
@@ -16,6 +17,12 @@ interface GlobalParams {
   user_max_usdr: number;
   global_max_deposit: number;
   price_interval: number;
+}
+interface GlobalParamsChanged {
+  global_max_usdr: boolean;
+  user_max_usdr: boolean;
+  global_max_deposit: boolean;
+  price_interval: boolean;
 }
 const ContractUpdatersMap = {
   global_max_usdr: setGlobalDebtCeiling,
@@ -32,11 +39,18 @@ export default function GlobalParamsAdminForm() {
     global_max_deposit: 0,
     price_interval: 0,
   };
+  const defaultValuesTrackers: GlobalParamsChanged = {
+    global_max_usdr: false,
+    user_max_usdr: false,
+    global_max_deposit: false,
+    price_interval: false,
+  };
   const [data, setData] = useState<GlobalParams>(defaultValues);
   const [superOwner, setSuperOwner] = useState<string>();
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
+  const [changedTracker, setChangedTracker] = useState<GlobalParamsChanged>(defaultValuesTrackers);
 
   useEffect(() => {
     let active = true;
@@ -54,6 +68,10 @@ export default function GlobalParamsAdminForm() {
     setData((values) => ({
       ...values,
       [event.target.name]: event.target.value ?? 0,
+    }));
+    setChangedTracker((values) => ({
+      ...values,
+      [event.target.name]: true,
     }));
   };
 
@@ -104,6 +122,16 @@ export default function GlobalParamsAdminForm() {
     }
   }, [fetchData]);
 
+  const updateContractValues = async () => {
+    await Promise.all(
+      Object.keys(data)
+        .filter((item) => (changedTracker as IIndexable)[item])
+        .map(async (item) => {
+          await (ContractUpdatersMap as IIndexable)[item](connection, wallet, Number((data as IIndexable)[item]));
+        })
+    );
+  };
+
   const handleSubmit = async (evt: any) => {
     evt.preventDefault();
     const form = evt.currentTarget;
@@ -112,6 +140,7 @@ export default function GlobalParamsAdminForm() {
       return;
     }
     setValidated(true);
+    await updateContractValues();
     const response = await fetch(`${API_ENDPOINT}/ratioconfig/general`, {
       body: JSON.stringify(data),
       headers: {
