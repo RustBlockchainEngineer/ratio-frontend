@@ -156,13 +156,15 @@ export async function setCollateralRatio(
 export async function setHarvestFee(
   connection: Connection,
   wallet: WalletAdapter | undefined,
-  feeNum: number,
-  feeDeno: number
+  feeNum: number
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
+  const feeDeno = 1000_000;
+  const feeNumNew = (feeNum / 100) * feeDeno;
+  console.log(feeNumNew, feeDeno);
   try {
-    const tx = await program.rpc.setHarvestFee(new BN(feeNum), new BN(feeDeno), {
+    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(feeDeno), {
       accounts: {
         payer: wallet?.publicKey,
         globalState: globalStateKey,
