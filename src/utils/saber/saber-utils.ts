@@ -339,7 +339,7 @@ export async function harvestFromSaber(
   const tx = new Transaction();
 
   let userRewardKey = await getOneFilteredTokenAccountsByOwner(connection, wallet.publicKey, SABER_REWARD_MINT);
-
+  let amountOrigin = 0;
   if (userRewardKey === '') {
     const ata = await Token.getAssociatedTokenAddress(
       ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -360,6 +360,9 @@ export async function harvestFromSaber(
         wallet.publicKey
       )
     );
+  } else {
+    const amount = await getTokenAmount(program.provider, userRewardKey);
+    amountOrigin = amount.toNumber();
   }
 
   let feeCollectorKey = await getOneFilteredTokenAccountsByOwner(connection, FEE_OWNER, SABER_REWARD_MINT);
@@ -386,7 +389,6 @@ export async function harvestFromSaber(
   }
 
   const [minter] = await findMinterAddress(SABER_MINT_WRAPPER, SABER_REWARDER, QUARRY_ADDRESSES.MintWrapper);
-
   const ix = await program.instruction.harvestFromSaber({
     accounts: {
       ratioHarvester: {
@@ -422,6 +424,18 @@ export async function harvestFromSaber(
   tx.add(ix);
   const txHash = await sendTransaction(connection, wallet, tx, []);
   console.log('Harvest finished', txHash);
+  let amountNew = amountOrigin;
+  while (amountNew === amountOrigin) {
+    await serumCmn.sleep(200);
+    const amountBn = await getTokenAmount(program.provider, userRewardKey);
+    amountNew = amountBn.toNumber();
+  }
+
+  const rewardMint = await serumCmn.getMintInfo(program.provider, SABER_REWARD_MINT);
+  const newReward = (amountNew - amountOrigin) * Math.pow(10, -rewardMint?.decimals);
+
+  console.log('Reward Earned', newReward);
+
   return txHash;
 }
 
@@ -465,6 +479,11 @@ export async function calculateReward(connection: Connection, wallet: any, mintC
   } catch (e) {
     // console.log(e);
   }
-  console.log(`Saber farming reward for  ${mintCollKey}`, expectedWagesEarned);
+  // console.log(`Saber farming reward for  ${mintCollKey}`, expectedWagesEarned);
   return Math.ceil(expectedWagesEarned * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
+}
+
+async function getTokenAmount(provider: any, tokenAccountKey: PublicKey | string) {
+  const accountInfo = await serumCmn.getTokenAccount(provider, new PublicKey(tokenAccountKey));
+  return accountInfo?.amount;
 }
