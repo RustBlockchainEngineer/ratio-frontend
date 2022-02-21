@@ -52,8 +52,7 @@ const ContractUpdatersMap = {
   payback_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
                   await setPaybackFee(connection, wallet, Number(data?.payback_fee)),
   harvest_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setHarvestFee(connection, wallet, Number(data?.harvest_fee), Number(data?.harvest_fee_deno)),
-  harvest_fee_deno: async() => {},
+                  await setHarvestFee(connection, wallet, Number(data?.harvest_fee)),
   stake_fee:    async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
                   await setStakeFee(connection, wallet, Number(data?.borrow_fee)),
   swap_fee:     async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
@@ -73,7 +72,6 @@ export default function FeesAdminForm() {
     stake_fee: 0,
     swap_fee: 0,
     withdraw_fee: 0,
-    harvest_fee_deno: 0,
     harvest_fee: 0,
   };
   const defaultValuesTrackers: FeesChanged = {
@@ -84,7 +82,6 @@ export default function FeesAdminForm() {
     stake_fee: false,
     swap_fee: false,
     withdraw_fee: false,
-    harvest_fee_deno: false,
     harvest_fee: false,
   };
   const [data, setData] = useState<Fees>(defaultValues);
@@ -210,23 +207,7 @@ export default function FeesAdminForm() {
           <AdminFormInput handleChange={handleChange} label="Stake" name="stake_fee" value={data?.stake_fee} />
           <AdminFormInput handleChange={handleChange} label="Swap" name="swap_fee" value={data?.swap_fee} />
           <AdminFormInput handleChange={handleChange} label="Withdraw" name="withdraw_fee" value={data?.withdraw_fee} />
-          <FormGroup>
-            <Form.Label>{"Harvest"}</Form.Label>
-              <InputGroup hasValidation>
-                <Form.Control
-                  name={"harvest_fee"}
-                  placeholder={"fee_num"}
-                  value={data?.harvest_fee}
-                  onChange={handleChange}
-                />
-                <Form.Control
-                  name={"harvest_fee_deno"}
-                  placeholder={"fee_deno"}
-                  value={data?.harvest_fee_deno}
-                  onChange={handleChange}
-                />
-              </InputGroup>
-          </FormGroup>
+          <AdminFormInput handleChange={handleChange} label="Harvest" name="harvest_fee" value={data?.harvest_fee} />
         </Row>
         <Button variant="primary" type="submit">
           Save
