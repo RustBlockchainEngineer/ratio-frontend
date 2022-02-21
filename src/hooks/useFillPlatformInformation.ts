@@ -36,12 +36,26 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
     }
     const getPlatformInformation = async () => {
       const promises = vaults.map(async (item: LPair) => {
-        //Obtain the tvl for the vault specific platform.
-        item.platform_tvl = poolInfoProviderFactory.getProviderForVault(item).getTVLbyVault(item);
-        item.platform_ratio_apr = await poolInfoProviderFactory.getProviderForVault(item).getRatioAPRbyVault(item);
+        // Each information fetching should be safe, if any error is thrown from this method none information will be shown.
+        try {
+          item.platform_tvl = poolInfoProviderFactory.getProviderForVault(item).getTVLbyVault(item);
+        } catch (error) {
+          console.error("There was a problem fetching the platform's TVL.", error);
+        }
+        item.platform_ratio_apr = await poolInfoProviderFactory
+          .getProviderForVault(item)
+          .getRatioAPRbyVault(item)
+          .catch((error) => {
+            console.error("There was a problem fetching the platform's APR.", error);
+            return 0;
+          });
         item.earned_rewards = await poolInfoProviderFactory
           .getProviderForVault(item)
-          .getRewards(connection, wallet, item);
+          .getRewards(connection, wallet, item)
+          .catch((error) => {
+            console.error("There was a problem fetching the platform's rewards.", error);
+            return undefined;
+          });
         return item;
       });
 
