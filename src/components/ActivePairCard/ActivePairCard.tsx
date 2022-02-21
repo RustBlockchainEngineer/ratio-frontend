@@ -12,8 +12,7 @@ import { formatUSD } from '../../utils/utils';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
-import { MINTADDRESS } from '../../constants';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
+import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import Button from '../Button';
@@ -34,7 +33,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const collMint = useMint(data.mint);
   const tokenPrice = usePrice(data.mint);
-  const usdrMint = useMint(MINTADDRESS['USDR']);
+  const usdrMint = useMint(USDR_MINT_KEY);
   const [isOpen, setOpen] = React.useState(false);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);

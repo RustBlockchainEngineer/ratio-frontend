@@ -13,13 +13,12 @@ import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
+import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import { sleep } from '@project-serum/common';
 import { useUpdateState } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { MINTADDRESS } from '../../constants';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
 const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
@@ -31,7 +30,7 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const collMint = useMint(data.mint);
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
 
-  const usdrMint = useMint(MINTADDRESS['USDR']);
+  const usdrMint = useMint(USDR_MINT_KEY);
 
   const [expand, setExpand] = React.useState(false);
   const [userState, setUserState] = React.useState(null);
