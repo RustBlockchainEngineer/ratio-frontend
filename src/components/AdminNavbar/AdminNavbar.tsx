@@ -87,6 +87,13 @@ const AdminNavbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseF
             onItemClick={onItemClick}
             collapseFlag={collapseFlag}
           />
+          <NavbarItem
+            name="Tokens"
+            active={navIndex === '/adminpanel/tokens'}
+            navIndex="/adminpanel/tokens"
+            onItemClick={onItemClick}
+            collapseFlag={collapseFlag}
+          />
         </div>
         <div>
           {!connected && (
