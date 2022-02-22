@@ -36,6 +36,7 @@ export interface LPAsset {
 
 export interface LPair {
   address_id: string;
+  vault_address_id: string;
   symbol: string;
   page_url: string;
   icon: string;
