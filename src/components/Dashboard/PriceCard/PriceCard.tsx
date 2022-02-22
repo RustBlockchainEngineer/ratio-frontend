@@ -27,7 +27,7 @@ const PriceCard = ({ data, tokenName }: PriceCardProps) => {
             <img src={risklevel} alt="risklevel" />
           </div>
           <div className="pricecard__value">
-            <h3>{data.mainValue}</h3>
+            <h3>{data.mainValue}%</h3>
           </div>
         </div>
         <div className="pricecard__body">
