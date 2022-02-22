@@ -31,6 +31,9 @@
         font-family: 'Poppins-Regular';
         font-size: 0.875rem;
         cursor: pointer;
+        &--icon {
+            height: 20px;
+        }
         &--icon1 {
             width: 20px;
             border: 1px solid var(--unnamed-color-bg);

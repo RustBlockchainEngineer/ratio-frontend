@@ -13,7 +13,7 @@ const Breadcrumb = ({ VaultData, availableVaults }: any) => {
 
   useEffect(() => {
     const p = availableVaults.map((item: any) => {
-      return { label: item.title, icon1: item.icon1, icon2: item.icon2, value: item.mint };
+      return { label: item.title, icon1: item.icons[0], icon2: item.icons[1], icon: item.icon, value: item.mint };
     });
     setOptions(p);
   }, [availableVaults]);
@@ -24,8 +24,9 @@ const Breadcrumb = ({ VaultData, availableVaults }: any) => {
     return (
       <div className={classNames('react-select__option', { 'react-select__option--active': props.isSelected })}>
         <div {...innerProps} className="px-3 py-2">
-          {data.icon1 && <img src={data.icon1} alt={children} className="react-select__option--icon1" />}
-          {data.icon2 && <img src={data.icon2} alt={children} className="react-select__option--icon2" />}
+          {data.icon && <img src={data.icon} alt={children} className="react-select__option--icon" />}
+          {/* {data.icon1 && <img src={data.icon1} alt={children} className="react-select__option--icon1" />}
+          {data.icon2 && <img src={data.icon2} alt={children} className="react-select__option--icon2" />} */}
           <span className="ml-3 react-select__option--token">{children}</span>
         </div>
       </div>
