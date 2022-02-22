@@ -216,14 +216,6 @@ export default function VaultCreationAdminForm() {
             />
             <AdminFormInput
               handleChange={handleChange}
-              label="Liquidation ratio"
-              name="liquidation_ratio"
-              type="number"
-              required={false}
-              value={data?.liquidation_ratio}
-            />
-            <AdminFormInput
-              handleChange={handleChange}
               label="Page url"
               required={false}
               name="page_url"
@@ -258,14 +250,6 @@ export default function VaultCreationAdminForm() {
               required={true}
               name="platform_symbol"
               value={data?.platform_symbol}
-            />
-            <AdminFormInput
-              handleChange={handleChange}
-              label="Pool size"
-              name="pool_size"
-              type="number"
-              required={false}
-              value={data?.pool_size}
             />
             <AdminFormInput
               handleChange={handleChange}
