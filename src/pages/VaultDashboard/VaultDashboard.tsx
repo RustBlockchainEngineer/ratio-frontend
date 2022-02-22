@@ -47,13 +47,6 @@ const priceCardData = [
     mainUnit: '(RAY/USD)',
     currentPrice: '$300.00 USD',
   },
-  // {
-  //   title: 'Collateralization Ratio',
-  //   titleIcon: false,
-  //   mainValue: '295.85%',
-  //   minimumRatio: '295.85%',
-  //   stabilityFee: '4%',
-  // },
 ];
 
 const VaultDashboard = () => {
@@ -320,7 +313,11 @@ const VaultDashboard = () => {
         <div className="vaultdashboard__body row no-gutters">
           <div className="col-xxl-8">
             <div className="vaultdashboard__bodyleft row">
-              <PriceCard data={priceCardData[0]} tokenName={VaultData.title} />
+              <PriceCard
+                data={priceCardData[0]}
+                tokenName={VaultData?.title}
+                collateralizationRatio={VaultData?.item?.collateralization_ratio}
+              />
               <div className="col-lg-6">
                 <WalletBalances
                   mintAddress={vault_mint}

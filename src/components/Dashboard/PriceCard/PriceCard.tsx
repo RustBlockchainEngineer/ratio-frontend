@@ -1,5 +1,3 @@
-import React from 'react';
-import ComingSoon from '../../ComingSoon';
 import risklevel from '../../../assets/images/risklevel.svg';
 
 interface PricecardInterface {
@@ -15,9 +13,10 @@ interface PricecardInterface {
 type PriceCardProps = {
   data: PricecardInterface;
   tokenName: string;
+  collateralizationRatio: number;
 };
 
-const PriceCard = ({ data, tokenName }: PriceCardProps) => {
+const PriceCard = ({ data, tokenName, collateralizationRatio }: PriceCardProps) => {
   return (
     <div className="col-lg-6 ">
       <div className="pricecard">
@@ -27,25 +26,25 @@ const PriceCard = ({ data, tokenName }: PriceCardProps) => {
             <img src={risklevel} alt="risklevel" />
           </div>
           <div className="pricecard__value">
-            <h3>{data.mainValue}%</h3>
+            <h3>{collateralizationRatio * 100}%</h3>
           </div>
         </div>
         <div className="pricecard__body">
           {data.currentPrice && (
             <div>
               <label>Current {tokenName} LP Token Price</label>
-              <p>{data.currentPrice}</p>
+              <p>{data?.currentPrice}</p>
             </div>
           )}
           {data.minimumRatio && (
             <div className="d-flex justify-content-between">
               <div>
                 <label>Minimum Ratio</label>
-                <p>{data.minimumRatio}</p>
+                <p>{data?.minimumRatio}</p>
               </div>
               <div>
                 <label>Stability Fee</label>
-                <p className="text-right">{data.stabilityFee}</p>
+                <p className="text-right">{data?.stabilityFee}</p>
               </div>
             </div>
           )}
