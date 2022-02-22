@@ -34,8 +34,8 @@ export async function postWithAuthToRatioApi(data: any, route: string, authToken
   return await response.json();
 }
 
-export async function getFromRatioApi(data = {}, route = '', authToken?: any) {
-  const response = await fetch(`${API_ENDPOINT}/${route}`, {
+export async function getFromRatioApi(route = '', authToken: any) {
+  const response = await fetch(`${API_ENDPOINT}/lpairs/asdasdsa`, {
     headers: {
       'Content-Type': 'application/json',
       'x-access-token': JSON.stringify(authToken),
