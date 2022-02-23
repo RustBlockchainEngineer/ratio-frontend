@@ -22,7 +22,7 @@ const TokensEarned = ({ data }: any) => {
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mintAddress as string)), [vaults]);
 
   const connection = useConnection();
-  const { wallet } = useWallet();
+  const { wallet, connected } = useWallet();
   const { updateHistoryFlag, setUpdateHistoryFlag } = useUpdateHistory();
 
   const [rewards, setRewards] = useState(0);
@@ -32,13 +32,16 @@ const TokensEarned = ({ data }: any) => {
     setRewards(reward as number);
   };
 
-  const timer = setInterval(updateRewards, REFRESH_TIMER);
+  // const timer = setInterval(updateRewards, REFRESH_TIMER);
 
   useEffect(() => {
     if (updateHistoryFlag) {
       updateRewards();
     }
-  }, [updateHistoryFlag]);
+    return () => {
+      setRewards(0);
+    };
+  }, [updateHistoryFlag, connected, vault]);
 
   const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
