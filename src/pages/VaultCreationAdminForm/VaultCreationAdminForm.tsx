@@ -21,7 +21,8 @@ import AdminFormLayout from '../AdminFormLayout';
 import LPAssetAdditionModal, { LPAssetCreationData } from './LPAssetAdditionModal/LPAssetAdditionModal';
 
 interface LPCreationData {
-  address_id: string | null;
+  address_id: string;
+  vault_address_id: string | null;
   page_url: string | null;
   icon: string | null;
   platform_id: string | null;
@@ -53,6 +54,7 @@ export default function VaultCreationAdminForm() {
   }, [gWallet.connected]);
   const defaultValues: LPCreationData = {
     address_id: '',
+    vault_address_id: '',
     page_url: '',
     icon: '',
     platform_id: '',
@@ -65,7 +67,6 @@ export default function VaultCreationAdminForm() {
     lpasset: [],
   };
   const [data, setData] = useState<LPCreationData>(defaultValues);
-  const [lpMintAddress, setLpMintAddress] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
   const { accessToken } = useAuthContextProvider();
   const fetchPlatforms = useCallback(async (): Promise<Platform[]> => {
@@ -156,7 +157,7 @@ export default function VaultCreationAdminForm() {
       return;
     }
     setValidated(true);
-    const vaultProgramAddress = await getOrCreateTokenVault(connection, lpMintAddress, data?.risk_rating);
+    const vaultProgramAddress = await getOrCreateTokenVault(connection, data?.address_id, data?.risk_rating);
     if (!vaultProgramAddress) {
       return;
     }
@@ -199,12 +200,7 @@ export default function VaultCreationAdminForm() {
       {globalStateCreated && (
         <Form validated={validated} onSubmit={handleSubmit}>
           <Row className="mb-3">
-            <AdminFormInput
-              handleChange={(evt: any) => setLpMintAddress(evt.target.value)}
-              label="LP Address"
-              name="address_id"
-              value={lpMintAddress}
-            />
+            <AdminFormInput handleChange={handleChange} label="LP Address" name="address_id" value={data?.address_id} />
             <AdminFormInput handleChange={handleChange} label="Symbol" name="symbol" value={data?.symbol} />
             <AdminFormInput
               handleChange={handleChange}
@@ -213,14 +209,6 @@ export default function VaultCreationAdminForm() {
               type="number"
               required={false}
               value={data?.collateralization_ratio}
-            />
-            <AdminFormInput
-              handleChange={handleChange}
-              label="Liquidation ratio"
-              name="liquidation_ratio"
-              type="number"
-              required={false}
-              value={data?.liquidation_ratio}
             />
             <AdminFormInput
               handleChange={handleChange}
@@ -258,14 +246,6 @@ export default function VaultCreationAdminForm() {
               required={true}
               name="platform_symbol"
               value={data?.platform_symbol}
-            />
-            <AdminFormInput
-              handleChange={handleChange}
-              label="Pool size"
-              name="pool_size"
-              type="number"
-              required={false}
-              value={data?.pool_size}
             />
             <AdminFormInput
               handleChange={handleChange}
@@ -329,26 +309,24 @@ export default function VaultCreationAdminForm() {
         <Table className="mt-3" striped bordered hover size="sm">
           <thead>
             <tr>
-              <th>Address</th>
+              <th>Vault address</th>
+              <th>LP mint address</th>
               <th>Name</th>
               <th>Collateralization ratio</th>
               <th>Created on</th>
-              <th>Liquidation ratio</th>
               <th>Platform</th>
-              <th>Pool size</th>
               <th>Risk rating</th>
             </tr>
           </thead>
           <tbody>
             {vaults?.map((item) => (
               <tr key={item.address_id}>
+                <td>{item.vault_address_id}</td>
                 <td>{item.address_id}</td>
                 <td>{item.symbol}</td>
                 <td>{item.collateralization_ratio}</td>
                 <td>{item.created_on}</td>
-                <td>{item.liquidation_ratio}</td>
                 <td>{item.platform_name}</td>
-                <td>{item.pool_size}</td>
                 <td>{item.risk_rating}</td>
               </tr>
             ))}

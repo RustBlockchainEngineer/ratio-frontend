@@ -24,12 +24,10 @@ interface Fees {
   borrow_fee: number;
   deposit_fee: number;
   payback_fee: number;
-  reward_fee: number;
   stake_fee: number;
   swap_fee: number;
   withdraw_fee: number;
   harvest_fee: number;
-  harvest_fee_deno: number;
 }
 
 // Tracks if a certain field has been changed.
@@ -37,11 +35,9 @@ interface FeesChanged {
   borrow_fee: boolean;
   deposit_fee: boolean;
   payback_fee: boolean;
-  reward_fee: boolean;
   stake_fee: boolean;
   swap_fee: boolean;
   withdraw_fee: boolean;
-  harvest_fee_deno: boolean;
   harvest_fee: boolean;
 }
 const ContractUpdatersMap = {
@@ -54,11 +50,11 @@ const ContractUpdatersMap = {
   harvest_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
                   await setHarvestFee(connection, wallet, Number(data?.harvest_fee)),
   stake_fee:    async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setStakeFee(connection, wallet, Number(data?.borrow_fee)),
+                  await setStakeFee(connection, wallet, Number(data?.stake_fee)),
   swap_fee:     async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setSwapFee(connection, wallet, Number(data?.borrow_fee)),
+                  await setSwapFee(connection, wallet, Number(data?.swap_fee)),
   withdraw_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setWithdrawFee(connection, wallet, Number(data?.borrow_fee)),
+                  await setWithdrawFee(connection, wallet, Number(data?.withdraw_fee)),
                   
 };
 
@@ -68,7 +64,6 @@ export default function FeesAdminForm() {
     borrow_fee: 0,
     deposit_fee: 0,
     payback_fee: 0,
-    reward_fee: 0,
     stake_fee: 0,
     swap_fee: 0,
     withdraw_fee: 0,
@@ -78,7 +73,6 @@ export default function FeesAdminForm() {
     borrow_fee: false,
     deposit_fee: false,
     payback_fee: false,
-    reward_fee: false,
     stake_fee: false,
     swap_fee: false,
     withdraw_fee: false,
@@ -203,9 +197,7 @@ export default function FeesAdminForm() {
           <AdminFormInput handleChange={handleChange} label="Borrow" name="borrow_fee" value={data?.borrow_fee} />
           <AdminFormInput handleChange={handleChange} label="Deposit" name="deposit_fee" value={data?.deposit_fee} />
           <AdminFormInput handleChange={handleChange} label="Payback" name="payback_fee" value={data?.payback_fee} />
-          <AdminFormInput handleChange={handleChange} label="Rewards" name="reward_fee" value={data?.reward_fee} />
           <AdminFormInput handleChange={handleChange} label="Stake" name="stake_fee" value={data?.stake_fee} />
-          <AdminFormInput handleChange={handleChange} label="Swap" name="swap_fee" value={data?.swap_fee} />
           <AdminFormInput handleChange={handleChange} label="Withdraw" name="withdraw_fee" value={data?.withdraw_fee} />
           <AdminFormInput handleChange={handleChange} label="Harvest" name="harvest_fee" value={data?.harvest_fee} />
         </Row>
