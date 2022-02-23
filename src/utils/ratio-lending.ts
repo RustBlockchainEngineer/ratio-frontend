@@ -126,6 +126,14 @@ async function retrieveGlobalState(connection: Connection, wallet: any) {
   return { globalState, globalStateKey };
 }
 
+export async function getGlobalStateKey(){
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    STABLE_POOL_PROGRAM_ID
+  );
+  return globalStateKey;
+}
+
 export async function getGlobalState(connection: Connection, wallet: any) {
   try {
     const { globalState, globalStateKey } = await retrieveGlobalState(connection,wallet);
@@ -205,6 +213,14 @@ export async function createGlobalState(connection: Connection, wallet: any) {
     console.error(e);
   }
   return 'created global state';
+}
+
+export async function getTokenVaultKey(mintCollKey: string| PublicKey) {
+  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TOKEN_VAULT_TAG), new PublicKey(mintCollKey).toBuffer()],
+    STABLE_POOL_PROGRAM_ID
+  );
+  return tokenVaultKey;
 }
 
 export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
