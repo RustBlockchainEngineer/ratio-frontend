@@ -479,7 +479,6 @@ export async function calculateReward(connection: Connection, wallet: any, mintC
   } catch (e) {
     // console.log(e);
   }
-  // console.log(`Saber farming reward for  ${mintCollKey}`, expectedWagesEarned);
   return Math.ceil(expectedWagesEarned * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
 }
 

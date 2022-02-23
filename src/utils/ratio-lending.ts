@@ -28,6 +28,12 @@ import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
 import { createSaberTokenVault } from './saber/saber-utils';
 
+export const DEPOSIT_ACTION = "deposit";
+export const HARVEST_ACTION = "harvest";
+export const WIHTDRAW_ACTION = "withdraw";
+export const BORROW_ACTION = "borrow";
+export const PAYBACK_ACTION = "payback";
+export const HISTORY_TO_SHOW = 5;
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export const TYPE_ID_RAYDIUM: PlatformType = 0;
 export const TYPE_ID_ORCA: PlatformType = 1;
@@ -940,3 +946,38 @@ export async function changeSuperOwner(
   console.log('tx id->', tx);
   return 'Set Super Owner to' + newOwner.toBase58() + ', transaction id = ' + tx;
 }
+
+export function pushUserHistory(action:string, userKey: string, mintKey: string, txHash:string, amount: number) {
+
+  if (!window.localStorage[action]) {
+    window.localStorage[action] = JSON.stringify({});
+  }
+  const actions = JSON.parse(window.localStorage[action]);
+
+  if (!actions[userKey]) {
+    actions[userKey] = {};
+  }
+
+  if (!actions[userKey][mintKey]) {
+    actions[userKey][mintKey] = [];
+  }
+
+  actions[userKey][mintKey].splice(0, 0, {
+    time: new Date().getTime(),
+    amount,
+    txHash
+  });
+
+  window.localStorage[action] = JSON.stringify(actions);
+
+}
+
+export function getUserHistory(action:string, userKey: string, mintKey: string) {
+  const actions = JSON.parse(window.localStorage[action]);
+
+  if (actions && actions[userKey] && actions[userKey][mintKey]) {
+    return actions[userKey][mintKey].slice(0, HISTORY_TO_SHOW);
+  }
+  return []
+}
+
