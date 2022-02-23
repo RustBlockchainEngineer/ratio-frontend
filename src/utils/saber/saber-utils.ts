@@ -442,11 +442,11 @@ export async function harvestFromSaber(
 export async function calculateReward(connection: Connection, wallet: any, mintCollKey: PublicKey) {
   const program = getProgramInstance(connection, wallet);
 
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
     program.programId
   );
-  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
@@ -479,7 +479,6 @@ export async function calculateReward(connection: Connection, wallet: any, mintC
   } catch (e) {
     // console.log(e);
   }
-  // console.log(`Saber farming reward for  ${mintCollKey}`, expectedWagesEarned);
   return Math.ceil(expectedWagesEarned * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
 }
 

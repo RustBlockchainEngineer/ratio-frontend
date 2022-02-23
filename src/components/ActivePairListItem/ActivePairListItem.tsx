@@ -17,7 +17,7 @@ import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY }
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import { sleep } from '@project-serum/common';
-import { useUpdateState } from '../../contexts/auth';
+import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
@@ -29,6 +29,7 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const connection = useConnection();
   const collMint = useMint(data.mint);
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  const { setUpdateHistoryFlag } = useUpdateHistory();
 
   const usdrMint = useMint(USDR_MINT_KEY);
 
@@ -138,17 +139,24 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
       history.push(`/dashboard/vaultdashboard/${data.mint}`);
     }
   };
-
+  const harvest = () => {
+    console.log('harvesting');
+    poolInfoProviderFactory
+      ?.harvestReward(connection, wallet, data.item)
+      .then(() => {
+        setUpdateHistoryFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        toast('Successfully Harvested!');
+      });
+  };
   const renderModalButton = () => {
     return (
       <div>
-        <Button
-          disabled={!connected}
-          onClick={() => {
-            poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
-          }}
-          className="button button--blue activepaircard__generate"
-        >
+        <Button disabled={!connected} onClick={harvest} className="button button--blue activepaircard__generate">
           Harvest
         </Button>
         <div className="mx-1"></div>

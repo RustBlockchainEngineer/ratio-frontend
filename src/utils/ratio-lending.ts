@@ -28,6 +28,12 @@ import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
 import { createSaberTokenVault } from './saber/saber-utils';
 
+export const DEPOSIT_ACTION = "deposit";
+export const HARVEST_ACTION = "harvest";
+export const WIHTDRAW_ACTION = "withdraw";
+export const BORROW_ACTION = "borrow";
+export const PAYBACK_ACTION = "payback";
+export const HISTORY_TO_SHOW = 5;
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export const TYPE_ID_RAYDIUM: PlatformType = 0;
 export const TYPE_ID_ORCA: PlatformType = 1;
@@ -120,6 +126,14 @@ async function retrieveGlobalState(connection: Connection, wallet: any) {
   return { globalState, globalStateKey };
 }
 
+export async function getGlobalStateKey(){
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    STABLE_POOL_PROGRAM_ID
+  );
+  return globalStateKey;
+}
+
 export async function getGlobalState(connection: Connection, wallet: any) {
   try {
     const { globalState, globalStateKey } = await retrieveGlobalState(connection,wallet);
@@ -199,6 +213,14 @@ export async function createGlobalState(connection: Connection, wallet: any) {
     console.error(e);
   }
   return 'created global state';
+}
+
+export async function getTokenVaultKey(mintCollKey: string| PublicKey) {
+  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TOKEN_VAULT_TAG), new PublicKey(mintCollKey).toBuffer()],
+    STABLE_POOL_PROGRAM_ID
+  );
+  return tokenVaultKey;
 }
 
 export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
@@ -940,3 +962,38 @@ export async function changeSuperOwner(
   console.log('tx id->', tx);
   return 'Set Super Owner to' + newOwner.toBase58() + ', transaction id = ' + tx;
 }
+
+export function pushUserHistory(action:string, userKey: string, mintKey: string, txHash:string, amount: number) {
+
+  if (!window.localStorage[action]) {
+    window.localStorage[action] = JSON.stringify({});
+  }
+  const actions = JSON.parse(window.localStorage[action]);
+
+  if (!actions[userKey]) {
+    actions[userKey] = {};
+  }
+
+  if (!actions[userKey][mintKey]) {
+    actions[userKey][mintKey] = [];
+  }
+
+  actions[userKey][mintKey].splice(0, 0, {
+    time: new Date().getTime(),
+    amount,
+    txHash
+  });
+
+  window.localStorage[action] = JSON.stringify(actions);
+
+}
+
+export function getUserHistory(action:string, userKey: string, mintKey: string) {
+  const actions = JSON.parse(window.localStorage[action]);
+
+  if (actions && actions[userKey] && actions[userKey][mintKey]) {
+    return actions[userKey][mintKey].slice(0, HISTORY_TO_SHOW);
+  }
+  return []
+}
+
