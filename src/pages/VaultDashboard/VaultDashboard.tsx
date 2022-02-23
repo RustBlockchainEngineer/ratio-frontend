@@ -43,7 +43,7 @@ const priceCardData = [
   {
     title: 'Liquidation threshold',
     titleIcon: true,
-    mainValue: '$90.00 USD',
+    mainValue: '90.00',
     mainUnit: '(RAY/USD)',
     currentPrice: '$300.00 USD',
   },
