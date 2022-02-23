@@ -244,7 +244,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
               </a>
             </div>
             <div>
-              <h5>APR:</h5>
+              <h5>APY:</h5>
               <h6 className="semiBold mt-1">{Number(data?.apr).toFixed()}%</h6>
             </div>
           </div>

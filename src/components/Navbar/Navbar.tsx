@@ -145,7 +145,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
           onItemClick={onItemClick}
           collapseFlag={collapseFlag}
         />
-        {active_vaults.length > 0 && Object.keys(overview).length > 0 && (
+        {
           <NavbarItem
             icon={activeVaultsIcon}
             name="My Active Vaults"
@@ -157,7 +157,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
             expandData={active_vaults}
             positionValues={activeVaultsData}
           />
-        )}
+        }
         {/* <NavbarItem
           icon={archivedVaultsIcon}
           name="My Archived Vaults"
