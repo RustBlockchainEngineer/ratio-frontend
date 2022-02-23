@@ -25,7 +25,7 @@ export async function setGlobalTvlLimit(
   const program = await getProgramInstance(connection, wallet);
   const { globalStateKey } = await getGlobalState(connection, wallet);
   try {
-    const tx = await program.rpc.setGlobalTvlLimit(new BN(limit * 1_000_000_000), {
+    const tx = await program.rpc.setGlobalTvlLimit(new BN(limit), {
       accounts: {
         payer: wallet?.publicKey,
         globalState: globalStateKey,
