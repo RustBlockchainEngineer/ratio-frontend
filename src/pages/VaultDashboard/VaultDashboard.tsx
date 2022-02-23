@@ -143,9 +143,7 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (tokenPrice && collMint && lpWalletBalance && globalState && VaultData) {
       //ternary operators are used here while the globalState paramters do not exist
-      console.log(globalState);
-      console.log('TVL Limit', globalState?.tvlLimit.toString());
-      console.log('TVL', globalState.tvl?.toString());
+
       const tvlLimit = globalState?.tvlLimit ? globalState?.tvlLimit.toNumber() : 0;
       const tvl = globalState?.tvl ? globalState?.tvl.toNumber() : 0;
       const availableTVL = tvlLimit - tvl;
