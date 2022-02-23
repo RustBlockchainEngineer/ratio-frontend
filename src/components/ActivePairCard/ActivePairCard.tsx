@@ -7,7 +7,7 @@ import { PublicKey } from '@solana/web3.js';
 import { sleep } from '@project-serum/common';
 
 import { useConnection } from '../../contexts/connection';
-import { useUpdateState } from '../../contexts/auth';
+import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
 import { formatUSD } from '../../utils/utils';
 import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
@@ -30,6 +30,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  const { setUpdateHistoryFlag } = useUpdateHistory();
 
   const collMint = useMint(data.mint);
   const tokenPrice = usePrice(data.mint);
@@ -141,17 +142,26 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     }
   };
 
+  const harvest = () => {
+    console.log('harvesting');
+    poolInfoProviderFactory
+      ?.harvestReward(connection, wallet, data.item)
+      .then(() => {
+        setUpdateHistoryFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        toast('Successfully Harvested!');
+      });
+  };
+
   const renderModalButton = () => {
     return (
       <div className="col">
         <div className="d-flex">
-          <Button
-            disabled={!connected}
-            className="button button--blue activepaircard__generate mt-2"
-            onClick={() => {
-              poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
-            }}
-          >
+          <Button disabled={!connected} className="button button--blue activepaircard__generate mt-2" onClick={harvest}>
             Harvest
           </Button>
           <div className="mx-1"></div>

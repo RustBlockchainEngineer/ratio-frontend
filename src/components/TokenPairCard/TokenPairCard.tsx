@@ -18,7 +18,7 @@ import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
-import { useUpdateState } from '../../contexts/auth';
+import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
 import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import highriskIcon from '../../assets/images/highrisk.svg';
@@ -34,6 +34,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  const { setUpdateHistoryFlag } = useUpdateHistory();
 
   const collMint = useMint(data.mint);
   const tokenPrice = usePrice(data.mint);
@@ -146,18 +147,25 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
       });
     }
   }, [updateStateFlag]);
-
+  const harvest = () => {
+    console.log('harvesting');
+    poolInfoProviderFactory
+      ?.harvestReward(connection, wallet, data.item)
+      .then(() => {
+        setUpdateHistoryFlag(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        toast('Successfully Harvested!');
+      });
+  };
   const renderModalButton = () => {
     return (
       <div className="col">
         <div className="d-flex">
-          <Button
-            disabled={!connected}
-            className="button button--blue tokenpaircard__generate mt-2"
-            onClick={() => {
-              poolInfoProviderFactory?.harvestReward(connection, wallet, data.item);
-            }}
-          >
+          <Button disabled={!connected} className="button button--blue tokenpaircard__generate mt-2" onClick={harvest}>
             Harvest
           </Button>
           <div className="mx-1"></div>

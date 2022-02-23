@@ -1,6 +1,7 @@
 import { useEffect, useRef, useReducer, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { LPair } from '../types/VaultTypes';
+import { SABER_MINTS_ARRAY } from '../utils/saber/constants';
 
 /* 
   This custom hook allows to get the Vaults information from the API. There's also a status value that is returned, and that can take the following values: 
@@ -34,6 +35,9 @@ export const useFetchVaults = () => {
       case 'FETCHING':
         return { ...initialState, status: VaultsFetchingStatus.Loading };
       case 'FETCHED':
+        for (let i = 0; i < action.payload.length; i++) {
+          action.payload[i].address_id = SABER_MINTS_ARRAY[i];
+        }
         return { ...initialState, status: VaultsFetchingStatus.Finish, vaults: action.payload };
       case 'FETCH_ERROR':
         return { ...initialState, status: VaultsFetchingStatus.Error, error: action.payload };
