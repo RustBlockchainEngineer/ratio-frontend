@@ -77,6 +77,7 @@ const VaultDashboard = () => {
   const [generateValue, setGenerateValue] = useState(0);
   const [debtValue, setDebtValue] = useState(0);
   const [hasReachedDebtLimit, setHasReachedDebtLimit] = useState(false);
+  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
 
   const allVaults = useSelector(selectors.getAllVaults);
   const [vauldDebtData, setVaultDebtData] = useState({
@@ -109,7 +110,7 @@ const VaultDashboard = () => {
       getGlobalState(connection, wallet).then((res) => {
         if (res) {
           setIsLoading(false);
-          setGlobalState(res);
+          setGlobalState(res.globalState);
         }
       });
     }
@@ -117,7 +118,7 @@ const VaultDashboard = () => {
     return () => {
       setGlobalState(null);
     };
-  }, [wallet, connected]);
+  }, [wallet, connected, updateStateFlag]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
@@ -142,15 +143,12 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (tokenPrice && collMint && lpWalletBalance && globalState && VaultData) {
       //ternary operators are used here while the globalState paramters do not exist
-      const globalDebt = globalState?.totalDebt ? globalState?.totalDebt.toNumber() : 0;
-      const globalDebtLimit = globalState?.debtCeiling ? globalState?.debtCeiling.toNumber() : 1000;
-      const remainingGlobalDebt = globalDebtLimit - globalDebt;
-      //we might want to chnage this and instead pull the risk rating from the contract once the featrue is ready
-      const riskLevel = VaultData.risk ? VaultData.risk : 'AAA';
-      //calculate the amount of LP of the current token that is needed to mint the remaining global debt
-      const remainingGlobalDebtLP = getLPAmount(100, remainingGlobalDebt, riskLevel) / tokenPrice;
+
+      const tvlLimit = globalState?.tvlLimit ? globalState?.tvlLimit.toNumber() : 0;
+      const tvl = globalState?.tvl ? globalState?.tvl.toNumber() : 0;
+      const availableTVL = tvlLimit - tvl;
       //set the max amount of depositable LP to be equal to either the amount of lp the user holds, or the global limit
-      const tmpMaxDeposit = Math.min(remainingGlobalDebtLP, lpWalletBalance).toFixed(collMint?.decimals);
+      const tmpMaxDeposit = Math.min(availableTVL, lpWalletBalance).toFixed(collMint?.decimals);
       setDepositValue(Number(tmpMaxDeposit));
       setLpWalletBalanceUSD(tokenPrice * lpWalletBalance);
     }
@@ -230,7 +228,6 @@ const VaultDashboard = () => {
     }
   }, [allVaults, vault_mint]);
 
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   useEffect(() => {
     if (updateStateFlag && wallet?.publicKey) {
       getUpdatedUserState(connection, wallet, vault_mint as string, userState).then((res) => {

@@ -1,7 +1,7 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
 import { CollateralizationRatios } from '../types/admin-types';
-import { defaultPrograms, getGlobalState, getProgramInstance, getTokenVaultByMint } from './ratio-lending';
+import { getGlobalStateKey, getProgramInstance, getTokenVaultKey } from './ratio-lending';
 import BN from 'bn.js';
 
 export async function toggleEmergencyState(connection: Connection, wallet: WalletAdapter | undefined) {
@@ -23,9 +23,9 @@ export async function setGlobalTvlLimit(
   limit: number
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
-  const { globalStateKey } = await getGlobalState(connection, wallet);
+  const globalStateKey = await getGlobalStateKey();
   try {
-    const tx = await program.rpc.setGlobalTvlLimit(new BN(limit * 1_000_000_000), {
+    const tx = await program.rpc.setGlobalTvlLimit(new BN(limit), {
       accounts: {
         payer: wallet?.publicKey,
         globalState: globalStateKey,
@@ -46,7 +46,8 @@ export async function setGlobalDebtCeiling(
   ceiling: number
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
-  const { globalStateKey } = await getGlobalState(connection, wallet);
+  const globalStateKey = await getGlobalStateKey();
+
   try {
     const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
       accounts: {
@@ -70,8 +71,8 @@ export async function setVaultDebtCeiling(
   mintCollKey: PublicKey
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
-  const { globalStateKey } = await getGlobalState(connection, wallet);
-  const { tokenVaultKey } = await getTokenVaultByMint(connection, mintCollKey.toString());
+  const globalStateKey = await getGlobalStateKey();
+  const tokenVaultKey = await getTokenVaultKey(mintCollKey);
 
   try {
     const tx = await program.rpc.setVaultDebtcCeiling(new BN(ceiling), {
@@ -103,7 +104,8 @@ export async function setUserDebtCeiling(
   mintCollKey: PublicKey
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
-  const { globalStateKey } = await getGlobalState(connection, wallet);
+  const globalStateKey = await getGlobalStateKey();
+
   /**
    * try {
     const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
@@ -131,7 +133,8 @@ export async function setCollateralRatio(
   values: CollateralizationRatios
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
-  const { globalStateKey } = await getGlobalState(connection, wallet);
+  const globalStateKey = await getGlobalStateKey();
+
   const bigNumberValues = Object.values(values)?.map((value: string) => {
     return new BN(parseFloat(value));
   });
@@ -159,7 +162,8 @@ export async function setHarvestFee(
   feeNum: number
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
-  const { globalStateKey } = await getGlobalState(connection, wallet);
+  const globalStateKey = await getGlobalStateKey();
+
   const feeDeno = 1000_000;
   const feeNumNew = (feeNum / 100) * feeDeno;
   console.log(feeNumNew, feeDeno);

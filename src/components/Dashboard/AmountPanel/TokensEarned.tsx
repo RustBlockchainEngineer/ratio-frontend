@@ -24,26 +24,30 @@ const TokensEarned = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const { updateHistoryFlag, setUpdateHistoryFlag } = useUpdateHistory();
+  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
   const [rewards, setRewards] = useState(0);
   const updateRewards = async () => {
-    const reward = await poolInfoProviderFactory?.getRewards(connection, wallet, vault as LPair);
-    console.log('Getting reward', reward);
-    setRewards(reward as number);
+    if (poolInfoProviderFactory && wallet && wallet.publicKey) {
+      console.log('Getting reward');
+
+      const reward = await poolInfoProviderFactory?.getRewards(connection, wallet, vault as LPair);
+
+      console.log('Got reward', reward);
+
+      setRewards(reward as number);
+    }
   };
 
   // const timer = setInterval(updateRewards, REFRESH_TIMER);
 
   useEffect(() => {
-    if (updateHistoryFlag) {
-      updateRewards();
-    }
+    updateRewards();
+
     return () => {
       setRewards(0);
     };
-  }, [updateHistoryFlag, connected, vault]);
-
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
+  }, [updateHistoryFlag, connected, vault, poolInfoProviderFactory]);
 
   const harvest = () => {
     console.log('harvesting');
@@ -79,7 +83,7 @@ const TokensEarned = ({ data }: any) => {
               RAY-SOL-LP
             </td>
             <td>{rewards}</td>
-            <td className="text-right">$1,200</td>
+            <td className="text-right">${rewards * 100}</td>
           </tr>
         </tbody>
       </Table>

@@ -139,9 +139,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
         if (!active) {
           return;
         }
-        setGlobalState(res);
+        const data = res.globalState;
+        setGlobalState(data);
         setHasReachedGlobalDebtLimit(
-          res?.totalDebt ? res?.totalDebt.toNumber() === res?.debtCeiling.toNumber() : false
+          data?.totalDebt ? data?.totalDebt.toNumber() === data?.debtCeiling.toNumber() : false
         );
       });
     }
