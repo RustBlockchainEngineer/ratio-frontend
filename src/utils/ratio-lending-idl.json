@@ -3,6 +3,70 @@
   "name": "stable_pool",
   "constants": [
     {
+      "name": "GLOBAL_STATE_SEED",
+      "type": {
+        "defined": "&[u8]"
+      },
+      "value": "b\"GLOBAL_STATE_TAG\""
+    },
+    {
+      "name": "VAULT_SEED",
+      "type": {
+        "defined": "&[u8]"
+      },
+      "value": "b\"VAULT_SEED\""
+    },
+    {
+      "name": "TROVE_SEED",
+      "type": {
+        "defined": "&[u8]"
+      },
+      "value": "b\"TROVE_SEED\""
+    },
+    {
+      "name": "MINT_USD_SEED",
+      "type": {
+        "defined": "&[u8]"
+      },
+      "value": "b\"MINT_USD_SEED\""
+    },
+    {
+      "name": "USD_TOKEN_SEED",
+      "type": {
+        "defined": "&[u8]"
+      },
+      "value": "b\"USD_TOKEN_SEED\""
+    },
+    {
+      "name": "TROVE_POOL_SEED",
+      "type": {
+        "defined": "&[u8]"
+      },
+      "value": "b\"TROVE_POOL_SEED\""
+    },
+    {
+      "name": "PRICE_FEED_TAG",
+      "type": {
+        "defined": "&[u8]"
+      },
+      "value": "b\"price-feed\""
+    },
+    {
+      "name": "USD_DECIMALS",
+      "type": "u8",
+      "value": "6"
+    },
+    {
+      "name": "DEFAULT_FEE_NUMERATOR",
+      "type": "u128",
+      "value": "3"
+    },
+    {
+      "name": "DEFAULT_FEE_DENOMINATOR",
+      "type": "u128",
+      "value": "1000"
+    },
+    {
       "name": "RISK_TYPE_COUNT",
       "type": "u8",
       "value": "10"
@@ -33,12 +97,12 @@
           "isSigner": false
         },
         {
-          "name": "systemProgram",
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "tokenProgram",
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         },
@@ -68,7 +132,7 @@
       ]
     },
     {
-      "name": "createTokenVault",
+      "name": "createVault",
       "accounts": [
         {
           "name": "authority",
@@ -76,7 +140,7 @@
           "isSigner": true
         },
         {
-          "name": "tokenVault",
+          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
@@ -91,11 +155,6 @@
           "isSigner": false
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
@@ -104,11 +163,16 @@
           "name": "rent",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
         {
-          "name": "tokenVaultNonce",
+          "name": "vaultBump",
           "type": "u8"
         },
         {
@@ -133,7 +197,7 @@
       "name": "setHarvestFee",
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -158,7 +222,7 @@
       "name": "toggleEmerState",
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -176,10 +240,10 @@
       ]
     },
     {
-      "name": "changeSuperOwner",
+      "name": "changeAuthority",
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -197,10 +261,31 @@
       "args": []
     },
     {
+      "name": "changeTreasury",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "newTreasury",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "setGlobalTvlLimit",
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -221,7 +306,7 @@
       "name": "setGlobalDebtCeiling",
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -242,7 +327,7 @@
       "name": "setVaultDebtCeiling",
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -257,7 +342,7 @@
           "isSigner": false
         },
         {
-          "name": "tokenVault",
+          "name": "vault",
           "isMut": true,
           "isSigner": false
         }
@@ -273,7 +358,7 @@
       "name": "setUserDebtCeiling",
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -293,12 +378,12 @@
           "isSigner": false
         },
         {
-          "name": "tokenVault",
+          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTrove",
+          "name": "trove",
           "isMut": true,
           "isSigner": false
         }
@@ -314,7 +399,7 @@
       "name": "setCollaterialRatio",
       "accounts": [
         {
-          "name": "payer",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
@@ -328,45 +413,37 @@
         {
           "name": "ratios",
           "type": {
-            "array": [
-              "u64",
-              10
-            ]
+            "array": ["u64", 10]
           }
         }
       ]
     },
     {
-      "name": "createUserTrove",
+      "name": "createTrove",
       "accounts": [
         {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "authority",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
         },
         {
-          "name": "tokenColl",
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "trove",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ataTrove",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "mintColl",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -378,15 +455,20 @@
           "name": "rent",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
         {
-          "name": "userTroveNonce",
+          "name": "troveNonce",
           "type": "u8"
         },
         {
-          "name": "tokenCollNonce",
+          "name": "ataTroveNonce",
           "type": "u8"
         },
         {
@@ -399,19 +481,19 @@
       "name": "createUserRewardVault",
       "accounts": [
         {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "authority",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "trove",
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "rewardVault",
@@ -424,11 +506,6 @@
           "isSigner": false
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
@@ -437,11 +514,16 @@
           "name": "rent",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
         {
-          "name": "rewardVaultNonce",
+          "name": "rewardVaultBump",
           "type": "u8"
         }
       ]
@@ -450,32 +532,32 @@
       "name": "depositCollateral",
       "accounts": [
         {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
           "name": "globalState",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenVault",
+          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTrove",
+          "name": "trove",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "poolTokenColl",
+          "name": "ataTrove",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTokenColl",
+          "name": "ataUserColl",
           "isMut": true,
           "isSigner": false
         },
@@ -501,32 +583,32 @@
       "name": "withdrawCollateral",
       "accounts": [
         {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
           "name": "globalState",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenVault",
+          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTrove",
+          "name": "trove",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "poolTokenColl",
+          "name": "ataTrove",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTokenColl",
+          "name": "ataUserColl",
           "isMut": true,
           "isSigner": false
         },
@@ -552,22 +634,17 @@
       "name": "borrowUsd",
       "accounts": [
         {
-          "name": "owner",
+          "name": "authority",
           "isMut": true,
           "isSigner": true
         },
         {
-          "name": "tokenVault",
+          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "priceFeed",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userTrove",
+          "name": "trove",
           "isMut": true,
           "isSigner": false
         },
@@ -577,23 +654,23 @@
           "isSigner": false
         },
         {
+          "name": "priceFeed",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "mintUsd",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTokenUsd",
+          "name": "ataUserUsd",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "mintColl",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -608,6 +685,11 @@
         },
         {
           "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -628,16 +710,16 @@
       "accounts": [
         {
           "name": "owner",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
         },
         {
-          "name": "tokenVault",
+          "name": "vault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTrove",
+          "name": "trove",
           "isMut": true,
           "isSigner": false
         },
@@ -652,7 +734,7 @@
           "isSigner": false
         },
         {
-          "name": "userTokenUsd",
+          "name": "ataUserUsd",
           "isMut": true,
           "isSigner": false
         },
@@ -678,19 +760,19 @@
       "name": "createQuarryMiner",
       "accounts": [
         {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userTrove",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "payer",
           "isMut": true,
           "isSigner": true
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "trove",
+          "isMut": true,
+          "isSigner": false
         },
         {
           "name": "miner",
@@ -728,12 +810,12 @@
           "isSigner": false
         },
         {
-          "name": "systemProgram",
+          "name": "rent",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "rent",
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -756,32 +838,32 @@
           "name": "ratioStaker",
           "accounts": [
             {
+              "name": "authority",
+              "isMut": true,
+              "isSigner": true
+            },
+            {
               "name": "globalState",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "tokenVault",
+              "name": "vault",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "userTrove",
+              "name": "trove",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "owner",
-              "isMut": false,
-              "isSigner": true
-            },
-            {
-              "name": "poolTokenColl",
+              "name": "ataTrove",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "userTokenColl",
+              "name": "ataUserColl",
               "isMut": true,
               "isSigner": false
             },
@@ -842,32 +924,32 @@
           "name": "ratioStaker",
           "accounts": [
             {
+              "name": "authority",
+              "isMut": true,
+              "isSigner": true
+            },
+            {
               "name": "globalState",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "tokenVault",
+              "name": "vault",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "userTrove",
+              "name": "trove",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "owner",
-              "isMut": false,
-              "isSigner": true
-            },
-            {
-              "name": "poolTokenColl",
+              "name": "ataTrove",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "userTokenColl",
+              "name": "ataUserColl",
               "isMut": true,
               "isSigner": false
             },
@@ -928,27 +1010,27 @@
           "name": "ratioHarvester",
           "accounts": [
             {
+              "name": "authority",
+              "isMut": true,
+              "isSigner": true
+            },
+            {
               "name": "globalState",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "tokenVault",
+              "name": "vault",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "userTrove",
+              "name": "trove",
               "isMut": true,
               "isSigner": false
             },
             {
-              "name": "authority",
-              "isMut": false,
-              "isSigner": true
-            },
-            {
-              "name": "userTroveReward",
+              "name": "troveReward",
               "isMut": true,
               "isSigner": false
             },
@@ -963,12 +1045,7 @@
               "isSigner": false
             },
             {
-              "name": "collateralMint",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
-              "name": "systemProgram",
+              "name": "mintColl",
               "isMut": false,
               "isSigner": false
             },
@@ -979,6 +1056,11 @@
             },
             {
               "name": "clock",
+              "isMut": false,
+              "isSigner": false
+            },
+            {
+              "name": "systemProgram",
               "isMut": false,
               "isSigner": false
             }
@@ -1005,7 +1087,7 @@
           ]
         },
         {
-          "name": "userTokenColl",
+          "name": "ataUserColl",
           "isMut": true,
           "isSigner": false
         },
@@ -1051,12 +1133,17 @@
       "name": "createPriceFeed",
       "accounts": [
         {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
           "name": "globalState",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "tokenVault",
+          "name": "vault",
           "isMut": false,
           "isSigner": false
         },
@@ -1101,17 +1188,12 @@
           "isSigner": false
         },
         {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "tokenProgram",
+          "name": "clock",
           "isMut": false,
           "isSigner": false
         },
@@ -1121,7 +1203,7 @@
           "isSigner": false
         },
         {
-          "name": "clock",
+          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -1181,6 +1263,10 @@
             "type": "publicKey"
           },
           {
+            "name": "treasury",
+            "type": "publicKey"
+          },
+          {
             "name": "mintUsd",
             "type": "publicKey"
           },
@@ -1223,17 +1309,14 @@
           {
             "name": "collPerRisklv",
             "type": {
-              "array": [
-                "u64",
-                10
-              ]
+              "array": ["u64", 10]
             }
           }
         ]
       }
     },
     {
-      "name": "TokenVault",
+      "name": "Vault",
       "type": {
         "kind": "struct",
         "fields": [
@@ -1270,7 +1353,7 @@
             "type": "u8"
           },
           {
-            "name": "tokenVaultNonce",
+            "name": "vaultBump",
             "type": "u8"
           },
           {
@@ -1313,13 +1396,13 @@
       }
     },
     {
-      "name": "UserTrove",
+      "name": "Trove",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "tokenColl",
-            "type": "publicKey"
+            "name": "walletNonce",
+            "type": "u8"
           },
           {
             "name": "rewardTokenA",
@@ -1342,31 +1425,31 @@
             "type": "u64"
           },
           {
-            "name": "lastMintTime",
-            "type": "u64"
-          },
-          {
-            "name": "userTroveNonce",
+            "name": "troveNonce",
             "type": "u8"
           },
           {
-            "name": "walletNonce",
+            "name": "ataTroveNonce",
             "type": "u8"
           },
           {
-            "name": "tokenCollNonce",
-            "type": "u8"
+            "name": "tokenColl",
+            "type": "publicKey"
           },
           {
             "name": "userUsdNonce",
             "type": "u8"
           },
           {
-            "name": "userTroveRewardTokenANonce",
+            "name": "lastMintTime",
+            "type": "u64"
+          },
+          {
+            "name": "troveRewardTokenANonce",
             "type": "u8"
           },
           {
-            "name": "userTroveRewardTokenBNonce",
+            "name": "troveRewardTokenBNonce",
             "type": "u8"
           }
         ]
@@ -1573,8 +1656,5 @@
       "name": "InvalidSaberPlatform",
       "msg": "Invalid saber platform"
     }
-  ],
-  "metadata": {
-    "address": "rT22BzUhpVDPtkheuc7DgMWBNNteWyuWfJ7Ao2e44FD"
-  }
+  ]
 }

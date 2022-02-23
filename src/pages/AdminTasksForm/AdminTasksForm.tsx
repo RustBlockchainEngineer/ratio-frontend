@@ -4,7 +4,12 @@ import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import { changeSuperOwner, getCurrentEmergencyState, toggleEmergencyState } from '../../utils/admin-contract-calls';
+import { EmergencyState } from '../../types/admin-types';
+import {
+  changeSuperOwner,
+  getCurrentEmergencyState,
+  setEmergencyState as setEmergencyStateOnContract,
+} from '../../utils/admin-contract-calls';
 import { getCurrentSuperOwner } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 
@@ -12,7 +17,7 @@ export default function AdminTasksForm() {
   const [superOwner, setSuperOwner] = useState<string>('');
   const [superOwnerChanged, setSuperOwnerChanged] = useState(false);
   const [validated, setValidated] = useState(false);
-  const [emergencyState, setEmergencyState] = useState('Unknown');
+  const [currEmerState, setCurrEmerState] = useState(EmergencyState.UNKNOWN);
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
@@ -31,9 +36,9 @@ export default function AdminTasksForm() {
 
   useEffect(() => {
     let active = true;
-    getCurrentEmergencyState(connection, wallet).then((result: string) => {
-      if (active && result) {
-        setEmergencyState(result);
+    getCurrentEmergencyState(connection, wallet).then((result: EmergencyState) => {
+      if (active && result !== undefined) {
+        setCurrEmerState(result);
       }
     });
     return () => {
@@ -48,7 +53,11 @@ export default function AdminTasksForm() {
 
   const handleToggleEmergencyStateClick = async (evt: any) => {
     evt.preventDefault();
-    await toggleEmergencyState(connection, wallet);
+    await setEmergencyStateOnContract(
+      connection,
+      wallet,
+      currEmerState === EmergencyState.RUNNING ? EmergencyState.PAUSED : EmergencyState.RUNNING
+    );
   };
 
   const handleChangeSuperOwnerSubmit = async (evt: any) => {
@@ -88,7 +97,7 @@ export default function AdminTasksForm() {
         </Row>
         <Form.Group as={Row} className="mb-3">
           <Form.Label column md={3} sm={4}>
-            Current emergency state: <span className="font-italic">{emergencyState}</span>
+            Current emergency state: <span className="font-italic">{EmergencyState[currEmerState]}</span>
           </Form.Label>
           <Col md="auto" sm={4}>
             <Button variant="primary" type="button" onClick={handleToggleEmergencyStateClick}>
