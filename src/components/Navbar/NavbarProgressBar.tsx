@@ -32,7 +32,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
         if (!res) {
           return;
         }
-        setGlobalState(res.globalState);
+        setGlobalState(res?.globalState);
       });
     }
     return () => {
