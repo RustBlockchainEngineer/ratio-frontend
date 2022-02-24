@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Form, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -6,7 +6,7 @@ import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
-import { useWallet } from '../../contexts/wallet';
+import { useWallet, WalletAdapter } from '../../contexts/wallet';
 import { IIndexable } from '../../types/admin-types';
 import { setGlobalDebtCeiling, setGlobalTvlLimit, setUserDebtCeiling } from '../../utils/admin-contract-calls';
 import { getCurrentSuperOwner } from '../../utils/ratio-lending';
@@ -25,10 +25,16 @@ interface GlobalParamsChanged {
   price_interval: boolean;
 }
 const ContractUpdatersMap = {
-  global_max_usdr: setGlobalDebtCeiling,
-  user_max_usdr: setUserDebtCeiling,
-  global_max_deposit: setGlobalTvlLimit,
-  price_interval: async () => {}, // There's no update on the contact side for this property
+  global_max_usdr: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {
+    await setGlobalDebtCeiling(connection, wallet, Number(data.global_max_usdr));
+  },
+  user_max_usdr: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {
+    //setUserDebtCeiling(connection, wallet, Number(data.global_max_deposit));
+  },
+  global_max_deposit: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {
+    await setGlobalTvlLimit(connection, wallet, Number(data.global_max_deposit));
+  },
+  price_interval: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {}, // There's no update on the contact side for this property
 };
 
 export default function GlobalParamsAdminForm() {
@@ -127,7 +133,7 @@ export default function GlobalParamsAdminForm() {
       Object.keys(data)
         .filter((item) => (changedTracker as IIndexable)[item])
         .map(async (item) => {
-          await (ContractUpdatersMap as IIndexable)[item](connection, wallet, Number((data as IIndexable)[item]));
+          await (ContractUpdatersMap as IIndexable)[item](connection, wallet, data);
         })
     );
   };
@@ -140,7 +146,13 @@ export default function GlobalParamsAdminForm() {
       return;
     }
     setValidated(true);
-    await updateContractValues();
+    try {
+      await updateContractValues();
+    } catch (error) {
+      console.error('There was an error when updating the contract values', error);
+      toast.error('There was an error when updating the contract values');
+      return;
+    }
     const response = await fetch(`${API_ENDPOINT}/ratioconfig/general`, {
       body: JSON.stringify(data),
       headers: {
