@@ -1,15 +1,5 @@
-import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
-
 import { Table } from 'react-bootstrap';
 import USDr from '../../../assets/images/USDr.png';
-import { useAccountByMint, useMint } from '../../../contexts/accounts';
-
-import { useConnection } from '../../../contexts/connection';
-import { useWallet } from '../../../contexts/wallet';
-import { USDR_MINT_KEY } from '../../../utils/ratio-lending';
-import { TokenAmount } from '../../../utils/safe-math';
-import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 
 const WalletBalances = ({ data, icon, tokenName, collAmount, collAmountUSD, usdrAmount }: any) => {
   return (
