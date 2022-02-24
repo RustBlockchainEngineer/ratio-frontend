@@ -297,6 +297,25 @@ export async function borrowUSDr(
     [Buffer.from(PRICE_FEED_TAG), mintCollKey.toBuffer()],
     program.programId
   );
+  // todo - get real tokenA, B, C
+  // FIXME: hardcoded
+  const mintA = new PublicKey('7KLQxufDu9H7BEAHvthC5p4Uk6WrH3aw8TwvPXoLgG11');
+  const mintB = new PublicKey('BicnAQ4jQgz3g7htuq1y6SKUNtrTr7UmpQjCqnTKkHR5');
+  const mintC = new PublicKey('FnjuEcDDTL3e511XE5a7McbDZvv2sVfNfEjyq4fJWXxg');
+  const vaultA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
+  const vaultB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
+  const vaultC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
+
+  const ix1 = program.instruction.updatePriceFeed({
+    account: {
+      priceFeed: priceFeedKey,
+      mintColl: mintCollKey,
+      vaultA,
+      vaultB,
+      vaultC,
+      ...defaultPrograms,
+    },
+  });
 
   const borrowInstruction = await program.instruction.borrowUsd(new anchor.BN(amount), userUsdKeyNonce, {
     accounts: {
@@ -312,6 +331,7 @@ export async function borrowUSDr(
     },
   });
 
+  transaction.add(ix1);
   transaction.add(borrowInstruction);
 
   const tx = await sendTransaction(connection, wallet, transaction, signers);

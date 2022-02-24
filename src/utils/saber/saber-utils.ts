@@ -12,6 +12,7 @@ import {
   TROVE_POOL_SEED,
   TROVE_SEED,
   WSOL_MINT_KEY,
+  PRICE_FEED_TAG,
 } from '../ratio-lending';
 import {
   PublicKey,
@@ -66,15 +67,57 @@ export async function createSaberTokenVault(
   console.log('tokenVaultKey', tokenVaultKey.toBase58());
 
   try {
-    await program.rpc.createVault(tokenVaultNonce, riskLevel, 0, new anchor.BN(100_000_000_000_000), TYPE_ID_SABER, {
+    const [priceFeedKey, priceFeedBump] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from(PRICE_FEED_TAG), mintCollKey.toBuffer()],
+      program.programId
+    );
+    // todo - get real tokenA, B, C
+    // FIXME: hardcoded
+    const mintA = new PublicKey('7KLQxufDu9H7BEAHvthC5p4Uk6WrH3aw8TwvPXoLgG11');
+    const mintB = new PublicKey('BicnAQ4jQgz3g7htuq1y6SKUNtrTr7UmpQjCqnTKkHR5');
+    const mintC = new PublicKey('FnjuEcDDTL3e511XE5a7McbDZvv2sVfNfEjyq4fJWXxg');
+    const vaultA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
+    const vaultB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
+    const vaultC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
+    const pairCount = 2;
+
+    const ix1 = program.instruction.createVault(
+      tokenVaultNonce,
+      riskLevel,
+      0,
+      new anchor.BN(100_000_000_000_000),
+      TYPE_ID_SABER,
+      {
+        accounts: {
+          authority: wallet.publicKey,
+          vault: tokenVaultKey,
+          globalState: globalStateKey,
+          mintColl: mintCollKey,
+          ...defaultAccounts,
+        },
+      }
+    );
+    const ix2 = program.instruction.createPriceFeed(pairCount, {
       accounts: {
         authority: wallet.publicKey,
-        vault: tokenVaultKey,
         globalState: globalStateKey,
+        vault: tokenVaultKey,
+        priceFeed: priceFeedKey,
         mintColl: mintCollKey,
+        mintA,
+        mintB,
+        mintC,
+        vaultA,
+        vaultB,
+        vaultC,
         ...defaultAccounts,
       },
     });
+    const transaction = new Transaction();
+    transaction.add(...[ix1, ix2]);
+
+    const txHash = await sendTransaction(connection, wallet, transaction, []);
+    console.log(`vault created. txHash = ${txHash}`);
     return 'created token vault successfully';
   } catch (e) {
     console.log("can't create token vault");
