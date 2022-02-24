@@ -369,7 +369,7 @@ export async function getTokenVaultAndAddressByPublicKeyMint(connection: Connect
     program.programId
   );
   try {
-    const tokenVault = await program.account.tokenVault.fetch(tokenVaultKey);
+    const tokenVault = await program.account.vault.fetch(tokenVaultKey);
     return { tokenVault, tokenVaultKey };
   } catch (e) {
     return null;
@@ -395,26 +395,6 @@ export async function getTokenVaultAddressByPublicKeyMint(
 ): Promise<PublicKey | undefined> {
   const res = await getTokenVaultAndAddressByPublicKeyMint(connection, mint);
   return res?.tokenVaultKey;
-}
-
-export async function createTokenVault(
-  connection: Connection,
-  wallet: any,
-  mintCollKey: PublicKey = WSOL_MINT_KEY,
-  riskLevel = 0,
-  platform = 'SABER'
-) {
-  try {
-    switch (platform) {
-      case 'SABER':
-        return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
-      default:
-        console.error('Platform vault creation yet not implemented');
-        break;
-    }
-  } catch (e) {
-    console.log("can't create token vault");
-  }
 }
 
 export async function createUserTrove(

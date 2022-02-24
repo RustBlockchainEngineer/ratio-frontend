@@ -4,7 +4,7 @@ import { IoMdClose } from 'react-icons/io';
 import LockVaultModal from '../LockVaultModal';
 import Button from '../Button';
 import { useConnection } from '../../contexts/connection';
-import { createTokenVault, getTokenVaultByMint } from '../../utils/ratio-lending';
+import { getTokenVaultByMint } from '../../utils/ratio-lending';
 import { useWallet } from '../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
 

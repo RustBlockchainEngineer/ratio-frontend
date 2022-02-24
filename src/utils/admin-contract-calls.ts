@@ -1,8 +1,15 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
-import { getGlobalStateKey, getGlobalState, getProgramInstance, getTokenVaultKey } from './ratio-lending';
+import {
+  getGlobalStateKey,
+  getGlobalState,
+  getProgramInstance,
+  getTokenVaultKey,
+  WSOL_MINT_KEY,
+} from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
+import { createSaberTokenVault } from './saber/saber-utils';
 
 export async function setEmergencyState(
   connection: Connection,
@@ -25,6 +32,27 @@ export async function setEmergencyState(
     throw error;
   }
 }
+
+export async function createTokenVault(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: PublicKey = WSOL_MINT_KEY,
+  riskLevel = 0,
+  platform = 'SABER'
+) {
+  try {
+    switch (platform) {
+      case 'SABER':
+        return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
+      default:
+        console.error('Platform vault creation yet not implemented');
+        break;
+    }
+  } catch (e) {
+    console.log("can't create token vault");
+  }
+}
+
 export async function getCurrentEmergencyState(
   connection: Connection,
   wallet: WalletAdapter | undefined

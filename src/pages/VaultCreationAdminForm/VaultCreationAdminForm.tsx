@@ -11,12 +11,8 @@ import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useWallet } from '../../contexts/wallet';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { Platform, RISK_RATING } from '../../types/VaultTypes';
-import {
-  createGlobalState,
-  createTokenVault,
-  getTokenVaultAddressByMint,
-  isGlobalStateCreated,
-} from '../../utils/ratio-lending';
+import { createTokenVault } from '../../utils/admin-contract-calls';
+import { createGlobalState, getTokenVaultAddressByMint, isGlobalStateCreated } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 import LPAssetAdditionModal, { LPAssetCreationData } from './LPAssetAdditionModal/LPAssetAdditionModal';
 
@@ -111,15 +107,14 @@ export default function VaultCreationAdminForm() {
 
   const getOrCreateTokenVault = async (
     connection: Connection,
-    lpMintAddress: string,
-    risk_rating: string | null
+    data: LPCreationData
   ): Promise<PublicKey | undefined> => {
-    let vaultProgramAddress = await getTokenVaultAddressByMint(connection, lpMintAddress);
+    let vaultProgramAddress = await getTokenVaultAddressByMint(connection, data?.address_id);
     if (vaultProgramAddress) {
       toast.info('Token vault program already exists');
     } else {
       try {
-        const riskRatingValue: number = RISK_RATING[risk_rating as keyof typeof RISK_RATING];
+        const riskRatingValue: number = RISK_RATING[data?.risk_rating as keyof typeof RISK_RATING];
         const platformName: string | undefined = platforms.find((item) => item.id === data.platform_id)?.name;
         if (!platformName) {
           toast.error('Platform needs to be selected to create a vault');
@@ -128,7 +123,7 @@ export default function VaultCreationAdminForm() {
         const result = await createTokenVault(
           connection,
           wallet,
-          new PublicKey(lpMintAddress),
+          new PublicKey(data?.address_id),
           riskRatingValue,
           platformName
         );
@@ -139,7 +134,7 @@ export default function VaultCreationAdminForm() {
       } catch (error: any) {
         console.error(error);
       }
-      vaultProgramAddress = await getTokenVaultAddressByMint(connection, lpMintAddress);
+      vaultProgramAddress = await getTokenVaultAddressByMint(connection, data?.address_id);
       vaultProgramAddress && toast.info('Token vault program created successfully');
     }
     if (!vaultProgramAddress) {
@@ -157,11 +152,11 @@ export default function VaultCreationAdminForm() {
       return;
     }
     setValidated(true);
-    const vaultProgramAddress = await getOrCreateTokenVault(connection, data?.address_id, data?.risk_rating);
+    const vaultProgramAddress = await getOrCreateTokenVault(connection, data);
     if (!vaultProgramAddress) {
       return;
     }
-    data.address_id = vaultProgramAddress.toBase58();
+    data.vault_address_id = vaultProgramAddress.toBase58();
     const response = await fetch(`${API_ENDPOINT}/lpairs/${data.address_id}`, {
       body: JSON.stringify(data),
       headers: {
