@@ -57,7 +57,11 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
     }
     setValue(currentValue);
     const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
-    setPercentage(parseInt(percentageFull));
+    if (maxValue === 0 || isNaN(parseInt(maxValue))) {
+      setPercentage(0);
+    } else {
+      setPercentage(parseInt(percentageFull));
+    }
     setWarning(currentValue / maxValue === 1);
   }, [wallet, connection, globalState]);
 
