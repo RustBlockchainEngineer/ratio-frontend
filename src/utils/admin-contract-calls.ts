@@ -1,7 +1,12 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
 import { CollateralizationRatios } from '../types/admin-types';
-import { getGlobalStateKey, getProgramInstance, getTokenVaultKey } from './ratio-lending';
+import {
+  getGlobalStateKey,
+  getProgramInstance,
+  getTokenVaultKey,
+  changeSuperOwner as changeAuthority,
+} from './ratio-lending';
 import BN from 'bn.js';
 
 export async function toggleEmergencyState(connection: Connection, wallet: WalletAdapter | undefined) {
@@ -15,6 +20,8 @@ export async function getCurrentEmergencyState(
   return '';
 }
 export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, value: PublicKey) {
+  // todo & fixme
+  await changeAuthority(connection, wallet, value);
   console.error('changeSuperOwner yet not implemented');
 }
 export async function setGlobalTvlLimit(
