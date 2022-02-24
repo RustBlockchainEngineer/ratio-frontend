@@ -54,19 +54,19 @@ export async function getSaberSwapPoolsInfo(conn: Connection, connEnv: string) {
     //     tvl: '20',
     //   };
     // } else {
-      const { tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount, tvl } =
-        await getSaberSwapPoolInfo(conn, swapAccount);
+    const { tokenAName, tokenAAddress, tokenAAmount, tokenBName, tokenBAddress, tokenBAmount, tvl } =
+      await getSaberSwapPoolInfo(conn, swapAccount);
 
-      swapPoolsInfo[`${pools[i].name}`] = {
-        poolAddr,
-        tokenAName,
-        tokenAAddress,
-        tokenAAmount,
-        tokenBName,
-        tokenBAddress,
-        tokenBAmount,
-        tvl,
-      };
+    swapPoolsInfo[`${pools[i].name}`] = {
+      poolAddr,
+      tokenAName,
+      tokenAAddress,
+      tokenAAmount,
+      tokenBName,
+      tokenBAddress,
+      tokenBAmount,
+      tvl,
+    };
     // }
   }
   return swapPoolsInfo;

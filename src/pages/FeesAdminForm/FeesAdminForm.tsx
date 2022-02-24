@@ -45,21 +45,20 @@ interface FeesChanged {
   harvest_fee: boolean;
 }
 const ContractUpdatersMap = {
-  borrow_fee:   async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setBorrowFee(connection, wallet, Number(data?.borrow_fee)),
-  deposit_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setDepositFee(connection, wallet, Number(data?.deposit_fee)),
-  payback_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setPaybackFee(connection, wallet, Number(data?.payback_fee)),
-  harvest_fee:  async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setHarvestFee(connection, wallet, Number(data?.harvest_fee)),
-  stake_fee:    async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setStakeFee(connection, wallet, Number(data?.borrow_fee)),
-  swap_fee:     async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setSwapFee(connection, wallet, Number(data?.borrow_fee)),
-  withdraw_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) => 
-                  await setWithdrawFee(connection, wallet, Number(data?.borrow_fee)),
-                  
+  borrow_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) =>
+    await setBorrowFee(connection, wallet, Number(data?.borrow_fee)),
+  deposit_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) =>
+    await setDepositFee(connection, wallet, Number(data?.deposit_fee)),
+  payback_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) =>
+    await setPaybackFee(connection, wallet, Number(data?.payback_fee)),
+  harvest_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) =>
+    await setHarvestFee(connection, wallet, Number(data?.harvest_fee)),
+  stake_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) =>
+    await setStakeFee(connection, wallet, Number(data?.borrow_fee)),
+  swap_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) =>
+    await setSwapFee(connection, wallet, Number(data?.borrow_fee)),
+  withdraw_fee: async (connection: Connection, wallet: WalletAdapter, data: Fees) =>
+    await setWithdrawFee(connection, wallet, Number(data?.borrow_fee)),
 };
 
 export default function FeesAdminForm() {

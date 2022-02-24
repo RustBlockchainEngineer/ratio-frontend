@@ -27,7 +27,7 @@ export async function setGlobalTvlLimit(
   try {
     const tx = await program.rpc.setGlobalTvlLimit(new BN(limit), {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
@@ -50,7 +50,7 @@ export async function setGlobalDebtCeiling(
   try {
     const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
@@ -76,7 +76,7 @@ export async function setVaultDebtCeiling(
   try {
     const tx = await program.rpc.setVaultDebtcCeiling(new BN(ceiling), {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
         mintColl: mintCollKey,
         vault: tokenVaultKey,
@@ -140,7 +140,7 @@ export async function setCollateralRatio(
   try {
     const tx = await program.rpc.setCollaterialRatio(bigNumberValues, {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
@@ -166,7 +166,7 @@ export async function setHarvestFee(
   try {
     const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(feeDeno), {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });

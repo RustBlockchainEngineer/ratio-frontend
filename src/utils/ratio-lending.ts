@@ -37,13 +37,13 @@ export const TYPE_ID_UNKNOWN: PlatformType = 4;
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
-export const GLOBAL_STATE_TAG = 'global-state-seed';
-export const TOKEN_VAULT_TAG = 'token-vault-seed';
-export const USER_TROVE_TAG = 'user-trove';
-export const USD_MINT_TAG = 'usd-mint';
-export const USER_USD_TOKEN_TAG = 'usd-token';
-export const TOKEN_VAULT_POOL_TAG = 'token-vault-pool';
-export const USER_TROVE_POOL_TAG = 'user-trove-pool';
+export const GLOBAL_STATE_TAG = 'GLOBAL_STATE_TAG';
+export const VAULT_SEED = 'VAULT_SEED';
+export const TROVE_SEED = 'TROVE_SEED';
+export const MINT_USD_SEED = 'MINT_USD_SEED';
+export const USD_TOKEN_SEED = 'USD_TOKEN_SEED';
+export const TROVE_POOL_SEED = 'TROVE_POOL_SEED';
+export const PRICE_FEED_TAG = 'price-feed';
 
 export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
@@ -122,7 +122,7 @@ async function retrieveGlobalState(connection: Connection, wallet: any) {
 
 export async function getGlobalState(connection: Connection, wallet: any) {
   try {
-    const { globalState, globalStateKey } = await retrieveGlobalState(connection,wallet);
+    const { globalState, globalStateKey } = await retrieveGlobalState(connection, wallet);
     if (globalState) {
       return { globalState, globalStateKey };
     } else {
@@ -146,7 +146,7 @@ export async function getCurrentSuperOwner(connection: Connection, wallet: any):
 
 export async function isGlobalStateCreated(connection: Connection, wallet: any) {
   try {
-    const globalState = await retrieveGlobalState(connection,wallet);
+    const globalState = await retrieveGlobalState(connection, wallet);
     if (globalState) {
       return true;
     }
@@ -167,7 +167,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
   );
   console.log('globalStateKey', globalStateKey.toBase58());
   const [mintUsdKey, mintUsdNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USD_MINT_TAG)],
+    [Buffer.from(MINT_USD_SEED)],
     program.programId
   );
   console.log('mintUsdKey', mintUsdKey.toBase58());
@@ -203,13 +203,13 @@ export async function createGlobalState(connection: Connection, wallet: any) {
 
 export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
   const program = getProgramInstance(connection, wallet);
-  
+
   const tokenVaultKey = await getTokenVaultAddressByPublicKeyMint(connection, mintCollKey);
-  if(!tokenVaultKey){
+  if (!tokenVaultKey) {
     return null;
   }
   const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   try {
@@ -273,15 +273,15 @@ export async function borrowUSDr(
   );
 
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   const [mintUsdKey, mintUsdNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USD_MINT_TAG)],
+    [Buffer.from(MINT_USD_SEED)],
     program.programId
   );
 
@@ -289,26 +289,28 @@ export async function borrowUSDr(
   const signers: Keypair[] = [];
 
   const [userUsdKey, userUsdKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_USD_TOKEN_TAG), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
+    [Buffer.from(USD_TOKEN_SEED), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
     program.programId
   );
 
-  const borrowInstruction = await program.instruction.borrowUsd(
-    new anchor.BN(amount),
-    userUsdKeyNonce,
-    {
-      accounts: {
-        owner: wallet.publicKey,
-        tokenVault: tokenVaultKey,
-        userTrove: userTroveKey,
-        globalState: globalStateKey,
-        mintUsd: mintUsdKey,
-        userTokenUsd: userUsdKey,
-        mintColl: mintCollKey,
-        ...defaultPrograms,
-      },
-    }
+  const [priceFeedKey, priceFeedBump] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(PRICE_FEED_TAG), mintCollKey.toBuffer()],
+    program.programId
   );
+
+  const borrowInstruction = await program.instruction.borrowUsd(new anchor.BN(amount), userUsdKeyNonce, {
+    accounts: {
+      authority: wallet.publicKey,
+      vault: tokenVaultKey,
+      trove: userTroveKey,
+      globalState: globalStateKey,
+      priceFeed: priceFeedKey,
+      mintUsd: mintUsdKey,
+      ataUserUsd: userUsdKey,
+      mintColl: mintCollKey,
+      ...defaultPrograms,
+    },
+  });
 
   transaction.add(borrowInstruction);
 
@@ -318,16 +320,15 @@ export async function borrowUSDr(
   return 'User borrowed ' + amount / Math.pow(10, USD_DECIMALS) + ' USD , transaction id = ' + tx;
 }
 
-
 export async function getTokenVaultAndAddressByPublicKeyMint(connection: Connection, mint: PublicKey) {
   const program = getProgramInstance(connection, null);
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mint.toBuffer()],
+    [Buffer.from(VAULT_SEED), mint.toBuffer()],
     program.programId
   );
   try {
     const tokenVault = await program.account.tokenVault.fetch(tokenVaultKey);
-    return {tokenVault,tokenVaultKey};
+    return { tokenVault, tokenVaultKey };
   } catch (e) {
     return null;
   }
@@ -336,18 +337,21 @@ export async function getTokenVaultAndAddressByMint(connection: Connection, mint
   return getTokenVaultAndAddressByPublicKeyMint(connection, new PublicKey(mint));
 }
 
-export async function getTokenVaultByMint(connection: Connection, mint: string): Promise<any|undefined> {
-  const res = await getTokenVaultAndAddressByMint(connection,mint);
+export async function getTokenVaultByMint(connection: Connection, mint: string): Promise<any | undefined> {
+  const res = await getTokenVaultAndAddressByMint(connection, mint);
   return res?.tokenVault;
 }
 
-export async function getTokenVaultAddressByMint(connection: Connection, mint: string) : Promise<PublicKey|undefined> {
-  const res = await getTokenVaultAndAddressByMint(connection,mint);
+export async function getTokenVaultAddressByMint(connection: Connection, mint: string): Promise<PublicKey | undefined> {
+  const res = await getTokenVaultAndAddressByMint(connection, mint);
   return res?.tokenVaultKey;
 }
 
-export async function getTokenVaultAddressByPublicKeyMint(connection: Connection, mint: PublicKey) : Promise<PublicKey|undefined> {
-  const res = await getTokenVaultAndAddressByPublicKeyMint(connection,mint);
+export async function getTokenVaultAddressByPublicKeyMint(
+  connection: Connection,
+  mint: PublicKey
+): Promise<PublicKey | undefined> {
+  const res = await getTokenVaultAndAddressByPublicKeyMint(connection, mint);
   return res?.tokenVaultKey;
 }
 
@@ -356,11 +360,11 @@ export async function createTokenVault(
   wallet: any,
   mintCollKey: PublicKey = WSOL_MINT_KEY,
   riskLevel = 0,
-  platform = "SABER",
+  platform = 'SABER'
 ) {
   try {
     switch (platform) {
-      case "SABER":
+      case 'SABER':
         return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
       default:
         console.error('Platform vault creation yet not implemented');
@@ -371,22 +375,27 @@ export async function createTokenVault(
   }
 }
 
-export async function createUserTrove(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY, debtCeil = 100_000_000_000) {
+export async function createUserTrove(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: PublicKey = WSOL_MINT_KEY,
+  debtCeil = 100_000_000_000
+) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
 
   const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
 
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_POOL_TAG), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
+    [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
 
@@ -400,12 +409,12 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
   try {
     await program.rpc.createUserTrove(userTroveNonce, userTroveTokenVaultNonce, new BN(debtCeil), {
       accounts: {
-        tokenVault: tokenVaultKey,
-        userTrove: userTroveKey,
+        vault: tokenVaultKey,
+        trove: userTroveKey,
 
         authority: wallet.publicKey,
 
-        tokenColl: userTroveTokenVaultKey,
+        ataTrove: userTroveTokenVaultKey,
         mintColl: mintCollKey,
         ...defaultPrograms,
       },
@@ -432,15 +441,16 @@ export async function depositCollateral(
     program.programId
   );
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [tokenCollKey, tokenCollNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_POOL_TAG), tokenVaultKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    program.programId
+  );
+
+  const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
 
@@ -466,9 +476,9 @@ export async function depositCollateral(
   } catch {
     const tx = await program.instruction.createUserTrove(userTroveNonce, tokenVaultNonce, {
       accounts: {
-        troveOwner: wallet.publicKey,
-        userTrove: userTroveKey,
-        tokenVault: tokenVaultKey,
+        authority: wallet.publicKey,
+        trove: userTroveKey,
+        vault: tokenVaultKey,
         mintColl: mintCollKey,
         ...defaultPrograms,
       },
@@ -476,23 +486,18 @@ export async function depositCollateral(
     transaction.add(tx);
   }
 
-  const depositInstruction = await program.instruction.depositCollateral(
-    new anchor.BN(amount),
-    tokenVaultNonce,
-    userTroveNonce,
-    tokenCollNonce,
-    {
-      accounts: {
-        owner: wallet.publicKey,
-        userTrove: userTroveKey,
-        tokenVault: tokenVaultKey,
-        poolTokenColl: tokenCollKey,
-        userTokenColl: userCollKey,
-        mintColl: mintCollKey,
-        ...defaultPrograms,
-      },
-    }
-  );
+  const depositInstruction = await program.instruction.depositCollateral(new anchor.BN(amount), {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      vault: tokenVaultKey,
+      trove: userTroveKey,
+      ataTrove: userTroveTokenVaultKey,
+      ataUserColl: userCollKey,
+      mintColl: mintCollKey,
+      ...defaultPrograms,
+    },
+  });
 
   transaction.add(depositInstruction);
 
@@ -521,7 +526,7 @@ export async function lockAndMint(
   mintCollKey: PublicKey = WSOL_MINT_KEY
 ) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
-/*
+  /*
   const program = getProgramInstance(connection, wallet);
 
   const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
@@ -529,7 +534,7 @@ export async function lockAndMint(
     program.programId
   );
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [tokenCollKey, tokenCollNonce] = await anchor.web3.PublicKey.findProgramAddress(
@@ -537,12 +542,12 @@ export async function lockAndMint(
     program.programId
   );
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
 
   const [mintUsdKey, mintUsdNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USD_MINT_TAG)],
+    [Buffer.from(MINT_USD_SEED)],
     program.programId
   );
 
@@ -630,8 +635,10 @@ export async function lockAndMint(
 }
 
 export async function getUsdrMintKey() {
-
-  const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(USD_MINT_TAG)], STABLE_POOL_PROGRAM_ID);
+  const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(MINT_USD_SEED)],
+    STABLE_POOL_PROGRAM_ID
+  );
   return mintUsdKey.toBase58();
 }
 
@@ -650,15 +657,15 @@ export async function repayUSDr(
     program.programId
   );
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   const [mintUsdKey, mintUsdNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USD_MINT_TAG)],
+    [Buffer.from(MINT_USD_SEED)],
     program.programId
   );
 
@@ -667,25 +674,22 @@ export async function repayUSDr(
   const signers: Keypair[] = [];
 
   const [userUsdKey, userUsdKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_USD_TOKEN_TAG), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
+    [Buffer.from(USD_TOKEN_SEED), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
     program.programId
   );
 
-  const repayInstruction = await program.instruction.repayUsd(
-    new anchor.BN(amount),
-    {
-      accounts: {
-        owner: wallet.publicKey,
-        tokenVault: tokenVaultKey,
-        userTrove: userTroveKey,
-        globalState: globalStateKey,
-        mintUsd: mintUsdKey,
-        userTokenUsd: userUsdKey,
-        mintColl: mintCollKey,
-        ...defaultPrograms,
-      },
-    }
-  );
+  const repayInstruction = await program.instruction.repayUsd(new anchor.BN(amount), {
+    accounts: {
+      owner: wallet.publicKey,
+      vault: tokenVaultKey,
+      trove: userTroveKey,
+      globalState: globalStateKey,
+      mintUsd: mintUsdKey,
+      ataUserUsd: userUsdKey,
+      mintColl: mintCollKey,
+      ...defaultPrograms,
+    },
+  });
   instructions.push(repayInstruction);
 
   instructions.forEach((instruction) => {
@@ -717,18 +721,17 @@ export async function withdrawCollateral(
   console.log('fetched globalState', globalState);
 
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [tokenCollKey, tokenCollNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_POOL_TAG), tokenVaultKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
-
+  const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
+    program.programId
+  );
   const transaction = new Transaction();
   const instructions: TransactionInstruction[] = [];
   const signers: Keypair[] = [];
@@ -745,21 +748,18 @@ export async function withdrawCollateral(
     signers
   );
 
-  const withdrawInstruction = await program.instruction.withdrawCollateral(
-    new anchor.BN(amount),
-    {
-      accounts: {
-        owner: wallet.publicKey,
-        globalState: globalStateKey,
-        userTrove: userTroveKey,
-        tokenVault: tokenVaultKey,
-        poolTokenColl: tokenCollKey,
-        userTokenColl: userCollKey,
-        mintColl: mintCollKey,
-        ...defaultPrograms,
-      },
-    }
-  );
+  const withdrawInstruction = await program.instruction.withdrawCollateral(new anchor.BN(amount), {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      trove: userTroveKey,
+      vault: tokenVaultKey,
+      ataTrove: userTroveTokenVaultKey,
+      ataUserColl: userCollKey,
+      mintColl: mintCollKey,
+      ...defaultPrograms,
+    },
+  });
   instructions.push(withdrawInstruction);
 
   if (mintCollKey.toBase58() === WSOL_MINT_KEY.toBase58()) {
@@ -784,7 +784,7 @@ export async function setVaultDebtCeiling(
   connection: Connection,
   wallet: any,
   vaultDebtCeiling: number,
-  mintCollKey: PublicKey = WSOL_MINT_KEY,
+  mintCollKey: PublicKey = WSOL_MINT_KEY
 ) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
@@ -793,33 +793,26 @@ export async function setVaultDebtCeiling(
     program.programId
   );
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.setVaultDebtCeiling(
-    new anchor.BN(vaultDebtCeiling),
-    {
-      accounts: {
-        payer: wallet.publicKey,
-        globalState: globalStateKey,
-        mintColl: mintCollKey,
-        tokenVault: tokenVaultKey,
-      },
-    }
-  );
+  const ix = await program.instruction.setVaultDebtCeiling(new anchor.BN(vaultDebtCeiling), {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      mintColl: mintCollKey,
+      vault: tokenVaultKey,
+    },
+  });
   transaction.add(ix);
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
   return 'Set Vault Debt Ceiling to' + vaultDebtCeiling + ', transaction id = ' + tx;
 }
 
-export async function setGloalTvlLimit(
-  connection: Connection,
-  wallet: any,
-  newTvlLimit: number
-) {
+export async function setGloalTvlLimit(connection: Connection, wallet: any, newTvlLimit: number) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
@@ -828,15 +821,12 @@ export async function setGloalTvlLimit(
   );
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.setGloalTvlLimit(
-    new anchor.BN(newTvlLimit),
-    {
-      accounts: {
-        payer: wallet.publicKey,
-        globalState: globalStateKey
-      },
-    }
-  );
+  const ix = await program.instruction.setGloalTvlLimit(new anchor.BN(newTvlLimit), {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+    },
+  });
   transaction.add(ix);
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
@@ -848,7 +838,7 @@ export async function setUserDebtCeiling(
   wallet: any,
   userPk: PublicKey,
   newDebtCeiling: number,
-  mintCollKey: PublicKey = WSOL_MINT_KEY,
+  mintCollKey: PublicKey = WSOL_MINT_KEY
 ) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
@@ -857,38 +847,31 @@ export async function setUserDebtCeiling(
     program.programId
   );
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TOKEN_VAULT_TAG), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_TROVE_TAG), tokenVaultKey.toBuffer(), userPk.toBuffer()],
+    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), userPk.toBuffer()],
     program.programId
   );
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.setUserDebtCeiling(
-    new anchor.BN(newDebtCeiling),
-    {
-      accounts: {
-        payer: wallet.publicKey,
-        user: userPk,
-        globalState: globalStateKey,
-        mintColl: mintCollKey,
-        tokenVault: tokenVaultKey,
-        userTrove: userTroveKey,
-      },
-    }
-  );
+  const ix = await program.instruction.setUserDebtCeiling(new anchor.BN(newDebtCeiling), {
+    accounts: {
+      authority: wallet.publicKey,
+      user: userPk,
+      globalState: globalStateKey,
+      mintColl: mintCollKey,
+      vault: tokenVaultKey,
+      trove: userTroveKey,
+    },
+  });
   transaction.add(ix);
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
   return 'Set User Debt Ceiling to' + newDebtCeiling + ', transaction id = ' + tx;
 }
-export async function toggleEmergencyState(
-  connection: Connection,
-  wallet: any,
-  paused: number
-) {
+export async function toggleEmergencyState(connection: Connection, wallet: any, paused: number) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
@@ -897,26 +880,19 @@ export async function toggleEmergencyState(
   );
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.toggleEmerState(
-    paused,
-    {
-      accounts: {
-        payer: wallet.publicKey,
-        globalState: globalStateKey
-      },
-    }
-  );
+  const ix = await program.instruction.toggleEmerState(paused, {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+    },
+  });
   transaction.add(ix);
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
-  return 'Set EmergencyState to' + paused?'Paused':'Resumed' + ', transaction id = ' + tx;
+  return 'Set EmergencyState to' + paused ? 'Paused' : 'Resumed' + ', transaction id = ' + tx;
 }
 
-export async function changeSuperOwner(
-  connection: Connection,
-  wallet: any,
-  newOwner: PublicKey
-) {
+export async function changeSuperOwner(connection: Connection, wallet: any, newOwner: PublicKey) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -926,17 +902,38 @@ export async function changeSuperOwner(
   );
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.changeSuperOwner(
-    {
-      accounts: {
-        payer: wallet.publicKey,
-        globalState: globalStateKey,
-        newOwner
-      },
-    }
-  );
+  const ix = await program.instruction.changeAuthority({
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      newOwner,
+    },
+  });
   transaction.add(ix);
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
   return 'Set Super Owner to' + newOwner.toBase58() + ', transaction id = ' + tx;
+}
+
+export async function changeTreasury(connection: Connection, wallet: any, newTreasury: PublicKey) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+
+  const program = getProgramInstance(connection, wallet);
+  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    program.programId
+  );
+  const transaction = new Transaction();
+  const signers: Keypair[] = [];
+  const ix = await program.instruction.changeTreasury({
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      newTreasury,
+    },
+  });
+  transaction.add(ix);
+  const tx = await sendTransaction(connection, wallet, transaction, signers);
+  console.log('tx id->', tx);
+  return 'Set Treasury to' + newTreasury.toBase58() + ', transaction id = ' + tx;
 }
