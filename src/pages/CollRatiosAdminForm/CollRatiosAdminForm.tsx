@@ -119,30 +119,30 @@ export default function CollRatiosAdminForm() {
       <h5 className="mt-3">Modify Collateralization Ratios Values:</h5>
       <Form validated={validated} onSubmit={handleSubmit}>
         <Row className="mb-3">
-          <AdminFormInput handleChange={handleChange} label="A rating" name="cr_a_ratio" value={data?.cr_a_ratio} />
-          <AdminFormInput handleChange={handleChange} label="AA rating" name="cr_aa_ratio" value={data?.cr_aa_ratio} />
           <AdminFormInput
             handleChange={handleChange}
             label="AAA rating"
             name="cr_aaa_ratio"
             value={data?.cr_aaa_ratio}
           />
-          <AdminFormInput handleChange={handleChange} label="B rating" name="cr_b_ratio" value={data?.cr_b_ratio} />
-          <AdminFormInput handleChange={handleChange} label="BB rating" name="cr_bb_ratio" value={data?.cr_bb_ratio} />
+          <AdminFormInput handleChange={handleChange} label="AA rating" name="cr_aa_ratio" value={data?.cr_aa_ratio} />
+          <AdminFormInput handleChange={handleChange} label="A rating" name="cr_a_ratio" value={data?.cr_a_ratio} />
           <AdminFormInput
             handleChange={handleChange}
             label="BBB rating"
             name="cr_bbb_ratio"
             value={data?.cr_bbb_ratio}
           />
-          <AdminFormInput handleChange={handleChange} label="C rating" name="cr_c_ratio" value={data?.cr_c_ratio} />
-          <AdminFormInput handleChange={handleChange} label="CC rating" name="cr_cc_ratio" value={data?.cr_cc_ratio} />
+          <AdminFormInput handleChange={handleChange} label="BB rating" name="cr_bb_ratio" value={data?.cr_bb_ratio} />
+          <AdminFormInput handleChange={handleChange} label="B rating" name="cr_b_ratio" value={data?.cr_b_ratio} />
           <AdminFormInput
             handleChange={handleChange}
             label="CCC rating"
             name="cr_ccc_ratio"
             value={data?.cr_ccc_ratio}
           />
+          <AdminFormInput handleChange={handleChange} label="CC rating" name="cr_cc_ratio" value={data?.cr_cc_ratio} />
+          <AdminFormInput handleChange={handleChange} label="C rating" name="cr_c_ratio" value={data?.cr_c_ratio} />
           <AdminFormInput handleChange={handleChange} label="D rating" name="cr_d_ratio" value={data?.cr_d_ratio} />
         </Row>
         <Button variant="primary" type="submit">

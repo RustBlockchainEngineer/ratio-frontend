@@ -54,3 +54,5 @@ export enum Roles {
   ADMIN = 'ADMIN',
   USER = 'USER',
 }
+
+export const REFRESH_TIMER = 30_000;

@@ -139,9 +139,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
         if (!active) {
           return;
         }
-        setGlobalState(res);
+        const data = res.globalState;
+        setGlobalState(data);
         setHasReachedGlobalDebtLimit(
-          res?.totalDebt ? res?.totalDebt.toNumber() === res?.debtCeiling.toNumber() : false
+          data?.totalDebt ? data?.totalDebt.toNumber() === data?.debtCeiling.toNumber() : false
         );
       });
     }
@@ -231,7 +232,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             {showOnlyActive === false ? (
               <tr>
                 <th scope="col">Asset</th>
-                <th scope="col">APR</th>
+                <th scope="col">APY</th>
                 <th scope="col">Platform</th>
                 {/* <th scope="col">USDr Debt</th>
                 <th scope="col">Positoin Value</th>
@@ -243,7 +244,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             ) : (
               <tr>
                 <th scope="col">Asset</th>
-                <th scope="col">APR</th>
+                <th scope="col">APY</th>
                 <th scope="col">USDr Debt</th>
                 <th scope="col">USDr Available to Mint</th>
                 <th scope="col">Positoin Value</th>

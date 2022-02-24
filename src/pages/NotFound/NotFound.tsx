@@ -16,7 +16,7 @@ const NotFound = () => {
           <p>
             It&lsquo;s not you, it&lsquo;s us. It looks like the page doesn&lsquo;t exist. Let&lsquo;s take you back.
           </p>
-          <Button className="button--fill" onClick={onButtonClick}>
+          <Button className="button--blue" onClick={onButtonClick}>
             Back to app
           </Button>
         </>

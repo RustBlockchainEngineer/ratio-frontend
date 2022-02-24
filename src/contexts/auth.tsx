@@ -5,6 +5,8 @@ interface AuthConfig {
   setLoggedIn: (val: boolean) => void;
   updateState: boolean;
   setUpdateState: (val: boolean) => void;
+  updateHistory: boolean;
+  setUpdateHistory: (val: boolean) => void;
 }
 
 const AuthContext = React.createContext<AuthConfig>({
@@ -12,11 +14,15 @@ const AuthContext = React.createContext<AuthConfig>({
   setLoggedIn: () => {},
   updateState: false,
   setUpdateState: () => {},
+
+  updateHistory: false,
+  setUpdateHistory: () => {},
 });
 
 export function AuthProvider({ children = undefined as any }) {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [updateState, setUpdateState] = useState<boolean>(false);
+  const [updateHistory, setUpdateHistory] = useState<boolean>(false);
   return (
     <AuthContext.Provider
       value={{
@@ -24,6 +30,8 @@ export function AuthProvider({ children = undefined as any }) {
         setLoggedIn,
         updateState,
         setUpdateState,
+        updateHistory,
+        setUpdateHistory,
       }}
     >
       {children}
@@ -42,5 +50,12 @@ export function useUpdateState() {
   return {
     updateStateFlag: useContext(AuthContext)?.updateState,
     setUpdateStateFlag: useContext(AuthContext)?.setUpdateState,
+  };
+}
+
+export function useUpdateHistory() {
+  return {
+    updateHistoryFlag: useContext(AuthContext)?.updateHistory,
+    setUpdateHistoryFlag: useContext(AuthContext)?.setUpdateHistory,
   };
 }
