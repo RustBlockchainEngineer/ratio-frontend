@@ -235,7 +235,7 @@ export async function getUserState(connection: Connection, wallet: any, mintColl
     program.programId
   );
   try {
-    return await program.account.userTrove.fetch(userTroveKey);
+    return await program.account.trove.fetch(userTroveKey);
   } catch (e) {
     return null;
   }
@@ -369,7 +369,7 @@ export async function getTokenVaultAndAddressByPublicKeyMint(connection: Connect
     program.programId
   );
   try {
-    const tokenVault = await program.account.tokenVault.fetch(tokenVaultKey);
+    const tokenVault = await program.account.vault.fetch(tokenVaultKey);
     return { tokenVault, tokenVaultKey };
   } catch (e) {
     return null;
@@ -442,7 +442,7 @@ export async function createUserTrove(
   );
 
   try {
-    const userTrove = await program.account.userTrove.fetch(userTroveKey);
+    const userTrove = await program.account.trove.fetch(userTroveKey);
     console.log('fetched userTrove', userTrove);
     console.log('This user trove was already created!');
     return 'already created!';
@@ -514,7 +514,7 @@ export async function depositCollateral(
   );
 
   try {
-    await program.account.userTrove.fetch(userTroveKey);
+    await program.account.trove.fetch(userTroveKey);
   } catch {
     const tx = await program.instruction.createTrove(userTroveNonce, tokenVaultNonce, {
       accounts: {
