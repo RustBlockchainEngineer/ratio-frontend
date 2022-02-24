@@ -1656,5 +1656,8 @@
       "name": "InvalidSaberPlatform",
       "msg": "Invalid saber platform"
     }
-  ]
+  ],
+  "metadata": {
+    "address": "61TAXTt2Kt7erSWarrdhCXbqfFrWmLJ2opGMeWjeeXaH"
+  }
 }
