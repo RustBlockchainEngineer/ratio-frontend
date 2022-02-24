@@ -128,6 +128,10 @@
         {
           "name": "debtCeiling",
           "type": "u64"
+        },
+        {
+          "name": "userDebtCeiling",
+          "type": "u64"
         }
       ]
     },
@@ -363,27 +367,7 @@
           "isSigner": true
         },
         {
-          "name": "user",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "globalState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintColl",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "trove",
           "isMut": true,
           "isSigner": false
         }
@@ -470,10 +454,6 @@
         {
           "name": "ataTroveNonce",
           "type": "u8"
-        },
-        {
-          "name": "ceiling",
-          "type": "u64"
         }
       ]
     },
@@ -1299,6 +1279,10 @@
             "type": "u64"
           },
           {
+            "name": "userDebtCeiling",
+            "type": "u64"
+          },
+          {
             "name": "feeNum",
             "type": "u128"
           },
@@ -1418,10 +1402,6 @@
           },
           {
             "name": "debt",
-            "type": "u64"
-          },
-          {
-            "name": "debtCeiling",
             "type": "u64"
           },
           {
@@ -1656,8 +1636,5 @@
       "name": "InvalidSaberPlatform",
       "msg": "Invalid saber platform"
     }
-  ],
-  "metadata": {
-    "address": "61TAXTt2Kt7erSWarrdhCXbqfFrWmLJ2opGMeWjeeXaH"
-  }
+  ]
 }

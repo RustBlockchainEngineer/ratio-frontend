@@ -11,8 +11,8 @@ import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useWallet } from '../../contexts/wallet';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { Platform, RISK_RATING } from '../../types/VaultTypes';
-import { createTokenVault } from '../../utils/admin-contract-calls';
-import { createGlobalState, getTokenVaultAddressByMint, isGlobalStateCreated } from '../../utils/ratio-lending';
+import { createGlobalState, createTokenVault } from '../../utils/admin-contract-calls';
+import { getTokenVaultAddressByMint, isGlobalStateCreated } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 import LPAssetAdditionModal, { LPAssetCreationData } from './LPAssetAdditionModal/LPAssetAdditionModal';
 
