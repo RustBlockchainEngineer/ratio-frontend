@@ -15,21 +15,6 @@ const PriceContext = React.createContext<PriceConfig>({
 export function PriceProvider({ children = undefined as any }) {
   const [prices, setPrices] = useState<any>({});
 
-  useEffect(() => {
-    Axios('https://price-api.sonar.watch/prices').then((res) => {
-      if (res && res.data) {
-        const tmpPrices: any = {};
-        res.data.forEach((item: any) => {
-          tmpPrices[item.mint] = item.price;
-        });
-        setPrices({
-          ...tmpPrices,
-          ...prices,
-        });
-      }
-    });
-  }, []);
-
   return (
     <PriceContext.Provider
       value={{
