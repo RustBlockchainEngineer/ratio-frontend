@@ -52,7 +52,7 @@ const fetchAllCollateralRatios = async (accessToken: any) => {
 
 const getCollateralRatio = (collateralRatios: any, riskRating: string): number => {
   console.log(riskRating);
-  const mapValue: any | undefined = collateralRatioToRiskRating[`${riskRating}`];
+  const mapValue: any | undefined = collateralRatioToRiskRating[riskRating];
   return collateralRatios[mapValue?.index];
 };
 
@@ -69,7 +69,7 @@ export const useFetchCollateralRatio = (riskRating: string) => {
       try {
         const collRatios = await collateralizationRatios();
         const collateralRatioObj = getCollateralRatio(collRatios, riskRating);
-        const collRatioValue = collateralRatioObj[collateralRatioToRiskRating[`${riskRating}`]?.value];
+        const collRatioValue = collateralRatioObj[collateralRatioToRiskRating[riskRating]?.value];
         if (cancelRequest) return;
         setCollateralRatio(collRatioValue);
         setError(null);
@@ -85,5 +85,8 @@ export const useFetchCollateralRatio = (riskRating: string) => {
     };
   }, [riskRating]);
 
-  return [collateralRatio, error];
+  return {
+    collateralRatio,
+    error,
+  };
 };
