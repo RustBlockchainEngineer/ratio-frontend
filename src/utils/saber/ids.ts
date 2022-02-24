@@ -19,11 +19,11 @@ export async function getDevnetPools() {
     //     quarryAddress: SABER_QUARRY_NEW,
     //   });
     // } else {
-      swapPools.push({
-        name,
-        swapAddress,
-        quarryAddress,
-      });
+    swapPools.push({
+      name,
+      swapAddress,
+      quarryAddress,
+    });
     // }
   }
 
