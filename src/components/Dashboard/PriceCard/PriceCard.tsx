@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import risklevel from '../../../assets/images/risklevel.svg';
+import { useFetchCollateralRatio } from '../../../hooks/useFetchCollateralRatio';
 
 interface PricecardInterface {
   title?: string;
@@ -13,10 +15,11 @@ interface PricecardInterface {
 type PriceCardProps = {
   data: PricecardInterface;
   tokenName: string;
-  collateralizationRatio: number;
+  risk: string;
 };
 
-const PriceCard = ({ data, tokenName, collateralizationRatio }: PriceCardProps) => {
+const PriceCard = ({ data, tokenName, risk }: PriceCardProps) => {
+  const collateralizationRatio = useFetchCollateralRatio(risk);
   return (
     <div className="col-lg-6 ">
       <div className="pricecard">
@@ -26,7 +29,8 @@ const PriceCard = ({ data, tokenName, collateralizationRatio }: PriceCardProps) 
             <img src={risklevel} alt="risklevel" />
           </div>
           <div className="pricecard__value">
-            <h3>{collateralizationRatio * 100}%</h3>
+            {/** collateralizationRatio[0]=data and collateralizationRatio[1]=error **/}
+            <h3>{collateralizationRatio[1] !== null ? `...` : (collateralizationRatio[0] * 100).toFixed(2)}%</h3>
           </div>
         </div>
         <div className="pricecard__body">
