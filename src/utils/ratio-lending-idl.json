@@ -413,10 +413,7 @@
         {
           "name": "ratios",
           "type": {
-            "array": [
-              "u64",
-              10
-            ]
+            "array": ["u64", 10]
           }
         }
       ]
@@ -1312,10 +1309,7 @@
           {
             "name": "collPerRisklv",
             "type": {
-              "array": [
-                "u64",
-                10
-              ]
+              "array": ["u64", 10]
             }
           }
         ]

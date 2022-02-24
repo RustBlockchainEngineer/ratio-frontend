@@ -1,28 +1,59 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
-import { CollateralizationRatios } from '../types/admin-types';
-import {
-  getGlobalStateKey,
-  getProgramInstance,
-  getTokenVaultKey,
-  changeSuperOwner as changeAuthority,
-} from './ratio-lending';
+import { getGlobalStateKey, getGlobalState, getProgramInstance, getTokenVaultKey } from './ratio-lending';
+import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
 
-export async function toggleEmergencyState(connection: Connection, wallet: WalletAdapter | undefined) {
-  console.error('toggleEmergencyState yet not implemented');
+export async function setEmergencyState(
+  connection: Connection,
+  wallet: WalletAdapter | undefined,
+  newState: EmergencyState
+) {
+  const program = await getProgramInstance(connection, wallet);
+  const globalStateKey = await getGlobalStateKey();
+  try {
+    const tx = await program.rpc.toggleEmerState(newState as number, {
+      accounts: {
+        payer: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    console.log('------ SET EMERGENCY STATE TX --------');
+    console.log(tx);
+  } catch (error) {
+    console.error('ERROR when changing the emergency state.', error);
+    throw error;
+  }
 }
 export async function getCurrentEmergencyState(
   connection: Connection,
   wallet: WalletAdapter | undefined
-): Promise<string> {
-  console.error('getCurrentEmergencyState yet not implemented');
-  return '';
+): Promise<EmergencyState> {
+  try {
+    const { globalState } = await getGlobalState(connection, wallet);
+    return globalState.paused as EmergencyState;
+  } catch (e) {
+    console.error('Error while fetching the emergency state');
+    throw e;
+  }
 }
 export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, value: PublicKey) {
-  // todo & fixme
-  await changeAuthority(connection, wallet, value);
-  console.error('changeSuperOwner yet not implemented');
+  const program = await getProgramInstance(connection, wallet);
+  const globalStateKey = await getGlobalStateKey();
+  try {
+    const tx = await program.rpc.changeAuthority({
+      accounts: {
+        authority: wallet?.publicKey,
+        globalState: globalStateKey,
+        newOwner: value,
+      },
+    });
+    console.log('------ CHANGE AUTHORITY TX --------');
+    console.log(tx);
+  } catch (error) {
+    console.error('ERROR when changing the authority.', error);
+    throw error;
+  }
 }
 export async function setGlobalTvlLimit(
   connection: Connection,
@@ -110,29 +141,8 @@ export async function setUserDebtCeiling(
   user: PublicKey,
   mintCollKey: PublicKey
 ): Promise<boolean> {
-  const program = await getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
-
-  /**
-   * try {
-    const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
-      accounts: {
-        payer: wallet?.publicKey,
-        user:
-        globalState: globalStateKey,
-
-      },
-    });
-    console.log('----- TX GLOBAL DEBT CEILING ------');
-    console.log(tx);
-    return true;
-  } catch (error) {
-    console.log('ERROR');
-    console.log(error);
-    throw error;
-  }
-  **/
-  return true;
+  console.error('setUserDebtCeiling yet not implemented');
+  return false;
 }
 export async function setCollateralRatio(
   connection: Connection,

@@ -140,8 +140,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
         <NavbarItem
           icon={allVaultsIcon}
           name="Available Vaults"
-          active={navIndex === '/dashboard/all-vaults'}
-          navIndex="/dashboard/all-vaults"
+          active={navIndex === '/dashboard/available-vaults'}
+          navIndex="/dashboard/available-vaults"
           onItemClick={onItemClick}
           collapseFlag={collapseFlag}
         />
@@ -149,8 +149,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
           <NavbarItem
             icon={activeVaultsIcon}
             name="My Active Vaults"
-            active={navIndex === '/dashboard/my-active-vaults'}
-            navIndex="/dashboard/my-active-vaults"
+            active={navIndex === '/dashboard/active-vaults'}
+            navIndex="/dashboard/active-vaults"
             onItemClick={onItemClick}
             collapseFlag={collapseFlag}
             expands={false}

@@ -14,3 +14,9 @@ export interface CollateralizationRatios {
 export interface IIndexable {
   [key: string]: any;
 }
+
+export enum EmergencyState {
+  RUNNING = 0,
+  PAUSED = 1,
+  UNKNOWN = -1,
+}
