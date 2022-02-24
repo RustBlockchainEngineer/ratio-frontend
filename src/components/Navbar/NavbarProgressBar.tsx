@@ -57,7 +57,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
     }
     setValue(currentValue);
     const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
-    if (maxValue === 0 || maxValue === undefined) {
+    if (maxValue === 0 || isNaN(parseInt(maxValue))) {
       setPercentage(0);
     } else {
       setPercentage(parseInt(percentageFull));
