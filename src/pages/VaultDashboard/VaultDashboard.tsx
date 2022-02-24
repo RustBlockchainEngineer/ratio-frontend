@@ -88,7 +88,7 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     if (!connected) {
-      history.push('/dashboard/all-vaults');
+      history.push('/dashboard/available-vaults');
     } else if (vault_mint) {
       setIsLoading(true);
       getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {

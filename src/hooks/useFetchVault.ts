@@ -13,7 +13,6 @@ export const useFetchVault = (mint: string) => {
       const url = `${API_ENDPOINT}/lpairs/${mint}`;
       let data = null;
 
-      console.log('entro', url);
       if (cache[url]) {
         data = cache[url];
       } else {
