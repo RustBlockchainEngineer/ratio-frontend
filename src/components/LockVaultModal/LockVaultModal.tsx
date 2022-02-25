@@ -12,7 +12,6 @@ import ComingSoon from '../ComingSoon';
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
 import {
-  createTokenVault,
   lockAndMint,
   getTokenVaultByMint,
   getUserState,

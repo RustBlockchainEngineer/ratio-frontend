@@ -97,7 +97,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             icon: item.icon,
             title: item.symbol,
             tvl: item.platform_tvl,
-            apr: item.platform_ratio_apr,
+            apr: item.platform_ratio_apy,
             earned_rewards: item.earned_rewards,
             platform: {
               link: item.platform_site,
