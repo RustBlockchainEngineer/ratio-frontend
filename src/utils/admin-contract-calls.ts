@@ -1,23 +1,48 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
-import { getGlobalStateKey, getGlobalState, getProgramInstance, getTokenVaultKey } from './ratio-lending';
+import * as anchor from '@project-serum/anchor';
+import {
+  getGlobalStateKey,
+  getGlobalState,
+  getProgramInstance,
+  getTokenVaultKey,
+  WSOL_MINT_KEY,
+  GLOBAL_STATE_TAG,
+  MINT_USD_SEED,
+  defaultPrograms,
+  GLOBAL_TVL_LIMIT,
+  GLOBAL_DEBT_CEILING,
+  VAULT_SEED,
+} from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
+import { createSaberTokenVault } from './saber/saber-utils';
+import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
+import { sendTransaction } from './web3';
 
 export async function setEmergencyState(
   connection: Connection,
   wallet: WalletAdapter | undefined,
   newState: EmergencyState
 ) {
-  const program = await getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
+  await toggleEmergencyState(connection, wallet, newState as number);
+}
+
+export async function toggleEmergencyState(connection: Connection, wallet: any, paused: number) {
   try {
-    const tx = await program.rpc.toggleEmerState(newState as number, {
+    if (!wallet.publicKey) throw new WalletNotConnectedError();
+    const program = getProgramInstance(connection, wallet);
+    const globalStateKey = await getGlobalStateKey();
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.toggleEmerState(paused, {
       accounts: {
-        payer: wallet?.publicKey,
+        authority: wallet.publicKey,
         globalState: globalStateKey,
       },
     });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('------ SET EMERGENCY STATE TX --------');
     console.log(tx);
   } catch (error) {
@@ -25,6 +50,71 @@ export async function setEmergencyState(
     throw error;
   }
 }
+
+export async function createTokenVault(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: PublicKey = WSOL_MINT_KEY,
+  riskLevel = 0,
+  platform = 'SABER'
+) {
+  try {
+    switch (platform) {
+      case 'SABER':
+        return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
+      default:
+        console.error('Platform vault creation yet not implemented');
+        break;
+    }
+  } catch (e) {
+    console.log("can't create token vault");
+  }
+}
+
+// This command makes an Lottery
+export async function createGlobalState(connection: Connection, wallet: any) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    program.programId
+  );
+  console.log('globalStateKey', globalStateKey.toBase58());
+  const [mintUsdKey, mintUsdNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(MINT_USD_SEED)],
+    program.programId
+  );
+  console.log('mintUsdKey', mintUsdKey.toBase58());
+  try {
+    const globalState = await program.account.globalState.fetch(globalStateKey);
+    console.log('already created');
+    console.log('globalState', globalState);
+    return 'already created';
+  } catch (e) {
+    console.log("Global state didn't exist");
+  }
+  try {
+    await program.rpc.createGlobalState(
+      globalStateNonce,
+      mintUsdNonce,
+      new anchor.BN(GLOBAL_TVL_LIMIT),
+      new anchor.BN(GLOBAL_DEBT_CEILING),
+      {
+        accounts: {
+          authority: wallet.publicKey,
+          globalState: globalStateKey,
+          mintUsd: mintUsdKey,
+          ...defaultPrograms,
+        },
+      }
+    );
+  } catch (e) {
+    console.log("can't create global state");
+    console.error(e);
+  }
+  return 'created global state';
+}
+
 export async function getCurrentEmergencyState(
   connection: Connection,
   wallet: WalletAdapter | undefined
@@ -37,17 +127,22 @@ export async function getCurrentEmergencyState(
     throw e;
   }
 }
-export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, value: PublicKey) {
+export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, newOwner: PublicKey) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStateKey();
   try {
-    const tx = await program.rpc.changeAuthority({
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.changeAuthority({
       accounts: {
-        authority: wallet?.publicKey,
+        authority: wallet.publicKey,
         globalState: globalStateKey,
-        newOwner: value,
+        newOwner,
       },
     });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('------ CHANGE AUTHORITY TX --------');
     console.log(tx);
   } catch (error) {
@@ -55,95 +150,111 @@ export async function changeSuperOwner(connection: Connection, wallet: WalletAda
     throw error;
   }
 }
+
 export async function setGlobalTvlLimit(
   connection: Connection,
   wallet: WalletAdapter | undefined,
-  limit: number
-): Promise<boolean> {
-  const program = await getProgramInstance(connection, wallet);
+  newTvlLimit: number
+) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStateKey();
   try {
-    const tx = await program.rpc.setGlobalTvlLimit(new BN(limit), {
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setGlobalTvlLimit(new anchor.BN(newTvlLimit), {
       accounts: {
-        authority: wallet?.publicKey,
+        authority: wallet.publicKey,
         globalState: globalStateKey,
       },
     });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('------ TX GLOBAL TVL LIMIT --------');
-    console.log(tx);
-    return true;
+    console.log('tx id->', tx);
   } catch (error) {
-    console.log('ERROR');
-    console.log(error);
+    console.log('There was an error while setting the global tvl limit', error);
     throw error;
   }
 }
+
 export async function setGlobalDebtCeiling(
   connection: Connection,
   wallet: WalletAdapter | undefined,
-  ceiling: number
+  newDebtCeiling: number
 ): Promise<boolean> {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStateKey();
 
   try {
-    const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setGlobalDebtCeiling(new anchor.BN(newDebtCeiling), {
       accounts: {
-        authority: wallet?.publicKey,
+        authority: wallet.publicKey,
         globalState: globalStateKey,
       },
     });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('----- TX GLOBAL DEBT CEILING ------');
     console.log(tx);
     return true;
   } catch (error) {
-    console.log('ERROR');
-    console.log(error);
+    console.log('There was an error while setting the global debt ceiling', error);
     throw error;
   }
 }
+
 export async function setVaultDebtCeiling(
   connection: Connection,
-  wallet: WalletAdapter | undefined,
-  ceiling: number,
-  mintCollKey: PublicKey
-): Promise<boolean> {
-  const program = await getProgramInstance(connection, wallet);
+  wallet: any,
+  vaultDebtCeiling: number,
+  mintCollKey: PublicKey = WSOL_MINT_KEY
+) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStateKey();
   const tokenVaultKey = await getTokenVaultKey(mintCollKey);
+  const transaction = new Transaction();
+  const signers: Keypair[] = [];
+  const ix = await program.instruction.setVaultDebtCeiling(new anchor.BN(vaultDebtCeiling), {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      mintColl: mintCollKey,
+      vault: tokenVaultKey,
+    },
+  });
+  transaction.add(ix);
+  const tx = await sendTransaction(connection, wallet, transaction, signers);
+  console.log('tx id->', tx);
+  return 'Set Vault Debt Ceiling to' + vaultDebtCeiling + ', transaction id = ' + tx;
+}
 
+export async function setUserDebtCeiling(connection: Connection, wallet: any, newDebtCeiling: number) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
   try {
-    const tx = await program.rpc.setVaultDebtcCeiling(new BN(ceiling), {
+    const program = getProgramInstance(connection, wallet);
+    const globalStateKey = await getGlobalStateKey();
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setUserDebtCeiling(new anchor.BN(newDebtCeiling), {
       accounts: {
-        authority: wallet?.publicKey,
+        authority: wallet.publicKey,
         globalState: globalStateKey,
-        mintColl: mintCollKey,
-        vault: tokenVaultKey,
       },
     });
-    console.log('---- TX VAULT DEBT CEILING ------');
-    console.log(tx);
-    return true;
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
+    console.log('tx id->', tx);
   } catch (error) {
-    console.log('ERROR');
-    console.log(error);
+    console.log('There was an error while setting the user debt  ceiling', error);
     throw error;
   }
 }
 
-/**
- * TO DEFINE FOR WHAT USER SHOULD BE SET THAT.
- */
-export async function setUserDebtCeiling(
-  connection: Connection,
-  wallet: WalletAdapter | undefined,
-  value: number,
-  user: PublicKey,
-  mintCollKey: PublicKey
-): Promise<boolean> {
-  console.error('setUserDebtCeiling yet not implemented');
-  return false;
-}
 export async function setCollateralRatio(
   connection: Connection,
   wallet: WalletAdapter | undefined,
@@ -217,4 +328,27 @@ export async function setWithdrawFee(connection: Connection, wallet: WalletAdapt
 }
 export async function setDepositFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setDepositFee yet not implemented');
+}
+
+export async function changeTreasury(connection: Connection, wallet: any, newTreasury: PublicKey) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+
+  const program = getProgramInstance(connection, wallet);
+  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    program.programId
+  );
+  const transaction = new Transaction();
+  const signers: Keypair[] = [];
+  const ix = await program.instruction.changeTreasury({
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      newTreasury,
+    },
+  });
+  transaction.add(ix);
+  const tx = await sendTransaction(connection, wallet, transaction, signers);
+  console.log('tx id->', tx);
+  return 'Set Treasury to' + newTreasury.toBase58() + ', transaction id = ' + tx;
 }
