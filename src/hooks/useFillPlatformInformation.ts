@@ -40,13 +40,14 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
         } catch (error) {
           console.error("There was a problem fetching the platform's TVL.", error);
         }
-        item.platform_ratio_apr = await poolInfoProviderFactory
+        item.platform_ratio_apy = await poolInfoProviderFactory
           .getProviderForVault(item)
-          .getRatioAPRbyVault(item)
+          .getRatioAPYbyVault(item)
           .catch((error) => {
             console.error("There was a problem fetching the platform's APR.", error);
             return 0;
           });
+        // console.log('APY', item.platform_ratio_apy);
         item.earned_rewards = await poolInfoProviderFactory
           .getProviderForVault(item)
           .getRewards(connection, wallet, item)
