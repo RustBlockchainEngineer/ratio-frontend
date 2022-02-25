@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useMercurialPoolsInfo } from './useMercurialPoolInfo';
-import { useOrcaPoolsInfo } from './useOrcaPoolInfo';
-import { useRaydiumPoolsInfo } from './useRaydiumPoolInfo';
-import { useSaberPoolsInfo } from './useSaberPoolInfo';
 import { getFactory } from '../utils/PoolInfoProvider/PoolInfoProviderFactory';
 import { LPair } from '../types/VaultTypes';
 import { useConnection } from '../contexts/connection';
 import { useWallet } from '../contexts/wallet';
+import { useMercurialPools, useOrcaPools, useRaydiumPools, useSaberPools } from '../contexts/pools';
 
 /* 
   This custom hook allows to fill the platforms tvl information for each of the vaults received, depending on the platform related to the vault. 
@@ -16,10 +13,11 @@ import { useWallet } from '../contexts/wallet';
 */
 export const useFillPlatformInformation = (vaults: LPair[]) => {
   const [vaultsWithInformation, setVaultsWithInformation] = useState<LPair[]>([]);
-  const { pools: raydiumPools } = useRaydiumPoolsInfo();
-  const { pools: orcaPools } = useOrcaPoolsInfo();
-  const { pools: saberPools } = useSaberPoolsInfo();
-  const { pools: mercurialPools } = useMercurialPoolsInfo();
+
+  const saberPools = useSaberPools();
+  const raydiumPools = useRaydiumPools();
+  const orcaPools = useOrcaPools();
+  const mercurialPools = useMercurialPools();
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
