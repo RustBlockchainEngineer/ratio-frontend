@@ -68,11 +68,13 @@ const GenerateModal = ({ data }: any) => {
 
   const borrow = () => {
     console.log('Borrowing USDr', borrowAmount);
-    if (borrowAmount < 10) {
+    // FixMe: Let's ignore this at the moment.
+    // If this is really necessary, we should add some codes on contract also.
+    /*if (borrowAmount < 10) {
       setMintStatus(true);
       setInvalidStr('You must mint at least 10 USDr');
       return;
-    }
+    }*/
     if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
       setMintStatus(true);
       setInvalidStr('Amount is invalid to generate USDr!');

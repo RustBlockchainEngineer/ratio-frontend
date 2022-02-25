@@ -61,8 +61,9 @@ export const defaultPrograms = {
   clock: SYSVAR_CLOCK_PUBKEY,
 };
 
-const GLOBAL_TVL_LIMIT = 1_000_000_000;
-const GLOBAL_DEBT_CEILING = 15_000_000;
+const GLOBAL_TVL_LIMIT = 1_000_000_000_000;
+const GLOBAL_DEBT_CEILING = 1500_000_000;
+const USER_DEBT_CEILING = 1500_000_000;
 
 export const TOKEN_VAULT_OPTIONS = [
   {
@@ -199,6 +200,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
       mintUsdNonce,
       new anchor.BN(GLOBAL_TVL_LIMIT),
       new anchor.BN(GLOBAL_DEBT_CEILING),
+      new anchor.BN(USER_DEBT_CEILING),
       {
         accounts: {
           authority: wallet.publicKey,
@@ -319,6 +321,7 @@ export async function borrowUSDr(
     [Buffer.from(PRICE_FEED_TAG), mintCollKey.toBuffer()],
     program.programId
   );
+
   // todo - get real tokenA, B, C
   // FIXME: hardcoded
   const mintA = new PublicKey('7KLQxufDu9H7BEAHvthC5p4Uk6WrH3aw8TwvPXoLgG11');
@@ -328,8 +331,9 @@ export async function borrowUSDr(
   const vaultB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
   const vaultC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
 
+  console.log('priceFeedKey =', priceFeedKey.toBase58());
   const ix1 = program.instruction.updatePriceFeed({
-    account: {
+    accounts: {
       priceFeed: priceFeedKey,
       mintColl: mintCollKey,
       vaultA,
@@ -338,8 +342,7 @@ export async function borrowUSDr(
       ...defaultPrograms,
     },
   });
-
-  const borrowInstruction = await program.instruction.borrowUsd(new anchor.BN(amount), userUsdKeyNonce, {
+  const borrowInstruction = program.instruction.borrowUsd(new anchor.BN(amount), userUsdKeyNonce, {
     accounts: {
       authority: wallet.publicKey,
       vault: tokenVaultKey,
@@ -449,7 +452,7 @@ export async function createUserTrove(
   } catch (e) {}
 
   try {
-    await program.rpc.createTrove(userTroveNonce, userTroveTokenVaultNonce, new BN(debtCeil), {
+    await program.rpc.createTrove(userTroveNonce, userTroveTokenVaultNonce, {
       accounts: {
         vault: tokenVaultKey,
         trove: userTroveKey,
@@ -758,25 +761,11 @@ export async function setGloalTvlLimit(connection: Connection, wallet: any, newT
   return 'Set Global TVL Limit to' + newTvlLimit + ', transaction id = ' + tx;
 }
 
-export async function setUserDebtCeiling(
-  connection: Connection,
-  wallet: any,
-  userPk: PublicKey,
-  newDebtCeiling: number,
-  mintCollKey: PublicKey = WSOL_MINT_KEY
-) {
+export async function setUserDebtCeiling(connection: Connection, wallet: any, newDebtCeiling: number) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), userPk.toBuffer()],
     program.programId
   );
   const transaction = new Transaction();
@@ -784,11 +773,7 @@ export async function setUserDebtCeiling(
   const ix = await program.instruction.setUserDebtCeiling(new anchor.BN(newDebtCeiling), {
     accounts: {
       authority: wallet.publicKey,
-      user: userPk,
       globalState: globalStateKey,
-      mintColl: mintCollKey,
-      vault: tokenVaultKey,
-      trove: userTroveKey,
     },
   });
   transaction.add(ix);

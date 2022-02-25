@@ -149,7 +149,7 @@ export async function createSaberUserTrove(connection: Connection, wallet: any, 
     program.programId
   );
 
-  const ix1 = await program.instruction.createTrove(userTroveNonce, userTroveTokenVaultNonce, new anchor.BN(0), {
+  const ix1 = await program.instruction.createTrove(userTroveNonce, userTroveTokenVaultNonce, {
     accounts: {
       vault: tokenVaultKey,
       trove: userTroveKey,
@@ -341,6 +341,7 @@ export async function harvestFromSaber(
     [Buffer.from(GLOBAL_STATE_TAG)],
     program.programId
   );
+  const globalState = await program.account.globalState.fetch(globalStateKey);
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
@@ -400,13 +401,13 @@ export async function harvestFromSaber(
     amountOrigin = amount.toNumber();
   }
 
-  let feeCollectorKey = await getOneFilteredTokenAccountsByOwner(connection, FEE_OWNER, SABER_REWARD_MINT);
+  let feeCollectorKey = await getOneFilteredTokenAccountsByOwner(connection, globalState.treasury, SABER_REWARD_MINT);
   if (feeCollectorKey === '') {
     const ata = await Token.getAssociatedTokenAddress(
       ASSOCIATED_TOKEN_PROGRAM_ID,
       TOKEN_PROGRAM_ID,
       SABER_REWARD_MINT,
-      FEE_OWNER
+      globalState.treasury
     );
 
     feeCollectorKey = ata.toString();
@@ -444,7 +445,7 @@ export async function harvestFromSaber(
         miner: userMinerKey,
         minerVault: userMinerVaultKey,
       },
-      userTokenColl: userTroveTokenVaultKey,
+      ataUserColl: userTroveTokenVaultKey,
       saberFarmRewarder: SABER_REWARDER,
       saberFarmProgram: QUARRY_ADDRESSES.Mine,
 
