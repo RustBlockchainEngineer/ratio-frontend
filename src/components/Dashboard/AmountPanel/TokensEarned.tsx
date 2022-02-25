@@ -1,21 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
-
+import { useEffect, useMemo, useState } from 'react';
 import { Table } from 'react-bootstrap';
 import Button from '../../Button';
-import RAY from '../../../assets/images/RAY.svg';
-import SOL from '../../../assets/images/SOL.svg';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
-import { getUserHistory, HARVEST_ACTION } from '../../../utils/ratio-lending';
-import { PublicKey } from '@solana/web3.js';
-import { useAccountByMint } from '../../../contexts/accounts';
-import { SABER_REWARD_MINT } from '../../../utils/saber/constants';
 import { useUpdateHistory } from '../../../contexts/auth';
 import { toast } from 'react-toastify';
-import { REFRESH_TIMER } from '../../../constants';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -65,7 +57,7 @@ const TokensEarned = ({ data }: any) => {
   };
 
   return (
-    <div>
+    <div className="tokensearned">
       <h4>Tokens Earned</h4>
       <Table striped hover>
         <thead>
@@ -77,13 +69,12 @@ const TokensEarned = ({ data }: any) => {
         </thead>
         <tbody>
           <tr>
-            <td className="name">
-              <img src={RAY} alt="RAY" />
-              <img src={SOL} alt="RAY" className="lastToken" />
-              RAY-SOL-LP
+            <td className="tokensearned__name">
+              {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />}
+              {data.tokenName === 'USDC-USDR' ? 'USDC-USDr' : data.tokenName}
             </td>
-            <td>{rewards}</td>
-            <td className="text-right">${rewards * 100}</td>
+            <td className="align-middle">{rewards}</td>
+            <td className="text-right align-middle">${rewards * 100}</td>
           </tr>
         </tbody>
       </Table>
