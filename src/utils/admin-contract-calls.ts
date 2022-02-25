@@ -334,12 +334,8 @@ export async function changeTreasury(connection: Connection, wallet: any, newTre
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
+  const globalStateKey = await getGlobalStateKey();
   const transaction = new Transaction();
-  const signers: Keypair[] = [];
   const ix = await program.instruction.changeTreasury({
     accounts: {
       authority: wallet.publicKey,
@@ -348,7 +344,17 @@ export async function changeTreasury(connection: Connection, wallet: any, newTre
     },
   });
   transaction.add(ix);
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
+  const tx = await sendTransaction(connection, wallet, transaction);
   console.log('tx id->', tx);
   return 'Set Treasury to' + newTreasury.toBase58() + ', transaction id = ' + tx;
+}
+
+export async function getCurrentTreasuryWallet(connection: Connection, wallet: any): Promise<PublicKey> {
+  try {
+    const { globalState } = await getGlobalState(connection, wallet);
+    return globalState.treasury;
+  } catch (e) {
+    console.error('Error while fetching the super owner');
+    throw e;
+  }
 }
