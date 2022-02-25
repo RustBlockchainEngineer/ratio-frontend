@@ -1,17 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useMercurialPoolsInfo } from './useMercurialPoolInfo';
-import { useOrcaPoolsInfo } from './useOrcaPoolInfo';
-import { useRaydiumPoolsInfo } from './useRaydiumPoolInfo';
-import { useSaberPoolsInfo } from './useSaberPoolInfo';
 import { getFactory } from '../utils/PoolInfoProvider/PoolInfoProviderFactory';
 import { LPair } from '../types/VaultTypes';
 import { IPoolInfoProvider } from '../utils/PoolInfoProvider/IPoolInfoProvider';
+import { useMercurialPools, useOrcaPools, useRaydiumPools, useSaberPools } from '../contexts/pools';
 
 export const useGetPoolInfoProvider = (vault: LPair | undefined): Maybe<IPoolInfoProvider> => {
-  const { pools: raydiumPools } = useRaydiumPoolsInfo();
-  const { pools: orcaPools } = useOrcaPoolsInfo();
-  const { pools: saberPools } = useSaberPoolsInfo();
-  const { pools: mercurialPools } = useMercurialPoolsInfo();
+  const raydiumPools = useRaydiumPools();
+  const orcaPools = useOrcaPools();
+  const saberPools = useSaberPools();
+  const mercurialPools = useMercurialPools();
 
   const [poolInfoProvider, setPoolInfoProvider] = useState<Maybe<IPoolInfoProvider>>(null);
 

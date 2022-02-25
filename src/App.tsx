@@ -10,7 +10,7 @@ import Layer from './pages/Layer';
 import Faucet from './pages/Faucet';
 import AdminPanel from './pages/AdminPanel';
 import { AuthProvider } from './contexts/auth';
-import { RaydiumPoolProvider } from './contexts/pools';
+import { PoolProvider } from './contexts/pools';
 import { AuthContextProvider as APIAuthContextProvider } from './contexts/authAPI';
 import { PriceProvider } from './contexts/price';
 import { MercurialAPIProvider } from './contexts/mercurialAPI';
@@ -26,7 +26,7 @@ const App: React.FC = () => {
       <AuthProvider>
         <WalletProvider>
           <AccountsProvider>
-            <RaydiumPoolProvider>
+            <PoolProvider>
               <PriceProvider>
                 <MarketProvider>
                   <MercurialAPIProvider>
@@ -48,7 +48,7 @@ const App: React.FC = () => {
                   </MercurialAPIProvider>
                 </MarketProvider>
               </PriceProvider>
-            </RaydiumPoolProvider>
+            </PoolProvider>
           </AccountsProvider>
         </WalletProvider>
       </AuthProvider>
