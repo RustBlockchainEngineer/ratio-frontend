@@ -29,7 +29,7 @@ const ContractUpdatersMap = {
     await setGlobalDebtCeiling(connection, wallet, Number(data.global_max_usdr));
   },
   user_max_usdr: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {
-    //setUserDebtCeiling(connection, wallet, Number(data.global_max_deposit));
+    await setUserDebtCeiling(connection, wallet, Number(data.user_max_usdr));
   },
   global_max_deposit: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {
     await setGlobalTvlLimit(connection, wallet, Number(data.global_max_deposit));

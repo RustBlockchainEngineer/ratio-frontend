@@ -173,8 +173,7 @@ export async function setGlobalTvlLimit(
     console.log('------ TX GLOBAL TVL LIMIT --------');
     console.log('tx id->', tx);
   } catch (error) {
-    console.log('ERROR');
-    console.log(error);
+    console.log('There was an error while setting the global tvl limit', error);
     throw error;
   }
 }
@@ -182,24 +181,28 @@ export async function setGlobalTvlLimit(
 export async function setGlobalDebtCeiling(
   connection: Connection,
   wallet: WalletAdapter | undefined,
-  ceiling: number
+  newDebtCeiling: number
 ): Promise<boolean> {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStateKey();
 
   try {
-    const tx = await program.rpc.setGlobalDebtCeiling(new BN(ceiling), {
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setGlobalDebtCeiling(new anchor.BN(newDebtCeiling), {
       accounts: {
-        authority: wallet?.publicKey,
+        authority: wallet.publicKey,
         globalState: globalStateKey,
       },
     });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('----- TX GLOBAL DEBT CEILING ------');
     console.log(tx);
     return true;
   } catch (error) {
-    console.log('ERROR');
-    console.log(error);
+    console.log('There was an error while setting the global debt ceiling', error);
     throw error;
   }
 }
@@ -230,28 +233,26 @@ export async function setVaultDebtCeiling(
   return 'Set Vault Debt Ceiling to' + vaultDebtCeiling + ', transaction id = ' + tx;
 }
 
-export async function setUserDebtCeiling(
-  connection: Connection,
-  wallet: any,
-  userPk: PublicKey,
-  newDebtCeiling: number,
-  mintCollKey: PublicKey = WSOL_MINT_KEY
-) {
+export async function setUserDebtCeiling(connection: Connection, wallet: any, newDebtCeiling: number) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
-  const program = getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
-  const transaction = new Transaction();
-  const signers: Keypair[] = [];
-  const ix = await program.instruction.setUserDebtCeiling(new anchor.BN(newDebtCeiling), {
-    accounts: {
-      authority: wallet.publicKey,
-      globalState: globalStateKey,
-    },
-  });
-  transaction.add(ix);
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
-  console.log('tx id->', tx);
-  return 'Set User Debt Ceiling to' + newDebtCeiling + ', transaction id = ' + tx;
+  try {
+    const program = getProgramInstance(connection, wallet);
+    const globalStateKey = await getGlobalStateKey();
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setUserDebtCeiling(new anchor.BN(newDebtCeiling), {
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
+    console.log('tx id->', tx);
+  } catch (error) {
+    console.log('There was an error while setting the user debt  ceiling', error);
+    throw error;
+  }
 }
 
 export async function setCollateralRatio(
