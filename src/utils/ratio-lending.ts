@@ -61,8 +61,9 @@ export const defaultPrograms = {
   clock: SYSVAR_CLOCK_PUBKEY,
 };
 
-export const GLOBAL_TVL_LIMIT = 1_000_000_000;
-export const GLOBAL_DEBT_CEILING = 15_000_000;
+export const GLOBAL_TVL_LIMIT = 1_000_000_000_000;
+export const GLOBAL_DEBT_CEILING = 1500_000_000;
+export const USER_DEBT_CEILING = 1500_000_000;
 
 export const TOKEN_VAULT_OPTIONS = [
   {
@@ -275,6 +276,7 @@ export async function borrowUSDr(
     [Buffer.from(PRICE_FEED_TAG), mintCollKey.toBuffer()],
     program.programId
   );
+
   // todo - get real tokenA, B, C
   // FIXME: hardcoded
   const mintA = new PublicKey('7KLQxufDu9H7BEAHvthC5p4Uk6WrH3aw8TwvPXoLgG11');
@@ -284,8 +286,9 @@ export async function borrowUSDr(
   const vaultB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
   const vaultC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
 
+  console.log('priceFeedKey =', priceFeedKey.toBase58());
   const ix1 = program.instruction.updatePriceFeed({
-    account: {
+    accounts: {
       priceFeed: priceFeedKey,
       mintColl: mintCollKey,
       vaultA,
@@ -294,8 +297,7 @@ export async function borrowUSDr(
       ...defaultPrograms,
     },
   });
-
-  const borrowInstruction = await program.instruction.borrowUsd(new anchor.BN(amount), userUsdKeyNonce, {
+  const borrowInstruction = program.instruction.borrowUsd(new anchor.BN(amount), userUsdKeyNonce, {
     accounts: {
       authority: wallet.publicKey,
       vault: tokenVaultKey,
@@ -385,7 +387,7 @@ export async function createUserTrove(
   } catch (e) {}
 
   try {
-    await program.rpc.createTrove(userTroveNonce, userTroveTokenVaultNonce, new BN(debtCeil), {
+    await program.rpc.createTrove(userTroveNonce, userTroveTokenVaultNonce, {
       accounts: {
         vault: tokenVaultKey,
         trove: userTroveKey,
