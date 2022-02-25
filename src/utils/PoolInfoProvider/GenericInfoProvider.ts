@@ -38,7 +38,7 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
     } catch (err) {
       apr = 0;
     }
-    console.log('apr', apr);
+    // console.log('apr', apr);
     // apr is percent
     // const apy = Number(((1 + (apr / 100) / 365) ** 365 - 1) * 100)
     return apr;

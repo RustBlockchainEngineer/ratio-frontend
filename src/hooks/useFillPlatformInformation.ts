@@ -47,7 +47,7 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
             console.error("There was a problem fetching the platform's APR.", error);
             return 0;
           });
-        console.log('APY', item.platform_ratio_apy);
+        // console.log('APY', item.platform_ratio_apy);
         item.earned_rewards = await poolInfoProviderFactory
           .getProviderForVault(item)
           .getRewards(connection, wallet, item)
