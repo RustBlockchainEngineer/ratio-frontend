@@ -20,23 +20,28 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
     this.poolInfoCache = poolsInfo;
   }
 
-  async getRatioAPRbyVault(vault: LPair): Promise<number> {
+  async getRatioAPYbyVault(vault: LPair): Promise<number> {
+    let apr = 0;
     try {
       const url = `${API_ENDPOINT}/lpairs/${vault.address_id}/apr/last`;
       if (ratioAPRCache[url]) {
         const data = ratioAPRCache[url];
-        return data?.apr ?? 0;
+        apr = data?.apr ?? 0;
       } else {
         const response = await fetch(url);
         const data: LPairAPRLast = await response.json();
 
         // We cache the data
         ratioAPRCache[url] = data;
-        return data?.apr ?? 0;
+        apr = data?.apr ?? 0;
       }
     } catch (err) {
-      return 0;
+      apr = 0;
     }
+    console.log('apr', apr);
+    // apr is percent
+    // const apy = Number(((1 + (apr / 100) / 365) ** 365 - 1) * 100)
+    return apr;
   }
 
   abstract getTVLbyVault(vault: LPair): number;
