@@ -10,6 +10,7 @@ import { useConnection } from '../../contexts/connection';
 import { useWallet, WalletAdapter } from '../../contexts/wallet';
 import { IIndexable } from '../../types/admin-types';
 import {
+  getHarvestFee,
   setBorrowFee,
   setDepositFee,
   setHarvestFee,
@@ -130,11 +131,16 @@ export default function FeesAdminForm() {
     };
 
     async function load() {
-      const res = await fetchData();
+      const res = await getHarvestFee(connection, wallet);
       if (!active) {
         return;
       }
-      setData(res);
+      setData((prev)=>{
+        return {
+          ...prev,
+          harvest_fee: res
+        };
+      });
     }
   }, [fetchData]);
 
