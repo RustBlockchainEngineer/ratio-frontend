@@ -45,7 +45,7 @@ const priceCardData = [
     titleIcon: true,
     mainValue: '90.00',
     mainUnit: '(RAY/USD)',
-    currentPrice: '$300.00 USD',
+    currentPrice: '$1.00 USD',
   },
 ];
 
