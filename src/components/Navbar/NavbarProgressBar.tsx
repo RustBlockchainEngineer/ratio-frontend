@@ -7,6 +7,7 @@ import { ProgressBar } from 'react-bootstrap';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { getGlobalState } from '../../utils/ratio-lending';
+import { TokenAmount } from '../../utils/safe-math';
 
 type NavbarProgressBarProps = {
   type: ProgressBarType;
@@ -47,17 +48,17 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
     let currentValue;
     let maxValue;
     if (data.type === ProgressBarType.TVL) {
-      currentValue = globalState.tvl ? globalState.tvl.toNumber() : 1;
-      maxValue = globalState.tvlLimit ? globalState.tvlLimit.toNumber() : 20;
+      currentValue = Number(new TokenAmount(globalState.tvl as string, 6).fixed()); // globalState.tvl ? globalState.tvl.toNumber() : 1;
+      maxValue = Number(new TokenAmount(globalState.tvlLimit as string, 6).fixed()); //globalState.tvlLimit ? globalState.tvlLimit.toNumber() : 20;
     } else if (data.type === ProgressBarType.USDr) {
-      currentValue = globalState.totalDebt ? globalState.totalDebt.toNumber() : 1;
-      maxValue = globalState.debtCeiling ? globalState.debtCeiling.toNumber() : 1;
+      currentValue = Number(new TokenAmount(globalState.totalDebt as string, 6).fixed()); // globalState.totalDebt ? globalState.totalDebt.toNumber() : 1;
+      maxValue = Number(new TokenAmount(globalState.debtCeiling as string, 6).fixed());
     } else {
       return;
     }
     setValue(currentValue);
     const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
-    if (maxValue === 0 || isNaN(parseInt(maxValue))) {
+    if (maxValue === 0 || isNaN(maxValue)) {
       setPercentage(0);
     } else {
       setPercentage(parseInt(percentageFull));

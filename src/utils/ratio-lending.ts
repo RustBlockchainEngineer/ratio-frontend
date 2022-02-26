@@ -556,7 +556,7 @@ export async function depositCollateral(
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
 
-  return 'User deposited ' + amount / Math.pow(10, 9) + ' SOL, transaction id = ' + tx;
+  return 'User deposited ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
 }
 
 export async function getUsdrMintKey() {
@@ -703,7 +703,7 @@ export async function withdrawCollateral(
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   console.log('tx id->', tx);
 
-  return 'User withdrawed ' + amount / Math.pow(10, 9) + ' SOL, transaction id = ' + tx;
+  return 'User withdrawed ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
 }
 export async function setVaultDebtCeiling(
   connection: Connection,
