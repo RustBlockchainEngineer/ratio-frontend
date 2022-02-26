@@ -13,6 +13,7 @@ import {
   GLOBAL_TVL_LIMIT,
   GLOBAL_DEBT_CEILING,
   VAULT_SEED,
+  USER_DEBT_CEILING,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
@@ -99,6 +100,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
       mintUsdNonce,
       new anchor.BN(GLOBAL_TVL_LIMIT),
       new anchor.BN(GLOBAL_DEBT_CEILING),
+      new anchor.BN(USER_DEBT_CEILING),
       {
         accounts: {
           authority: wallet.publicKey,
