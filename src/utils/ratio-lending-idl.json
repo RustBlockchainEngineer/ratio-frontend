@@ -397,7 +397,10 @@
         {
           "name": "ratios",
           "type": {
-            "array": ["u64", 10]
+            "array": [
+              "u64",
+              10
+            ]
           }
         }
       ]
@@ -1293,7 +1296,10 @@
           {
             "name": "collPerRisklv",
             "type": {
-              "array": ["u64", 10]
+              "array": [
+                "u64",
+                10
+              ]
             }
           }
         ]
@@ -1636,5 +1642,8 @@
       "name": "InvalidSaberPlatform",
       "msg": "Invalid saber platform"
     }
-  ]
+  ],
+  "metadata": {
+    "address": "67Jzojo7JmV8nvkKuDkjkgFEADAFwCEcGy191XY9ertR"
+  }
 }
