@@ -13,6 +13,8 @@ import { getUserState, USDR_MINT_KEY } from '../utils/ratio-lending';
 import { TokenAmount } from '../utils/safe-math';
 import { getUSDrAmount } from '../utils/risk';
 import { cache, MintParser } from '../contexts/accounts';
+import * as serumCmn from '@project-serum/common';
+import * as anchor from '@project-serum/anchor';
 
 export type KnownTokenMap = Map<string, TokenInfo>;
 
@@ -295,9 +297,16 @@ export const getDebtLimitForVault = async ({
   };
 };
 
+// export const getMint = async (connection: Connection, key: any) => {
+//   const id = typeof key === 'string' ? key : key?.toBase58();
+//   const { info } = await cache.query(connection, id, MintParser);
+//   return info;
+// };
+
 export const getMint = async (connection: Connection, key: any) => {
   const id = typeof key === 'string' ? key : key?.toBase58();
-  const { info } = await cache.query(connection, id, MintParser);
+  const provider = new anchor.Provider(connection, undefined as any, anchor.Provider.defaultOptions());
+  const info = serumCmn.getMintInfo(provider, new PublicKey(id));
   return info;
 };
 
