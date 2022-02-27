@@ -196,7 +196,7 @@ export default function FeesAdminForm() {
   };
   return (
     <AdminFormLayout>
-      <h5 className="mt-3">Modify Fees Values:</h5>
+      <h5 className="mt-3">Modify Fees Values(%):</h5>
       <Form validated={validated} onSubmit={handleSubmit}>
         <Row className="mb-3">
           <AdminFormInput handleChange={handleChange} label="Borrow" name="borrow_fee" value={data?.borrow_fee} />

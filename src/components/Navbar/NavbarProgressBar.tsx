@@ -8,6 +8,7 @@ import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { getGlobalState } from '../../utils/ratio-lending';
 import { TokenAmount } from '../../utils/safe-math';
+import { TVL_DECIMAL } from '../../constants/constants';
 
 type NavbarProgressBarProps = {
   type: ProgressBarType;
@@ -48,8 +49,8 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
     let currentValue;
     let maxValue;
     if (data.type === ProgressBarType.TVL) {
-      currentValue = Number(new TokenAmount(globalState.tvl as string, 6).fixed()); // globalState.tvl ? globalState.tvl.toNumber() : 1;
-      maxValue = Number(new TokenAmount(globalState.tvlLimit as string, 6).fixed()); //globalState.tvlLimit ? globalState.tvlLimit.toNumber() : 20;
+      currentValue = Number(new TokenAmount(globalState.tvl as string, TVL_DECIMAL).fixed()); // globalState.tvl ? globalState.tvl.toNumber() : 1;
+      maxValue = Number(new TokenAmount(globalState.tvlLimit as string, TVL_DECIMAL).fixed()); //globalState.tvlLimit ? globalState.tvlLimit.toNumber() : 20;
     } else if (data.type === ProgressBarType.USDr) {
       currentValue = Number(new TokenAmount(globalState.totalDebt as string, 6).fixed()); // globalState.totalDebt ? globalState.totalDebt.toNumber() : 1;
       maxValue = Number(new TokenAmount(globalState.debtCeiling as string, 6).fixed());

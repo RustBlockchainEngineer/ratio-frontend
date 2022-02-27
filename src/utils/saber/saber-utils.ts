@@ -37,6 +37,7 @@ import { createAssociatedTokenAccount, findAssociatedTokenAddress } from '../ray
 import { getOneFilteredTokenAccountsByOwner, sendTransaction } from '../web3';
 import { FEE_OWNER, SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_MINT } from './constants';
 import { WalletAdapter } from '../../contexts/wallet';
+import { TokenAmount } from '../safe-math';
 
 const defaultAccounts = {
   tokenProgram: TOKEN_PROGRAM_ID,
@@ -515,7 +516,7 @@ export async function calculateReward(connection: Connection, wallet: any, mintC
   } catch (e) {
     // console.log(e);
   }
-  return Math.ceil(expectedWagesEarned * Math.pow(10, -collMintInfo.decimals) * 100) / 100;
+  return parseFloat(new TokenAmount(expectedWagesEarned, collMintInfo.decimals).fixed());
 }
 
 async function getTokenAmount(provider: any, tokenAccountKey: PublicKey | string) {

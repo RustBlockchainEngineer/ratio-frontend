@@ -19,7 +19,7 @@ import { useConnection } from '../../contexts/connection';
 import { getUserOverview, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
-import { sleep } from '../../utils/utils';
+import { getMint, sleep } from '../../utils/utils';
 import { usePrices } from '../../contexts/price';
 import { actionTypes, selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
@@ -78,6 +78,32 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
     setOverviewData(newOverviewData);
   };
 
+  const getActiveVaultInfo = async function (activeVaults: any[]) {
+    let tmpTotalValueLocked = 0;
+    const vaults = Object.values(activeVaults);
+
+    const avdArr: any = [];
+    for (const vault of vaults) {
+      const { mint, lockedAmount, debt }: any = vault;
+      const mintInfo = await getMint(connection, mint);
+      const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
+      const pv = price * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
+      const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
+      const vaultValue: any = {
+        title,
+        mint,
+        pv,
+        debt: new TokenAmount(debt, usdrMint?.decimals).fixed(),
+      };
+      avdArr.push(vaultValue);
+      tmpTotalValueLocked += pv;
+    }
+    return {
+      tvl: tmpTotalValueLocked,
+      activeVaults: avdArr,
+    };
+  };
+
   React.useEffect(() => {
     const overview = JSON.parse(overviewData);
     if (Object.keys(overview).length) {
@@ -85,28 +111,10 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
       setActiveVaultCount(vaultCount);
 
-      let tmpTotalValueLocked = 0;
-      const vaults = Object.values(activeVaults);
-
-      const avdArr: any = [];
-      for (const vault of vaults) {
-        const { mint, lockedAmount, debt }: any = vault;
-        const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
-        // todo
-        // FixME: temporarily hard coded the value of the decimal to be 9
-        const pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
-        const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
-        const vaultValue: any = {
-          title,
-          mint,
-          pv,
-          debt: new TokenAmount(debt, usdrMint?.decimals).fixed(),
-        };
-        avdArr.push(vaultValue);
-        tmpTotalValueLocked += pv;
-      }
-      setActiveVaultsData(avdArr);
-      setTotalLocked(tmpTotalValueLocked);
+      getActiveVaultInfo(activeVaults).then((res) => {
+        setActiveVaultsData(res.activeVaults);
+        setTotalLocked(res.tvl);
+      });
     }
 
     return () => {
