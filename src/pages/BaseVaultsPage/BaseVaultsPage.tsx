@@ -247,8 +247,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 <th scope="col">APY</th>
                 <th scope="col">USDr Debt</th>
                 <th scope="col">USDr Available to Mint</th>
-                <th scope="col">Positoin Value</th>
-                <th scope="col">Rewards earned</th>
+                <th scope="col">Position Value</th>
+                <th scope="col">Rewards Earned</th>
                 <th scope="col">Risk Rating</th>
                 <th scope="col"></th>
               </tr>
