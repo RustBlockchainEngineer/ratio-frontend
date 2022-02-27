@@ -54,7 +54,7 @@ const INITIAL_TOKEN_B_AMOUNT = LAMPORTS_PER_SOL;
 const AMP_FACTOR = 100;
 const INITIAL_BASE_AMOUNT = 5000000000000000;
 
-const DEFAULT_DECIMALS = 6;
+const DEFAULT_DECIMALS = 9;
 
 const FEES: Fees = {
   adminTrade: DEFAULT_FEE,
@@ -129,7 +129,13 @@ async function signAndSendTransactionEnvelope(connection: Connection, wallet: an
 }
 
 export async function airdropSaberLP(connection: Connection, wallet: any) {
+  // await createQuarry(connection, wallet, '9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd');
+  // await createQuarry(connection, wallet, 'FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T');
+  // await createQuarry(connection, wallet, '7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh');
+  // await createQuarry(connection, wallet, 'HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg');
+
   const program = getProgramInstance(connection, wallet);
+
   const provider = program.provider;
 
   console.log('Creating token A');
