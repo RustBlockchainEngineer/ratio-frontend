@@ -24,6 +24,7 @@ export const TVL: any = {
   'ATLAS-RAY': 60000000,
   'SAMO-RAY': 9000000,
 };
+export const TVL_DECIMAL = 9;
 
 export const PLATFORM: any = {
   'USDC-USDR': {
