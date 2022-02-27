@@ -121,8 +121,6 @@ const VaultDashboard = () => {
   }, [wallet, connected, updateStateFlag]);
 
   useEffect(() => {
-    console.log('USDC_CASH', collMint);
-
     if (wallet && wallet.publicKey && collMint && collAccount) {
       const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
       setLpWalletBalance(Number(tokenAmount.fixed()));
