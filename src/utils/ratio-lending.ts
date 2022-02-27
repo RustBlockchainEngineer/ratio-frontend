@@ -181,7 +181,7 @@ export async function getTokenVaultKey(mintCollKey: string | PublicKey) {
 }
 
 export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
-  if (!wallet || mintCollKey){
+  if (!wallet || mintCollKey) {
     return null;
   }
   const program = getProgramInstance(connection, wallet);
