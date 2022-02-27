@@ -358,8 +358,7 @@ export async function setCollateralRatio(
 export async function getHarvestFee(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    const feeDeno = 1000_000;
-    return (((globalState.feeNum as number) / feeDeno) * 100) / 10 ** ADMIN_SETTINGS_DECIMALS;
+    return parseFloat(((globalState.feeNum.toNumber() / globalState.feeDeno.toNumber()) * 100).toFixed(2));
   } catch (e) {
     console.error('Error while fetching the tvl limiy');
     throw e;
@@ -374,11 +373,11 @@ export async function setHarvestFee(
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStateKey();
 
-  const feeDeno = 1000_000;
-  const feeNumNew = ((feeNum * 10 ** ADMIN_SETTINGS_DECIMALS) / 100) * feeDeno;
-  console.log(feeNumNew, feeDeno);
+  const MY_FEE_DENO = 1000_000;
+  const feeNumNew = (feeNum / 100) * MY_FEE_DENO;
+  console.log(`Set Harvest fees ${feeNumNew} / ${MY_FEE_DENO}`);
   try {
-    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(feeDeno), {
+    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(MY_FEE_DENO), {
       accounts: {
         authority: wallet?.publicKey,
         globalState: globalStateKey,
