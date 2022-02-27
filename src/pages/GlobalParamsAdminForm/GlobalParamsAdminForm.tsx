@@ -8,7 +8,14 @@ import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
 import { useWallet, WalletAdapter } from '../../contexts/wallet';
 import { IIndexable } from '../../types/admin-types';
-import { setGlobalDebtCeiling, setGlobalTvlLimit, setUserDebtCeiling } from '../../utils/admin-contract-calls';
+import {
+  getGlobalDebtCeiling,
+  getGlobalTVLLimit,
+  getUserDebtCeiling,
+  setGlobalDebtCeiling,
+  setGlobalTvlLimit,
+  setUserDebtCeiling,
+} from '../../utils/admin-contract-calls';
 import { getCurrentSuperOwner } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 
@@ -98,6 +105,60 @@ export default function GlobalParamsAdminForm() {
     return result;
   };
 
+  useEffect(() => {
+    let active = true;
+    getGlobalTVLLimit(connection, wallet).then((res) => {
+      if (!active) {
+        return;
+      }
+      setData((prev) => {
+        return {
+          ...prev,
+          global_max_deposit: res,
+        };
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [getGlobalTVLLimit]);
+
+  useEffect(() => {
+    let active = true;
+    getGlobalDebtCeiling(connection, wallet).then((res) => {
+      if (!active) {
+        return;
+      }
+      setData((prev) => {
+        return {
+          ...prev,
+          global_max_usdr: res,
+        };
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [getGlobalDebtCeiling]);
+
+  useEffect(() => {
+    let active = true;
+    getUserDebtCeiling(connection, wallet).then((res) => {
+      if (!active) {
+        return;
+      }
+      setData((prev) => {
+        return {
+          ...prev,
+          user_max_usdr: res,
+        };
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [getUserDebtCeiling]);
+
   const fetchData = useCallback(async () => {
     const response = await fetch(`${API_ENDPOINT}/ratioconfig/general/last`, {
       headers: {
@@ -124,7 +185,12 @@ export default function GlobalParamsAdminForm() {
       if (!active) {
         return;
       }
-      setData(res);
+      setData((prev) => {
+        return {
+          ...prev,
+          price_interval: res.price_interval,
+        };
+      });
     }
   }, [fetchData]);
 

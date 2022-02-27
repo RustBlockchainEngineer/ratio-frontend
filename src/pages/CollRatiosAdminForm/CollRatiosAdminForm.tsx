@@ -7,7 +7,7 @@ import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { CollateralizationRatios } from '../../types/admin-types';
-import { setCollateralRatio } from '../../utils/admin-contract-calls';
+import { getCollateralRatio, setCollateralRatio } from '../../utils/admin-contract-calls';
 import AdminFormLayout from '../AdminFormLayout';
 
 export default function CollRatiosAdminForm() {
@@ -50,20 +50,6 @@ export default function CollRatiosAdminForm() {
     return result;
   };
 
-  const fetchData = useCallback(async () => {
-    const response = await fetch(`${API_ENDPOINT}/ratioconfig/collateralratio/last`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': JSON.stringify(accessToken),
-      },
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw await response.json();
-    }
-    return parseJsonResponse(await response.json());
-  }, []);
-
   useEffect(() => {
     let active = true;
     load();
@@ -72,13 +58,13 @@ export default function CollRatiosAdminForm() {
     };
 
     async function load() {
-      const res = await fetchData();
+      const res = await getCollateralRatio(connection, wallet);
       if (!active) {
         return;
       }
       setData(res);
     }
-  }, [fetchData]);
+  }, [getCollateralRatio]);
 
   const connection = useConnection();
   const gWallet = useWallet();

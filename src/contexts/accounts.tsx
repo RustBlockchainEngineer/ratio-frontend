@@ -4,7 +4,7 @@ import { AccountLayout, u64, MintInfo, MintLayout } from '@solana/spl-token';
 import { useConnection } from './connection';
 import { useWallet } from './wallet';
 import { TokenAccount } from '../models';
-import { chunks } from '../utils/utils';
+import { chunks, getMint } from '../utils/utils';
 import { EventEmitter } from '../utils/eventEmitter';
 import { useUserAccounts } from '../hooks/useUserAccounts';
 import { WRAPPED_SOL_MINT, programIds } from '../utils/ids';
@@ -442,7 +442,28 @@ const getMultipleAccountsCore = async (connection: any, keys: string[], commitme
   // TODO: fix
   throw new Error();
 };
+export function useMint(key?: string | PublicKey) {
+  const connection = useConnection();
+  const [mint, setMint] = useState<MintInfo>();
+  const id = typeof key === 'string' ? key : key?.toBase58();
 
+  useEffect(() => {
+    if (connection && id) {
+      getMint(connection, id)
+        .then((info) => {
+          setMint(info);
+        })
+        .catch((e) => {
+          console.log("Can't fetch the mint address");
+        });
+    }
+    return () => {};
+  }, [connection, id]);
+
+  return mint;
+}
+
+/*
 export function useMint(key?: string | PublicKey) {
   const connection = useConnection();
   const [mint, setMint] = useState<MintInfo>();
@@ -471,7 +492,7 @@ export function useMint(key?: string | PublicKey) {
 
   return mint;
 }
-
+*/
 export const useAccountByMint = (mint: string) => {
   const { userAccounts } = useUserAccounts();
   const index = userAccounts.findIndex((acc) => acc.info.mint.toBase58() === mint);

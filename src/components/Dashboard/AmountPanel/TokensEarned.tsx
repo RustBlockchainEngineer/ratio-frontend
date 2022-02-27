@@ -8,6 +8,7 @@ import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { useUpdateHistory } from '../../../contexts/auth';
 import { toast } from 'react-toastify';
+import { SBR_PRICE } from '../../../constants/constants';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -74,7 +75,7 @@ const TokensEarned = ({ data }: any) => {
               {data.tokenName === 'USDC-USDR' ? 'USDC-USDr' : data.tokenName}
             </td>
             <td className="align-middle">{rewards}</td>
-            <td className="text-right align-middle">${rewards * 100}</td>
+            <td className="text-right align-middle">${rewards * SBR_PRICE}</td>
           </tr>
         </tbody>
       </Table>
