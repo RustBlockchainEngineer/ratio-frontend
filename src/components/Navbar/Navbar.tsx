@@ -92,8 +92,9 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       for (const vault of vaults) {
         const { mint, lockedAmount, debt }: any = vault;
         const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
-        //temporarily hard coded the value of the decimal to be 6
-        const pv = price * Number(new TokenAmount(lockedAmount as string, 6).fixed());
+        // todo
+        // FixME: temporarily hard coded the value of the decimal to be 9
+        const pv = price * Number(new TokenAmount(lockedAmount as string, 9).fixed());
         const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
         const vaultValue: any = {
           title,
