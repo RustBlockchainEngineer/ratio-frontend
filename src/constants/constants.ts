@@ -25,7 +25,7 @@ export const TVL: any = {
   'SAMO-RAY': 9000000,
 };
 export const TVL_DECIMAL = 9;
-
+export const SBR_PRICE = 0.03108;
 export const PLATFORM: any = {
   'USDC-USDR': {
     icon: raydiumIcon,
