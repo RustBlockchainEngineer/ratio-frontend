@@ -165,8 +165,8 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     return (
       <div className="col">
         <div className="d-flex">
-          <Button disabled={!connected} className="button button--blue tokenpaircard__generate mt-2" onClick={harvest}>
-            Harvest
+          <Button disabled={!connected} className="button button--blue tokenpaircard__generate mt-2">
+            Deposit
           </Button>
           <div className="mx-1"></div>
           <Button
@@ -285,36 +285,6 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
               </div>
             )
           }
-          <div className="tokenpaircard__detailBox">
-            {/* {isOpen && (
-              <div className="tokenpaircard__detailBox__content">
-                <div className="d-flex justify-content-between">
-                  <div>
-                    Position value
-                    <p>$ {positionValue.toFixed(2)}</p>
-                  </div>
-                  <div className="text-right">
-                    Rewards earned
-                    <p>{formatUSD.format(data.earned_rewards)}</p>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between mt-1">
-                  <div>
-                    USDr Debt
-                    <p>{formatUSD.format(Number(totalDebt.toFixed(2)))}</p>
-                  </div>
-                  <div className="text-right">
-                    Ratio TVL
-                    <p>{formatUSD.format(tvlUSD)}</p>
-                  </div>
-                </div>
-              </div>
-            )} */}
-
-            {/* <div className="tokenpaircard__detailBox__toggle" onClick={() => setOpen(!isOpen)} aria-hidden="true">
-              Position Overview {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-            </div> */}
-          </div>
         </div>
       </div>
     </>
