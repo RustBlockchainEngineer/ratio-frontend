@@ -53,7 +53,7 @@ export const PRICE_FEED_TAG = 'price-feed';
 
 export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
-export const USDR_MINT_KEY = 'CLXs35GtmoD2e4MwMeAbNsuQF4YKPW2EgzgNWZVpqLu2';
+export const USDR_MINT_KEY = 'HEKMCQDijwc1yjcJtQLTbwZT5R2q8rQZzrr3dMv9xfS5';
 export const defaultPrograms = {
   systemProgram: SystemProgram.programId,
   tokenProgram: TOKEN_PROGRAM_ID,
@@ -181,7 +181,7 @@ export async function getTokenVaultKey(mintCollKey: string | PublicKey) {
 }
 
 export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
-  if (!wallet || mintCollKey){
+  if (!wallet || !wallet.publicKey || !mintCollKey) {
     return null;
   }
   const program = getProgramInstance(connection, wallet);

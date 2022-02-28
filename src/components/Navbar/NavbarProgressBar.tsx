@@ -62,7 +62,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
     if (maxValue === 0 || isNaN(maxValue)) {
       setPercentage(0);
     } else {
-      setPercentage(parseInt(percentageFull));
+      setPercentage(parseFloat(percentageFull));
     }
     setWarning(currentValue / maxValue === 1);
   }, [wallet, connection, globalState]);
@@ -85,7 +85,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
             {data.type === ProgressBarType.TVL && '$'}
             {currentValue.toFixed(2)}
           </p>
-          <p className={classNames('detailBox__percentage')}>{percentage.toFixed(0)}%</p>
+          <p className={classNames('detailBox__percentage')}>{percentage.toFixed(2)}%</p>
         </div>
       </div>
       <ProgressBar now={percentage} />

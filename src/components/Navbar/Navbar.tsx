@@ -87,7 +87,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       const { mint, lockedAmount, debt }: any = vault;
       const mintInfo = await getMint(connection, mint);
       const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
-      //temporarily hard coded the value of the decimal to be 6
       const pv = price * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
       const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
       const vaultValue: any = {

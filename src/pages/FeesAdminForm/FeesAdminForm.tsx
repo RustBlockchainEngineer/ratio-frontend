@@ -135,10 +135,10 @@ export default function FeesAdminForm() {
       if (!active) {
         return;
       }
-      setData((prev)=>{
+      setData((prev) => {
         return {
           ...prev,
-          harvest_fee: res
+          harvest_fee: res,
         };
       });
     }
