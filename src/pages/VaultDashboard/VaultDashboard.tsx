@@ -365,6 +365,7 @@ const VaultDashboard = () => {
                 icons={VaultData.icons}
                 tokenName={VaultData.title}
                 usdrAmount={usdrWalletBalance}
+                platform={VaultData.platform}
               />
             </div>
           </div>

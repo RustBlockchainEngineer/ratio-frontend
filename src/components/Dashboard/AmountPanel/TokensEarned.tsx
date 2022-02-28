@@ -57,6 +57,20 @@ const TokensEarned = ({ data }: any) => {
       });
   };
 
+  const getTokenNameByPlatform = (name: string) => {
+    let tokenName;
+    switch (name) {
+      case 'SABER':
+        tokenName = 'SBR';
+        break;
+
+      default:
+        tokenName = 'SBR';
+        break;
+    }
+    return tokenName;
+  };
+
   return (
     <div className="tokensearned">
       <h4>Tokens Earned</h4>
@@ -71,8 +85,9 @@ const TokensEarned = ({ data }: any) => {
         <tbody>
           <tr>
             <td className="tokensearned__name">
-              {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />}
-              {data.tokenName === 'USDC-USDR' ? 'USDC-USDr' : data.tokenName}
+              {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
+              <img src={data.platform.icon} alt="SBR" className="tokensearned__icon" />
+              {getTokenNameByPlatform(data.platform.name)}
             </td>
             <td className="align-middle">{rewards}</td>
             <td className="text-right align-middle">${rewards * SBR_PRICE}</td>
