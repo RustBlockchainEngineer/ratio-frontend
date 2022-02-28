@@ -23,6 +23,8 @@ import { TokenPairCardProps } from '../../models/UInterface';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
 
+import { useUserInfo } from '../../contexts/state';
+
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
 
@@ -34,11 +36,15 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const collMint = useMint(data.mint);
   const tokenPrice = usePrice(data.mint);
   const usdrMint = useMint(USDR_MINT_KEY);
+
+  const userState = useUserInfo(data.mint);
+  const vaultState = useUserInfo(data.mint);
+
   const [isOpen, setOpen] = React.useState(false);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
   const [totalDebt, setTotalDebt] = React.useState(0);
-  const [userState, setUserState] = React.useState(null);
+
   const [positionValue, setPositionValue] = React.useState(0);
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
 
@@ -68,63 +74,18 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   }, [wallet, connection]);
 
   React.useEffect(() => {
-    if (updateStateFlag && wallet?.publicKey) {
-      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
-        setUserState(res);
-        setUpdateStateFlag(false);
-      });
-    }
-  }, [updateStateFlag]);
+    if (connection && collMint && usdrMint && data.mint && vaultState) {
+      const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
+      const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
 
-  React.useEffect(() => {
-    if (wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        setUserState(res);
-      });
-    }
-    return () => {
-      setUserState(null);
-    };
-  }, [wallet, connection, collMint]);
-
-  React.useEffect(() => {
-    if (connection && collMint && usdrMint && data.mint) {
-      if (updateStateFlag) {
-        refreshVaultValues();
-      } else {
-        updateVaultValues();
-      }
+      setTVL(Number(tvlAmount.fixed()));
+      setTotalDebt(Number(debtAmount.fixed()));
     }
     return () => {
       setTVL(0);
       setTotalDebt(0);
     };
-  }, [connection, collMint, usdrMint, updateStateFlag]);
-
-  const refreshVaultValues = async () => {
-    const oriTvl = tvl;
-    const oriTotalDebt = totalDebt;
-    let totalDebtAmount = null;
-    let tvlAmount = null;
-    do {
-      await sleep(1000);
-      const tokenVault = getTokenVaultByMint(connection, data.mint);
-      tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
-      totalDebtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
-    } while (oriTvl === Number(tvlAmount.fixed()) || oriTotalDebt === Number(totalDebtAmount.fixed()));
-
-    setTVL(Number(tvlAmount.fixed()));
-    setTotalDebt(Number(totalDebtAmount.fixed()));
-  };
-
-  const updateVaultValues = async () => {
-    const tokenVault = await getTokenVaultByMint(connection, data.mint);
-    const tvlAmount = new TokenAmount((tokenVault as any)?.totalColl ?? 0, collMint?.decimals);
-    const debtAmount = new TokenAmount((tokenVault as any)?.totalDebt ?? 0, usdrMint?.decimals);
-
-    setTVL(Number(tvlAmount.fixed()));
-    setTotalDebt(Number(debtAmount.fixed()));
-  };
+  }, [connection, collMint, usdrMint, vaultState]);
 
   const printTvl = () => {
     if (isNaN(data.tvl)) {

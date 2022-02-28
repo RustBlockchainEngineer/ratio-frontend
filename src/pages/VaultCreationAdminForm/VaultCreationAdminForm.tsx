@@ -12,7 +12,7 @@ import { useWallet } from '../../contexts/wallet';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { Platform, RISK_RATING } from '../../types/VaultTypes';
 import { createGlobalState, createTokenVault } from '../../utils/admin-contract-calls';
-import { getTokenVaultAddressByMint, isGlobalStateCreated } from '../../utils/ratio-lending';
+import { getTokenVaultAddress, isGlobalStateCreated } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 import LPAssetAdditionModal, { LPAssetCreationData } from './LPAssetAdditionModal/LPAssetAdditionModal';
 
@@ -109,7 +109,7 @@ export default function VaultCreationAdminForm() {
     connection: Connection,
     data: LPCreationData
   ): Promise<PublicKey | undefined> => {
-    let vaultProgramAddress = await getTokenVaultAddressByMint(connection, data?.address_id);
+    let vaultProgramAddress = await getTokenVaultAddress(data?.address_id);
     if (vaultProgramAddress) {
       toast.info('Token vault program already exists');
     } else {
@@ -134,7 +134,7 @@ export default function VaultCreationAdminForm() {
       } catch (error: any) {
         console.error(error);
       }
-      vaultProgramAddress = await getTokenVaultAddressByMint(connection, data?.address_id);
+      vaultProgramAddress = await getTokenVaultAddress(connection, data?.address_id);
       vaultProgramAddress && toast.info('Token vault program created successfully');
     }
     if (!vaultProgramAddress) {

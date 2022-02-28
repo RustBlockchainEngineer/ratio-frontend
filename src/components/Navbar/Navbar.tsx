@@ -24,6 +24,7 @@ import { usePrices } from '../../contexts/price';
 import { actionTypes, selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
+import { useUserOverview } from '../../contexts/state';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -60,23 +61,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   }, [location.pathname]);
 
   const { updateStateFlag } = useUpdateState();
-
-  const showOverview = async (mints: any[]) => {
-    const overview = await getUserOverview(connection, wallet, mints);
-    dispatch({ type: actionTypes.SET_OVERVIEW, payload: overview });
-    setOverviewData(JSON.stringify(overview));
-  };
-
-  const getUpdateOverview = async (mints: any[]) => {
-    const originOverviewData = overviewData;
-    let newOverviewData = '';
-    do {
-      await sleep(2000);
-      const overview = await getUserOverview(connection, wallet, mints);
-      newOverviewData = JSON.stringify(overview);
-    } while (newOverviewData !== originOverviewData);
-    setOverviewData(newOverviewData);
-  };
+  const userOverview = useUserOverview();
 
   const getActiveVaultInfo = async function (activeVaults: any[]) {
     let tmpTotalValueLocked = 0;
@@ -105,9 +90,12 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   };
 
   React.useEffect(() => {
-    const overview = JSON.parse(overviewData);
-    if (Object.keys(overview).length) {
-      const { totalDebt, activeVaults, vaultCount } = overview;
+    // const overview = JSON.parse(overviewData);
+    if (userOverview && usdrMint) {
+      dispatch({ type: actionTypes.SET_OVERVIEW, payload: userOverview });
+
+      const { totalDebt, activeVaults, vaultCount } = userOverview;
+
       setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
       setActiveVaultCount(vaultCount);
 
@@ -121,17 +109,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       setActiveVaultsData([]);
       setTotalLocked(0);
     };
-  }, [overviewData]);
-
-  React.useEffect(() => {
-    if (connected && wallet?.publicKey && usdrMint) {
-      if (updateStateFlag === false) {
-        showOverview(mints);
-      } else {
-        getUpdateOverview(mints);
-      }
-    }
-  }, [connected, wallet, usdrMint, updateStateFlag, prices, mints]);
+  }, [userOverview, usdrMint]);
 
   const onItemClick = (index: string) => {
     setNavIndex(index);

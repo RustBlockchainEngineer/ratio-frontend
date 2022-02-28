@@ -172,21 +172,13 @@ export async function isGlobalStateCreated(connection: Connection, wallet: any) 
   }
 }
 
-export async function getTokenVaultKey(mintCollKey: string | PublicKey) {
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), new PublicKey(mintCollKey).toBuffer()],
-    STABLE_POOL_PROGRAM_ID
-  );
-  return tokenVaultKey;
-}
-
-export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey|string = WSOL_MINT_KEY) {
+export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey|string) {
   if (!wallet || !wallet.publicKey || !mintCollKey) {
     return null;
   }
   const program = getProgramInstance(connection, wallet);
 
-  const tokenVaultKey = await getTokenVaultAddressByPublicKeyMint(connection, new PublicKey(mintCollKey));
+  const tokenVaultKey = await getTokenVaultAddress(mintCollKey);
   if (!tokenVaultKey) {
     return null;
   }
@@ -323,12 +315,9 @@ export async function borrowUSDr(
   return 'User borrowed ' + amount / Math.pow(10, USD_DECIMALS) + ' USD , transaction id = ' + tx;
 }
 
-export async function getTokenVaultAndAddressByPublicKeyMint(connection: Connection, mint: PublicKey) {
+export async function getTokenVaultByMint(connection: Connection, mint: string| PublicKey) : Promise<any | undefined> {
   const program = getProgramInstance(connection, null);
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mint.toBuffer()],
-    program.programId
-  );
+  const tokenVaultKey = await getTokenVaultAddress(mint);
   try {
     const tokenVault = await program.account.vault.fetch(tokenVaultKey);
     return { tokenVault, tokenVaultKey };
@@ -336,18 +325,13 @@ export async function getTokenVaultAndAddressByPublicKeyMint(connection: Connect
     return null;
   }
 }
-export async function getTokenVaultAndAddressByMint(connection: Connection, mint: string) {
-  return getTokenVaultAndAddressByPublicKeyMint(connection, new PublicKey(mint));
-}
 
-export async function getTokenVaultByMint(connection: Connection, mint: string): Promise<any | undefined> {
-  const res = await getTokenVaultAndAddressByMint(connection, mint);
-  return res?.tokenVault;
-}
-
-export async function getTokenVaultAddressByMint(connection: Connection, mint: string): Promise<PublicKey | undefined> {
-  const res = await getTokenVaultAndAddressByMint(connection, mint);
-  return res?.tokenVaultKey;
+export async function getTokenVaultAddress(mint: string | PublicKey): Promise<PublicKey | undefined> {
+  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(VAULT_SEED), new PublicKey(mint).toBuffer()],
+    STABLE_POOL_PROGRAM_ID
+  );
+  return tokenVaultKey;
 }
 
 export async function getTokenVaultAddressByPublicKeyMint(

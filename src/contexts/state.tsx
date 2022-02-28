@@ -1,7 +1,7 @@
 import { connection } from '@project-serum/common';
 import { Connection } from '@solana/web3.js';
 import React, { useContext, useEffect, useState } from 'react';
-import { getTokenVaultByMint, getUserState } from '../utils/ratio-lending';
+import { getTokenVaultByMint, getUserOverview, getUserState } from '../utils/ratio-lending';
 import { useConnection } from './connection';
 import { useVaultsContextProvider } from './vaults';
 import { useWallet } from './wallet';
@@ -10,6 +10,7 @@ interface RFStateConfig {
   globalState: any;
   vaultState: any;
   userState: any;
+  overview: any;
   updateState: () => void;
 }
 
@@ -17,6 +18,7 @@ const RFStateContext = React.createContext<RFStateConfig>({
   globalState: {},
   vaultState: {},
   userState: {},
+  overview: {},
   updateState: () => {},
 });
 
@@ -28,6 +30,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const [globalState, setGlobalState] = useState<any>(null);
   const [vaultState, setVaultState] = useState<any>(null);
   const [userState, setUserState] = useState<any>(null);
+  const [overview, setOverview] = useState<any>(null);
   const [updateFlag, setUpdateStates] = useState<any>(false);
 
   const updateState = () => {
@@ -44,7 +47,9 @@ export function RFStateProvider({ children = undefined as any }) {
         vaultInfos[mint] = vaultInfo;
       }
       setVaultState(vaultInfos);
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const updateUserState = async () => {
@@ -58,7 +63,22 @@ export function RFStateProvider({ children = undefined as any }) {
         userInfos[mint] = userInfo;
       }
       setUserState(userInfos);
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const updateOverview = async () => {
+    try {
+      const mints = [];
+      for (let i = 0; i < vaults.length; i++) {
+        mints.push(vaults[i].address_id);
+      }
+      const res = await getUserOverview(connection, wallet, mints);
+      setOverview(res);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {
@@ -78,7 +98,17 @@ export function RFStateProvider({ children = undefined as any }) {
     return () => {
       setUserState({});
     };
-  }, [connection, vaults, wallet]);
+  }, [connection, vaults, wallet, wallet?.publicKey]);
+
+  useEffect(() => {
+    if (connection && wallet && wallet.publicKey) {
+      updateOverview();
+    }
+
+    return () => {
+      setOverview({});
+    };
+  }, [connection, vaults, wallet, wallet?.publicKey]);
 
   return (
     <RFStateContext.Provider
@@ -86,6 +116,7 @@ export function RFStateProvider({ children = undefined as any }) {
         globalState,
         vaultState,
         userState,
+        overview,
         updateState,
       }}
     >
@@ -100,4 +131,21 @@ export function useRFState() {
     throw new Error('[useRFState] Hook not used under Vaults context provider');
   }
   return context;
+}
+
+export function useUserInfo(mint: string) {
+  const context = React.useContext(RFStateContext);
+  const userInfo = context.userState[mint];
+  return userInfo;
+}
+
+export function useVaultInfo(mint: string) {
+  const context = React.useContext(RFStateContext);
+  const userInfo = context.vaultState[mint];
+  return userInfo;
+}
+export function useUserOverview() {
+  const context = React.useContext(RFStateContext);
+  const overview = context.overview;
+  return overview;
 }
