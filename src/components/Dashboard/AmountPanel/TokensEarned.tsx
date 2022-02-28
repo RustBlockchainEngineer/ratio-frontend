@@ -86,8 +86,8 @@ const TokensEarned = ({ data }: any) => {
           <tr>
             <td className="tokensearned__name">
               {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
-              <img src={data.platform.icon} alt="SBR" className="tokensearned__icon" />
-              {getTokenNameByPlatform(data.platform.name)}
+              <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
+              {getTokenNameByPlatform(data?.platform?.name)}
             </td>
             <td className="align-middle">{rewards}</td>
             <td className="text-right align-middle">${rewards * SBR_PRICE}</td>

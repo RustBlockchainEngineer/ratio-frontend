@@ -32,7 +32,6 @@ export function PoolProvider({ children = undefined as any }) {
   useEffect(() => {
     try {
       getRaydiumPools(connection).then((res: any) => {
-        console.log('Loaded Raydium pools ***', res);
         setRaydiumPools(res);
       });
     } catch (e) {}
@@ -41,7 +40,6 @@ export function PoolProvider({ children = undefined as any }) {
   useEffect(() => {
     try {
       getSaberSwapPoolsInfo(connection, connectionConfig.env).then((res: any) => {
-        console.log('Loaded Saber pools ***', res);
         setSaberPools(res);
       });
     } catch (e) {}
@@ -50,7 +48,6 @@ export function PoolProvider({ children = undefined as any }) {
   useEffect(() => {
     try {
       getOrcaSwapPoolInfo().then((res: any) => {
-        console.log('Loaded Orca pools ***', res);
         setOrcaPools(res);
       });
     } catch (e) {
@@ -61,7 +58,6 @@ export function PoolProvider({ children = undefined as any }) {
   useEffect(() => {
     try {
       getMercurialSwapPoolsInfo().then((res: any) => {
-        console.log('Loaded Mercurial pools ***', res);
         setMercurialPools(res);
       });
     } catch (e) {
