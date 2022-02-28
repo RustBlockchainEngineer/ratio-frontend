@@ -152,7 +152,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }, [wallet, connection]);
 
   React.useEffect(() => {
-    if (!connected && !connection && !wallet && !vaults.length && !globalState) {
+    if (!connected || !connection || !wallet || !vaults.length || !globalState) {
       return;
     }
     let active = true;

@@ -74,7 +74,7 @@ const Layer = () => {
     return () => {
       setEnable(false);
     };
-  }, [userData]);
+  }, [userData, connected]);
 
   const dispatch = useDispatch();
 
