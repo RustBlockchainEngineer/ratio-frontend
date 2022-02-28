@@ -38,6 +38,7 @@ import { getUSDrAmount, getLPAmount } from '../../utils/risk';
 import { useUpdateState } from '../../contexts/auth';
 import Breadcrumb from '../../components/Breadcrumb';
 import { Banner, BannerIcon } from '../../components/Banner';
+import { useRFStateInfo, useUserInfo } from '../../contexts/state';
 
 const priceCardData = [
   {
@@ -63,10 +64,9 @@ const VaultDashboard = () => {
   const collAccount = useAccountByMint(vault_mint as string);
   const usdrAccount = useAccountByMint(USDR_MINT_KEY);
 
-  const [userState, setUserState] = useState<any>(null);
-  const [globalState, setGlobalState] = useState<any>(null);
-
-  const [VaultData, setVaultData] = useState<any>({});
+  const userState = useUserInfo(vault_mint as string);
+  const globalState = useRFStateInfo();
+  const [vaultData, setVaultData] = useState<any>({});
 
   const [lpWalletBalance, setLpWalletBalance] = useState(0);
   const [lpWalletBalanceUSD, setLpWalletBalanceUSD] = useState(0);
@@ -85,40 +85,6 @@ const VaultDashboard = () => {
     usdrMint: USDR_MINT_KEY,
     usdrValue: 0,
   });
-
-  useEffect(() => {
-    if (!connected) {
-      history.push('/dashboard/available-vaults');
-    } else if (vault_mint) {
-      setIsLoading(true);
-      getUserState(connection, wallet, new PublicKey(vault_mint)).then((res) => {
-        if (res) {
-          setIsLoading(false);
-          setUserState(res);
-        }
-      });
-    }
-
-    return () => {
-      setUserState(null);
-    };
-  }, [vault_mint, wallet, connected]);
-
-  useEffect(() => {
-    if (connected) {
-      setIsLoading(true);
-      getGlobalState(connection, wallet).then((res) => {
-        if (res) {
-          setIsLoading(false);
-          setGlobalState(res.globalState);
-        }
-      });
-    }
-
-    return () => {
-      setGlobalState(null);
-    };
-  }, [wallet, connected, updateStateFlag]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
@@ -141,7 +107,7 @@ const VaultDashboard = () => {
   }, [wallet, usdrAccount, connection, usdrMint]);
 
   useEffect(() => {
-    if (tokenPrice && collMint && lpWalletBalance && globalState && VaultData) {
+    if (tokenPrice && collMint && lpWalletBalance && globalState) {
       //ternary operators are used here while the globalState paramters do not exist
 
       const tvlLimit = globalState?.tvlLimit ? globalState?.tvlLimit.toNumber() : 0;
@@ -155,15 +121,15 @@ const VaultDashboard = () => {
     return () => {
       setDepositValue(0);
     };
-  }, [lpWalletBalance, tokenPrice, collMint, globalState, VaultData]);
+  }, [lpWalletBalance, tokenPrice, collMint, globalState]);
 
   useEffect(() => {
-    if (userState && tokenPrice && collMint && usdrMint && globalState && VaultData) {
+    if (userState && tokenPrice && collMint && usdrMint && globalState && vaultData) {
       //calculate reminaing usdr debt the user can mint based on their current deposited LP
       const debt = userState?.debt ?? 0;
       const lpLockedAmount = new TokenAmount(userState?.lockedCollBalance, collMint?.decimals);
       //we might want to chnage this and instead pull the risk rating from the contract once the featrue is ready
-      const riskLevel = VaultData.risk ? VaultData.risk : 'AAA';
+      const riskLevel = vaultData.risk ? vaultData.risk : 'AAA';
       const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), riskLevel);
       const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
       const userDebtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
@@ -181,7 +147,7 @@ const VaultDashboard = () => {
       setHasReachedDebtLimit(false);
       setGenerateValue(0);
     };
-  }, [tokenPrice, userState, globalState, usdrMint, collMint, VaultData]);
+  }, [tokenPrice, userState, globalState, usdrMint, collMint, vaultData]);
 
   useEffect(() => {
     if (userState && collMint) {
@@ -221,21 +187,12 @@ const VaultDashboard = () => {
   useEffect(() => {
     setIsLoading(true);
     const result: any = allVaults.find((item: any) => item.mint === vault_mint);
-
+    console.log(allVaults);
     if (result) {
       setVaultData(result);
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, [allVaults, vault_mint]);
-
-  useEffect(() => {
-    if (updateStateFlag && wallet?.publicKey) {
-      getUpdatedUserState(connection, wallet, vault_mint as string, userState).then((res) => {
-        setUserState(res);
-        setUpdateStateFlag(false);
-      });
-    }
-  }, [updateStateFlag]);
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
@@ -265,17 +222,17 @@ const VaultDashboard = () => {
       <div className="vaultdashboard">
         <div className="vaultdashboard__header">
           <div className="vaultdashboard__header_titleBox">
-            <Breadcrumb VaultData={VaultData} availableVaults={allVaults} />
+            <Breadcrumb VaultData={vaultData} availableVaults={allVaults} />
             <div className="d-flex">
               <div>
-                <h3>{VaultData.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault</h3>
+                <h3>{vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault</h3>
                 {isMobile && (
                   <Link to="/">
                     View on Solana Beach
                     <img src={share} alt="share" />
                   </Link>
                 )}
-                <RiskLevel level={VaultData.risk} />
+                <RiskLevel level={vaultData.risk} />
               </div>
               <div>
                 <VaultDebt data={vauldDebtData} />
@@ -310,15 +267,15 @@ const VaultDashboard = () => {
         <div className="vaultdashboard__body row no-gutters">
           <div className="col-xxl-8">
             <div className="vaultdashboard__bodyleft row">
-              <PriceCard data={priceCardData[0]} tokenName={VaultData?.title} risk={VaultData?.risk} />
+              <PriceCard data={priceCardData[0]} tokenName={vaultData?.title} risk={vaultData?.risk} />
               <div className="col-lg-6">
                 <WalletBalances
                   mintAddress={vault_mint}
                   collAmount={lpWalletBalance}
                   collAmountUSD={lpWalletBalanceUSD}
-                  icon={VaultData.icon}
-                  icons={VaultData.icons}
-                  tokenName={VaultData.title}
+                  icon={vaultData.icon}
+                  icons={vaultData.icons}
+                  tokenName={vaultData.title}
                   usdrAmount={usdrWalletBalance}
                 />
               </div>
@@ -326,9 +283,9 @@ const VaultDashboard = () => {
                 <ModalCard
                   mintAddress={vault_mint}
                   title="Tokens in Vault"
-                  icon={VaultData.icon}
-                  icons={VaultData.icons}
-                  tokenName={VaultData.title}
+                  icon={vaultData.icon}
+                  icons={vaultData.icons}
+                  tokenName={vaultData.title}
                   depositValue={depositValue}
                   withdrawValue={withdrawValue}
                   debtValue={debtValue}
@@ -341,7 +298,7 @@ const VaultDashboard = () => {
                   mintAddress={vault_mint}
                   title="USDr Loan Amount"
                   icons={[usdrIcon]}
-                  tokenName={VaultData.title}
+                  tokenName={vaultData.title}
                   debtValue={debtValue}
                   generateValue={generateValue}
                   type="borrow_payback"
@@ -361,9 +318,9 @@ const VaultDashboard = () => {
                 mintAddress={vault_mint}
                 collAmount={lpWalletBalance}
                 collAmountUSD={lpWalletBalanceUSD}
-                icon={VaultData.icon}
-                icons={VaultData.icons}
-                tokenName={VaultData.title}
+                icon={vaultData.icon}
+                icons={vaultData.icons}
+                tokenName={vaultData.title}
                 usdrAmount={usdrWalletBalance}
                 platform={VaultData.platform}
               />

@@ -95,14 +95,15 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       dispatch({ type: actionTypes.SET_OVERVIEW, payload: userOverview });
 
       const { totalDebt, activeVaults, vaultCount } = userOverview;
+      if (activeVaults) {
+        setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
+        setActiveVaultCount(vaultCount);
 
-      setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
-      setActiveVaultCount(vaultCount);
-
-      getActiveVaultInfo(activeVaults).then((res) => {
-        setActiveVaultsData(res.activeVaults);
-        setTotalLocked(res.tvl);
-      });
+        getActiveVaultInfo(activeVaults).then((res) => {
+          setActiveVaultsData(res.activeVaults);
+          setTotalLocked(res.tvl);
+        });
+      }
     }
 
     return () => {

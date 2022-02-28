@@ -1,7 +1,7 @@
 import { connection } from '@project-serum/common';
 import { Connection } from '@solana/web3.js';
 import React, { useContext, useEffect, useState } from 'react';
-import { getTokenVaultByMint, getUserOverview, getUserState } from '../utils/ratio-lending';
+import { getGlobalState, getTokenVaultByMint, getUserOverview, getUserState } from '../utils/ratio-lending';
 import { useConnection } from './connection';
 import { useVaultsContextProvider } from './vaults';
 import { useWallet } from './wallet';
@@ -68,6 +68,17 @@ export function RFStateProvider({ children = undefined as any }) {
     }
   };
 
+  const updateGlobalState = async () => {
+    try {
+      const res = await getGlobalState(connection, wallet);
+      if (res) {
+        setGlobalState(res.globalState);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const updateOverview = async () => {
     try {
       const mints = [];
@@ -80,6 +91,15 @@ export function RFStateProvider({ children = undefined as any }) {
       console.log(e);
     }
   };
+
+  useEffect(() => {
+    if (connection) {
+      updateGlobalState();
+    }
+    return () => {
+      setGlobalState({});
+    };
+  }, [connection]);
 
   useEffect(() => {
     if (connection && vaults) {
@@ -131,6 +151,11 @@ export function useRFState() {
     throw new Error('[useRFState] Hook not used under Vaults context provider');
   }
   return context;
+}
+
+export function useRFStateInfo() {
+  const context = React.useContext(RFStateContext);
+  return context.globalState;
 }
 
 export function useUserInfo(mint: string) {
