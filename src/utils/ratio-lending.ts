@@ -180,13 +180,13 @@ export async function getTokenVaultKey(mintCollKey: string | PublicKey) {
   return tokenVaultKey;
 }
 
-export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
+export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey|string = WSOL_MINT_KEY) {
   if (!wallet || !wallet.publicKey || !mintCollKey) {
     return null;
   }
   const program = getProgramInstance(connection, wallet);
 
-  const tokenVaultKey = await getTokenVaultAddressByPublicKeyMint(connection, mintCollKey);
+  const tokenVaultKey = await getTokenVaultAddressByPublicKeyMint(connection, new PublicKey(mintCollKey));
   if (!tokenVaultKey) {
     return null;
   }
