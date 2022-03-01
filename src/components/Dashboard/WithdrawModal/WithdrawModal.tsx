@@ -4,16 +4,15 @@ import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useMint } from '../../../contexts/accounts';
-import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { getTokenVaultByMint, withdrawCollateral } from '../../../utils/ratio-lending';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
+import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 type PairType = {
   mint: string;
@@ -35,7 +34,7 @@ const WithdrawModal = ({ data }: any) => {
   const collMint = useMint(data.mint);
 
   const [withdrawAmount, setWithdrawAmount] = React.useState(0);
-  const { setUpdateStateFlag } = useUpdateState();
+  const updateRFStates = useUpdateRFStates();
   const [withdrawStatus, setWithdrawStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
@@ -87,7 +86,7 @@ const WithdrawModal = ({ data }: any) => {
         userCollAccount
       )
       .then(() => {
-        setUpdateStateFlag(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);
@@ -173,7 +172,7 @@ const WithdrawModal = ({ data }: any) => {
             />
             <Button
               className="button--blue bottomBtn"
-              disabled={withdrawAmount <= 0 || buttonDisabled}
+              disabled={withdrawAmount <= 0 || buttonDisabled || Number(data.usdrValue) !== 0}
               onClick={() => withdraw()}
             >
               Withdraw Assets

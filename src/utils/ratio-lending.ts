@@ -26,7 +26,7 @@ import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
-import { createSaberTokenVault } from './saber/saber-utils';
+import { calculateSaberReward, createSaberTokenVault } from './saber/saber-utils';
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
@@ -172,21 +172,13 @@ export async function isGlobalStateCreated(connection: Connection, wallet: any) 
   }
 }
 
-export async function getTokenVaultKey(mintCollKey: string | PublicKey) {
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), new PublicKey(mintCollKey).toBuffer()],
-    STABLE_POOL_PROGRAM_ID
-  );
-  return tokenVaultKey;
-}
-
-export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
+export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey|string) {
   if (!wallet || !wallet.publicKey || !mintCollKey) {
     return null;
   }
   const program = getProgramInstance(connection, wallet);
 
-  const tokenVaultKey = await getTokenVaultAddressByPublicKeyMint(connection, mintCollKey);
+  const tokenVaultKey = await getTokenVaultAddress(mintCollKey);
   if (!tokenVaultKey) {
     return null;
   }
@@ -199,44 +191,6 @@ export async function getUserState(connection: Connection, wallet: any, mintColl
   } catch (e) {
     return null;
   }
-}
-
-export async function getUserOverview(connection: Connection, wallet: any, mints: string[]) {
-  const activeVaults: any = {};
-  let vaultCount = 0;
-  let totalDebt = 0;
-  for (let i = 0; i < mints.length; i++) {
-    const state = await getUserState(connection, wallet, new PublicKey(mints[i]));
-    if (state && state.lockedCollBalance.toString() !== '0') {
-      activeVaults[mints[i]] = {
-        mint: mints[i],
-        lockedAmount: Number(state.lockedCollBalance.toString()),
-        debt: Number(state.debt.toString()),
-      };
-      vaultCount++;
-      totalDebt += Number(state.debt.toString());
-    }
-  }
-  return {
-    activeVaults,
-    totalDebt,
-    vaultCount,
-  };
-}
-
-export async function getUpdatedUserState(connection: any, wallet: any, mint: string, originState: any) {
-  let res = null;
-  do {
-    await sleep(300);
-    res = await getUserState(connection, wallet, new PublicKey(mint));
-  } while (
-    !res ||
-    (originState &&
-      res.lockedCollBalance.toString() === originState.lockedCollBalance.toString() &&
-      res.debt.toString() === (originState as any).debt.toString())
-  );
-
-  return res;
 }
 
 export async function borrowUSDr(
@@ -323,31 +277,23 @@ export async function borrowUSDr(
   return 'User borrowed ' + amount / Math.pow(10, USD_DECIMALS) + ' USD , transaction id = ' + tx;
 }
 
-export async function getTokenVaultAndAddressByPublicKeyMint(connection: Connection, mint: PublicKey) {
+export async function getTokenVaultByMint(connection: Connection, mint: string| PublicKey) : Promise<any | undefined> {
   const program = getProgramInstance(connection, null);
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mint.toBuffer()],
-    program.programId
-  );
+  const tokenVaultKey = await getTokenVaultAddress(mint);
   try {
     const tokenVault = await program.account.vault.fetch(tokenVaultKey);
-    return { tokenVault, tokenVaultKey };
+    return tokenVault;
   } catch (e) {
     return null;
   }
 }
-export async function getTokenVaultAndAddressByMint(connection: Connection, mint: string) {
-  return getTokenVaultAndAddressByPublicKeyMint(connection, new PublicKey(mint));
-}
 
-export async function getTokenVaultByMint(connection: Connection, mint: string): Promise<any | undefined> {
-  const res = await getTokenVaultAndAddressByMint(connection, mint);
-  return res?.tokenVault;
-}
-
-export async function getTokenVaultAddressByMint(connection: Connection, mint: string): Promise<PublicKey | undefined> {
-  const res = await getTokenVaultAndAddressByMint(connection, mint);
-  return res?.tokenVaultKey;
+export async function getTokenVaultAddress(mint: string | PublicKey): Promise<PublicKey | undefined> {
+  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(VAULT_SEED), new PublicKey(mint).toBuffer()],
+    STABLE_POOL_PROGRAM_ID
+  );
+  return tokenVaultKey;
 }
 
 export async function getTokenVaultAddressByPublicKeyMint(
@@ -677,4 +623,11 @@ export function getUserHistory(action: string, userKey: string, mintKey: string)
     return actions[userKey][mintKey].slice(0, HISTORY_TO_SHOW);
   }
   return [];
+}
+
+export async function calculateRewardByPlatform(connection: Connection, wallet: any, mintCollKey: string| PublicKey, platformType: number) {
+  if (platformType === TYPE_ID_SABER) {
+    return await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
+  }
+  return 0;
 }

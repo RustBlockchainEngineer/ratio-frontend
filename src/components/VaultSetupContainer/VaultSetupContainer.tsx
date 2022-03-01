@@ -5,16 +5,6 @@ import moment from 'moment';
 import Button from '../Button';
 import CustomInput from '../CustomInput';
 import { PairType } from '../../models/UInterface';
-import {
-  createTokenVault,
-  lockAndMint,
-  getTokenVaultByMint,
-  getUserState,
-  USDR_MINT_KEY,
-  depositCollateral,
-  borrowUSDr,
-  getUpdatedUserState,
-} from '../../utils/ratio-lending';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 import { useConnection } from '../../contexts/connection';
@@ -27,11 +17,11 @@ import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
-import { useUpdateState } from '../../contexts/auth';
 import { IoIosArrowRoundForward } from 'react-icons/io';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
+import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 const VaultSetupContainer = ({ data }: any) => {
   console.log(data);
@@ -40,14 +30,17 @@ const VaultSetupContainer = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
-  const [userState, setUserState] = React.useState(null);
+
+  const vault = useVaultInfo(data.mint);
+
   const [mintTime, setMintTime] = React.useState('');
 
   const tokenPrice = usePrice(data.mint);
-  const collMint = useMint(data.mint);
-  const usdrMint = useMint(USDR_MINT_KEY);
+
+  const userState = useUserInfo(data.mint);
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(data.mint);
+
   const collAccount = useAccountByMint(data.mint);
 
   const [lockAmount, setLockAmount] = React.useState(0);
@@ -97,9 +90,6 @@ const VaultSetupContainer = ({ data }: any) => {
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey && data.mint) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        setUserState(res);
-      });
       if (collAccount && collMint) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
         setLpWalletBalance(Number(tokenAmount.fixed()));
@@ -110,33 +100,7 @@ const VaultSetupContainer = ({ data }: any) => {
     };
   }, [wallet, collAccount, connection, collMint, data]);
 
-  React.useEffect(() => {
-    if (connected && data.mint) {
-      getTokenVaultByMint(connection, data.mint).then((res) => {
-        setVault(res);
-        if (res) {
-          setCreated(true);
-        } else {
-          setCreated(false);
-        }
-      });
-    } else {
-      setShow(false);
-    }
-    return () => {
-      setCreated(false);
-    };
-  }, [connection, connected, data]);
-
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  React.useEffect(() => {
-    if (updateStateFlag && wallet?.publicKey) {
-      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
-        setUserState(res);
-        setUpdateStateFlag(false);
-      });
-    }
-  }, [updateStateFlag]);
+  const updateRFStates = useUpdateRFStates();
 
   const [didMount, setDidMount] = React.useState(false);
   React.useEffect(() => {
@@ -155,15 +119,11 @@ const VaultSetupContainer = ({ data }: any) => {
       return;
     }
     if (collAccount) {
-      depositCollateral(
-        connection,
-        wallet,
-        lockAmount * Math.pow(10, collMint?.decimals as number),
-        collAccount.pubkey.toString(),
-        new PublicKey(data.mint)
-      )
+      //Zhao
+      poolInfoProviderFactory
+        ?.depositLP(connection, wallet, vaultFound as LPair, lockAmount, collAccount?.pubkey.toString() as string)
         .then(() => {
-          setUpdateStateFlag(true);
+          updateRFStates(true);
           setShow(false);
         })
         .catch((e) => {
@@ -233,18 +193,7 @@ const VaultSetupContainer = ({ data }: any) => {
           </strong>
         </div>
         <div>
-          <Button
-            className="button--fill setup"
-            onClick={() =>
-              poolInfoProviderFactory?.depositLP(
-                connection,
-                wallet,
-                vaultFound as LPair,
-                lockAmount,
-                collAccount?.pubkey.toString() as string
-              )
-            }
-          >
+          <Button className="button--fill setup" onClick={depositLP}>
             Set up vault
           </Button>
         </div>

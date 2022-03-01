@@ -4,11 +4,10 @@ import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
-import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { usePrice } from '../../../contexts/price';
 import { useWallet } from '../../../contexts/wallet';
-import { depositCollateral, getTokenVaultByMint, getUserState } from '../../../utils/ratio-lending';
+
 import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
@@ -16,6 +15,7 @@ import CustomInput from '../../CustomInput';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
+import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 type PairType = {
   mint: string;
@@ -41,10 +41,12 @@ const DepositModal = ({ data }: any) => {
   const [depositAmount, setDepositAmount] = React.useState(0);
 
   const [didMount, setDidMount] = React.useState(false);
-  const { setUpdateStateFlag } = useUpdateState();
+
   const [depositStatus, setDepositStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
+
+  const updateRFStates = useUpdateRFStates();
 
   useEffect(() => {
     setDidMount(true);
@@ -78,14 +80,15 @@ const DepositModal = ({ data }: any) => {
         collAccount?.pubkey.toString() as string
       )
       .then(() => {
-        setUpdateStateFlag(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
+        setDepositAmount(0);
       })
       .catch((e) => {
         console.log(e);
       })
       .finally(() => {
         toast('Successfully Deposited!');
-        setShow(false);
+        setShow(!show);
       });
   };
   return (
