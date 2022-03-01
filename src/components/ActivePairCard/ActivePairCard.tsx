@@ -193,7 +193,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
               </h6>
             </div>
             <div className="mt-2 d-flex justify-content-between">
-              <h6>APR:</h6>
+              <h6>APY:</h6>
               <h6 className="semiBold">{Number(data?.apr).toFixed()}%</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
@@ -207,7 +207,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
           </div>
           <div className="activepaircard__detailBox">
             <div className="d-flex justify-content-between">
-              <h6>Rewards earned:</h6>
+              <h6>Rewards Earned:</h6>
               <h6 className="semiBold">${data.earned_rewards}</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
