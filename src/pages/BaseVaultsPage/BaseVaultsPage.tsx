@@ -11,24 +11,26 @@ import ComparingFooter from '../../components/ComparingFooter';
 import TokenPairCard from '../../components/TokenPairCard';
 import ActivePairCard from '../../components/ActivePairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
-
+import { TokenAmount } from '../../utils/safe-math';
 import { getCoinPicSymbol } from '../../utils/helper';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { LPair } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { getDebtLimitForAllVaults } from '../../utils/utils';
-import { getGlobalState } from '../../utils/ratio-lending';
+import { getGlobalState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
+import { useMint } from '../../contexts/accounts';
 
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
+  const usdrMint = useMint(USDR_MINT_KEY);
   const compareVaultsList = useSelector(selectors.getCompareVaultsList);
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
@@ -40,6 +42,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const [vaultsDebtData, setVaultsDebtData] = React.useState<any>([]);
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
   const [hasReachedGlobalDebtLimit, setHasReachedGlobalDebtLimit] = React.useState(false);
+  const [remainingGlobalDebtLimit, setRemainingGlobalDebt] = React.useState(0);
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
@@ -102,6 +105,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           riskLevel: getRiskLevelNumber(item.risk_rating),
           item: item,
           hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
+          remainingDebt: item.remaining_debt,
         };
       });
 
@@ -139,13 +143,18 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   React.useEffect(() => {
     let active = true;
-    if (wallet && wallet.publicKey) {
+    if (wallet && wallet.publicKey && usdrMint) {
       getGlobalState(connection, wallet).then((res: any) => {
         if (!active) {
           return;
         }
         const data = res.globalState;
         setGlobalState(data);
+        const globalDebt = data?.totalDebt ? Number(new TokenAmount(data?.totalDebt, usdrMint?.decimals).fixed()) : 0;
+        const globalDebtLimit = data?.debtCeiling
+          ? Number(new TokenAmount(data?.debtCeiling, usdrMint?.decimals).fixed())
+          : 0;
+        setRemainingGlobalDebt(globalDebtLimit - globalDebt);
         setHasReachedGlobalDebtLimit(
           data?.totalDebt ? data?.totalDebt.toNumber() === data?.debtCeiling.toNumber() : false
         );
@@ -154,10 +163,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
     return () => {
       active = false;
     };
-  }, [wallet, connection]);
+  }, [wallet, connection, usdrMint]);
 
   React.useEffect(() => {
-    if (!connected || !connection || !wallet || !vaults.length || !globalState) {
+    if (!connected || !connection || !wallet || !vaults.length) {
       return;
     }
     let active = true;
@@ -181,8 +190,13 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       vaultsWithData = vaultsWithPlatformInformation;
     }
     vaultsWithData = vaultsWithData.map((item: any) => {
+      const remainingUserDebt = vaultsDebtData.length
+        ? vaultsDebtData.find((userVault: any) => userVault.title === item.symbol).debtLimit
+        : 0;
+      const remainingDebt = Math.min(remainingGlobalDebtLimit, remainingUserDebt);
       return {
         ...item,
+        remaining_debt: remainingDebt,
         has_reached_user_debt_limit: vaultsDebtData.length
           ? vaultsDebtData.find((userVault: any) => userVault.title === item.symbol).hasReachedDebtLimit
           : false,
@@ -193,7 +207,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       setVaultsWithAllData([]);
     };
     //In case a cleanup function needs to be added, consider that setting state to default values might race against other pages that use this same base page.
-  }, [hasReachedGlobalDebtLimit, vaultsWithPlatformInformation, vaults, vaultsDebtData]);
+  }, [remainingGlobalDebtLimit, vaultsWithPlatformInformation, vaults, vaultsDebtData]);
 
   const showContent = (vtype: string) => {
     const onCompareVault = (data: PairType, status: boolean) => {

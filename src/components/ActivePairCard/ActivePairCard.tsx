@@ -202,7 +202,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Available to Mint:</h6>
-              {/* <h6 className="semiBold"></h6> */}
+              <h6 className="semiBold">{Number(data?.remainingDebt).toFixed(2)}</h6>
             </div>
           </div>
           <div className="activepaircard__detailBox">
