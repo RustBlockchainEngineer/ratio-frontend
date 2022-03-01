@@ -73,7 +73,7 @@
     gap: 12px;
     &-icon {
       width: 3.75rem;
-      background-color: white;
+      // background-color: white;
      
     }
     .highRisk {
@@ -116,9 +116,8 @@
       border-radius: 0px;
     }
     img {
-      width: 15px;
-      height: auto;
-      border: none;
+      width: 12px;
+      margin-top: -2px;
     }
     .DDD {
       color: #ff3131;
@@ -141,13 +140,13 @@
     border-top: 1px solid rgba(#4c646f, 0.2);
     border-bottom: 1px solid rgba(#4c646f, 0.2);
     position: relative;
-
+   
     h6 {
       font-size: 1rem;
       color: var(--unnamed-color-3c4760);
       margin-bottom: 0px;
       font-family: 'Poppins-Medium';
-      
+     
     }
     &--platformName {
       text-decoration: underline;

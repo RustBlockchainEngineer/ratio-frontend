@@ -19,7 +19,6 @@ import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
-import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import highriskIcon from '../../assets/images/highrisk.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
@@ -165,10 +164,6 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     return (
       <div className="col">
         <div className="d-flex">
-          <Button disabled={!connected} className="button button--blue tokenpaircard__generate mt-2">
-            Deposit
-          </Button>
-          <div className="mx-1"></div>
           <Button
             disabled={!connected}
             className="button button--blue tokenpaircard__generate mt-2"
@@ -223,10 +218,10 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
               <div className="text-right">
                 <div className="d-flex align-items-center">
                   <img src={smallRatioIcon} alt="smallRatio" />
-                  <p className="mx-1">Rating</p>
-                  <img src={liskLevelIcon} alt="lisklevel" />
+                  <p className="mx-1">Risk Rating</p>
+                  {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
                 </div>
-                <div className="d-flex justify-content-start">
+                <div className="d-flex justify-content-end mt-1">
                   <h6 className={classNames('ml-1', data.risk)}>{data.risk} </h6>
                 </div>
               </div>

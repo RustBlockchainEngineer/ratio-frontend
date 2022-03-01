@@ -20,7 +20,6 @@ import { useWallet } from '../../contexts/wallet';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 
 import { TokenPairCardProps } from '../../models/UInterface';
-import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
 
@@ -161,7 +160,11 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     return (
       <div className="col">
         <div className="d-flex">
-          <Button disabled={!connected} className="button button--blue activepaircard__generate mt-2" onClick={harvest}>
+          <Button
+            disabled={!connected}
+            className="button button--gradientBorder activepaircard__generate mt-2"
+            onClick={harvest}
+          >
             Harvest
           </Button>
           <div className="mx-1"></div>
@@ -189,6 +192,32 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title}</h6>
                 <p>TVL {printTvl()}</p>
+                {/* <a href={data.platform.link} target="_blank" rel="noreferrer">
+                  <div className="d-inline-flex align-items-center mt-1 position-relative">
+                    <img src={data.platform.icon} />
+                    <p className="semiBold ml-1">{data.platform.name}</p>
+                    <img src={linkIcon} alt="linkIcon" className="activepaircard__titleBox--linkIcon" />
+                  </div>
+                </a> */}
+              </div>
+            </div>
+            <div className="activepaircard__riskBox">
+              <div className="text-right">
+                <div className="d-flex align-items-center">
+                  <img src={smallRatioIcon} alt="smallRatio" />
+                  <p className="mx-1">Risk Rating</p>
+                  {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
+                </div>
+                <div className="d-flex justify-content-end mt-1">
+                  <h6 className={classNames('ml-1', data.risk)}>{data.risk} </h6>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="activepaircard__aprBox">
+            <div className="d-flex align-items-center justify-content-between">
+              <h6>Platform:</h6>
+              <h6 className="semiBold">
                 <a href={data.platform.link} target="_blank" rel="noreferrer">
                   <div className="d-inline-flex align-items-center mt-1 position-relative">
                     <img src={data.platform.icon} />
@@ -196,23 +225,9 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
                     <img src={linkIcon} alt="linkIcon" className="activepaircard__titleBox--linkIcon" />
                   </div>
                 </a>
-              </div>
+              </h6>
             </div>
-            <div className="activepaircard__riskBox">
-              <div className="text-right">
-                <div className="d-flex align-items-center">
-                  <img src={smallRatioIcon} alt="smallRatio" />
-                  <p className="mx-1">Rating</p>
-                  <img src={liskLevelIcon} alt="lisklevel" />
-                </div>
-                <div className="d-flex justify-content-start">
-                  <h6 className={classNames('ml-1', data.risk)}>{data.risk} </h6>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="activepaircard__aprBox">
-            <div className="d-flex justify-content-between">
+            <div className="mt-2 d-flex justify-content-between">
               <h6>APR:</h6>
               <h6 className="semiBold">{Number(data?.apr).toFixed()}%</h6>
             </div>
@@ -227,12 +242,12 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
           </div>
           <div className="activepaircard__detailBox">
             <div className="d-flex justify-content-between">
-              <h6>Position Value:</h6>
-              <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
-            </div>
-            <div className="mt-3 d-flex justify-content-between">
               <h6>Rewards earned:</h6>
               <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
+            </div>
+            <div className="mt-3 d-flex justify-content-between">
+              <h6>Position Value:</h6>
+              <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
             </div>
           </div>
           <div className="activepaircard__btnBox d-flex">
