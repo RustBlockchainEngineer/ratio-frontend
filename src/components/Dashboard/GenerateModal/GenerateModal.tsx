@@ -15,6 +15,7 @@ import CustomInput from '../../CustomInput';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import { useUpdateState } from '../../../contexts/auth';
+import { useUSDrMintInfo, useUserInfo } from '../../../contexts/state';
 
 type PairType = {
   mint: string;
@@ -33,7 +34,9 @@ const GenerateModal = ({ data }: any) => {
   const [vault, setVault] = React.useState({});
   const [mintTime, setMintTime] = React.useState('');
 
-  const usdrMint = useMint(data.usdrMint);
+  const userState = useUserInfo(data.mint);
+  const usdrMint = useUSDrMintInfo();
+
   const [borrowAmount, setBorrowAmount] = React.useState(0);
   const { setUpdateStateFlag } = useUpdateState();
   const [mintStatus, setMintStatus] = React.useState(false);
@@ -41,20 +44,16 @@ const GenerateModal = ({ data }: any) => {
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   useEffect(() => {
-    if (wallet && wallet.publicKey && data.mint) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        if (res) {
-          const endDateOfLock = res.lastMintTime.toNumber() + 3600;
-          const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM / DD /YYYY HH : MM : SS');
+    if (userState) {
+      const endDateOfLock = userState.lastMintTime.toNumber() + 3600;
+      const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM / DD /YYYY HH : MM : SS');
 
-          setMintTime(unlockDateString);
-        }
-      });
+      setMintTime(unlockDateString);
     }
     return () => {
       setMintTime('');
     };
-  }, [wallet, connection]);
+  }, [userState]);
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {

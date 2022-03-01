@@ -12,13 +12,8 @@ import ComingSoon from '../ComingSoon';
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
 import {
-  lockAndMint,
-  getTokenVaultByMint,
-  getUserState,
-  USDR_MINT_KEY,
   depositCollateral,
   borrowUSDr,
-  getUpdatedUserState,
 } from '../../utils/ratio-lending';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -34,6 +29,7 @@ import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
 import { useUpdateState } from '../../contexts/auth';
 import usdrIcon from '../../assets/images/USDr.png';
+import { useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -44,13 +40,14 @@ const MintUSDrModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
-  const [userState, setUserState] = React.useState(null);
+
+  const vault = useVaultInfo(data.mint);
+
   const [mintTime, setMintTime] = React.useState('');
 
   const tokenPrice = usePrice(data.mint);
 
+  const userState = useUserInfo(data.mint);
   const usdrMint = useUSDrMintInfo();
   const collMint = useVaultMintInfo(data.mint);
 
@@ -99,9 +96,6 @@ const MintUSDrModal = ({ data }: any) => {
 
   useEffect(() => {
     if (wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        setUserState(res);
-      });
       if (collAccount && collMint) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
         setLpWalletBalance(Number(tokenAmount.fixed()));
@@ -112,33 +106,7 @@ const MintUSDrModal = ({ data }: any) => {
     };
   }, [wallet, collAccount, connection, collMint]);
 
-  useEffect(() => {
-    if (connected) {
-      getTokenVaultByMint(connection, data.mint).then((res) => {
-        setVault(res);
-        if (res) {
-          setCreated(true);
-        } else {
-          setCreated(false);
-        }
-      });
-    } else {
-      setShow(false);
-    }
-    return () => {
-      setCreated(false);
-    };
-  }, [connection, connected]);
-
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  useEffect(() => {
-    if (updateStateFlag && wallet?.publicKey) {
-      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
-        setUserState(res);
-        setUpdateStateFlag(false);
-      });
-    }
-  }, [updateStateFlag]);
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -149,32 +117,6 @@ const MintUSDrModal = ({ data }: any) => {
   if (!didMount) {
     return null;
   }
-
-  const depositLP = () => {
-    if (!(lpWalletBalance >= lockAmount && lockAmount > 0)) {
-      // toast('Insufficient funds!');
-      setLockStatus(true);
-      return;
-    }
-    if (collAccount) {
-      depositCollateral(
-        connection,
-        wallet,
-        lockAmount * Math.pow(10, collMint?.decimals as number),
-        collAccount.pubkey.toString(),
-        new PublicKey(data.mint)
-      )
-        .then(() => {
-          setUpdateStateFlag(true);
-        })
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          // history.push(`/dashboard/vaultdashboard/${data.mint}`);
-        });
-    }
-  };
 
   const mintUSDr = () => {
     if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {

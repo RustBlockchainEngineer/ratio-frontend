@@ -19,13 +19,7 @@ import solIcon from '../../assets/images/SOL.svg';
 import usdrIcon from '../../assets/images/USDr.png';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import {
-  getUserState,
-  getGlobalState,
-  // USDR_MINT_KEY, TOKEN_VAULT_OPTIONS, getUsdrMintKey,
-  getUpdatedUserState,
-  USDR_MINT_KEY,
-} from '../../utils/ratio-lending';
+import { USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';

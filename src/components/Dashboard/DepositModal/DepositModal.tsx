@@ -8,7 +8,7 @@ import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { usePrice } from '../../../contexts/price';
 import { useWallet } from '../../../contexts/wallet';
-import { depositCollateral, getTokenVaultByMint, getUserState } from '../../../utils/ratio-lending';
+
 import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';

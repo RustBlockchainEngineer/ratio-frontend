@@ -7,7 +7,6 @@ import { useMint } from '../../../contexts/accounts';
 import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { getTokenVaultByMint, withdrawCollateral } from '../../../utils/ratio-lending';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';

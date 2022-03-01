@@ -8,15 +8,14 @@ import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { TokenPairCardProps } from '../../models/UInterface';
-import { useMint } from '../../contexts/accounts';
+
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
-import { sleep } from '@project-serum/common';
+
 import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';

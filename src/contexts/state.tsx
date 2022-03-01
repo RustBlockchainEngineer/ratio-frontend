@@ -61,7 +61,6 @@ export function RFStateProvider({ children = undefined as any }) {
       const mintInfo = await getMint(connection, USDR_MINT_KEY);
       mintInfos[USDR_MINT_KEY] = mintInfo;
 
-      console.log(mintInfos);
       setTokenState(mintInfos);
     } catch (e) {
       console.log(e);

@@ -134,7 +134,7 @@ export default function VaultCreationAdminForm() {
       } catch (error: any) {
         console.error(error);
       }
-      vaultProgramAddress = await getTokenVaultAddress(connection, data?.address_id);
+      vaultProgramAddress = await getTokenVaultAddress(data?.address_id);
       vaultProgramAddress && toast.info('Token vault program created successfully');
     }
     if (!vaultProgramAddress) {

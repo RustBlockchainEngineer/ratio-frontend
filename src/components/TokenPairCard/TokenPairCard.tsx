@@ -17,7 +17,7 @@ import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
+
 import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import highriskIcon from '../../assets/images/highrisk.svg';
