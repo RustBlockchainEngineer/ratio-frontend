@@ -193,29 +193,6 @@ export async function getUserState(connection: Connection, wallet: any, mintColl
   }
 }
 
-export async function getUserOverview(connection: Connection, wallet: any, mints: string[]) {
-  const activeVaults: any = {};
-  let vaultCount = 0;
-  let totalDebt = 0;
-  for (let i = 0; i < mints.length; i++) {
-    const state = await getUserState(connection, wallet, new PublicKey(mints[i]));
-    if (state && state.lockedCollBalance.toString() !== '0') {
-      activeVaults[mints[i]] = {
-        mint: mints[i],
-        lockedAmount: Number(state.lockedCollBalance.toString()),
-        debt: Number(state.debt.toString()),
-      };
-      vaultCount++;
-      totalDebt += Number(state.debt.toString());
-    }
-  }
-  return {
-    activeVaults,
-    totalDebt,
-    vaultCount,
-  };
-}
-
 export async function borrowUSDr(
   connection: Connection,
   wallet: any,

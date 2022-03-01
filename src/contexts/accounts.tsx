@@ -327,7 +327,7 @@ export function AccountsProvider({ children = null as any }) {
     console.log('Update Tokens', updateTokenAccountFlag);
     const accounts = selectUserAccounts().filter((a) => a !== undefined) as TokenAccount[];
     setUserAccounts(accounts);
-  }, [nativeAccount, wallet, tokenAccounts, selectUserAccounts, updateTokenAccountFlag]);
+  }, [nativeAccount, wallet, tokenAccounts, selectUserAccounts]);
 
   useEffect(() => {
     const subs: number[] = [];

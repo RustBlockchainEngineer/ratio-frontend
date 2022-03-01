@@ -5,7 +5,6 @@ import {
   calculateRewardByPlatform,
   getGlobalState,
   getTokenVaultByMint,
-  getUserOverview,
   getUserState,
   USDR_MINT_KEY,
 } from '../utils/ratio-lending';
@@ -124,12 +123,27 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateOverview = async () => {
     try {
-      const mints = [];
-      for (let i = 0; i < vaults.length; i++) {
-        mints.push(vaults[i].address_id);
+      const activeVaults: any = {};
+      let vaultCount = 0;
+      let totalDebt = 0;
+      for (const mint of Object.keys(userState)) {
+        const state = userState[mint];
+        if (state && state.lockedCollBalance.toString() !== '0') {
+          activeVaults[mint] = {
+            mint,
+            lockedAmount: Number(state.lockedCollBalance.toString()),
+            debt: Number(state.debt.toString()),
+          };
+          vaultCount++;
+          totalDebt += Number(state.debt.toString());
+        }
       }
-      const res = await getUserOverview(connection, wallet, mints);
-      setOverview(res);
+
+      setOverview({
+        activeVaults,
+        totalDebt,
+        vaultCount,
+      });
     } catch (e) {
       console.log(e);
     }

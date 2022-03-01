@@ -15,7 +15,6 @@ import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import { useConnection } from '../../contexts/connection';
-import { getUserOverview, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { getMint, sleep } from '../../utils/utils';
