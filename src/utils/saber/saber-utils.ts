@@ -476,7 +476,7 @@ export async function harvestFromSaber(
   return txHash;
 }
 
-export async function calculateReward(connection: Connection, wallet: any, mintCollKey: PublicKey) {
+export async function calculateSaberReward(connection: Connection, wallet: any, mintCollKey: PublicKey) {
   const program = getProgramInstance(connection, wallet);
 
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(

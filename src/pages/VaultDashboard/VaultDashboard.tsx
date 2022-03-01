@@ -147,7 +147,6 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (userState && collMint) {
       const tmpWithdrawValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
-      console.log('locked', tmpWithdrawValue);
       setWithdrawValue(Number(tmpWithdrawValue));
     }
     return () => {
@@ -158,7 +157,6 @@ const VaultDashboard = () => {
   useEffect(() => {
     if (userState && usdrMint) {
       const tmpDebtValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
-      console.log('debt', tmpDebtValue);
       setDebtValue(Number(tmpDebtValue));
 
       if (vault_mint) {

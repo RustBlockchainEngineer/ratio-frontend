@@ -204,7 +204,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
           <div className="activepaircard__detailBox">
             <div className="d-flex justify-content-between">
               <h6>Rewards earned:</h6>
-              <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
+              <h6 className="semiBold">${data.earned_rewards}</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>Position Value:</h6>

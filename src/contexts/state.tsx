@@ -2,6 +2,7 @@ import { connection } from '@project-serum/common';
 import { Connection } from '@solana/web3.js';
 import React, { useContext, useEffect, useState } from 'react';
 import {
+  calculateRewardByPlatform,
   getGlobalState,
   getTokenVaultByMint,
   getUserOverview,
@@ -86,12 +87,15 @@ export function RFStateProvider({ children = undefined as any }) {
   const updateUserState = async () => {
     const userInfos: any = {};
     try {
-      for (let i = 0; i < vaults.length; i++) {
-        const vault = vaults[i];
-        const mint = vault.address_id;
-
+      for (const mint of Object.keys(vaultState)) {
+        const vaultInfo = vaultState[mint].tokenVault;
         const userInfo = await getUserState(connection, wallet, mint);
-        userInfos[mint] = userInfo;
+        if (userInfo) {
+          userInfos[mint] = {
+            ...userInfo,
+            reward: await calculateRewardByPlatform(connection, wallet, mint, vaultInfo.platformType),
+          };
+        }
       }
       setUserState(userInfos);
     } catch (e) {
@@ -158,7 +162,7 @@ export function RFStateProvider({ children = undefined as any }) {
     return () => {
       setUserState({});
     };
-  }, [connection, vaults, wallet, wallet?.publicKey]);
+  }, [connection, vaultState, wallet, wallet?.publicKey]);
 
   useEffect(() => {
     if (connection && wallet && wallet.publicKey) {
@@ -208,7 +212,7 @@ export function useUserInfo(mint: string) {
 export function useVaultInfo(mint: string) {
   const context = React.useContext(RFStateContext);
   const userInfo = context.vaultState[mint];
-  return userInfo;
+  return userInfo.tokenVault;
 }
 
 export function useUserOverview() {

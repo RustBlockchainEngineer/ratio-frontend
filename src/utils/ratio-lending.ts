@@ -26,7 +26,7 @@ import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
-import { createSaberTokenVault } from './saber/saber-utils';
+import { calculateSaberReward, createSaberTokenVault } from './saber/saber-utils';
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
@@ -214,21 +214,6 @@ export async function getUserOverview(connection: Connection, wallet: any, mints
     totalDebt,
     vaultCount,
   };
-}
-
-export async function getUpdatedUserState(connection: any, wallet: any, mint: string, originState: any) {
-  let res = null;
-  do {
-    await sleep(300);
-    res = await getUserState(connection, wallet, new PublicKey(mint));
-  } while (
-    !res ||
-    (originState &&
-      res.lockedCollBalance.toString() === originState.lockedCollBalance.toString() &&
-      res.debt.toString() === (originState as any).debt.toString())
-  );
-
-  return res;
 }
 
 export async function borrowUSDr(
@@ -661,4 +646,11 @@ export function getUserHistory(action: string, userKey: string, mintKey: string)
     return actions[userKey][mintKey].slice(0, HISTORY_TO_SHOW);
   }
   return [];
+}
+
+export async function calculateRewardByPlatform(connection: Connection, wallet: any, mintCollKey: string| PublicKey, platformType: number) {
+  if (platformType === TYPE_ID_SABER) {
+    return await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
+  }
+  return 0;
 }

@@ -9,6 +9,7 @@ import { LPair } from '../../../types/VaultTypes';
 import { useUpdateHistory } from '../../../contexts/auth';
 import { toast } from 'react-toastify';
 import { SBR_PRICE } from '../../../constants/constants';
+import { useUserInfo } from '../../../contexts/state';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -19,28 +20,7 @@ const TokensEarned = ({ data }: any) => {
   const { updateHistoryFlag, setUpdateHistoryFlag } = useUpdateHistory();
   const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
-  const [rewards, setRewards] = useState(0);
-  const updateRewards = async () => {
-    if (poolInfoProviderFactory && wallet && wallet.publicKey) {
-      console.log('Getting reward');
-
-      const reward = await poolInfoProviderFactory?.getRewards(connection, wallet, vault as LPair);
-
-      console.log('Got reward', reward);
-
-      setRewards(reward as number);
-    }
-  };
-
-  // const timer = setInterval(updateRewards, REFRESH_TIMER);
-
-  useEffect(() => {
-    updateRewards();
-
-    return () => {
-      setRewards(0);
-    };
-  }, [updateHistoryFlag, connected, vault, poolInfoProviderFactory]);
+  const userState = useUserInfo(data.mintAddress);
 
   const harvest = () => {
     console.log('harvesting');
@@ -89,8 +69,8 @@ const TokensEarned = ({ data }: any) => {
               <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
               {getTokenNameByPlatform(data?.platform?.name)}
             </td>
-            <td className="align-middle">{rewards}</td>
-            <td className="text-right align-middle">${rewards * SBR_PRICE}</td>
+            <td className="align-middle">{userState?.reward}</td>
+            <td className="text-right align-middle">${userState?.reward * SBR_PRICE}</td>
           </tr>
         </tbody>
       </Table>
