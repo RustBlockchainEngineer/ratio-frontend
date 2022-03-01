@@ -101,7 +101,7 @@ const VaultDashboard = () => {
   }, [wallet, usdrAccount, connection, usdrMint]);
 
   useEffect(() => {
-    if (tokenPrice && collMint && lpWalletBalance && globalState) {
+    if (tokenPrice && collMint && globalState) {
       //ternary operators are used here while the globalState paramters do not exist
 
       const tvlLimit = globalState?.tvlLimit ? globalState?.tvlLimit.toNumber() : 0;

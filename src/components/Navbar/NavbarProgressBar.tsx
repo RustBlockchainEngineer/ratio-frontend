@@ -9,6 +9,7 @@ import { useWallet } from '../../contexts/wallet';
 import { getGlobalState } from '../../utils/ratio-lending';
 import { TokenAmount } from '../../utils/safe-math';
 import { TVL_DECIMAL } from '../../constants/constants';
+import { useUserOverview } from '../../contexts/state';
 
 type NavbarProgressBarProps = {
   type: ProgressBarType;
@@ -24,7 +25,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
   const [percentage, setPercentage] = useState(0);
   const [warning, setWarning] = useState(false);
   const [globalState, setGlobalState] = useState<any>(null);
-
+  const userOverview = useUserOverview();
   const connection = useConnection();
   const { wallet, connected } = useWallet();
 
@@ -40,7 +41,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
     return () => {
       setGlobalState(null);
     };
-  }, [wallet, connection]);
+  }, [wallet, connection, userOverview]);
 
   React.useEffect(() => {
     if (!wallet || !wallet.publicKey || !globalState) {
