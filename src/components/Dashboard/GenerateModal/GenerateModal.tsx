@@ -6,7 +6,7 @@ import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { usePrice } from '../../../contexts/price';
 import { useWallet } from '../../../contexts/wallet';
-import { borrowUSDr, getTokenVaultByMint, getUserState } from '../../../utils/ratio-lending';
+import { borrowUSDr } from '../../../utils/ratio-lending';
 import { getUSDrAmount } from '../../../utils/risk';
 import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';

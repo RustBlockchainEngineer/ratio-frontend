@@ -282,7 +282,7 @@ export async function getTokenVaultByMint(connection: Connection, mint: string| 
   const tokenVaultKey = await getTokenVaultAddress(mint);
   try {
     const tokenVault = await program.account.vault.fetch(tokenVaultKey);
-    return { tokenVault, tokenVaultKey };
+    return tokenVault;
   } catch (e) {
     return null;
   }

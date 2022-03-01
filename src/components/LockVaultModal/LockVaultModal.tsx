@@ -11,13 +11,6 @@ import ComingSoon from '../ComingSoon';
 
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
-import {
-  lockAndMint,
-  getTokenVaultByMint,
-  USDR_MINT_KEY,
-  depositCollateral,
-  borrowUSDr,
-} from '../../utils/ratio-lending';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 import { useConnection } from '../../contexts/connection';

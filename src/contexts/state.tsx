@@ -20,7 +20,6 @@ interface RFStateConfig {
   userState: any;
   overview: any;
   updateRFState: (val: boolean) => void;
-  updateTokenAccount: boolean;
 }
 
 const RFStateContext = React.createContext<RFStateConfig>({
@@ -30,7 +29,6 @@ const RFStateContext = React.createContext<RFStateConfig>({
   userState: {},
   overview: {},
   updateRFState: () => {},
-  updateTokenAccount: false,
 });
 
 export function RFStateProvider({ children = undefined as any }) {
@@ -43,11 +41,9 @@ export function RFStateProvider({ children = undefined as any }) {
   const [userState, setUserState] = useState<any>(null);
   const [overview, setOverview] = useState<any>(null);
   const [tokenState, setTokenState] = useState<any>(null);
-  const [updateTokenAccount, setUpdateTokenAccount] = useState<any>(false);
+
   const updateRFState = (updateAll = true) => {
-    setUpdateTokenAccount(true);
     sleep(3000).then(() => {
-      setUpdateTokenAccount(false);
       if (updateAll) {
         updateGlobalState();
       } else {
@@ -56,7 +52,7 @@ export function RFStateProvider({ children = undefined as any }) {
     });
   };
 
-  const updateTokenState = async () => {
+  const updateMintState = async () => {
     const mintInfos: any = {};
     try {
       for (let i = 0; i < vaults.length; i++) {
@@ -95,7 +91,7 @@ export function RFStateProvider({ children = undefined as any }) {
     const userInfos: any = {};
     try {
       for (const mint of Object.keys(vaultState)) {
-        const vaultInfo = vaultState[mint].tokenVault;
+        const vaultInfo = vaultState[mint];
         const userInfo = await getUserState(connection, wallet, mint);
         if (userInfo) {
           userInfos[mint] = {
@@ -151,7 +147,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   useEffect(() => {
     if (connection) {
-      updateTokenState();
+      updateMintState();
     }
     return () => {
       setTokenState({});
@@ -205,7 +201,6 @@ export function RFStateProvider({ children = undefined as any }) {
         userState,
         overview,
         updateRFState,
-        updateTokenAccount,
       }}
     >
       {children}
@@ -223,45 +218,42 @@ export function useRFState() {
 
 export function useRFStateInfo() {
   const context = React.useContext(RFStateContext);
+
   return context.globalState;
 }
 
 export function useUserInfo(mint: string) {
   const context = React.useContext(RFStateContext);
-  const userInfo = context.userState[mint];
-  return userInfo;
+
+  return context.userState[mint];
 }
 
 export function useVaultInfo(mint: string) {
   const context = React.useContext(RFStateContext);
-  const userInfo = context.vaultState[mint];
-  return userInfo.tokenVault;
+
+  return context.vaultState[mint];
 }
 
 export function useUserOverview() {
   const context = React.useContext(RFStateContext);
-  const overview = context.overview;
-  return overview;
+
+  return context.overview;
 }
 
 export function useVaultMintInfo(mint: string) {
   const context = React.useContext(RFStateContext);
-  const token = context.tokenState[mint];
-  return token;
+
+  return context.tokenState[mint];
 }
 
 export function useUSDrMintInfo() {
   const context = React.useContext(RFStateContext);
-  const usdrMint = context.tokenState[USDR_MINT_KEY];
-  return usdrMint;
+
+  return context.tokenState[USDR_MINT_KEY];
 }
 
 export function useUpdateRFStates() {
   const context = React.useContext(RFStateContext);
-  return context.updateRFState;
-}
 
-export function useUpdateTokenAccounts() {
-  const context = React.useContext(RFStateContext);
-  return context.updateTokenAccount;
+  return context.updateRFState;
 }
