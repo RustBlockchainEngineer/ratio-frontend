@@ -200,7 +200,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
             </div>
             <div>
               <h5>APY:</h5>
-              <h6 className="semiBold mt-1">{Number(data?.apr).toFixed()}%</h6>
+              <h6 className="semiBold mt-1">{Number(data?.apr).toFixed(2)}%</h6>
             </div>
           </div>
           {compare_vaults_status ? (

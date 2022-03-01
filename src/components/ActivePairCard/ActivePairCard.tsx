@@ -194,7 +194,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             </div>
             <div className="mt-2 d-flex justify-content-between">
               <h6>APR:</h6>
-              <h6 className="semiBold">{Number(data?.apr).toFixed()}%</h6>
+              <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Debt:</h6>
