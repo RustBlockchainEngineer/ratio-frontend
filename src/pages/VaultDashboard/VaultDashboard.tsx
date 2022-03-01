@@ -128,8 +128,12 @@ const VaultDashboard = () => {
       const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
       const userDebtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
       //calculate remaining global debt
-      const globalDebt = globalState?.totalDebt ? globalState?.totalDebt.toNumber() : 0;
-      const globalDebtLimit = globalState?.debtCeiling ? globalState?.debtCeiling.toNumber() : 1000;
+      const globalDebt = globalState?.totalDebt
+        ? Number(new TokenAmount(globalState?.totalDebt, usdrMint?.decimals).fixed())
+        : 0;
+      const globalDebtLimit = globalState?.debtCeiling
+        ? Number(new TokenAmount(globalState?.debtCeiling, usdrMint?.decimals).fixed())
+        : 0;
       const remainingGlobalDebt = globalDebtLimit - globalDebt;
       //compare the two debt limits and set the overall debt limit to be equal to the smaller value
       const overalldebtLimit = Math.min(remainingGlobalDebt, userDebtLimit);
