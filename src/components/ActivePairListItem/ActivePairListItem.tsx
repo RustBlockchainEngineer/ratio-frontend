@@ -156,7 +156,11 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const renderModalButton = () => {
     return (
       <div>
-        <Button disabled={!connected} onClick={harvest} className="button button--blue activepaircard__generate">
+        <Button
+          disabled={!connected}
+          onClick={harvest}
+          className="button button--gradientBorder activepaircard__generate"
+        >
           Harvest
         </Button>
         <div className="mx-1"></div>
@@ -230,12 +234,12 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
         <td></td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
+            <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
           </div>
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
+            <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
           </div>
         </td>
         <td>

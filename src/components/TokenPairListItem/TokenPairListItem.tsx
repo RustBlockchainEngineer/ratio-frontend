@@ -249,10 +249,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
         <td>
           <div className="d-flex justify-content-between align-items-start">
             <div className="tokenpaircard__table__td">
-              <h5>Ratio Risk Rating:</h5>
-              <div className="d-flex mt-2">
-                <h6 className={classNames('ml-2 mt-1', data.risk)}>{data.risk} </h6>
-              </div>
+              <h6 className={classNames('ml-2 mt-1', data.risk)}>{data.risk} </h6>
             </div>
             {/* <div className="mt-1 expand_arrow">
               {expand ? (

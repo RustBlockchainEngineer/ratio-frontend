@@ -24,6 +24,8 @@ import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformati
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
 
+import smallRatioIcon from '../../assets/images/smallRatio.svg';
+
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
@@ -238,7 +240,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 <th scope="col">Positoin Value</th>
                 <th scope="col">Rewards earned</th>
                 <th scope="col">Ratio TVL</th> */}
-                <th scope="col">Risk Rating</th>
+                <th scope="col">
+                  <img src={smallRatioIcon} alt="lisklevel" className="allvaults__table-ratioIcon" />
+                  Risk Rating
+                </th>
                 <th scope="col"></th>
               </tr>
             ) : (
@@ -247,9 +252,12 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 <th scope="col">APY</th>
                 <th scope="col">USDr Debt</th>
                 <th scope="col">USDr Available to Mint</th>
-                <th scope="col">Position Value</th>
                 <th scope="col">Rewards Earned</th>
-                <th scope="col">Risk Rating</th>
+                <th scope="col">Position Value</th>
+                <th scope="col">
+                  <img src={smallRatioIcon} alt="lisklevel" className="allvaults__table-ratioIcon" />
+                  Risk Rating
+                </th>
                 <th scope="col"></th>
               </tr>
             )}
