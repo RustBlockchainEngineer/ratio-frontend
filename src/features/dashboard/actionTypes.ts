@@ -8,6 +8,8 @@ export const SET_ALL_VAULT = 'SET_ALL_VAULT';
 
 export const SET_ACTIVE_VAULT = 'SET_ACTIVE_VAULT';
 
+export const SET_INACTIVE_VAULT = 'SET_INACTIVE_VAULT';
+
 export const SET_SORT_DATA = 'SET_SORT_DATA';
 
 export const SET_PLATFORM_DATA = 'SET_PLATFORM_DATA';

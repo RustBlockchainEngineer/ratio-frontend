@@ -1,30 +1,14 @@
 import React from 'react';
 import { usePrice } from '../../contexts/price';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState } from '../../utils/ratio-lending';
-import { useConnection } from '../../contexts/connection';
-import { PublicKey } from '@solana/web3.js';
 import { TokenAmount } from '../../utils/safe-math';
-import { useMint } from '../../contexts/accounts';
-import { useWallet } from '../../contexts/wallet';
+import { useUserInfo, useVaultMintInfo } from '../../contexts/state';
 
 const ExpandContent = (data: any) => {
   const tokenPrice = usePrice(data.mint);
   const [positionValue, setPositionValue] = React.useState(0);
-  const { wallet, connected } = useWallet();
-  const [userState, setUserState] = React.useState(null);
-  const connection = useConnection();
-  const collMint = useMint(data.mint);
 
-  React.useEffect(() => {
-    if (wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(data?.mint)).then((res) => {
-        setUserState(res);
-      });
-    }
-    return () => {
-      setUserState(null);
-    };
-  }, [wallet, connection, collMint]);
+  const collMint = useVaultMintInfo(data.mint);
+  const userState = useUserInfo(data.mint);
 
   React.useEffect(() => {
     if (userState && tokenPrice && collMint) {

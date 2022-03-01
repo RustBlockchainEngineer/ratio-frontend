@@ -10,8 +10,8 @@ import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import { PublicKey } from '@solana/web3.js';
 import { getUsdrMintKey, repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { useMint } from '../../../contexts/accounts';
-import { useUpdateState } from '../../../contexts/auth';
 import { toast } from 'react-toastify';
+import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 type PairType = {
   icons: Array<string>;
@@ -30,7 +30,8 @@ const PaybackModal = ({ data }: any) => {
   const usdrMint = useMint(data.usdrMint);
 
   const [paybackAmount, setPayBackAmount] = React.useState(Number(data.usdrValue));
-  const { setUpdateStateFlag } = useUpdateState();
+  const updateRFStates = useUpdateRFStates();
+
   const [paybackStatus, setPaybackStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
@@ -64,7 +65,7 @@ const PaybackModal = ({ data }: any) => {
     }
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
       .then(() => {
-        setUpdateStateFlag(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
         setPayBackAmount(0);
       })
       .catch((e) => {
