@@ -21,7 +21,13 @@ import { TokenPairCardProps } from '../../models/UInterface';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
 
-import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
+import {
+  useUpdateRFStates,
+  useUSDrMintInfo,
+  useUserInfo,
+  useVaultMintInfo,
+  UPDATE_REWARD_STATE,
+} from '../../contexts/state';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
@@ -105,7 +111,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        updateRFStates(false);
+        updateRFStates(UPDATE_REWARD_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);

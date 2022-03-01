@@ -19,7 +19,7 @@ interface RFStateConfig {
   vaultState: any;
   userState: any;
   overview: any;
-  updateRFState: (val: boolean) => void;
+  updateRFState: (action: UpdateStateType, mint: string) => void;
 }
 
 const RFStateContext = React.createContext<RFStateConfig>({
@@ -30,6 +30,13 @@ const RFStateContext = React.createContext<RFStateConfig>({
   overview: {},
   updateRFState: () => {},
 });
+
+export declare type UpdateStateType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+export const UPDATE_GLOBAL_STATE: UpdateStateType = 0;
+export const UPDATE_VAULT_STATE: UpdateStateType = 1;
+export const UPDATE_USER_STATE: UpdateStateType = 2;
+export const UPDATE_REWARD_STATE: UpdateStateType = 3;
 
 export function RFStateProvider({ children = undefined as any }) {
   const connection = useConnection();
@@ -42,12 +49,16 @@ export function RFStateProvider({ children = undefined as any }) {
   const [overview, setOverview] = useState<any>(null);
   const [tokenState, setTokenState] = useState<any>(null);
 
-  const updateRFState = (updateAll = true) => {
+  const updateRFState = (action: UpdateStateType, mint = '') => {
     sleep(3000).then(() => {
-      if (updateAll) {
+      if (action === UPDATE_GLOBAL_STATE) {
         updateGlobalState();
-      } else {
-        updateUserState();
+      } else if (action === UPDATE_VAULT_STATE) {
+        updateVaultStateByMint(mint);
+      } else if (action === UPDATE_USER_STATE) {
+        updateUserStateByMint(mint);
+      } else if (action === UPDATE_REWARD_STATE) {
+        updateUserRewardByMint(mint);
       }
     });
   };
@@ -87,6 +98,17 @@ export function RFStateProvider({ children = undefined as any }) {
     }
   };
 
+  const updateVaultStateByMint = async (mint: string) => {
+    const newState = {
+      ...vaultState,
+    };
+
+    const vaultInfo = await getTokenVaultByMint(connection, mint);
+    newState[mint] = vaultInfo;
+
+    setVaultState(newState);
+  };
+
   const updateUserState = async () => {
     const userInfos: any = {};
     try {
@@ -104,6 +126,44 @@ export function RFStateProvider({ children = undefined as any }) {
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const updateUserStateByMint = async (mint: string) => {
+    const vaultInfo = vaultState[mint];
+    const userInfo = await getUserState(connection, wallet, mint);
+
+    const newStates = {
+      ...userState,
+    };
+
+    if (userInfo) {
+      const reward = await calculateRewardByPlatform(connection, wallet, mint, vaultInfo.platformType);
+      newStates[mint] = {
+        ...userInfo,
+        reward,
+      };
+    }
+
+    setUserState(newStates);
+  };
+
+  const updateUserRewardByMint = async (mint: string) => {
+    const vaultInfo = vaultState[mint];
+    const userInfo = userState[mint];
+
+    const newStates = {
+      ...userState,
+    };
+
+    if (userInfo) {
+      const reward = await calculateRewardByPlatform(connection, wallet, mint, vaultInfo.platformType);
+      newStates[mint] = {
+        ...userInfo,
+        reward,
+      };
+    }
+
+    setUserState(newStates);
   };
 
   const updateGlobalState = async () => {

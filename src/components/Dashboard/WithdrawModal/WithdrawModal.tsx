@@ -12,7 +12,7 @@ import CustomInput from '../../CustomInput';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
-import { useUpdateRFStates } from '../../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 type PairType = {
   mint: string;
@@ -86,7 +86,7 @@ const WithdrawModal = ({ data }: any) => {
         userCollAccount
       )
       .then(() => {
-        updateRFStates(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);

@@ -9,7 +9,7 @@ import { LPair } from '../../../types/VaultTypes';
 import { useUpdateHistory } from '../../../contexts/auth';
 import { toast } from 'react-toastify';
 import { SBR_PRICE } from '../../../constants/constants';
-import { useUpdateRFStates, useUserInfo } from '../../../contexts/state';
+import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserInfo } from '../../../contexts/state';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -27,7 +27,7 @@ const TokensEarned = ({ data }: any) => {
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, vault as LPair)
       .then(() => {
-        updateRFStates(false);
+        updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
       })
       .catch((e) => {
         console.log(e);

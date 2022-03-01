@@ -19,7 +19,14 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import { useUpdateHistory } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
-import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import {
+  UPDATE_REWARD_STATE,
+  useUpdateRFStates,
+  useUSDrMintInfo,
+  useUserInfo,
+  useVaultInfo,
+  useVaultMintInfo,
+} from '../../contexts/state';
 
 const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
   const history = useHistory();
@@ -102,7 +109,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        updateRFStates(false);
+        updateRFStates(UPDATE_REWARD_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);

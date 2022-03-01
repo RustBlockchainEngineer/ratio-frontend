@@ -14,7 +14,7 @@ import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { useUpdateRFStates, useUSDrMintInfo, useUserInfo } from '../../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo } from '../../../contexts/state';
 
 type PairType = {
   mint: string;
@@ -86,7 +86,7 @@ const GenerateModal = ({ data }: any) => {
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
       .then((tx) => {
         console.log('Success Generate txid=', tx);
-        updateRFStates(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);

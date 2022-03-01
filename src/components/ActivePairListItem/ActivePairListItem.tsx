@@ -20,7 +20,14 @@ import { sleep } from '@project-serum/common';
 import { useUpdateHistory } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
-import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import {
+  UPDATE_REWARD_STATE,
+  useUpdateRFStates,
+  useUSDrMintInfo,
+  useUserInfo,
+  useVaultInfo,
+  useVaultMintInfo,
+} from '../../contexts/state';
 
 const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -102,7 +109,7 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        updateRFStates(false);
+        updateRFStates(UPDATE_REWARD_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);

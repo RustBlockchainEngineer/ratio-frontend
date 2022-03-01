@@ -28,7 +28,7 @@ import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
 import usdrIcon from '../../assets/images/USDr.png';
-import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -126,7 +126,7 @@ const MintUSDrModal = ({ data }: any) => {
 
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
       .then(() => {
-        updateRFStates(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);

@@ -48,7 +48,7 @@ const VaultDebt = ({ data }: any) => {
     }
     repayUSDr(connection, wallet, Number(data.usdrValue) * Math.pow(10, usdrMint?.decimals), new PublicKey(data.mint))
       .then(() => {
-        updateRFStates(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);

@@ -26,7 +26,7 @@ import { sleep } from '../../utils/utils';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
-import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -130,7 +130,7 @@ const LockVaultModal = ({ data }: any) => {
         collAccount?.pubkey.toString() as string
       )
       .then(() => {
-        updateRFStates(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
         setShow(false);
       })
       .catch((e) => {

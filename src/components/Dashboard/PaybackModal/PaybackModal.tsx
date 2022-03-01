@@ -11,7 +11,7 @@ import { PublicKey } from '@solana/web3.js';
 import { getUsdrMintKey, repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { useMint } from '../../../contexts/accounts';
 import { toast } from 'react-toastify';
-import { useUpdateRFStates } from '../../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 type PairType = {
   icons: Array<string>;
@@ -65,7 +65,7 @@ const PaybackModal = ({ data }: any) => {
     }
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
       .then(() => {
-        updateRFStates(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
         setPayBackAmount(0);
       })
       .catch((e) => {
