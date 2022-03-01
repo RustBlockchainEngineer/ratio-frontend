@@ -17,8 +17,8 @@ import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
-import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
+
+import { useUpdateHistory } from '../../contexts/auth';
 import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import highriskIcon from '../../assets/images/highrisk.svg';
@@ -26,6 +26,14 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import {
+  UPDATE_REWARD_STATE,
+  useUpdateRFStates,
+  useUSDrMintInfo,
+  useUserInfo,
+  useVaultInfo,
+  useVaultMintInfo,
+} from '../../contexts/state';
 
 const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
   const history = useHistory();
@@ -33,16 +41,19 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
   const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  const { setUpdateHistoryFlag } = useUpdateHistory();
 
-  const collMint = useMint(data.mint);
   const tokenPrice = usePrice(data.mint);
-  const usdrMint = useMint(USDR_MINT_KEY);
+
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(data.mint);
 
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
-  const [userState, setUserState] = React.useState(null);
+
+  const userState = useUserInfo(data.mint);
+  const vaultState = useVaultInfo(data.mint);
+  const updateRFStates = useUpdateRFStates();
+
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
@@ -66,62 +77,18 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
   }, [data]);
 
   React.useEffect(() => {
-    if (wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        setUserState(res);
-      });
-    }
-    return () => {
-      setUserState(null);
-    };
-  }, [wallet, connection, collMint]);
-
-  const updateVaultValues = async () => {
-    const tokenVault = await getTokenVaultByMint(connection, data.mint);
-
-    if (!tokenVault) {
-      return;
-    }
-
-    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
-    const debtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
-
-    setTVL(Number(tvlAmount.fixed()));
-    setTotalDebt(Number(debtAmount.fixed()));
-  };
-
-  const refreshVaultValues = async () => {
-    const oriTvl = tvl;
-    const oriTotalDebt = totalDebt;
-    let totalDebtAmount = null;
-    let tvlAmount = null;
-    do {
-      await sleep(1000);
-      const tokenVault = getTokenVaultByMint(connection, data.mint);
-      if (!tokenVault) {
-        return;
-      }
-      tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
-      totalDebtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
-    } while (oriTvl === Number(tvlAmount.fixed()) || oriTotalDebt === Number(totalDebtAmount.fixed()));
-
-    setTVL(Number(tvlAmount.fixed()));
-    setTotalDebt(Number(totalDebtAmount.fixed()));
-  };
-
-  React.useEffect(() => {
     if (connection && collMint && usdrMint && data.mint) {
-      if (updateStateFlag) {
-        refreshVaultValues();
-      } else {
-        updateVaultValues();
-      }
+      const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
+      const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
+
+      setTVL(Number(tvlAmount.fixed()));
+      setTotalDebt(Number(debtAmount.fixed()));
     }
     return () => {
       setTVL(0);
       setTotalDebt(0);
     };
-  }, [connection, collMint, usdrMint, updateStateFlag]);
+  }, [connection, collMint, usdrMint, vaultState]);
 
   React.useEffect(() => {
     if (tokenPrice && tvl) {
@@ -139,20 +106,12 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     };
   }, [tokenPrice, userState, collMint]);
 
-  React.useEffect(() => {
-    if (updateStateFlag && wallet?.publicKey) {
-      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
-        setUserState(res);
-        setUpdateStateFlag(false);
-      });
-    }
-  }, [updateStateFlag]);
   const harvest = () => {
     console.log('harvesting');
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        setUpdateHistoryFlag(true);
+        updateRFStates(UPDATE_REWARD_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);
@@ -165,10 +124,6 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     return (
       <div className="col">
         <div className="d-flex">
-          <Button disabled={!connected} className="button button--blue tokenpaircard__generate mt-2">
-            Deposit
-          </Button>
-          <div className="mx-1"></div>
           <Button
             disabled={!connected}
             className="button button--blue tokenpaircard__generate mt-2"
@@ -223,10 +178,10 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
               <div className="text-right">
                 <div className="d-flex align-items-center">
                   <img src={smallRatioIcon} alt="smallRatio" />
-                  <p className="mx-1">Rating</p>
-                  <img src={liskLevelIcon} alt="lisklevel" />
+                  <p className="mx-1">Risk Rating</p>
+                  {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
                 </div>
-                <div className="d-flex justify-content-start">
+                <div className="d-flex justify-content-end mt-1">
                   <h6 className={classNames('ml-1', data.risk)}>{data.risk} </h6>
                 </div>
               </div>

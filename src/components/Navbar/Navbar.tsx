@@ -14,9 +14,7 @@ import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
-import { useUpdateState } from '../../contexts/auth';
 import { useConnection } from '../../contexts/connection';
-import { getUserOverview, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { getMint, sleep } from '../../utils/utils';
@@ -24,6 +22,7 @@ import { usePrices } from '../../contexts/price';
 import { actionTypes, selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
+import { useUSDrMintInfo, useUserOverview } from '../../contexts/state';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -47,7 +46,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const [totalLocked, setTotalLocked] = useState(0);
   const [overviewData, setOverviewData] = useState('{}');
   const [activeVaultsData, setActiveVaultsData] = useState([]);
-  const usdrMint = useMint(USDR_MINT_KEY);
+  const usdrMint = useUSDrMintInfo();
   const prices = usePrices();
 
   const { vaults: all_vaults } = useVaultsContextProvider();
@@ -59,24 +58,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
     setNavIndex(location.pathname);
   }, [location.pathname]);
 
-  const { updateStateFlag } = useUpdateState();
-
-  const showOverview = async (mints: any[]) => {
-    const overview = await getUserOverview(connection, wallet, mints);
-    dispatch({ type: actionTypes.SET_OVERVIEW, payload: overview });
-    setOverviewData(JSON.stringify(overview));
-  };
-
-  const getUpdateOverview = async (mints: any[]) => {
-    const originOverviewData = overviewData;
-    let newOverviewData = '';
-    do {
-      await sleep(300);
-      const overview = await getUserOverview(connection, wallet, mints);
-      newOverviewData = JSON.stringify(overview);
-    } while (newOverviewData !== originOverviewData);
-    setOverviewData(newOverviewData);
-  };
+  const userOverview = useUserOverview();
 
   const getActiveVaultInfo = async function (activeVaults: any[]) {
     let tmpTotalValueLocked = 0;
@@ -105,33 +87,27 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   };
 
   React.useEffect(() => {
-    const overview = JSON.parse(overviewData);
-    if (Object.keys(overview).length) {
-      const { totalDebt, activeVaults, vaultCount } = overview;
-      setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
-      setActiveVaultCount(vaultCount);
+    // const overview = JSON.parse(overviewData);
+    if (userOverview && usdrMint) {
+      dispatch({ type: actionTypes.SET_OVERVIEW, payload: userOverview });
 
-      getActiveVaultInfo(activeVaults).then((res) => {
-        setActiveVaultsData(res.activeVaults);
-        setTotalLocked(res.tvl);
-      });
+      const { totalDebt, activeVaults, vaultCount } = userOverview;
+      if (activeVaults) {
+        setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
+        setActiveVaultCount(vaultCount);
+
+        getActiveVaultInfo(activeVaults).then((res) => {
+          setActiveVaultsData(res.activeVaults);
+          setTotalLocked(res.tvl);
+        });
+      }
     }
 
     return () => {
       setActiveVaultsData([]);
       setTotalLocked(0);
     };
-  }, [overviewData]);
-
-  React.useEffect(() => {
-    if (connected && wallet?.publicKey && usdrMint) {
-      if (updateStateFlag === false) {
-        showOverview(mints);
-      } else {
-        getUpdateOverview(mints);
-      }
-    }
-  }, [connected, wallet, usdrMint, updateStateFlag, prices, mints]);
+  }, [userOverview, usdrMint]);
 
   const onItemClick = (index: string) => {
     setNavIndex(index);

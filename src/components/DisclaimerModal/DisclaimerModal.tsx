@@ -4,11 +4,10 @@ import { IoMdClose } from 'react-icons/io';
 import LockVaultModal from '../LockVaultModal';
 import Button from '../Button';
 import { useConnection } from '../../contexts/connection';
-import { getTokenVaultByMint } from '../../utils/ratio-lending';
 import { useWallet } from '../../contexts/wallet';
-import { PublicKey } from '@solana/web3.js';
 
 import { PairType } from '../../models/UInterface';
+import { useVaultInfo } from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -18,23 +17,8 @@ const DisclaimerModal = ({ data }: LockVaultModalProps) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
-  useEffect(() => {
-    if (connected) {
-      getTokenVaultByMint(connection, data.mint).then((res) => {
-        setVault(res);
-        if (res) {
-          setCreated(true);
-        } else {
-          setCreated(false);
-        }
-      });
-    }
-    return () => {
-      setCreated(false);
-    };
-  });
+  const vault = useVaultInfo(data.mint);
+
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
@@ -46,7 +30,7 @@ const DisclaimerModal = ({ data }: LockVaultModalProps) => {
   }
   return (
     <>
-      {/* {!isCreated ? (
+      {/* {!vault ? (
         <Button
           className="button--fill generate"
           onClick={() => createTokenVault(connection, wallet, new PublicKey(data.mint))}

@@ -3,6 +3,7 @@
   padding-right: 5rem;
   background-color: var(--background);
   padding-bottom: 5rem;
+  min-height: 70vh;
   @include respond-to(xl) {
     padding-left: 5rem;
     padding-right: 5rem;
@@ -66,6 +67,11 @@
     }
     &--action {
       width: 10rem;
+    }
+    &-ratioIcon {
+      width: 12px;
+      margin-right: 0.5rem;
+      margin-top: -2px;
     }
     &__icon {
       width: 3.75rem;

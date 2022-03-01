@@ -4,7 +4,7 @@ import { randomInteger } from '../utils';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { getUserState } from '../ratio-lending';
 import {
-  calculateReward,
+  calculateSaberReward,
   createSaberUserTrove,
   depositToSaber,
   harvestFromSaber,
@@ -62,7 +62,7 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
   async getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number> {
     // TODO Implement this function
     if (vault) {
-      const amount = await calculateReward(connection, wallet, new PublicKey(vault.address_id));
+      const amount = await calculateSaberReward(connection, wallet, new PublicKey(vault.address_id));
 
       return amount;
     }

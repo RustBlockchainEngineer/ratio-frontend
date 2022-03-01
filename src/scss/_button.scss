@@ -45,30 +45,9 @@
     }
   }
   &--gradientBorder {
-    position: relative;
-    box-sizing: border-box;
-    background-clip: padding-box;
-    border: solid 2px transparent;
-    border-radius: 10px;
-    color: #075FE5;
-    background-color: white;
-    &:focus {
-      color: #075FE5;
-      background-color: white;
-    }
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: -1;
-      margin: -2px; /* !importanté */
-      border-radius: inherit; /* !importanté */
-      background-image: url('../assets/images/btn-bg.svg');
-      // background: linear-gradient(90deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
-    }
+   background-color: transparent;
+   color: var(--unnamed-color-5fb5ff);
+   border: 2px solid var(--unnamed-color-5fb5ff);
   }
   &--danger {
     border: 2px solid var(--unnamed-color-ff3131);

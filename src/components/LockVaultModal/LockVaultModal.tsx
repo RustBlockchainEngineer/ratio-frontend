@@ -11,15 +11,6 @@ import ComingSoon from '../ComingSoon';
 
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
-import {
-  lockAndMint,
-  getTokenVaultByMint,
-  getUserState,
-  USDR_MINT_KEY,
-  depositCollateral,
-  borrowUSDr,
-  getUpdatedUserState,
-} from '../../utils/ratio-lending';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 import { useConnection } from '../../contexts/connection';
@@ -32,10 +23,10 @@ import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
-import { useUpdateState } from '../../contexts/auth';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
+import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -46,14 +37,17 @@ const LockVaultModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [vault, setVault] = React.useState({});
-  const [isCreated, setCreated] = React.useState({});
-  const [userState, setUserState] = React.useState(null);
+
   const [mintTime, setMintTime] = React.useState('');
 
   const tokenPrice = usePrice(data.mint);
-  const collMint = useMint(data.mint);
-  const usdrMint = useMint(USDR_MINT_KEY);
+
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(data.mint);
+
+  const userState = useUserInfo(data.mint);
+  const vault = useVaultInfo(data.mint);
+
   const collAccount = useAccountByMint(data.mint);
 
   const [lockAmount, setLockAmount] = React.useState(0);
@@ -103,9 +97,6 @@ const LockVaultModal = ({ data }: any) => {
 
   useEffect(() => {
     if (wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        setUserState(res);
-      });
       if (collAccount && collMint) {
         const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
         setLpWalletBalance(Number(tokenAmount.fixed()));
@@ -116,33 +107,7 @@ const LockVaultModal = ({ data }: any) => {
     };
   }, [wallet, collAccount, connection, collMint]);
 
-  useEffect(() => {
-    if (connected) {
-      getTokenVaultByMint(connection, data.mint).then((res) => {
-        setVault(res);
-        if (res) {
-          setCreated(true);
-        } else {
-          setCreated(false);
-        }
-      });
-    } else {
-      setShow(false);
-    }
-    return () => {
-      setCreated(false);
-    };
-  }, [connection, connected]);
-
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  useEffect(() => {
-    if (updateStateFlag && wallet?.publicKey) {
-      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
-        setUserState(res);
-        setUpdateStateFlag(false);
-      });
-    }
-  }, [updateStateFlag]);
+  const updateRFStates = useUpdateRFStates();
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -155,50 +120,26 @@ const LockVaultModal = ({ data }: any) => {
   }
 
   const depositLP = () => {
-    if (!(lpWalletBalance >= lockAmount && lockAmount > 0)) {
-      // toast('Insufficient funds!');
-      setLockStatus(true);
-      return;
-    }
-    if (collAccount) {
-      depositCollateral(
+    //zhao
+    poolInfoProviderFactory
+      ?.depositLP(
         connection,
         wallet,
-        lockAmount * Math.pow(10, collMint?.decimals as number),
-        collAccount.pubkey.toString(),
-        new PublicKey(data.mint)
+        vault as LPair,
+        lockAmount * Math.pow(10, collMint?.decimals ?? 0),
+        collAccount?.pubkey.toString() as string
       )
-        .then(() => {
-          setUpdateStateFlag(true);
-          setShow(false);
-        })
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          // history.push(`/dashboard/vaultdashboard/${data.mint}`);
-          toast('Successfully Deposited!');
-          setShow(false);
-        });
-    }
-  };
-
-  const mintUSDr = () => {
-    if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {
-      // toast('Amount is invalid to mint USDr!');
-      setMintStatus(true);
-      return;
-    }
-
-    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
       .then(() => {
-        setUpdateStateFlag(true);
+        updateRFStates(UPDATE_USER_STATE, data.mint);
+        setShow(false);
       })
       .catch((e) => {
         console.log(e);
       })
       .finally(() => {
-        history.push(`/dashboard/vaultdashboard/${data.mint}`);
+        // history.push(`/dashboard/vaultdashboard/${data.mint}`);
+        toast('Successfully Deposited!');
+        setShow(false);
       });
   };
 
@@ -237,18 +178,7 @@ const LockVaultModal = ({ data }: any) => {
               valid={lockStatus}
               invalidStr="Insufficient funds!"
             />
-            <Button
-              className="button--fill lockBtn"
-              onClick={() => {
-                poolInfoProviderFactory?.depositLP(
-                  connection,
-                  wallet,
-                  vault as LPair,
-                  lockAmount * Math.pow(10, collMint?.decimals ?? 0),
-                  collAccount?.pubkey.toString() as string
-                );
-              }}
-            >
+            <Button className="button--fill lockBtn" onClick={depositLP}>
               Deposit Assets
             </Button>
           </div>

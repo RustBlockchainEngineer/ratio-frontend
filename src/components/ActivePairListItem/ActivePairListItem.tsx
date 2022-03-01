@@ -13,13 +13,21 @@ import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
+
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import { sleep } from '@project-serum/common';
-import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
+import { useUpdateHistory } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import {
+  UPDATE_REWARD_STATE,
+  useUpdateRFStates,
+  useUSDrMintInfo,
+  useUserInfo,
+  useVaultInfo,
+  useVaultMintInfo,
+} from '../../contexts/state';
 
 const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -27,14 +35,16 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const tokenPrice = usePrice(data.mint);
   const { wallet, connected, publicKey } = useWallet();
   const connection = useConnection();
-  const collMint = useMint(data.mint);
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  const { setUpdateHistoryFlag } = useUpdateHistory();
 
-  const usdrMint = useMint(USDR_MINT_KEY);
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(data.mint);
 
   const [expand, setExpand] = React.useState(false);
-  const [userState, setUserState] = React.useState(null);
+
+  const userState = useUserInfo(data.mint);
+  const vaultState = useVaultInfo(data.mint);
+  const updateRFStates = useUpdateRFStates();
+
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
@@ -58,54 +68,18 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   }, [wallet, connection]);
 
   React.useEffect(() => {
-    if (wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        setUserState(res);
-      });
-    }
-    return () => {
-      setUserState(null);
-    };
-  }, [wallet, connection, collMint]);
-
-  const updateVaultValues = async () => {
-    const tokenVault = await getTokenVaultByMint(connection, data.mint);
-    const tvlAmount = new TokenAmount((tokenVault as any)?.totalColl, collMint?.decimals);
-    const debtAmount = new TokenAmount((tokenVault as any)?.totalDebt, usdrMint?.decimals);
-
-    setTVL(Number(tvlAmount.fixed()));
-    setTotalDebt(Number(debtAmount.fixed()));
-  };
-
-  const refreshVaultValues = async () => {
-    const oriAmount = tvl;
-    const oriTotalDebt = totalDebt;
-    let totalDebtAmount = null;
-    let tvlAmount = null;
-    do {
-      await sleep(1000);
-      const tokenVault = getTokenVaultByMint(connection, data.mint);
-      tvlAmount = new TokenAmount((tokenVault as any)?.totalColl, collMint?.decimals);
-      totalDebtAmount = new TokenAmount((tokenVault as any)?.totalDebt, usdrMint?.decimals);
-    } while (oriAmount === Number(tvlAmount.fixed()) || oriTotalDebt === Number(totalDebtAmount.fixed()));
-
-    setTVL(Number(tvlAmount.fixed()));
-    setTotalDebt(Number(totalDebtAmount.fixed()));
-  };
-
-  React.useEffect(() => {
     if (connection && collMint && usdrMint && data.mint) {
-      if (updateStateFlag) {
-        refreshVaultValues();
-      } else {
-        updateVaultValues();
-      }
+      const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
+      const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
+
+      setTVL(Number(tvlAmount.fixed()));
+      setTotalDebt(Number(debtAmount.fixed()));
     }
     return () => {
       setTVL(0);
       setTotalDebt(0);
     };
-  }, [connection, collMint, usdrMint, updateStateFlag]);
+  }, [connection, collMint, usdrMint, vaultState]);
 
   React.useEffect(() => {
     if (tokenPrice && tvl) {
@@ -123,15 +97,6 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     };
   }, [tokenPrice, userState, collMint]);
 
-  React.useEffect(() => {
-    if (updateStateFlag && wallet?.publicKey) {
-      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
-        setUserState(res);
-        setUpdateStateFlag(false);
-      });
-    }
-  }, [updateStateFlag]);
-
   const showDashboard = () => {
     if (!connected) {
       toast('Please connect your wallet!');
@@ -144,7 +109,7 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        setUpdateHistoryFlag(true);
+        updateRFStates(UPDATE_REWARD_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);
@@ -156,7 +121,11 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const renderModalButton = () => {
     return (
       <div>
-        <Button disabled={!connected} onClick={harvest} className="button button--blue activepaircard__generate">
+        <Button
+          disabled={!connected}
+          onClick={harvest}
+          className="button button--gradientBorder activepaircard__generate"
+        >
           Harvest
         </Button>
         <div className="mx-1"></div>
@@ -230,12 +199,12 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
         <td></td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
+            <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
           </div>
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
+            <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
           </div>
         </td>
         <td>

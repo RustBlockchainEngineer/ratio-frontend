@@ -24,6 +24,8 @@ import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformati
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
 
+import smallRatioIcon from '../../assets/images/smallRatio.svg';
+
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
   const [viewType, setViewType] = useState('tile');
@@ -77,59 +79,62 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
     if (d !== undefined) {
-      const p = filterData(d, filter_data, platform_data)
-        .filter((item: LPair) =>
-          showOnlyActive
-            ? Object.keys(overview.activeVaults).indexOf(item.address_id) > -1
-            : overview.activeVaults
-            ? Object.keys(overview.activeVaults).indexOf(item.address_id) === -1
-            : item
-        )
-        .map((item: LPair, index: any) => {
-          return {
-            id: index,
-            mint: item.address_id, //MINTADDRESS[key]
-            icons: item.lpasset?.map((item) =>
-              item.token_icon?.trim() === '' || item.token_icon === undefined
-                ? getCoinPicSymbol(item.token_symbole)
-                : item.token_icon
-            ),
-            icon: item.icon,
-            title: item.symbol,
-            tvl: item.platform_tvl,
-            apr: item.platform_ratio_apy ?? 0,
-            earned_rewards: item.earned_rewards,
-            platform: {
-              link: item.platform_site,
-              name: item.platform_name,
-              icon: item.platform_icon,
-            },
-            risk: item.risk_rating,
-            riskLevel: getRiskLevelNumber(item.risk_rating),
-            item: item,
-            hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
-          };
-        });
-      // .filter(Boolean);
+      const allVaults = filterData(d, filter_data, platform_data).map((item: LPair, index: any) => {
+        return {
+          id: index,
+          mint: item.address_id, //MINTADDRESS[key]
+          icons: item.lpasset?.map((item) =>
+            item.token_icon?.trim() === '' || item.token_icon === undefined
+              ? getCoinPicSymbol(item.token_symbole)
+              : item.token_icon
+          ),
+          icon: item.icon,
+          title: item.symbol,
+          tvl: item.platform_tvl,
+          apr: item.platform_ratio_apy ?? 0,
+          earned_rewards: item.earned_rewards,
+          platform: {
+            link: item.platform_site,
+            name: item.platform_name,
+            icon: item.platform_icon,
+          },
+          risk: item.risk_rating,
+          riskLevel: getRiskLevelNumber(item.risk_rating),
+          item: item,
+          hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
+        };
+      });
+
+      const filteredVaults = allVaults.filter((item: any) =>
+        showOnlyActive
+          ? Object.keys(overview.activeVaults).indexOf(item.mint) > -1
+          : !(Object.keys(overview.activeVaults).indexOf(item.mint) > -1)
+      );
+
       let x;
       if (platform_data.value !== 'ALL') {
-        x = p.filter((item: any) => item.platform.name === platform_data.value);
+        x = filteredVaults.filter((item: any) => item.platform.name === platform_data.value);
       } else {
-        x = p;
+        x = filteredVaults;
       }
       x.sort(dynamicSort(sort_data.value, view_data.value));
-      if (showOnlyActive) {
-        dispatch({ type: actionTypes.SET_ACTIVE_VAULT, payload: p });
-      } else {
-        dispatch({ type: actionTypes.SET_ALL_VAULT, payload: p });
-      }
+
+      dispatch({ type: actionTypes.SET_ALL_VAULT, payload: allVaults });
+
+      dispatch({
+        type: showOnlyActive ? actionTypes.SET_ACTIVE_VAULT : actionTypes.SET_INACTIVE_VAULT,
+        payload: filteredVaults,
+      });
+
       return x;
     }
     return [];
   }
 
   useEffect(() => {
-    setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
+    if (overview && overview.activeVaults) {
+      setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
+    }
   }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
 
   React.useEffect(() => {
@@ -238,7 +243,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 <th scope="col">Positoin Value</th>
                 <th scope="col">Rewards earned</th>
                 <th scope="col">Ratio TVL</th> */}
-                <th scope="col">Risk Rating</th>
+                <th scope="col">
+                  <img src={smallRatioIcon} alt="lisklevel" className="allvaults__table-ratioIcon" />
+                  Risk Rating
+                </th>
                 <th scope="col"></th>
               </tr>
             ) : (
@@ -247,9 +255,12 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 <th scope="col">APY</th>
                 <th scope="col">USDr Debt</th>
                 <th scope="col">USDr Available to Mint</th>
-                <th scope="col">Position Value</th>
                 <th scope="col">Rewards Earned</th>
-                <th scope="col">Risk Rating</th>
+                <th scope="col">Position Value</th>
+                <th scope="col">
+                  <img src={smallRatioIcon} alt="lisklevel" className="allvaults__table-ratioIcon" />
+                  Risk Rating
+                </th>
                 <th scope="col"></th>
               </tr>
             )}

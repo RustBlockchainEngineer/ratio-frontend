@@ -5,7 +5,7 @@ import {
   getGlobalStateKey,
   getGlobalState,
   getProgramInstance,
-  getTokenVaultKey,
+  getTokenVaultAddress,
   WSOL_MINT_KEY,
   GLOBAL_STATE_TAG,
   MINT_USD_SEED,
@@ -254,7 +254,7 @@ export async function setVaultDebtCeiling(
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStateKey();
-  const tokenVaultKey = await getTokenVaultKey(mintCollKey);
+  const tokenVaultKey = await getTokenVaultAddress(mintCollKey);
   const transaction = new Transaction();
   const signers: Keypair[] = [];
   const ix = await program.instruction.setVaultDebtCeiling(

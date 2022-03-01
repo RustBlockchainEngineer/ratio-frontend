@@ -18,6 +18,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { Roles } from './constants/constants';
 import NotFound from './pages/NotFound';
 import { VaultsContextProvider } from './contexts/vaults';
+import { RFStateProvider } from './contexts/state';
 
 dotenv.config();
 const App: React.FC = () => {
@@ -32,17 +33,19 @@ const App: React.FC = () => {
                   <MercurialAPIProvider>
                     <ThemeProvider>
                       <VaultsContextProvider>
-                        <Router>
-                          <Switch>
-                            <Route path="/dashboard" component={Layer} />
-                            <Route path="/faucet" exact component={Faucet} />
-                            <Route path="/adminpanel" component={AdminPanel} />
-                            <Route exact path="/">
-                              <Redirect to="/dashboard" />
-                            </Route>
-                            <Route component={NotFound} />
-                          </Switch>
-                        </Router>
+                        <RFStateProvider>
+                          <Router>
+                            <Switch>
+                              <Route path="/dashboard" component={Layer} />
+                              <Route path="/faucet" exact component={Faucet} />
+                              <Route path="/adminpanel" component={AdminPanel} />
+                              <Route exact path="/">
+                                <Redirect to="/dashboard" />
+                              </Route>
+                              <Route component={NotFound} />
+                            </Switch>
+                          </Router>
+                        </RFStateProvider>
                       </VaultsContextProvider>
                     </ThemeProvider>
                   </MercurialAPIProvider>
