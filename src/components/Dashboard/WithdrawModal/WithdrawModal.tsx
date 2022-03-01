@@ -172,7 +172,7 @@ const WithdrawModal = ({ data }: any) => {
             />
             <Button
               className="button--blue bottomBtn"
-              disabled={withdrawAmount <= 0 || buttonDisabled}
+              disabled={withdrawAmount <= 0 || buttonDisabled || Number(data.usdrValue) !== 0}
               onClick={() => withdraw()}
             >
               Withdraw Assets
