@@ -15,7 +15,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return vaultInfo?.tvl as number;
   }
 
-  depositLP(connection: Connection, wallet: any, vault: LPair): boolean {
+  async depositLP(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
     // TODO Implement this function
 
     alert('Mercurial: Deposit LP');
@@ -24,7 +24,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  withdrawLP(connection: Connection, wallet: any, vault: LPair): boolean {
+  async withdrawLP(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
     // TODO Implement this function
 
     alert('Mercurial: Withdraw LP');
@@ -33,7 +33,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  harvestReward(connection: Connection, wallet: any, vault: LPair): boolean {
+  async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
     // TODO Implement this function
 
     alert('Mercurial: Harvest Reward');
@@ -42,7 +42,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  getRewards(): number {
+  async getRewards(): Promise<number> {
     // TODO Implement this function
 
     console.error('Function not implemented yet');
