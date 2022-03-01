@@ -16,7 +16,7 @@ import { getCoinPicSymbol } from '../../utils/helper';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { LPair } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { getDebtLimitForAllVaults } from '../../utils/utils';
+import { getDebtLimitForAllVaults, calculateRemainingGlobalDebt } from '../../utils/utils';
 import { getGlobalState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
@@ -148,16 +148,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
         if (!active) {
           return;
         }
-        const data = res.globalState;
-        setGlobalState(data);
-        const globalDebt = data?.totalDebt ? Number(new TokenAmount(data?.totalDebt, usdrMint?.decimals).fixed()) : 0;
-        const globalDebtLimit = data?.debtCeiling
-          ? Number(new TokenAmount(data?.debtCeiling, usdrMint?.decimals).fixed())
-          : 0;
-        setRemainingGlobalDebt(globalDebtLimit - globalDebt);
-        setHasReachedGlobalDebtLimit(
-          data?.totalDebt ? data?.totalDebt.toNumber() === data?.debtCeiling.toNumber() : false
-        );
+        setGlobalState(res.globalState);
+        const remainingGlobalDebt = calculateRemainingGlobalDebt(res.globalState, usdrMint);
+        setRemainingGlobalDebt(remainingGlobalDebt);
+        setHasReachedGlobalDebtLimit(remainingGlobalDebt === 0);
       });
     }
     return () => {
