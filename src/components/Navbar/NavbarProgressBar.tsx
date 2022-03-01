@@ -9,6 +9,7 @@ import { useWallet } from '../../contexts/wallet';
 import { getGlobalState } from '../../utils/ratio-lending';
 import { TokenAmount } from '../../utils/safe-math';
 import { TVL_DECIMAL } from '../../constants/constants';
+import { useUpdateState } from '../../contexts/auth';
 
 type NavbarProgressBarProps = {
   type: ProgressBarType;
@@ -27,6 +28,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
+  const { updateStateFlag } = useUpdateState();
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {
@@ -40,7 +42,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
     return () => {
       setGlobalState(null);
     };
-  }, [wallet, connection]);
+  }, [wallet, connection, updateStateFlag]);
 
   React.useEffect(() => {
     if (!wallet || !wallet.publicKey || !globalState) {
