@@ -37,7 +37,7 @@ const NavbarItem = ({
   return (
     <div className={classNames('navbarItem', active ? 'navbarItem--active' : '')}>
       <div
-        className="d-flex align-items-center justify-content-between pl-5 pr-4 py-4"
+        className="d-flex align-items-center justify-content-between pl-4 pr-4 py-4"
         onClick={() => onItemClick(navIndex)}
         onKeyDown={() => onItemClick(navIndex)}
         aria-hidden="true"
@@ -56,7 +56,7 @@ const NavbarItem = ({
           </div>
         )}
       </div>
-      <div className="container navbar-active-vaults">
+      <div className="navbar-active-vaults">
         {expandStatus &&
           !collapseFlag &&
           positionValues &&
