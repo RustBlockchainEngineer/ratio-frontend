@@ -50,8 +50,10 @@ const MintUSDrModal = ({ data }: any) => {
   const [mintTime, setMintTime] = React.useState('');
 
   const tokenPrice = usePrice(data.mint);
-  const collMint = useMint(data.mint);
-  const usdrMint = useMint(USDR_MINT_KEY);
+
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(data.mint);
+
   const collAccount = useAccountByMint(data.mint);
 
   const [lockAmount, setLockAmount] = React.useState(0);

@@ -24,7 +24,7 @@ import { usePrices } from '../../contexts/price';
 import { actionTypes, selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
-import { useUserOverview } from '../../contexts/state';
+import { useUSDrMintInfo, useUserOverview } from '../../contexts/state';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -48,7 +48,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const [totalLocked, setTotalLocked] = useState(0);
   const [overviewData, setOverviewData] = useState('{}');
   const [activeVaultsData, setActiveVaultsData] = useState([]);
-  const usdrMint = useMint(USDR_MINT_KEY);
+  const usdrMint = useUSDrMintInfo();
   const prices = usePrices();
 
   const { vaults: all_vaults } = useVaultsContextProvider();

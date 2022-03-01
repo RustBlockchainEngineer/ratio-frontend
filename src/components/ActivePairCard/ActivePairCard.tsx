@@ -9,10 +9,9 @@ import { sleep } from '@project-serum/common';
 import { useConnection } from '../../contexts/connection';
 import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
 import { formatUSD } from '../../utils/utils';
-import { useMint } from '../../contexts/accounts';
+
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
-import { getTokenVaultByMint, getUpdatedUserState, getUserState, USDR_MINT_KEY } from '../../utils/ratio-lending';
 
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import Button from '../Button';
@@ -23,7 +22,7 @@ import { TokenPairCardProps } from '../../models/UInterface';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
 
-import { useUserInfo } from '../../contexts/state';
+import { useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
@@ -33,9 +32,10 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   const { setUpdateHistoryFlag } = useUpdateHistory();
 
-  const collMint = useMint(data.mint);
   const tokenPrice = usePrice(data.mint);
-  const usdrMint = useMint(USDR_MINT_KEY);
+
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(data.mint);
 
   const userState = useUserInfo(data.mint);
   const vaultState = useUserInfo(data.mint);

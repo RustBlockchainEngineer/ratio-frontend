@@ -38,7 +38,7 @@ import { getUSDrAmount, getLPAmount } from '../../utils/risk';
 import { useUpdateState } from '../../contexts/auth';
 import Breadcrumb from '../../components/Breadcrumb';
 import { Banner, BannerIcon } from '../../components/Banner';
-import { useRFStateInfo, useUserInfo } from '../../contexts/state';
+import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
 
 const priceCardData = [
   {
@@ -57,8 +57,9 @@ const VaultDashboard = () => {
   const { wallet, connected } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
 
-  const collMint = useMint(vault_mint as string);
-  const usdrMint = useMint(USDR_MINT_KEY);
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(vault_mint as string);
+
   const tokenPrice = usePrice(vault_mint as string);
 
   const collAccount = useAccountByMint(vault_mint as string);
@@ -187,7 +188,6 @@ const VaultDashboard = () => {
   useEffect(() => {
     setIsLoading(true);
     const result: any = allVaults.find((item: any) => item.mint === vault_mint);
-    console.log(allVaults);
     if (result) {
       setVaultData(result);
     }

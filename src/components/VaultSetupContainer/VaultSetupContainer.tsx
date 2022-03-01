@@ -6,8 +6,6 @@ import Button from '../Button';
 import CustomInput from '../CustomInput';
 import { PairType } from '../../models/UInterface';
 import {
-  createTokenVault,
-  lockAndMint,
   getTokenVaultByMint,
   getUserState,
   USDR_MINT_KEY,
@@ -32,6 +30,7 @@ import { IoIosArrowRoundForward } from 'react-icons/io';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
+import { useUSDrMintInfo, useVaultMintInfo } from '../../contexts/state';
 
 const VaultSetupContainer = ({ data }: any) => {
   console.log(data);
@@ -46,8 +45,10 @@ const VaultSetupContainer = ({ data }: any) => {
   const [mintTime, setMintTime] = React.useState('');
 
   const tokenPrice = usePrice(data.mint);
-  const collMint = useMint(data.mint);
-  const usdrMint = useMint(USDR_MINT_KEY);
+
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(data.mint);
+
   const collAccount = useAccountByMint(data.mint);
 
   const [lockAmount, setLockAmount] = React.useState(0);

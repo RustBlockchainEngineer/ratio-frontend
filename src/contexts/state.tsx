@@ -1,12 +1,20 @@
 import { connection } from '@project-serum/common';
 import { Connection } from '@solana/web3.js';
 import React, { useContext, useEffect, useState } from 'react';
-import { getGlobalState, getTokenVaultByMint, getUserOverview, getUserState } from '../utils/ratio-lending';
+import {
+  getGlobalState,
+  getTokenVaultByMint,
+  getUserOverview,
+  getUserState,
+  USDR_MINT_KEY,
+} from '../utils/ratio-lending';
+import { getMint } from '../utils/utils';
 import { useConnection } from './connection';
 import { useVaultsContextProvider } from './vaults';
 import { useWallet } from './wallet';
 
 interface RFStateConfig {
+  tokenState: any;
   globalState: any;
   vaultState: any;
   userState: any;
@@ -15,6 +23,7 @@ interface RFStateConfig {
 }
 
 const RFStateContext = React.createContext<RFStateConfig>({
+  tokenState: {},
   globalState: {},
   vaultState: {},
   userState: {},
@@ -31,11 +40,34 @@ export function RFStateProvider({ children = undefined as any }) {
   const [vaultState, setVaultState] = useState<any>(null);
   const [userState, setUserState] = useState<any>(null);
   const [overview, setOverview] = useState<any>(null);
+  const [tokenState, setTokenState] = useState<any>(null);
+
   const [updateFlag, setUpdateStates] = useState<any>(false);
 
   const updateState = () => {
     setUpdateStates(true);
   };
+
+  const updateTokenState = async () => {
+    const mintInfos: any = {};
+    try {
+      for (let i = 0; i < vaults.length; i++) {
+        const vault = vaults[i];
+        const mint = vault.address_id;
+
+        const mintInfo = await getMint(connection, mint);
+        mintInfos[mint] = mintInfo;
+      }
+      const mintInfo = await getMint(connection, USDR_MINT_KEY);
+      mintInfos[USDR_MINT_KEY] = mintInfo;
+
+      console.log(mintInfos);
+      setTokenState(mintInfos);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const updateVaultState = async () => {
     const vaultInfos: any = {};
     try {
@@ -94,6 +126,15 @@ export function RFStateProvider({ children = undefined as any }) {
 
   useEffect(() => {
     if (connection) {
+      updateTokenState();
+    }
+    return () => {
+      setTokenState({});
+    };
+  }, [connection, vaults]);
+
+  useEffect(() => {
+    if (connection) {
       updateGlobalState();
     }
     return () => {
@@ -133,6 +174,7 @@ export function RFStateProvider({ children = undefined as any }) {
   return (
     <RFStateContext.Provider
       value={{
+        tokenState,
         globalState,
         vaultState,
         userState,
@@ -169,8 +211,21 @@ export function useVaultInfo(mint: string) {
   const userInfo = context.vaultState[mint];
   return userInfo;
 }
+
 export function useUserOverview() {
   const context = React.useContext(RFStateContext);
   const overview = context.overview;
   return overview;
+}
+
+export function useVaultMintInfo(mint: string) {
+  const context = React.useContext(RFStateContext);
+  const token = context.tokenState[mint];
+  return token;
+}
+
+export function useUSDrMintInfo() {
+  const context = React.useContext(RFStateContext);
+  const usdrMint = context.tokenState[USDR_MINT_KEY];
+  return usdrMint;
 }

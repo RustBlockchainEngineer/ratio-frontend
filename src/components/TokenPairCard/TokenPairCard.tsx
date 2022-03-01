@@ -25,6 +25,7 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import { useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
   const history = useHistory();
@@ -35,13 +36,17 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
   const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
   const { setUpdateHistoryFlag } = useUpdateHistory();
 
-  const collMint = useMint(data.mint);
   const tokenPrice = usePrice(data.mint);
-  const usdrMint = useMint(USDR_MINT_KEY);
+
+  const usdrMint = useUSDrMintInfo();
+  const collMint = useVaultMintInfo(data.mint);
 
   const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
-  const [userState, setUserState] = React.useState(null);
+
+  const userState = useUserInfo(data.mint);
+  const vaultState = useVaultInfo(data.mint);
+
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
   const [tvlUSD, setTVLUSD] = React.useState(0);
@@ -65,56 +70,12 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
   }, [data]);
 
   React.useEffect(() => {
-    if (wallet && wallet.publicKey) {
-      getUserState(connection, wallet, new PublicKey(data.mint)).then((res) => {
-        setUserState(res);
-      });
-    }
-    return () => {
-      setUserState(null);
-    };
-  }, [wallet, connection, collMint]);
-
-  const updateVaultValues = async () => {
-    const tokenVault = await getTokenVaultByMint(connection, data.mint);
-
-    if (!tokenVault) {
-      return;
-    }
-
-    const tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
-    const debtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
-
-    setTVL(Number(tvlAmount.fixed()));
-    setTotalDebt(Number(debtAmount.fixed()));
-  };
-
-  const refreshVaultValues = async () => {
-    const oriTvl = tvl;
-    const oriTotalDebt = totalDebt;
-    let totalDebtAmount = null;
-    let tvlAmount = null;
-    do {
-      await sleep(1000);
-      const tokenVault = getTokenVaultByMint(connection, data.mint);
-      if (!tokenVault) {
-        return;
-      }
-      tvlAmount = new TokenAmount((tokenVault as any).totalColl, collMint?.decimals);
-      totalDebtAmount = new TokenAmount((tokenVault as any).totalDebt, usdrMint?.decimals);
-    } while (oriTvl === Number(tvlAmount.fixed()) || oriTotalDebt === Number(totalDebtAmount.fixed()));
-
-    setTVL(Number(tvlAmount.fixed()));
-    setTotalDebt(Number(totalDebtAmount.fixed()));
-  };
-
-  React.useEffect(() => {
     if (connection && collMint && usdrMint && data.mint) {
-      if (updateStateFlag) {
-        refreshVaultValues();
-      } else {
-        updateVaultValues();
-      }
+      const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
+      const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
+
+      setTVL(Number(tvlAmount.fixed()));
+      setTotalDebt(Number(debtAmount.fixed()));
     }
     return () => {
       setTVL(0);
@@ -138,14 +99,6 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     };
   }, [tokenPrice, userState, collMint]);
 
-  React.useEffect(() => {
-    if (updateStateFlag && wallet?.publicKey) {
-      getUpdatedUserState(connection, wallet, data.mint, userState).then((res) => {
-        setUserState(res);
-        setUpdateStateFlag(false);
-      });
-    }
-  }, [updateStateFlag]);
   const harvest = () => {
     console.log('harvesting');
     poolInfoProviderFactory
