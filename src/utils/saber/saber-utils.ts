@@ -242,7 +242,9 @@ export async function depositToSaber(
     [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
-  const txHash = await program.rpc.depositToSaber(new anchor.BN(amount), {
+  const transaction = new Transaction();
+
+  const ix = await program.instruction.depositToSaber(new anchor.BN(amount), {
     accounts: {
       ratioStaker: {
         globalState: globalStateKey,
@@ -263,6 +265,9 @@ export async function depositToSaber(
       saberFarmProgram: QUARRY_ADDRESSES.Mine,
     },
   });
+  transaction.add(ix);
+  const txHash = await sendTransaction(connection, wallet, transaction);
+  console.log('Saber deposit tx', txHash);
   return txHash;
 }
 
@@ -306,7 +311,9 @@ export async function withdrawFromSaber(
     [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
-  const txHash = await program.rpc.withdrawFromSaber(new anchor.BN(amount), {
+  const transaction = new Transaction();
+
+  const ix = await program.instruction.withdrawFromSaber(new anchor.BN(amount), {
     accounts: {
       ratioStaker: {
         globalState: globalStateKey,
@@ -327,6 +334,10 @@ export async function withdrawFromSaber(
       saberFarmProgram: QUARRY_ADDRESSES.Mine,
     },
   });
+  transaction.add(ix);
+  const txHash = await sendTransaction(connection, wallet, transaction);
+  console.log('Saber withdraw tx', txHash);
+
   return txHash;
 }
 
@@ -459,8 +470,10 @@ export async function harvestFromSaber(
     },
   });
   tx.add(ix);
-  const txHash = await sendTransaction(connection, wallet, tx, []);
+
+  const txHash = await sendTransaction(connection, wallet, tx);
   console.log('Harvest finished', txHash);
+
   let amountNew = amountOrigin;
   while (amountNew === amountOrigin) {
     await serumCmn.sleep(200);
@@ -471,7 +484,7 @@ export async function harvestFromSaber(
   const rewardMint = await serumCmn.getMintInfo(program.provider, SABER_REWARD_MINT);
   const newReward = (amountNew - amountOrigin) * Math.pow(10, -rewardMint?.decimals);
 
-  console.log('Reward Earned', newReward);
+  console.log('New reward earned', newReward);
 
   return txHash;
 }

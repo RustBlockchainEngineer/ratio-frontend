@@ -2,7 +2,6 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
-import { useUpdateState } from '../../../contexts/auth';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { repayUSDr } from '../../../utils/ratio-lending';
@@ -12,6 +11,7 @@ import Button from '../../Button';
 import PaybackModal from '../PaybackModal';
 
 import usdrIcon from '../../../assets/images/USDr.png';
+import { useUpdateRFStates } from '../../../contexts/state';
 
 const VaultDebt = ({ data }: any) => {
   const connection = useConnection();
@@ -19,7 +19,7 @@ const VaultDebt = ({ data }: any) => {
   const usdrMint = useMint(data.usdrMint);
 
   const [didMount, setDidMount] = React.useState(false);
-  const { setUpdateStateFlag } = useUpdateState();
+  const updateRFStates = useUpdateRFStates();
 
   const paybackData = {
     mint: data.mint,
@@ -48,7 +48,7 @@ const VaultDebt = ({ data }: any) => {
     }
     repayUSDr(connection, wallet, Number(data.usdrValue) * Math.pow(10, usdrMint?.decimals), new PublicKey(data.mint))
       .then(() => {
-        setUpdateStateFlag(true);
+        updateRFStates(true);
       })
       .catch((e) => {
         console.log(e);

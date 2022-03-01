@@ -14,7 +14,6 @@ import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
-import { useUpdateState } from '../../contexts/auth';
 import { useConnection } from '../../contexts/connection';
 import { getUserOverview, USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useMint } from '../../contexts/accounts';
@@ -60,7 +59,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
     setNavIndex(location.pathname);
   }, [location.pathname]);
 
-  const { updateStateFlag } = useUpdateState();
   const userOverview = useUserOverview();
 
   const getActiveVaultInfo = async function (activeVaults: any[]) {

@@ -30,11 +30,10 @@ import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
-import { useUpdateState } from '../../contexts/auth';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
-import { useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -115,7 +114,7 @@ const LockVaultModal = ({ data }: any) => {
     };
   }, [wallet, collAccount, connection, collMint]);
 
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  const updateRFStates = useUpdateRFStates();
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -138,7 +137,7 @@ const LockVaultModal = ({ data }: any) => {
         collAccount?.pubkey.toString() as string
       )
       .then(() => {
-        setUpdateStateFlag(true);
+        updateRFStates(true);
         setShow(false);
       })
       .catch((e) => {

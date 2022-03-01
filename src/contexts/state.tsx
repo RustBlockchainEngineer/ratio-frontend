@@ -1,4 +1,4 @@
-import { connection } from '@project-serum/common';
+import { connection, sleep } from '@project-serum/common';
 import { Connection } from '@solana/web3.js';
 import React, { useContext, useEffect, useState } from 'react';
 import {
@@ -20,7 +20,8 @@ interface RFStateConfig {
   vaultState: any;
   userState: any;
   overview: any;
-  updateState: () => void;
+  updateRFState: (val: boolean) => void;
+  updateTokenAccount: boolean;
 }
 
 const RFStateContext = React.createContext<RFStateConfig>({
@@ -29,7 +30,8 @@ const RFStateContext = React.createContext<RFStateConfig>({
   vaultState: {},
   userState: {},
   overview: {},
-  updateState: () => {},
+  updateRFState: () => {},
+  updateTokenAccount: false,
 });
 
 export function RFStateProvider({ children = undefined as any }) {
@@ -42,11 +44,17 @@ export function RFStateProvider({ children = undefined as any }) {
   const [userState, setUserState] = useState<any>(null);
   const [overview, setOverview] = useState<any>(null);
   const [tokenState, setTokenState] = useState<any>(null);
-
-  const [updateFlag, setUpdateStates] = useState<any>(false);
-
-  const updateState = () => {
-    setUpdateStates(true);
+  const [updateTokenAccount, setUpdateTokenAccount] = useState<any>(false);
+  const updateRFState = (updateAll = true) => {
+    setUpdateTokenAccount(true);
+    sleep(3000).then(() => {
+      setUpdateTokenAccount(false);
+      if (updateAll) {
+        updateGlobalState();
+      } else {
+        updateUserState();
+      }
+    });
   };
 
   const updateTokenState = async () => {
@@ -152,7 +160,7 @@ export function RFStateProvider({ children = undefined as any }) {
     return () => {
       setVaultState({});
     };
-  }, [connection, vaults]);
+  }, [connection, vaults, globalState]);
 
   useEffect(() => {
     if (connection && wallet && wallet.publicKey) {
@@ -172,7 +180,7 @@ export function RFStateProvider({ children = undefined as any }) {
     return () => {
       setOverview({});
     };
-  }, [connection, vaults, wallet, wallet?.publicKey]);
+  }, [connection, vaults, userState]);
 
   return (
     <RFStateContext.Provider
@@ -182,7 +190,8 @@ export function RFStateProvider({ children = undefined as any }) {
         vaultState,
         userState,
         overview,
-        updateState,
+        updateRFState,
+        updateTokenAccount,
       }}
     >
       {children}
@@ -231,4 +240,14 @@ export function useUSDrMintInfo() {
   const context = React.useContext(RFStateContext);
   const usdrMint = context.tokenState[USDR_MINT_KEY];
   return usdrMint;
+}
+
+export function useUpdateRFStates() {
+  const context = React.useContext(RFStateContext);
+  return context.updateRFState;
+}
+
+export function useUpdateTokenAccounts() {
+  const context = React.useContext(RFStateContext);
+  return context.updateTokenAccount;
 }

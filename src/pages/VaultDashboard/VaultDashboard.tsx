@@ -29,7 +29,7 @@ import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
 import { getRiskLevel } from '../../libs/helper';
 import { getUSDrAmount, getLPAmount } from '../../utils/risk';
-import { useUpdateState } from '../../contexts/auth';
+
 import Breadcrumb from '../../components/Breadcrumb';
 import { Banner, BannerIcon } from '../../components/Banner';
 import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
@@ -72,7 +72,6 @@ const VaultDashboard = () => {
   const [generateValue, setGenerateValue] = useState(0);
   const [debtValue, setDebtValue] = useState(0);
   const [hasReachedDebtLimit, setHasReachedDebtLimit] = useState(false);
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
 
   const allVaults = useSelector(selectors.getAllVaults);
   const [vauldDebtData, setVaultDebtData] = useState({

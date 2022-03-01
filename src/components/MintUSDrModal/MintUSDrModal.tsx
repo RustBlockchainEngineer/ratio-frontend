@@ -27,9 +27,8 @@ import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
-import { useUpdateState } from '../../contexts/auth';
 import usdrIcon from '../../assets/images/USDr.png';
-import { useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -106,7 +105,7 @@ const MintUSDrModal = ({ data }: any) => {
     };
   }, [wallet, collAccount, connection, collMint]);
 
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
+  const updateRFStates = useUpdateRFStates();
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -127,7 +126,7 @@ const MintUSDrModal = ({ data }: any) => {
 
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
       .then(() => {
-        setUpdateStateFlag(true);
+        updateRFStates(true);
       })
       .catch((e) => {
         console.log(e);

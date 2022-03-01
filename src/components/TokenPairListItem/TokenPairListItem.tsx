@@ -16,10 +16,10 @@ import { useConnection } from '../../contexts/connection';
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 
-import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
+import { useUpdateHistory } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
-import { useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
   const history = useHistory();
@@ -31,8 +31,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
   const usdrMint = useUSDrMintInfo();
   const collMint = useVaultMintInfo(data.mint);
 
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  const { setUpdateHistoryFlag } = useUpdateHistory();
+  const updateRFStates = useUpdateRFStates();
 
   const [expand, setExpand] = React.useState(false);
 
@@ -73,7 +72,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
       setTVL(0);
       setTotalDebt(0);
     };
-  }, [connection, collMint, usdrMint, updateStateFlag]);
+  }, [connection, collMint, usdrMint, vaultState]);
 
   React.useEffect(() => {
     if (tokenPrice && tvl) {
@@ -103,7 +102,7 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        setUpdateHistoryFlag(true);
+        updateRFStates(false);
       })
       .catch((e) => {
         console.log(e);

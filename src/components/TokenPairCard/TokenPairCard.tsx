@@ -18,14 +18,15 @@ import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 
-import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
+import { useUpdateHistory } from '../../contexts/auth';
+import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import highriskIcon from '../../assets/images/highrisk.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
-import { useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
   const history = useHistory();
@@ -33,8 +34,6 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
   const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  const { setUpdateHistoryFlag } = useUpdateHistory();
 
   const tokenPrice = usePrice(data.mint);
 
@@ -46,6 +45,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
 
   const userState = useUserInfo(data.mint);
   const vaultState = useVaultInfo(data.mint);
+  const updateRFStates = useUpdateRFStates();
 
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
@@ -81,7 +81,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
       setTVL(0);
       setTotalDebt(0);
     };
-  }, [connection, collMint, usdrMint, updateStateFlag]);
+  }, [connection, collMint, usdrMint, vaultState]);
 
   React.useEffect(() => {
     if (tokenPrice && tvl) {
@@ -104,7 +104,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        setUpdateHistoryFlag(true);
+        updateRFStates(false);
       })
       .catch((e) => {
         console.log(e);

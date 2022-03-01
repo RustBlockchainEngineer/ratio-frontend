@@ -17,10 +17,10 @@ import { useConnection } from '../../contexts/connection';
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import { sleep } from '@project-serum/common';
-import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
+import { useUpdateHistory } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
-import { useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
 
 const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const history = useHistory();
@@ -32,13 +32,11 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
   const usdrMint = useUSDrMintInfo();
   const collMint = useVaultMintInfo(data.mint);
 
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  const { setUpdateHistoryFlag } = useUpdateHistory();
-
   const [expand, setExpand] = React.useState(false);
 
   const userState = useUserInfo(data.mint);
   const vaultState = useVaultInfo(data.mint);
+  const updateRFStates = useUpdateRFStates();
 
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
@@ -74,7 +72,7 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
       setTVL(0);
       setTotalDebt(0);
     };
-  }, [connection, collMint, usdrMint, updateStateFlag]);
+  }, [connection, collMint, usdrMint, vaultState]);
 
   React.useEffect(() => {
     if (tokenPrice && tvl) {
@@ -104,7 +102,7 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        setUpdateHistoryFlag(true);
+        updateRFStates(false);
       })
       .catch((e) => {
         console.log(e);

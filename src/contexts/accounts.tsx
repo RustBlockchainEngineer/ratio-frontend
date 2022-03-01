@@ -8,7 +8,7 @@ import { chunks, getMint } from '../utils/utils';
 import { EventEmitter } from '../utils/eventEmitter';
 import { useUserAccounts } from '../hooks/useUserAccounts';
 import { WRAPPED_SOL_MINT, programIds } from '../utils/ids';
-import { useUpdateState } from './auth';
+import { useUpdateTokenAccounts } from './state';
 
 const AccountsContext = React.createContext<any>(null);
 
@@ -308,7 +308,7 @@ export function AccountsProvider({ children = null as any }) {
   const [tokenAccounts, setTokenAccounts] = useState<TokenAccount[]>([]);
   const [userAccounts, setUserAccounts] = useState<TokenAccount[]>([]);
   const { nativeAccount } = UseNativeAccount();
-  const { updateStateFlag } = useUpdateState();
+  const updateTokenAccountFlag = useUpdateTokenAccounts();
 
   const selectUserAccounts = useCallback(() => {
     if (!publicKey) {
@@ -321,12 +321,13 @@ export function AccountsProvider({ children = null as any }) {
       .map((id) => cache.get(id))
       .filter((a) => a && a.info.owner.toBase58() === address)
       .map((a) => a as TokenAccount);
-  }, [publicKey, updateStateFlag]);
+  }, [publicKey, updateTokenAccountFlag]);
 
   useEffect(() => {
+    console.log('Update Tokens', updateTokenAccountFlag);
     const accounts = selectUserAccounts().filter((a) => a !== undefined) as TokenAccount[];
     setUserAccounts(accounts);
-  }, [nativeAccount, wallet, tokenAccounts, selectUserAccounts, updateStateFlag]);
+  }, [nativeAccount, wallet, tokenAccounts, selectUserAccounts, updateTokenAccountFlag]);
 
   useEffect(() => {
     const subs: number[] = [];

@@ -7,7 +7,6 @@ import { PublicKey } from '@solana/web3.js';
 import { sleep } from '@project-serum/common';
 
 import { useConnection } from '../../contexts/connection';
-import { useUpdateHistory, useUpdateState } from '../../contexts/auth';
 import { formatUSD } from '../../utils/utils';
 
 import { usePrice } from '../../contexts/price';
@@ -22,15 +21,14 @@ import { TokenPairCardProps } from '../../models/UInterface';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
 
-import { useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
+import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const { updateStateFlag, setUpdateStateFlag } = useUpdateState();
-  const { setUpdateHistoryFlag } = useUpdateHistory();
+  const updateRFStates = useUpdateRFStates();
 
   const tokenPrice = usePrice(data.mint);
 
@@ -107,7 +105,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
-        setUpdateHistoryFlag(true);
+        updateRFStates(false);
       })
       .catch((e) => {
         console.log(e);
