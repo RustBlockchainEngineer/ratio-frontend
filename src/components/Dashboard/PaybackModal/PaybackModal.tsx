@@ -12,6 +12,7 @@ import { getUsdrMintKey, repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-l
 import { useMint } from '../../../contexts/accounts';
 import { toast } from 'react-toastify';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
+import { isWalletApproveError } from '../../../utils/utils';
 
 type PairType = {
   icons: Array<string>;
@@ -67,9 +68,12 @@ const PaybackModal = ({ data }: any) => {
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         setPayBackAmount(0);
+        toast('Successfully Paid back!');
       })
       .catch((e) => {
         console.log(e);
+        if (isWalletApproveError(e)) toast('Wallet is not approved!');
+        else toast('Transaction Error!');
       })
       .finally(() => {
         setShow(false);

@@ -172,7 +172,7 @@ export async function isGlobalStateCreated(connection: Connection, wallet: any) 
   }
 }
 
-export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey|string) {
+export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey | string) {
   if (!wallet || !wallet.publicKey || !mintCollKey) {
     return null;
   }
@@ -277,7 +277,7 @@ export async function borrowUSDr(
   return 'User borrowed ' + amount / Math.pow(10, USD_DECIMALS) + ' USD , transaction id = ' + tx;
 }
 
-export async function getTokenVaultByMint(connection: Connection, mint: string| PublicKey) : Promise<any | undefined> {
+export async function getTokenVaultByMint(connection: Connection, mint: string | PublicKey): Promise<any | undefined> {
   const program = getProgramInstance(connection, null);
   const tokenVaultKey = await getTokenVaultAddress(mint);
   try {
@@ -625,7 +625,12 @@ export function getUserHistory(action: string, userKey: string, mintKey: string)
   return [];
 }
 
-export async function calculateRewardByPlatform(connection: Connection, wallet: any, mintCollKey: string| PublicKey, platformType: number) {
+export async function calculateRewardByPlatform(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: string | PublicKey,
+  platformType: number
+) {
   if (platformType === TYPE_ID_SABER) {
     return await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
   }

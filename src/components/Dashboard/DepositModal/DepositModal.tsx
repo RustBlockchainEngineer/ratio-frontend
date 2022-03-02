@@ -10,6 +10,7 @@ import { useWallet } from '../../../contexts/wallet';
 
 import { TokenAmount } from '../../../utils/safe-math';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
+import { isWalletApproveError } from '../../../utils/utils';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
@@ -82,12 +83,14 @@ const DepositModal = ({ data }: any) => {
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         setDepositAmount(0);
+        toast('Successfully Deposited!');
       })
       .catch((e) => {
         console.log(e);
+        if (isWalletApproveError(e)) toast('Wallet is not approved!');
+        else toast('Transaction Error!');
       })
       .finally(() => {
-        toast('Successfully Deposited!');
         setShow(!show);
       });
   };

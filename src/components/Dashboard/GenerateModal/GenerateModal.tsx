@@ -15,6 +15,7 @@ import CustomInput from '../../CustomInput';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo } from '../../../contexts/state';
+import { isWalletApproveError } from '../../../utils/utils';
 
 type PairType = {
   mint: string;
@@ -87,13 +88,15 @@ const GenerateModal = ({ data }: any) => {
       .then((tx) => {
         console.log('Success Generate txid=', tx);
         updateRFStates(UPDATE_USER_STATE, data.mint);
+        toast('Successfully minted USDr tokens!');
       })
       .catch((e) => {
         console.log(e);
+        if (isWalletApproveError(e)) toast('Wallet is not approved!');
+        else toast('Transaction Error!');
       })
       .finally(() => {
         setShow(!show);
-        toast('Successfully minted USDr tokens!');
       });
   };
 

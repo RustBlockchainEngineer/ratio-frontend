@@ -346,3 +346,7 @@ export const getDebtLimitForAllVaults = async (connection: Connection, wallet: a
 export const randomInteger = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+export const isWalletApproveError = (e: any) => {
+  return e.code === 4001 || e.code === -32603;
+};
