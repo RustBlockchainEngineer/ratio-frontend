@@ -63,18 +63,18 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
 
   const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
 
-  React.useEffect(() => {
-    if (data.hasReachedUserDebtLimit) {
-      setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
-    } else if (isGlobalDebtLimitReached) {
-      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
-    } else {
-      setHasUserReachedDebtLimit('');
-    }
-    return () => {
-      setHasUserReachedDebtLimit('');
-    };
-  }, [data]);
+  // React.useEffect(() => {
+  //   if (data.hasReachedUserDebtLimit) {
+  //     setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
+  //   } else if (isGlobalDebtLimitReached) {
+  //     setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
+  //   } else {
+  //     setHasUserReachedDebtLimit('');
+  //   }
+  //   return () => {
+  //     setHasUserReachedDebtLimit('');
+  //   };
+  // }, [data]);
 
   React.useEffect(() => {
     if (connection && collMint && usdrMint && data.mint) {

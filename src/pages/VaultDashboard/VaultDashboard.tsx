@@ -23,7 +23,7 @@ import { USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { PublicKey } from '@solana/web3.js';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
-import { getRiskLevelNumber } from '../../utils/utils';
+import { getRiskLevelNumber, calculateRemainingGlobalDebt, calculateRemainingUserDebt } from '../../utils/utils';
 import { getFaucetState } from '../../utils/ratio-faucet';
 import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
@@ -119,22 +119,10 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint && globalState && vaultData) {
-      //calculate reminaing usdr debt the user can mint based on their current deposited LP
-      const debt = userState?.debt ?? 0;
-      const lpLockedAmount = new TokenAmount(userState?.lockedCollBalance, collMint?.decimals);
-      //we might want to chnage this and instead pull the risk rating from the contract once the featrue is ready
-      const riskLevel = vaultData.risk ? vaultData.risk : 'AAA';
-      const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()), riskLevel);
-      const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
-      const userDebtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
-      //calculate remaining global debt
-      const globalDebt = globalState?.totalDebt ? globalState?.totalDebt.toNumber() : 0;
-      const globalDebtLimit = globalState?.debtCeiling ? globalState?.debtCeiling.toNumber() : 1000;
-      const remainingGlobalDebt = globalDebtLimit - globalDebt;
-      //compare the two debt limits and set the overall debt limit to be equal to the smaller value
-      const overalldebtLimit = Math.min(remainingGlobalDebt, userDebtLimit);
-      //this only captures wether the user debt limit has been hit
-      setHasReachedDebtLimit(overalldebtLimit <= 0 && +debt > 0);
+      const remainingGlobalDebt = calculateRemainingGlobalDebt(globalState, usdrMint);
+      const remainingUserDebt = calculateRemainingUserDebt(tokenPrice, vaultData?.risk, userState, collMint, usdrMint);
+      const overalldebtLimit = Math.min(remainingGlobalDebt, remainingUserDebt);
+      setHasReachedDebtLimit(overalldebtLimit <= 0 && +userState?.debt > 0);
       setGenerateValue(overalldebtLimit);
     }
     return () => {

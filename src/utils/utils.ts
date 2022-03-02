@@ -248,6 +248,7 @@ interface GetDebtLimit {
   vaultMint: MintInfo;
   collMint: MintInfo;
   usdrMint: MintInfo;
+  riskRating: string;
   tokenPrice: any | number;
 }
 
@@ -272,28 +273,44 @@ export const getRiskLevelNumber = (vaultMint: any) => {
   return 10;
 };
 
+export const calculateRemainingGlobalDebt = (globalState: any, usdrMint: any) => {
+  const globalCurrentDebt = new TokenAmount(globalState?.totalDebt, usdrMint?.decimals);
+  const globalDebtLimit = new TokenAmount(globalState?.debtCeiling, usdrMint?.decimals);
+  const remainingGlobalDebt = Number(globalDebtLimit.fixed()) - Number(globalCurrentDebt.fixed());
+
+  return remainingGlobalDebt < 0 ? 0 : remainingGlobalDebt;
+};
+
+export const calculateRemainingUserDebt = (
+  lpTokenPrice: number,
+  riskLevel: string,
+  vaultState: any,
+  collMint: any,
+  usdrMint: any
+) => {
+  const lpLockedAmount = new TokenAmount(vaultState?.lockedCollBalance, collMint?.decimals);
+  const userTotalDebtMintable = getUSDrAmount(100, lpTokenPrice * Number(lpLockedAmount.fixed()), riskLevel);
+  const userCurrentDebt = new TokenAmount(vaultState?.debt, usdrMint?.decimals);
+  const userRemainingMintableDebt = userTotalDebtMintable - Number(userCurrentDebt.fixed());
+  const userDebtLimit = Number(userRemainingMintableDebt.toFixed(usdrMint?.decimals));
+
+  return userDebtLimit < 0 ? 0 : userDebtLimit;
+};
+
 export const getDebtLimitForVault = async ({
   connection,
   wallet,
   vaultMint,
   collMint,
   usdrMint,
+  riskRating,
   tokenPrice,
 }: GetDebtLimit) => {
   const userState = await getUserState(connection, wallet, new PublicKey(vaultMint));
-  const lockedCollBalance = (userState as any)?.lockedCollBalance ?? 0;
-  const debt = (userState as any)?.debt ?? 0;
-
-  const lpLockedAmount = new TokenAmount(lockedCollBalance, collMint?.decimals);
-  //need to incorperate risk rating here
-  const totalUSDr = getUSDrAmount(100, tokenPrice * Number(lpLockedAmount.fixed()));
-  const maxAmount = totalUSDr - Number(new TokenAmount(debt, usdrMint?.decimals).fixed());
-
-  const debtLimit = Number(maxAmount.toFixed(usdrMint?.decimals));
-
+  const debtLimit = calculateRemainingUserDebt(tokenPrice, riskRating, userState, collMint, usdrMint);
   return {
     debtLimit,
-    hasReachedDebtLimit: debtLimit <= 0 && +debt > 0,
+    hasReachedDebtLimit: debtLimit <= 0 && +userState?.debt > 0,
   };
 };
 
@@ -315,6 +332,7 @@ export const getDebtLimitForAllVaults = async (connection: Connection, wallet: a
 
   const debtLimitForAllVaults = await Promise.all(
     vaults.map(async (vault: any) => {
+      console.log(vault);
       const collMint = await getMint(connection, vault.address_id);
 
       const params: GetDebtLimit = {
@@ -322,6 +340,7 @@ export const getDebtLimitForAllVaults = async (connection: Connection, wallet: a
         wallet,
         collMint,
         usdrMint,
+        riskRating: vault.risk_rating,
         vaultMint: vault.address_id,
         tokenPrice: Number(process.env.REACT_APP_LP_TOKEN_PRICE), // TODO: fix this LP Token Price
       };

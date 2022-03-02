@@ -193,10 +193,14 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{formatUSD.format(Number(totalDebt.toFixed(2)))}</h6>
+            <h6 className="semiBold">{Number(totalDebt.toFixed(2))}</h6>
           </div>
         </td>
-        <td></td>
+        <td>
+          <div className="tokenpaircard__table__td">
+            <h6 className="semiBold">{Number(data?.remainingDebt).toFixed(2)}</h6>
+          </div>
+        </td>
         <td>
           <div className="tokenpaircard__table__td">
             <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
