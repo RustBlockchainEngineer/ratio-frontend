@@ -8,7 +8,6 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
-// @ts-ignore
 import { blob, nu64, seq, struct, u8 } from 'buffer-layout';
 
 import { FarmInfo } from './farms';
@@ -136,8 +135,7 @@ export async function depositV4(
   const userRewardTokenAccountB = await createAssociatedTokenAccountIfNotExist(
     rewardAccountB,
     owner,
-    // @ts-ignore
-    farmInfo.rewardB.mintAddress,
+    farmInfo?.rewardB?.mintAddress || '',
     transaction,
     atas
   );
@@ -169,8 +167,7 @@ export async function depositV4(
       userRewardTokenAccount,
       new PublicKey(farmInfo.poolRewardTokenAccount),
       userRewardTokenAccountB,
-      // @ts-ignore
-      new PublicKey(farmInfo.poolRewardTokenAccountB),
+      new PublicKey(farmInfo?.poolRewardTokenAccountB || ''),
       value
     )
   );
@@ -222,8 +219,7 @@ export async function depositV5(
   const userRewardTokenAccountB = await createAssociatedTokenAccountIfNotExist(
     rewardAccountB,
     owner,
-    // @ts-ignore
-    farmInfo.rewardB.mintAddress,
+    farmInfo?.rewardB?.mintAddress || '',
     transaction,
     atas
   );
@@ -251,8 +247,7 @@ export async function depositV5(
       userRewardTokenAccount,
       new PublicKey(farmInfo.poolRewardTokenAccount),
       userRewardTokenAccountB,
-      // @ts-ignore
-      new PublicKey(farmInfo.poolRewardTokenAccountB),
+      new PublicKey(farmInfo?.poolRewardTokenAccountB || ''),
       value
     )
   );
@@ -363,8 +358,7 @@ export async function withdrawV4(
   const userRewardTokenAccountB = await createAssociatedTokenAccountIfNotExist(
     rewardAccountB,
     owner,
-    // @ts-ignore
-    farmInfo.rewardB.mintAddress,
+    farmInfo?.rewardB?.mintAddress || '',
     transaction,
     atas
   );
@@ -384,8 +378,7 @@ export async function withdrawV4(
       userRewardTokenAccount,
       new PublicKey(farmInfo.poolRewardTokenAccount),
       userRewardTokenAccountB,
-      // @ts-ignore
-      new PublicKey(farmInfo.poolRewardTokenAccountB),
+      new PublicKey(farmInfo?.poolRewardTokenAccountB || ''),
       value
     )
   );
@@ -437,8 +430,7 @@ export async function withdrawV5(
   const userRewardTokenAccountB = await createAssociatedTokenAccountIfNotExist(
     rewardAccountB,
     owner,
-    // @ts-ignore
-    farmInfo.rewardB.mintAddress,
+    farmInfo?.rewardB?.mintAddress || '',
     transaction,
     atas
   );
@@ -466,8 +458,7 @@ export async function withdrawV5(
       userRewardTokenAccount,
       new PublicKey(farmInfo.poolRewardTokenAccount),
       userRewardTokenAccountB,
-      // @ts-ignore
-      new PublicKey(farmInfo.poolRewardTokenAccountB),
+      new PublicKey(farmInfo?.poolRewardTokenAccountB || ''),
       value
     )
   );

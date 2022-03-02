@@ -24,7 +24,7 @@ export interface FarmInfo {
   poolRewardTokenAccount: string;
   poolRewardTokenAccountB?: string;
 
-  user?: object;
+  user?: Record<string, unknown>;
 }
 
 export function getFarmByLpMintAddress(lpMintAddress: string): FarmInfo | undefined {
