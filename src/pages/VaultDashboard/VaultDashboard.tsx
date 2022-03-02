@@ -288,7 +288,7 @@ const VaultDashboard = () => {
                 />
               </div>
             </div>
-            {!isBigScreen && (
+            {/* {!isBigScreen && (
               <div className="col col-xxl-4 ">
                 <div className="vaultdashboard__bodyright">
                   <AmountPanel
@@ -303,29 +303,27 @@ const VaultDashboard = () => {
                   />
                 </div>
               </div>
-            )}
-            <div className="vaultdashboard__bodyleft row pt-0 my-5">
+            )} */}
+            {/* <div className="vaultdashboard__bodyleft row pt-0 my-5">
               <div className="col">
                 <VaultHistoryTable mintAddress={vault_mint} />
               </div>
+            </div> */}
+          </div>
+          <div className="col col-xxl-4 ">
+            <div className="vaultdashboard__bodyright">
+              <AmountPanel
+                mintAddress={vault_mint}
+                collAmount={lpWalletBalance}
+                collAmountUSD={lpWalletBalanceUSD}
+                icon={vaultData.icon}
+                icons={vaultData.icons}
+                tokenName={vaultData.title}
+                usdrAmount={usdrWalletBalance}
+                platform={vaultData.platform}
+              />
             </div>
           </div>
-          {isBigScreen && (
-            <div className="col col-xxl-4 ">
-              <div className="vaultdashboard__bodyright">
-                <AmountPanel
-                  mintAddress={vault_mint}
-                  collAmount={lpWalletBalance}
-                  collAmountUSD={lpWalletBalanceUSD}
-                  icon={vaultData.icon}
-                  icons={vaultData.icons}
-                  tokenName={vaultData.title}
-                  usdrAmount={usdrWalletBalance}
-                  platform={vaultData.platform}
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </>

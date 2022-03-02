@@ -95,6 +95,7 @@
   &__bodyleft {
     margin-top: 0rem;
     padding-left: 4rem;
+    padding-bottom: 1rem;
     @include respond-to(xxl) {
       padding-right: 4rem;
       
@@ -107,13 +108,13 @@
   }
   &__bodyright {
     margin-bottom: 50px;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     border: 1px solid rgba(#214769, 0.2);
     border-radius: 25px;
     margin-right: 4rem;
     @include respond-to(xxl) {
-      margin-left: 4rem;
-      margin-right: 4rem;
+      margin-left: 5rem;
+      margin-right: 5rem;
     }
     @include respond-to(lg) {
       margin-right: 2rem;
