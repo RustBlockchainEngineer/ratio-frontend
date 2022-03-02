@@ -88,12 +88,12 @@ const GenerateModal = ({ data }: any) => {
       .then((tx) => {
         console.log('Success Generate txid=', tx);
         updateRFStates(UPDATE_USER_STATE, data.mint);
-        toast('Successfully minted USDr tokens!');
+        toast.success('Successfully minted USDr tokens!');
       })
       .catch((e) => {
         console.log(e);
-        if (isWalletApproveError(e)) toast('Wallet is not approved!');
-        else toast('Transaction Error!');
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
       .finally(() => {
         setShow(!show);

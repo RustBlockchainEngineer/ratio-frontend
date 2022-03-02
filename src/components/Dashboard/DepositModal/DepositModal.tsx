@@ -83,12 +83,12 @@ const DepositModal = ({ data }: any) => {
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         setDepositAmount(0);
-        toast('Successfully Deposited!');
+        toast.success('Successfully Deposited!');
       })
       .catch((e) => {
         console.log(e);
-        if (isWalletApproveError(e)) toast('Wallet is not approved!');
-        else toast('Transaction Error!');
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
       .finally(() => {
         setShow(!show);

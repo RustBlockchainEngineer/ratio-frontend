@@ -29,12 +29,12 @@ const TokensEarned = ({ data }: any) => {
       ?.harvestReward(connection, wallet, vault as LPair)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
-        toast('Successfully Harvested!');
+        toast.success('Successfully Harvested!');
       })
       .catch((e) => {
         console.log(e);
-        if (isWalletApproveError(e)) toast('Wallet is not approved!');
-        else toast('Transaction Error!');
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
       .finally(() => {});
   };

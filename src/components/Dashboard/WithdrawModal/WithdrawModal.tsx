@@ -88,12 +88,12 @@ const WithdrawModal = ({ data }: any) => {
       )
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
-        toast('Successfully Withdrawn!');
+        toast.success('Successfully Withdrawn!');
       })
       .catch((e) => {
         console.log(e);
-        if (isWalletApproveError(e)) toast('Wallet is not approved!');
-        else toast('Transaction Error!');
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
       .finally(() => {
         setShow(false);

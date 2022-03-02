@@ -113,12 +113,12 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mint);
-        toast('Successfully Harvested!');
+        toast.success('Successfully Harvested!');
       })
       .catch((e) => {
         console.log(e);
-        if (isWalletApproveError(e)) toast('Wallet is not approved!');
-        else toast('Transaction Error!');
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
       .finally(() => {});
   };
