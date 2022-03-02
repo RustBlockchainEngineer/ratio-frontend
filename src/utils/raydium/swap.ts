@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-// @ts-ignore
 import { nu64, struct, u8 } from 'buffer-layout';
 
 import { _OPEN_ORDERS_LAYOUT_V2, Market, OpenOrders } from '@project-serum/serum/lib/market';
@@ -825,7 +824,6 @@ export async function place(
   // const useFeeDiscountPubkey: PublicKey | null
   const openOrdersAddress: PublicKey = await createProgramAccountIfNotExist(
     connection,
-    // @ts-ignore
     openOrdersAccounts.length === 0 ? null : openOrdersAccounts[0].address.toBase58(),
     owner,
     new PublicKey(SERUM_PROGRAM_ID_V3),
@@ -867,7 +865,6 @@ export async function place(
     market.makePlaceOrderInstruction(connection, {
       owner,
       payer: wrappedSolAccount ?? new PublicKey(fromTokenAccount),
-      // @ts-ignore
       side: forecastConfig.side,
       price: forecastConfig.worstPrice,
       size:
