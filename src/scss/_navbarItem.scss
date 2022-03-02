@@ -27,7 +27,7 @@
     align-items:center;
     justify-content: space-between;
     margin-left: 3rem;
-    padding-left: 1rem;
+    padding-left: 0.5rem;
     padding-right: 0.5rem;
     border-left: 2px solid var(--unnamed-color-bg);
     &-name {
@@ -36,6 +36,7 @@
       color: var(--unnamed-color-3C4760);
     }
     &-positionvalue {
+      min-width: 58px;
       font-family: 'Poppins-Bold';
       font-size: 0.75rem;
       color: var(--unnamed-color-f48c57);
@@ -45,6 +46,7 @@
       margin-right: 0.5rem;
     }
     &-rewardsearned {
+      min-width: 58px;
       font-family: 'Poppins-Bold';
       font-size: 0.75rem;
       color: var(--unnamed-color-5fb5ff);

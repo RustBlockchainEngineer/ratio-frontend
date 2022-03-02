@@ -59,8 +59,8 @@ const TokensEarned = ({ data }: any) => {
       <Table striped hover>
         <thead>
           <tr>
-            <th className="w-75">Name</th>
-            <th className="w-25">Rewards</th>
+            <th>Name</th>
+            <th>Rewards</th>
             <th className="text-right">USD</th>
           </tr>
         </thead>
