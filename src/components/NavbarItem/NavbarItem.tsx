@@ -63,26 +63,28 @@ const NavbarItem = ({
           positionValues.map((item: any, index: number) => {
             return (
               <div className="row navbarItem__expand no-gutters" key={index}>
-                <div className="text-left col-6">
+                <div className="text-left">
                   <p className="navbarItem__expand-name">{item.title}</p>
                 </div>
-                <div className="col-3">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={{ show: 100, hide: 100 }}
-                    overlay={<Tooltip id="tooltip">Position Value</Tooltip>}
-                  >
-                    <div className="navbarItem__expand-positionvalue">$ {item && nFormatter(item.pv || 0, 2)}</div>
-                  </OverlayTrigger>
-                </div>
-                <div className="col-3">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={{ show: 100, hide: 100 }}
-                    overlay={<Tooltip id="tooltip">USDr minted</Tooltip>}
-                  >
-                    <div className="navbarItem__expand-rewardsearned">$ {nFormatter(item.debt || 0, 2)}</div>
-                  </OverlayTrigger>
+                <div className="d-flex">
+                  <div>
+                    <OverlayTrigger
+                      placement="top"
+                      delay={{ show: 100, hide: 100 }}
+                      overlay={<Tooltip id="tooltip">Position Value</Tooltip>}
+                    >
+                      <div className="navbarItem__expand-positionvalue">$ {item && nFormatter(item.pv || 0, 2)}</div>
+                    </OverlayTrigger>
+                  </div>
+                  <div>
+                    <OverlayTrigger
+                      placement="top"
+                      delay={{ show: 100, hide: 100 }}
+                      overlay={<Tooltip id="tooltip">USDr minted</Tooltip>}
+                    >
+                      <div className="navbarItem__expand-rewardsearned">$ {nFormatter(item.debt || 0, 2)}</div>
+                    </OverlayTrigger>
+                  </div>
                 </div>
               </div>
             );

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { useLocation } from 'react-router-dom';
+
 import ComingSoon from '../../components/ComingSoon';
 import RiskLevel from '../../components/Dashboard/RiskLevel';
 import SpeedoMetor from '../../components/Dashboard/SpeedoMeter';
@@ -14,8 +15,6 @@ import AmountPanel from '../../components/Dashboard/AmountPanel';
 import WalletBalances from '../../components/Dashboard/AmountPanel/WalletBalances';
 
 import share from '../../assets/images/share.svg';
-import rayIcon from '../../assets/images/RAY.svg';
-import solIcon from '../../assets/images/SOL.svg';
 import usdrIcon from '../../assets/images/USDr.png';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
@@ -178,6 +177,8 @@ const VaultDashboard = () => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
 
+  const isBigScreen = useMediaQuery({ query: '(min-width: 1539px)' });
+
   if (isLoading)
     return (
       <div className="col allvaults__loading">
@@ -287,26 +288,44 @@ const VaultDashboard = () => {
                 />
               </div>
             </div>
-            <div className="vaultdashboard__bodyleft row pt-0 mt-5">
+            {!isBigScreen && (
+              <div className="col col-xxl-4 ">
+                <div className="vaultdashboard__bodyright">
+                  <AmountPanel
+                    mintAddress={vault_mint}
+                    collAmount={lpWalletBalance}
+                    collAmountUSD={lpWalletBalanceUSD}
+                    icon={vaultData.icon}
+                    icons={vaultData.icons}
+                    tokenName={vaultData.title}
+                    usdrAmount={usdrWalletBalance}
+                    platform={vaultData.platform}
+                  />
+                </div>
+              </div>
+            )}
+            <div className="vaultdashboard__bodyleft row pt-0 my-5">
               <div className="col">
                 <VaultHistoryTable mintAddress={vault_mint} />
               </div>
             </div>
           </div>
-          <div className="col col-xxl-4 ">
-            <div className="vaultdashboard__bodyright">
-              <AmountPanel
-                mintAddress={vault_mint}
-                collAmount={lpWalletBalance}
-                collAmountUSD={lpWalletBalanceUSD}
-                icon={vaultData.icon}
-                icons={vaultData.icons}
-                tokenName={vaultData.title}
-                usdrAmount={usdrWalletBalance}
-                platform={vaultData.platform}
-              />
+          {isBigScreen && (
+            <div className="col col-xxl-4 ">
+              <div className="vaultdashboard__bodyright">
+                <AmountPanel
+                  mintAddress={vault_mint}
+                  collAmount={lpWalletBalance}
+                  collAmountUSD={lpWalletBalanceUSD}
+                  icon={vaultData.icon}
+                  icons={vaultData.icons}
+                  tokenName={vaultData.title}
+                  usdrAmount={usdrWalletBalance}
+                  platform={vaultData.platform}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </>
