@@ -121,9 +121,9 @@ const TokenPairListItem = ({ data, onCompareVault, isGlobalDebtLimitReached }: T
   const renderModalButton = () => {
     return (
       <div>
-        <Button disabled={!connected} onClick={harvest} className="button button--blue tokenpaircard__generate">
+        {/* <Button disabled={!connected} onClick={harvest} className="button button--blue tokenpaircard__generate">
           Harvest
-        </Button>
+        </Button> */}
         <div className="mx-1"></div>
         <Button
           disabled={!connected}

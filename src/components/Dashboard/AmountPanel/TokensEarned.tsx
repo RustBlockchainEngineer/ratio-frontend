@@ -8,7 +8,7 @@ import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { useUpdateHistory } from '../../../contexts/auth';
 import { toast } from 'react-toastify';
-import { SBR_PRICE } from '../../../constants/constants';
+import { SBR_PRICE, PRICE_DECIMAL } from '../../../constants/constants';
 import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 
@@ -71,8 +71,10 @@ const TokensEarned = ({ data }: any) => {
               <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
               {getTokenNameByPlatform(data?.platform?.name)}
             </td>
-            <td className="align-middle">{userState?.reward}</td>
-            <td className="text-right align-middle">${userState?.reward * SBR_PRICE}</td>
+            <td className="align-middle">
+              {userState?.reward?.toFixed(PRICE_DECIMAL)} {getTokenNameByPlatform(data?.platform?.name)}
+            </td>
+            <td className="text-right align-middle">${(userState?.reward * SBR_PRICE)?.toFixed(PRICE_DECIMAL)}</td>
           </tr>
         </tbody>
       </Table>

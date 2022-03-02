@@ -30,7 +30,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
     return vaultInfo?.tvl as number;
   }
 
-  depositLP(connection: Connection, wallet: any, vault: LPair, amount: number): boolean {
+  async depositLP(connection: Connection, wallet: any, vault: LPair, amount: number): Promise<boolean> {
     // TODO Implement this function
 
     alert('Raydium: Deposit LP');
@@ -39,7 +39,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number): boolean {
+  async withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number): Promise<boolean> {
     // TODO Implement this function
 
     alert('Raydium: Withdraw LP');
@@ -48,7 +48,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  harvestReward(connection: Connection, wallet: any, vault: LPair): boolean {
+  async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
     // TODO Implement this function
 
     alert('Raydium: Harvest Reward');
@@ -57,7 +57,7 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
-  getRewards(): number {
+  async getRewards(): Promise<number> {
     // TODO Implement this function
 
     console.error('Function not implemented yet');
