@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { nu64, seq, struct, u8 } from 'buffer-layout';
 import { cloneDeep } from 'lodash-es';
 

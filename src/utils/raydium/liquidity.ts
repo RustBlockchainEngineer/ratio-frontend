@@ -2,7 +2,6 @@
 /* eslint-disable prettier/prettier */
 
 import BigNumber from 'bignumber.js';
-// @ts-ignore
 import { nu64, struct, u8 } from 'buffer-layout';
 
 import { publicKey, u128, u64 } from '@project-serum/borsh';
