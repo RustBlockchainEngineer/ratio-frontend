@@ -73,7 +73,7 @@ const NavbarItem = ({
                       delay={{ show: 100, hide: 100 }}
                       overlay={<Tooltip id="tooltip">Position Value</Tooltip>}
                     >
-                      <div className="navbarItem__expand-positionvalue">$ {item && nFormatter(item.pv || 0, 2)}</div>
+                      <div className="navbarItem__expand-positionvalue">$ {item && nFormatter(item.pv || 0, 1)}</div>
                     </OverlayTrigger>
                   </div>
                   <div>
@@ -82,7 +82,7 @@ const NavbarItem = ({
                       delay={{ show: 100, hide: 100 }}
                       overlay={<Tooltip id="tooltip">USDr minted</Tooltip>}
                     >
-                      <div className="navbarItem__expand-rewardsearned">$ {nFormatter(item.debt || 0, 2)}</div>
+                      <div className="navbarItem__expand-rewardsearned">$ {nFormatter(item.debt || 0, 1)}</div>
                     </OverlayTrigger>
                   </div>
                 </div>
