@@ -13,6 +13,7 @@ import {
   TROVE_SEED,
   WSOL_MINT_KEY,
   PRICE_FEED_TAG,
+  getUserState,
 } from '../ratio-lending';
 import {
   PublicKey,
@@ -126,7 +127,12 @@ export async function createSaberTokenVault(
     console.error(e);
   }
 }
-export async function createSaberUserTrove(connection: Connection, wallet: any, mintCollKey: PublicKey) {
+export async function createSaberUserTrove(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: PublicKey,
+  needTx = false
+) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   console.log('Create Saber UserTrove');
@@ -198,15 +204,17 @@ export async function createSaberUserTrove(connection: Connection, wallet: any, 
       quarryProgram: QUARRY_ADDRESSES.Mine,
       ...defaultAccounts,
     },
-    instrunctions: [ix1, ix2],
   });
 
   const transaction = new Transaction();
   transaction.add(...[ix1, ix2, ix3]);
+  if (needTx) {
+    return transaction;
+  } else {
+    const txHash = await sendTransaction(connection, wallet, transaction, []);
 
-  const txHash = await sendTransaction(connection, wallet, transaction, []);
-
-  return txHash;
+    return txHash;
+  }
 }
 export async function depositToSaber(
   connection: Connection,
@@ -243,6 +251,12 @@ export async function depositToSaber(
     program.programId
   );
   const transaction = new Transaction();
+
+  const user = await getUserState(connection, wallet, mintCollKey);
+  if (!user) {
+    const tx = await createSaberUserTrove(connection, wallet, mintCollKey, true);
+    transaction.add(tx);
+  }
 
   const ix = await program.instruction.depositToSaber(new anchor.BN(amount), {
     accounts: {

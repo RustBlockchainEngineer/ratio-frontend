@@ -28,10 +28,6 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
     tokenAccount: string
   ): Promise<boolean> {
     // TODO Implement this function
-    const user = await getUserState(connection, wallet, new PublicKey(vault.address_id));
-    if (!user) {
-      const tx = await createSaberUserTrove(connection, wallet, new PublicKey(vault.address_id));
-    }
 
     await depositToSaber(connection, wallet, new PublicKey(vault.address_id), amount, new PublicKey(tokenAccount));
     return true;
