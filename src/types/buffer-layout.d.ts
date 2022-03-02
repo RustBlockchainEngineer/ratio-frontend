@@ -1,7 +1,4 @@
-declare module 'buffer-layout' {
-  const bl: any;
-  export = bl;
-}
+declare module 'buffer-layout';
 
 declare module 'jazzicon' {
   const jazzicon: any;
