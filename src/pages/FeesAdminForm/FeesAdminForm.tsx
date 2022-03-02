@@ -199,11 +199,41 @@ export default function FeesAdminForm() {
       <h5 className="mt-3">Modify Fees Values(%):</h5>
       <Form validated={validated} onSubmit={handleSubmit}>
         <Row className="mb-3">
-          <AdminFormInput handleChange={handleChange} label="Borrow" name="borrow_fee" value={data?.borrow_fee} />
-          <AdminFormInput handleChange={handleChange} label="Deposit" name="deposit_fee" value={data?.deposit_fee} />
-          <AdminFormInput handleChange={handleChange} label="Payback" name="payback_fee" value={data?.payback_fee} />
-          <AdminFormInput handleChange={handleChange} label="Stake" name="stake_fee" value={data?.stake_fee} />
-          <AdminFormInput handleChange={handleChange} label="Withdraw" name="withdraw_fee" value={data?.withdraw_fee} />
+          <AdminFormInput
+            yetNotImplemented={true}
+            handleChange={handleChange}
+            label="Borrow"
+            name="borrow_fee"
+            value={data?.borrow_fee}
+          />
+          <AdminFormInput
+            yetNotImplemented={true}
+            handleChange={handleChange}
+            label="Deposit"
+            name="deposit_fee"
+            value={data?.deposit_fee}
+          />
+          <AdminFormInput
+            yetNotImplemented={true}
+            handleChange={handleChange}
+            label="Payback"
+            name="payback_fee"
+            value={data?.payback_fee}
+          />
+          <AdminFormInput
+            yetNotImplemented={true}
+            handleChange={handleChange}
+            label="Stake"
+            name="stake_fee"
+            value={data?.stake_fee}
+          />
+          <AdminFormInput
+            yetNotImplemented={true}
+            handleChange={handleChange}
+            label="Withdraw"
+            name="withdraw_fee"
+            value={data?.withdraw_fee}
+          />
           <AdminFormInput handleChange={handleChange} label="Harvest" name="harvest_fee" value={data?.harvest_fee} />
         </Row>
         <Button variant="primary" type="submit">
