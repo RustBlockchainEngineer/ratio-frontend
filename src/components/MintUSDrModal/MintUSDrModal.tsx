@@ -11,10 +11,7 @@ import ComingSoon from '../ComingSoon';
 
 import riskLevel from '../../assets/images/risklevel.svg';
 import highRisk from '../../assets/images/highrisk.svg';
-import {
-  depositCollateral,
-  borrowUSDr,
-} from '../../utils/ratio-lending';
+import { depositCollateral, borrowUSDr } from '../../utils/ratio-lending';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 import { useConnection } from '../../contexts/connection';
@@ -28,7 +25,14 @@ import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
 import { sleep } from '../../utils/utils';
 import usdrIcon from '../../assets/images/USDr.png';
-import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultInfo, useVaultMintInfo } from '../../contexts/state';
+import {
+  UPDATE_USER_STATE,
+  useUpdateRFStates,
+  useUSDrMintInfo,
+  useUserInfo,
+  useVaultInfo,
+  useVaultMintInfo,
+} from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;

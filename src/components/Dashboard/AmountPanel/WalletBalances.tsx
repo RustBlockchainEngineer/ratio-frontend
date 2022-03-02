@@ -22,7 +22,7 @@ const WalletBalances = ({ data, icon, tokenName, collAmount, collAmountUSD, usdr
               {tokenName === 'USDC-USDR' ? 'USDC-USDr' : tokenName}
             </td>
             <td className="align-middle">{collAmount?.toFixed(2)}</td>
-            <td className="text-right align-middle">$ {collAmountUSD?.toFixed(2)}</td>
+            <td className="text-right align-middle">${collAmountUSD?.toFixed(2)}</td>
           </tr>
           <tr>
             <td>

@@ -10,6 +10,7 @@ import { useUpdateHistory } from '../../../contexts/auth';
 import { toast } from 'react-toastify';
 import { SBR_PRICE, PRICE_DECIMAL } from '../../../constants/constants';
 import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserInfo } from '../../../contexts/state';
+import { isWalletApproveError } from '../../../utils/utils';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -28,13 +29,14 @@ const TokensEarned = ({ data }: any) => {
       ?.harvestReward(connection, wallet, vault as LPair)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
+        toast.success('Successfully Harvested!');
       })
       .catch((e) => {
         console.log(e);
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
-      .finally(() => {
-        toast('Successfully Harvested!');
-      });
+      .finally(() => {});
   };
 
   const getTokenNameByPlatform = (name: string) => {

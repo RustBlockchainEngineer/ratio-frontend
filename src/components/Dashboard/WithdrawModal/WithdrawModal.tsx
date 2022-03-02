@@ -13,6 +13,7 @@ import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
+import { isWalletApproveError } from '../../../utils/utils';
 
 type PairType = {
   mint: string;
@@ -87,9 +88,12 @@ const WithdrawModal = ({ data }: any) => {
       )
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
+        toast.success('Successfully Withdrawn!');
       })
       .catch((e) => {
         console.log(e);
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
       .finally(() => {
         setShow(false);

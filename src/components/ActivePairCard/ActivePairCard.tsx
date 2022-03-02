@@ -20,6 +20,7 @@ import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { TokenPairCardProps } from '../../models/UInterface';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
+import { isWalletApproveError } from '../../utils/utils';
 
 import {
   useUpdateRFStates,
@@ -112,13 +113,14 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
       ?.harvestReward(connection, wallet, data.item)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mint);
+        toast.success('Successfully Harvested!');
       })
       .catch((e) => {
         console.log(e);
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
-      .finally(() => {
-        toast('Successfully Harvested!');
-      });
+      .finally(() => {});
   };
 
   const renderModalButton = () => {

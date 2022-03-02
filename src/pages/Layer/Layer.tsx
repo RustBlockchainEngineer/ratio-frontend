@@ -94,8 +94,7 @@ const Layer = () => {
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
       <ToastContainer
         position="top-center"
-        autoClose={3000}
-        hideProgressBar
+        autoClose={1500}
         newestOnTop={false}
         closeOnClick
         rtl={false}

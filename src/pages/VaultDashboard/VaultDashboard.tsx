@@ -132,8 +132,10 @@ const VaultDashboard = () => {
   }, [tokenPrice, userState, globalState, usdrMint, collMint, vaultData]);
 
   useEffect(() => {
+    console.log('anan useEffect userState =', userState, ' mint =', collMint);
     if (userState && collMint) {
       const tmpWithdrawValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
+      console.log('with value =', Number(tmpWithdrawValue));
       setWithdrawValue(Number(tmpWithdrawValue));
     }
     return () => {
