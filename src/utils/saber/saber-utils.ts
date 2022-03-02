@@ -335,18 +335,17 @@ export async function withdrawFromSaber(
     },
   });
   transaction.add(ix);
+
+  const harvest_ix = await harvestFromSaber(connection, wallet, mintCollKey, true);
+  transaction.add(harvest_ix);
+
   const txHash = await sendTransaction(connection, wallet, transaction);
   console.log('Saber withdraw tx', txHash);
 
   return txHash;
 }
 
-export async function harvestFromSaber(
-  connection: Connection,
-  wallet: any,
-  mintCollKey: PublicKey
-  // userCollAddress: PublicKey
-) {
+export async function harvestFromSaber(connection: Connection, wallet: any, mintCollKey: PublicKey, needTx = false) {
   console.log('Harvesting from Saber');
   const program = getProgramInstance(connection, wallet);
   const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
@@ -387,7 +386,7 @@ export async function harvestFromSaber(
   const tx = new Transaction();
 
   let userRewardKey = await getOneFilteredTokenAccountsByOwner(connection, wallet.publicKey, SABER_REWARD_MINT);
-  let amountOrigin = 0;
+
   if (userRewardKey === '') {
     const ata = await Token.getAssociatedTokenAddress(
       ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -408,9 +407,6 @@ export async function harvestFromSaber(
         wallet.publicKey
       )
     );
-  } else {
-    const amount = await getTokenAmount(program.provider, userRewardKey);
-    amountOrigin = amount.toNumber();
   }
 
   let feeCollectorKey = await getOneFilteredTokenAccountsByOwner(connection, globalState.treasury, SABER_REWARD_MINT);
@@ -471,54 +467,44 @@ export async function harvestFromSaber(
   });
   tx.add(ix);
 
-  const txHash = await sendTransaction(connection, wallet, tx);
-  console.log('Harvest finished', txHash);
-
-  let amountNew = amountOrigin;
-  while (amountNew === amountOrigin) {
-    await serumCmn.sleep(200);
-    const amountBn = await getTokenAmount(program.provider, userRewardKey);
-    amountNew = amountBn.toNumber();
+  if (needTx === false) {
+    const txHash = await sendTransaction(connection, wallet, tx);
+    console.log('Harvest finished', txHash);
+    return txHash;
+  } else {
+    return tx;
   }
-
-  const rewardMint = await serumCmn.getMintInfo(program.provider, SABER_REWARD_MINT);
-  const newReward = (amountNew - amountOrigin) * Math.pow(10, -rewardMint?.decimals);
-
-  console.log('New reward earned', newReward);
-
-  return txHash;
 }
 
 export async function calculateSaberReward(connection: Connection, wallet: any, mintCollKey: PublicKey) {
-  const program = getProgramInstance(connection, wallet);
-
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-
-  const sdk: QuarrySDK = QuarrySDK.load({
-    provider: program.provider,
-  });
-  const rewarder = await sdk.mine.loadRewarderWrapper(SABER_REWARDER);
-
-  const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
-
-  const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
-  const quarry = await rewarder.getQuarry(poolMintToken);
-
-  const miner = await quarry.getMiner(userTroveKey);
-  const payroll = quarry.payroll;
-
-  const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
-
-  let expectedWagesEarned = 0;
   try {
-    expectedWagesEarned = (
+    const program = getProgramInstance(connection, wallet);
+
+    const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
+      program.programId
+    );
+    const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+      [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+      program.programId
+    );
+
+    const sdk: QuarrySDK = QuarrySDK.load({
+      provider: program.provider,
+    });
+    const rewarder = await sdk.mine.loadRewarderWrapper(SABER_REWARDER);
+
+    const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
+
+    const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
+    const quarry = await rewarder.getQuarry(poolMintToken);
+
+    const miner = await quarry.getMiner(userTroveKey);
+    const payroll = quarry.payroll;
+
+    const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
+
+    const expectedWagesEarned = (
       await payroll.calculateRewardsEarned(
         currentTimeStamp,
         miner?.balance as anchor.BN,
@@ -526,13 +512,9 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
         miner?.rewardsEarned as anchor.BN
       )
     ).toNumber();
+    return parseFloat(new TokenAmount(expectedWagesEarned, collMintInfo.decimals).fixed());
   } catch (e) {
-    // console.log(e);
+    console.log(e);
+    return 0;
   }
-  return parseFloat(new TokenAmount(expectedWagesEarned, collMintInfo.decimals).fixed());
-}
-
-async function getTokenAmount(provider: any, tokenAccountKey: PublicKey | string) {
-  const accountInfo = await serumCmn.getTokenAccount(provider, new PublicKey(tokenAccountKey));
-  return accountInfo?.amount;
 }
