@@ -72,16 +72,20 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Use Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
       - name: Build
         run: yarn build
       - name: Release
         uses: cycjimmy/semantic-release-action@v2
         id: semantic
         with:
-          branch: master
+          semantic_version: 18
           extra_plugins: |
-            @semantic-release/git@v9
-            @semantic-release/changelog
+            @semantic-release/git@10
+            @semantic-release/changelog@6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
