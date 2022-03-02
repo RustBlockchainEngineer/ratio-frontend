@@ -393,6 +393,7 @@ export async function depositCollateral(
         authority: wallet.publicKey,
         trove: userTroveKey,
         vault: tokenVaultKey,
+        ataTrove: userTroveTokenVaultKey,
         mintColl: mintCollKey,
         ...defaultPrograms,
       },
