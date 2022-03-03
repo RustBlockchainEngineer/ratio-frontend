@@ -296,20 +296,7 @@ export async function getTokenVaultAddress(mint: string | PublicKey): Promise<Pu
   return tokenVaultKey;
 }
 
-export async function getTokenVaultAddressByPublicKeyMint(
-  connection: Connection,
-  mint: PublicKey
-): Promise<PublicKey | undefined> {
-  const res = await getTokenVaultAndAddressByPublicKeyMint(connection, mint);
-  return res?.tokenVaultKey;
-}
-
-export async function createUserTrove(
-  connection: Connection,
-  wallet: any,
-  mintCollKey: PublicKey = WSOL_MINT_KEY,
-  debtCeil = 100_000_000_000
-) {
+export async function createUserTrove(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -340,9 +327,7 @@ export async function createUserTrove(
       accounts: {
         vault: tokenVaultKey,
         trove: userTroveKey,
-
         authority: wallet.publicKey,
-
         ataTrove: userTroveTokenVaultKey,
         mintColl: mintCollKey,
         ...defaultPrograms,
@@ -408,6 +393,7 @@ export async function depositCollateral(
         authority: wallet.publicKey,
         trove: userTroveKey,
         vault: tokenVaultKey,
+        ataTrove: userTroveTokenVaultKey,
         mintColl: mintCollKey,
         ...defaultPrograms,
       },
@@ -631,8 +617,9 @@ export async function calculateRewardByPlatform(
   mintCollKey: string | PublicKey,
   platformType: number
 ) {
+  let reward = 0;
   if (platformType === TYPE_ID_SABER) {
-    return await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
+    reward = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
   }
-  return 0;
+  return Math.floor(reward * 10000) / 10000;
 }

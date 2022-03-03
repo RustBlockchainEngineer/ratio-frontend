@@ -1,11 +1,10 @@
 /* eslint-disable prettier/prettier */
 import BigNumber from 'bignumber.js';
-// @ts-ignore
 import { struct, u8 } from 'buffer-layout';
 
 // import { AMM_INFO_LAYOUT_V4 } from './liquidity'
 import { Market as MarketSerum } from '@project-serum/serum';
-import { Orderbook } from '@project-serum/serum/lib/market.js';
+import { MarketOptions, Orderbook } from '@project-serum/serum/lib/market.js';
 import { closeAccount, initializeAccount } from '@project-serum/serum/lib/token-instructions';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, Token } from '@solana/spl-token';
 import {
@@ -61,7 +60,7 @@ export async function getMarket(conn: any, marketAddress: string): Promise<any |
       throw new Error('There is already a pool for this Serum Market');
     }
     const marketAddressPubKey = new PublicKey(marketAddress);
-    const market = await Market.load(conn, marketAddressPubKey, undefined, new PublicKey(SERUM_PROGRAM_ID_V3));
+    const market: Market = await Market.load(conn, marketAddressPubKey, undefined, new PublicKey(SERUM_PROGRAM_ID_V3));
     const {
       asksAddress,
       bidsAddress,
@@ -86,9 +85,7 @@ export async function getMarket(conn: any, marketAddress: string): Promise<any |
 
     const orderBookMsg = await getMultipleAccounts(conn, [bidsAddress, asksAddress], commitment);
     orderBookMsg.forEach((info) => {
-      // @ts-ignore
-      const data = info.account.data;
-      // @ts-ignore
+      const data = info?.account?.data;
       const orderbook = Orderbook.decode(market, data);
       const { isBids, slab } = orderbook;
       if (isBids) {
@@ -365,10 +362,7 @@ async function initAmm(
 
     signers.push(newAccount);
   } else {
-    transaction.add(
-      // @ts-ignore
-      transfer(new PublicKey(baseToken), poolCoinTokenAccount, owner, parseInt(coinVol.toFixed()))
-    );
+    transaction.add(transfer(new PublicKey(baseToken || ''), poolCoinTokenAccount, owner, parseInt(coinVol.toFixed())));
   }
   if (market.quoteMintAddress.toString() === TOKENS.WSOL.mintAddress) {
     const newAccount = new Account();
@@ -399,8 +393,7 @@ async function initAmm(
     );
     signers.push(newAccount);
   } else {
-    // @ts-ignore
-    transaction.add(transfer(new PublicKey(quoteToken), poolPcTokenAccount, owner, parseInt(pcVol.toFixed())));
+    transaction.add(transfer(new PublicKey(quoteToken || ''), poolPcTokenAccount, owner, parseInt(pcVol.toFixed())));
   }
 
   transaction.add(
@@ -562,7 +555,6 @@ export function preInitialize(
   });
 }
 
-// @ts-ignore
 export class Market extends MarketSerum {
   public baseVault: PublicKey | null = null;
   public quoteVault: PublicKey | null = null;
@@ -572,9 +564,32 @@ export class Market extends MarketSerum {
   public asks: PublicKey | null = null;
   public baseLotSize = 0;
   public quoteLotSize = 0;
-  private _decoded: any;
   public quoteMint: PublicKey | null = null;
   public baseMint: PublicKey | null = null;
+
+  constructor(
+    decoded: any,
+    baseMintDecimals: number,
+    quoteMintDecimals: number,
+    options: MarketOptions = {},
+    programId: PublicKey,
+    layoutOverride?: any
+  ) {
+    super(decoded, baseMintDecimals, quoteMintDecimals, options, programId, layoutOverride);
+    const { skipPreflight = false, commitment = 'recent' } = options;
+    if (!decoded.accountFlags.initialized || !decoded.accountFlags.market) {
+      throw new Error('Invalid market state');
+    }
+    this._decoded = decoded;
+    this._baseSplTokenDecimals = baseMintDecimals;
+    this._quoteSplTokenDecimals = quoteMintDecimals;
+    this._skipPreflight = skipPreflight;
+    this._commitment = commitment;
+    this._programId = programId;
+    this._openOrdersAccountsCache = {};
+    this._feeDiscountKeysCache = {};
+    this._layoutOverride = layoutOverride;
+  }
 
   static async load(connection: Connection, address: PublicKey, options: any = {}, programId: PublicKey) {
     const { owner, data } = throwIfNull(await connection.getAccountInfo(address), 'Market not found');

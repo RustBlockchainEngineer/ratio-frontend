@@ -1,15 +1,8 @@
 import { LPair } from '../../types/VaultTypes';
 import { GenericInfoProvider } from './GenericInfoProvider';
-import { randomInteger } from '../utils';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { getUserState } from '../ratio-lending';
-import {
-  calculateSaberReward,
-  createSaberUserTrove,
-  depositToSaber,
-  harvestFromSaber,
-  withdrawFromSaber,
-} from '../saber/saber-utils';
+import { calculateRewardByPlatform, getUserState, TYPE_ID_SABER } from '../ratio-lending';
+import { depositToSaber, harvestFromSaber, withdrawFromSaber } from '../saber/saber-utils';
 
 export class SaberPoolInfoProvider extends GenericInfoProvider {
   getTVLbyVault(vault: LPair): number {
@@ -28,10 +21,6 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
     tokenAccount: string
   ): Promise<boolean> {
     // TODO Implement this function
-    const user = await getUserState(connection, wallet, new PublicKey(vault.address_id));
-    if (!user) {
-      const tx = await createSaberUserTrove(connection, wallet, new PublicKey(vault.address_id));
-    }
 
     await depositToSaber(connection, wallet, new PublicKey(vault.address_id), amount, new PublicKey(tokenAccount));
     return true;
@@ -62,7 +51,12 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
   async getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number> {
     // TODO Implement this function
     if (vault) {
-      const amount = await calculateSaberReward(connection, wallet, new PublicKey(vault.address_id));
+      const amount = await calculateRewardByPlatform(
+        connection,
+        wallet,
+        new PublicKey(vault.address_id),
+        TYPE_ID_SABER
+      );
 
       return amount;
     }
