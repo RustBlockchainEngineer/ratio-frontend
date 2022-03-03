@@ -272,6 +272,7 @@ const UseNativeAccount = () => {
       }
     });
     connection.onAccountChange(publicKey, (acc) => {
+      console.log('*************Account is Changed**********', acc);
       if (acc) {
         updateCache(acc);
         setNativeAccount(acc);
