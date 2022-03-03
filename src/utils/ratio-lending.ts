@@ -617,8 +617,9 @@ export async function calculateRewardByPlatform(
   mintCollKey: string | PublicKey,
   platformType: number
 ) {
+  let reward = 0;
   if (platformType === TYPE_ID_SABER) {
-    return await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
+    reward = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
   }
-  return 0;
+  return Math.floor(reward * 10000) / 10000;
 }
