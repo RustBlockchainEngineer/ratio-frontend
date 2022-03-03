@@ -59,10 +59,10 @@ const GuideModal = () => {
               <p>Step 4: Go to the faucet on the site </p>
               <p>Step 5: Mint any of the LP devnet tokens </p>
               <p>Step 6: Use the app to deposit, mint, pay back, withdraw, and harvest. </p>
-              <h6 className="mt-3">
+              {/* <h6 className="mt-3">
                 Note: Note: Phantom wallets will give the best user experience as token names and icons will be imported
                 to wallet.
-              </h6>
+              </h6> */}
             </div>
             <div className="guidemodal__btnBox row">
               <div className="col">
