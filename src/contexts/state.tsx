@@ -9,6 +9,7 @@ import {
   USDR_MINT_KEY,
 } from '../utils/ratio-lending';
 import { getMint } from '../utils/utils';
+import { useUpdateWallet } from './auth';
 import { useConnection } from './connection';
 import { useVaultsContextProvider } from './vaults';
 import { useWallet } from './wallet';
@@ -48,19 +49,20 @@ export function RFStateProvider({ children = undefined as any }) {
   const [userState, setUserState] = useState<any>(null);
   const [overview, setOverview] = useState<any>(null);
   const [tokenState, setTokenState] = useState<any>(null);
+  const { updateWalletFlag, setUpdateWalletFlag } = useUpdateWallet();
+  const updateRFState = async (action: UpdateStateType, mint = '') => {
+    await sleep(3000);
+    setUpdateWalletFlag(!updateWalletFlag);
 
-  const updateRFState = (action: UpdateStateType, mint = '') => {
-    sleep(3000).then(() => {
-      if (action === UPDATE_GLOBAL_STATE) {
-        updateGlobalState();
-      } else if (action === UPDATE_VAULT_STATE) {
-        updateVaultStateByMint(mint);
-      } else if (action === UPDATE_USER_STATE) {
-        updateUserStateByMint(mint);
-      } else if (action === UPDATE_REWARD_STATE) {
-        updateUserRewardByMint(mint);
-      }
-    });
+    if (action === UPDATE_GLOBAL_STATE) {
+      updateGlobalState();
+    } else if (action === UPDATE_VAULT_STATE) {
+      updateVaultStateByMint(mint);
+    } else if (action === UPDATE_USER_STATE) {
+      updateUserStateByMint(mint);
+    } else if (action === UPDATE_REWARD_STATE) {
+      updateUserRewardByMint(mint);
+    }
   };
 
   const updateMintState = async () => {
@@ -178,6 +180,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOverview = async () => {
+    if (!userState) return;
     try {
       const activeVaults: any = {};
       let vaultCount = 0;
