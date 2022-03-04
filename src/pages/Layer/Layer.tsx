@@ -33,6 +33,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { API_ENDPOINT } from '../../constants/constants';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 
+const NOT_FOUND_STATUS_CODE = 404;
+
 const Layer = () => {
   const theme = useContext(ThemeContext);
   const { darkMode } = theme.state;
@@ -41,7 +43,6 @@ const Layer = () => {
   const [collapseFlag, setCollapseFlag] = useState(false);
   const history = useHistory();
   const { connected, publicKey } = useWallet();
-  const NOT_FOUND_STATUS_CODE = 404;
 
   const [enable, setEnable] = useState(false);
   const {

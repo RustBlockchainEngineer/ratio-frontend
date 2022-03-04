@@ -131,7 +131,6 @@ const VaultDashboard = () => {
   }, [tokenPrice, userState, globalState, usdrMint, collMint, vaultData]);
 
   useEffect(() => {
-    console.log('anan useEffect userState =', userState, ' mint =', collMint);
     if (userState && collMint) {
       const tmpWithdrawValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
       console.log('with value =', Number(tmpWithdrawValue));
@@ -204,7 +203,7 @@ const VaultDashboard = () => {
       <div className="vaultdashboard">
         <div className="vaultdashboard__header">
           <div className="vaultdashboard__header_titleBox">
-            <Breadcrumb VaultData={vaultData} availableVaults={allVaults} />
+            <Breadcrumb vaultData={vaultData} availableVaults={allVaults} />
             <div className="d-flex">
               <div>
                 <h3>{vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault</h3>
