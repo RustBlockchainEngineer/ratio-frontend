@@ -23,6 +23,7 @@ import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useMint } from '../../contexts/accounts';
 
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
@@ -204,6 +205,13 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }, [remainingGlobalDebtLimit, vaultsWithPlatformInformation, vaults, vaultsDebtData]);
 
   const showContent = (vtype: string) => {
+    if (overview && !overview.activeVaults)
+      return (
+        <div className="d-flex justify-content-center mt-5">
+          <LoadingSpinner className="spinner-border-lg text-primary" />
+        </div>
+      );
+
     const onCompareVault = (data: PairType, status: boolean) => {
       if (status) {
         dispatch({ type: actionTypes.SET_COMPARE_VAULTS_LIST, payload: [...compareVaultsList, data] });
