@@ -27,6 +27,7 @@ import { getTokenBySymbol } from './tokens';
 import usdrIcon from '../assets/images/USDr.png';
 import { sleep } from './utils';
 import { calculateSaberReward, createSaberTokenVault } from './saber/saber-utils';
+import { PRICE_DECIMAL } from '../constants';
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
@@ -621,5 +622,6 @@ export async function calculateRewardByPlatform(
   if (platformType === TYPE_ID_SABER) {
     reward = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
   }
-  return Math.floor(reward * 10000) / 10000;
+
+  return parseFloat(reward.toFixed(PRICE_DECIMAL));
 }
