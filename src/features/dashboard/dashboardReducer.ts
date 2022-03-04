@@ -17,7 +17,7 @@ const initialState = {
   compare_vaults: false,
   compare_vaults_list: [],
   filter_data: [],
-  sort_data: { value: 'apr', label: 'APR' },
+  sort_data: { value: 'apr', label: 'APY' },
   view_data: { value: 'ascending', label: 'Ascending' },
   all_vaults: [],
   active_vaults: [],

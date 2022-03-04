@@ -332,7 +332,6 @@ export const getDebtLimitForAllVaults = async (connection: Connection, wallet: a
 
   const debtLimitForAllVaults = await Promise.all(
     vaults.map(async (vault: any) => {
-      console.log(vault);
       const collMint = await getMint(connection, vault.address_id);
 
       const params: GetDebtLimit = {
