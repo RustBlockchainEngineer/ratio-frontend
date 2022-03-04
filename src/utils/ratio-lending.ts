@@ -622,5 +622,6 @@ export async function calculateRewardByPlatform(
   if (platformType === TYPE_ID_SABER) {
     reward = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
   }
+
   return parseFloat(reward.toFixed(PRICE_DECIMAL));
 }
