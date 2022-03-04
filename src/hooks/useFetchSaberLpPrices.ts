@@ -43,3 +43,5 @@ export const useFetchSaberLpPrices = () => {
     error,
   };
 };
+
+export const useFetchSaberLpPrice = async () => {};
