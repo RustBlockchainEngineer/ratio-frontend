@@ -183,7 +183,13 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOverview = async () => {
-    if (!userState || Object.keys(userState).length === 0) return;
+    if (!userState || Object.keys(userState).length === 0) {
+      return setOverview({
+        activeVaults: {},
+        totalDebt: 0,
+        vaultCount: 0,
+      });
+    }
     try {
       const activeVaults: any = {};
       let vaultCount = 0;
