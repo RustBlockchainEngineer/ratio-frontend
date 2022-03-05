@@ -440,7 +440,7 @@ export async function harvestFromSaber(connection: Connection, wallet: any, mint
         TOKEN_PROGRAM_ID,
         SABER_REWARD_MINT,
         new PublicKey(feeCollectorKey),
-        wallet.publicKey,
+        globalState.treasury,
         wallet.publicKey
       )
     );
