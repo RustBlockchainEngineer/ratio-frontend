@@ -2,12 +2,18 @@ import { useEffect, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { useAuthContextProvider } from '../contexts/authAPI';
 
+interface SaberLpPrices {
+  poolName: string;
+  lpPrice: string;
+}
+
 function makeRatioApiEndpointSaberLpPrices(): string {
   return `${API_ENDPOINT}/saberlpprices`;
 }
 
 export const useFetchSaberLpPrices = () => {
-  const [lpPrices, setLpPrices] = useState<any>({ DATA: 'DATA NOT LOADED YET' });
+  const [status, setStatus] = useState<any>('Data not loaded yet');
+  const [lpPrices, setLpPrices] = useState<[SaberLpPrices]>();
   const [error, setError] = useState<any>(null);
   const { accessToken } = useAuthContextProvider();
 
@@ -25,9 +31,11 @@ export const useFetchSaberLpPrices = () => {
         const tokenPrices = await res.json();
         if (cancelRequest) return;
         setLpPrices(tokenPrices);
+        setStatus('Data loaded successfully');
         setError(null);
       } catch (error) {
         if (cancelRequest) return;
+        setStatus('ERROR FETCHING SABER LP PRICES');
         setError(error);
       }
     }
