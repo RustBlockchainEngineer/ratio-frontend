@@ -4,12 +4,20 @@ import { useHistory } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import { IoIosArrowForward } from 'react-icons/io';
 import Select from 'react-select';
+import { useIsVaultActive } from '../../hooks/useIsVaultActive';
 
-const Breadcrumb = ({ VaultData, availableVaults }: any) => {
+enum BreadCrumbTitle {
+  ActiveVaults = 'My Active Vaults',
+  AvailableVaults = 'Available Vaults',
+}
+
+const Breadcrumb = ({ vaultData, availableVaults }: any) => {
   const history = useHistory();
   const [value, setValue] = useState();
   const [options, setOptions] = useState();
   const [isOpen, setIsOpen] = useState(false);
+
+  const isVaultActive = useIsVaultActive(vaultData?.mint || '');
 
   useEffect(() => {
     const p = availableVaults.map((item: any) => {
@@ -45,14 +53,16 @@ const Breadcrumb = ({ VaultData, availableVaults }: any) => {
     setIsOpen(currentNextShow);
   };
 
+  const breadCrumbTitle = isVaultActive ? BreadCrumbTitle.ActiveVaults : BreadCrumbTitle.AvailableVaults;
+
   return (
     <div className="bread-crumb">
       <p className="bread-crumb__text">
-        Available Vaults <IoIosArrowForward />
+        {breadCrumbTitle} <IoIosArrowForward />
       </p>
       <Dropdown onToggle={onToggle} show={isOpen}>
         <Dropdown.Toggle id="dropdown-basic">
-          {VaultData?.title === 'USDC-USDR' ? 'USDC-USDr' : VaultData.title} Vault
+          {vaultData?.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
