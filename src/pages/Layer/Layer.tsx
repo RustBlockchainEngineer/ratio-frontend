@@ -49,7 +49,7 @@ const Layer = () => {
     isLoading,
     data: userData,
     error,
-  } = useFetch<boolean>(`${API_ENDPOINT}/users/auth/${publicKey}`, {
+  } = useFetch<boolean | undefined>(`${API_ENDPOINT}/users/auth/${publicKey}`, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -63,10 +63,29 @@ const Layer = () => {
         setEnable(false);
         return;
       }
-      if (!isLoading && (error?.status === NOT_FOUND_STATUS_CODE || userData === false)) {
+      if (error?.status === NOT_FOUND_STATUS_CODE || userData === false) {
         setEnable(false);
         toast('Please add your address to whitelist.');
         return;
+      } else {
+        // This can be done on background, we are not updating the interface with this result
+        fetch(`${API_ENDPOINT}/users/${publicKey}`).then((res) => {
+          if (res.status === NOT_FOUND_STATUS_CODE) {
+            fetch(`${API_ENDPOINT}/users/register`, {
+              method: 'POST',
+              body: JSON.stringify({ wallet_address_id: publicKey }),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }).then((result) => {
+              if (result.ok) {
+                toast.info('User registered successfully.');
+              } else {
+                toast.warn("User couldn't be registered correctly.");
+              }
+            });
+          }
+        });
       }
       setEnable(!isLoading && !error && (userData ?? false));
     } else {
@@ -75,7 +94,7 @@ const Layer = () => {
     return () => {
       setEnable(false);
     };
-  }, [userData, connected]);
+  }, [userData, error]);
 
   const dispatch = useDispatch();
 
