@@ -115,14 +115,15 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             placeholder="Search vaults by token"
             isMulti
           />
-          <Select
-            components={{ Option: CustomOption }}
-            options={platformOptions}
-            value={platform_data}
-            onChange={onPlatformChange}
-            classNamePrefix="platform-select"
-            defaultValue={platformOptions[0]}
-          />
+          {/* HIDE this filter, until we have more than one platform to be filtered */}
+          {/*<Select*/}
+          {/*components={{ Option: CustomOption }}*/}
+          {/*options={platformOptions}*/}
+          {/*value={platform_data}*/}
+          {/*onChange={onPlatformChange}*/}
+          {/*classNamePrefix="platform-select"*/}
+          {/*defaultValue={platformOptions[0]}*/}
+          {/*/>*/}
           {/* <Switch
             onChange={handleCompareVaults}
             checked={compareVaults}
