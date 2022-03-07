@@ -104,8 +104,8 @@ const Layer = () => {
         pauseOnHover
       />
       {isLoading && (
-        <div className="text-center">
-          <LoadingSpinner className="spinner-border-lg text-info" />
+        <div className="text-center mt-5">
+          <LoadingSpinner className="spinner-border-lg text-primary" />
         </div>
       )}
       {!isLoading && (

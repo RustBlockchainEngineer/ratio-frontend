@@ -166,13 +166,12 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
                 <h6>Total Vault Value</h6>
                 <h6 className="navbar-vertical__item--yellow">$ {totalLocked.toFixed(2)}</h6>
               </div>
-              <div className="navbar-vertical__item pb-3">
+              <div className="navbar-vertical__item pt-3">
                 <h6>USDr Minted</h6>
                 <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
-              <hr className="ratio-platform mt-3" />
-              <NavbarProgressBar type={ProgressBarType.TVL} />
-              <NavbarProgressBar type={ProgressBarType.USDr} />
+              {/* <NavbarProgressBar type={ProgressBarType.TVL} /> */}
+              <NavbarProgressBar label={true} className="navbar-vertical__progressbar" type={ProgressBarType.USDr} />
             </div>
           ) : null
         ) : (

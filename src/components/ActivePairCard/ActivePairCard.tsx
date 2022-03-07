@@ -140,7 +140,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             className="button button--blue activepaircard__generate mt-2"
             onClick={showDashboard}
           >
-            Open Vault
+            Enter Vault
           </Button>
         </div>
       </div>
