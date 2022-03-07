@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import { useLocation } from 'react-router-dom';
 
 import ComingSoon from '../../components/ComingSoon';
 import RiskLevel from '../../components/Dashboard/RiskLevel';
@@ -23,11 +22,8 @@ import { PublicKey } from '@solana/web3.js';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { getRiskLevelNumber, calculateRemainingGlobalDebt, calculateRemainingUserDebt } from '../../utils/utils';
-import { getFaucetState } from '../../utils/ratio-faucet';
 import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
-import { getRiskLevel } from '../../libs/helper';
-import { getUSDrAmount, getLPAmount } from '../../utils/risk';
 
 import Breadcrumb from '../../components/Breadcrumb';
 import { Banner, BannerIcon } from '../../components/Banner';
