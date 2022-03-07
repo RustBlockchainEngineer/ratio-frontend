@@ -21,7 +21,7 @@ import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 import { Console } from 'console';
-import { GLOBAL_DEBT_CEILING_DECIMALS } from '../constants';
+import { GLOBAL_DEBT_CEILING_DECIMALS, USER_DEBT_CEILING_DECIMALS } from '../constants';
 
 export const ADMIN_SETTINGS_DECIMALS = 6;
 
@@ -207,7 +207,7 @@ export async function getGlobalDebtCeiling(connection: Connection, wallet: Walle
 export async function getUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.userDebtCeiling as number) / 10 ** ADMIN_SETTINGS_DECIMALS;
+    return (globalState.userDebtCeiling as number) / 10 ** USER_DEBT_CEILING_DECIMALS;
   } catch (e) {
     console.error('Error while fetching the global user debt ceiling');
     throw e;
@@ -283,7 +283,7 @@ export async function setUserDebtCeiling(connection: Connection, wallet: any, ne
     const transaction = new Transaction();
     const signers: Keypair[] = [];
     const ix = await program.instruction.setUserDebtCeiling(
-      new anchor.BN(newDebtCeiling * 10 ** ADMIN_SETTINGS_DECIMALS),
+      new anchor.BN(newDebtCeiling * 10 ** USER_DEBT_CEILING_DECIMALS),
       {
         accounts: {
           authority: wallet.publicKey,

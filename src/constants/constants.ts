@@ -26,6 +26,7 @@ export const TVL: any = {
 };
 export const PRICE_DECIMAL = 8;
 export const GLOBAL_DEBT_CEILING_DECIMALS = 6;
+export const USER_DEBT_CEILING_DECIMALS = 6;
 export const TVL_DECIMAL = 9;
 export const SBR_PRICE = 0.03108;
 export const PLATFORM: any = {
