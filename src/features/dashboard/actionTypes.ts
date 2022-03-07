@@ -17,3 +17,5 @@ export const SET_PLATFORM_DATA = 'SET_PLATFORM_DATA';
 export const SET_VIEW_DATA = 'SET_VIEW_DATA';
 
 export const SET_OVERVIEW = 'SET_OVERVIEW';
+
+export const SET_VIEW_TYPE = 'SET_VIEW_TYPE';

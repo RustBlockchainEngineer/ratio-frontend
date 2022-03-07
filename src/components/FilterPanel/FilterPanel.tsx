@@ -159,11 +159,11 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             <>
               <img
                 src={darkMode ? titleDark : title}
-                alt="tile"
-                onClick={() => onViewType('tile')}
+                alt="grid"
+                onClick={() => onViewType('grid')}
                 className={classNames([
                   'ml-4 filterpanel__viewtype',
-                  { 'filterpanel__viewtype-active': viewType === 'tile' },
+                  { 'filterpanel__viewtype-active': viewType === 'grid' },
                 ])}
                 aria-hidden="true"
               />
