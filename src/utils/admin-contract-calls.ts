@@ -21,7 +21,7 @@ import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 import { Console } from 'console';
-import { GLOBAL_DEBT_CEILING_DECIMALS, USER_DEBT_CEILING_DECIMALS } from '../constants';
+import { COLL_RATIOS_DECIMALS, GLOBAL_DEBT_CEILING_DECIMALS, USER_DEBT_CEILING_DECIMALS } from '../constants';
 
 export const ADMIN_SETTINGS_DECIMALS = 6;
 
@@ -308,16 +308,16 @@ export async function getCollateralRatio(
     const { globalState } = await getGlobalState(connection, wallet);
     const readValues = globalState.collPerRisklv as number[];
     const result: CollateralizationRatios = {
-      cr_aaa_ratio: readValues[0] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_aa_ratio: readValues[1] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_a_ratio: readValues[2] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_bbb_ratio: readValues[3] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_bb_ratio: readValues[4] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_b_ratio: readValues[5] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_ccc_ratio: readValues[6] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_cc_ratio: readValues[7] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_c_ratio: readValues[8] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_d_ratio: readValues[9] / 10 ** ADMIN_SETTINGS_DECIMALS,
+      cr_aaa_ratio: readValues[0] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_aa_ratio: readValues[1] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_a_ratio: readValues[2] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_bbb_ratio: readValues[3] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_bb_ratio: readValues[4] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_b_ratio: readValues[5] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_ccc_ratio: readValues[6] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_cc_ratio: readValues[7] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_c_ratio: readValues[8] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_d_ratio: readValues[9] / 10 ** COLL_RATIOS_DECIMALS,
     };
     return result;
   } catch (e) {
@@ -335,7 +335,7 @@ export async function setCollateralRatio(
   const globalStateKey = await getGlobalStateKey();
 
   const bigNumberValues = Object.values(values)?.map((value: string) => {
-    return new BN(parseFloat(value) * 10 ** ADMIN_SETTINGS_DECIMALS);
+    return new BN(parseFloat(value) * 10 ** COLL_RATIOS_DECIMALS);
   });
   console.log('BIG NUMBER VALUES');
   console.log(bigNumberValues);
