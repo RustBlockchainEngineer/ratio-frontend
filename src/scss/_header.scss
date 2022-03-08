@@ -35,6 +35,7 @@
   }
 
   &__tvl {
+    cursor: default !important;
     &::before {
       content: 'Total TVL Cap' !important;
     }
@@ -42,6 +43,7 @@
 
   &__debt {
     margin-right: 1rem;
+    cursor: default !important;
     &::before {
       content: 'Total USDr Debt' !important;
     }
