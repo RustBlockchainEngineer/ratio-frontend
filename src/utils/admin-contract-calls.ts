@@ -12,7 +12,6 @@ import {
   defaultPrograms,
   GLOBAL_TVL_LIMIT,
   GLOBAL_DEBT_CEILING,
-  VAULT_SEED,
   USER_DEBT_CEILING,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
@@ -20,8 +19,12 @@ import BN from 'bn.js';
 import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
-import { Console } from 'console';
-import { COLL_RATIOS_DECIMALS, GLOBAL_DEBT_CEILING_DECIMALS, USER_DEBT_CEILING_DECIMALS } from '../constants';
+import {
+  COLL_RATIOS_DECIMALS,
+  GLOBAL_DEBT_CEILING_DECIMALS,
+  TVL_DECIMAL,
+  USER_DEBT_CEILING_DECIMALS,
+} from '../constants';
 
 export const ADMIN_SETTINGS_DECIMALS = 6;
 
@@ -168,7 +171,7 @@ export async function setGlobalTvlLimit(
   try {
     const transaction = new Transaction();
     const signers: Keypair[] = [];
-    const ix = await program.instruction.setGlobalTvlLimit(new anchor.BN(newTvlLimit * 10 ** ADMIN_SETTINGS_DECIMALS), {
+    const ix = await program.instruction.setGlobalTvlLimit(new anchor.BN(newTvlLimit * 10 ** TVL_DECIMAL), {
       accounts: {
         authority: wallet.publicKey,
         globalState: globalStateKey,
@@ -187,7 +190,7 @@ export async function setGlobalTvlLimit(
 export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.tvlLimit as number) / 10 ** ADMIN_SETTINGS_DECIMALS;
+    return (globalState.tvlLimit as number) / 10 ** TVL_DECIMAL;
   } catch (e) {
     console.error('Error while fetching the tvl limiy');
     throw e;
