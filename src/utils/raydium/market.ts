@@ -221,7 +221,7 @@ export async function createAmm(
     const txid = await sendTransaction(conn, wallet, transaction, signers);
     console.log('txid', txid);
     let txidSuccessFlag = 0;
-    await conn.onSignature(txid, function (_signatureResult: any, _context: any) {
+    await conn.onSignature(txid, function (_signatureResult: any) {
       if (_signatureResult.err) {
         txidSuccessFlag = -1;
       } else {
@@ -424,7 +424,7 @@ async function initAmm(
 
   console.log('txid3', txid);
   let txidSuccessFlag = 0;
-  await conn.onSignature(txid, function (_signatureResult: any, _context: any) {
+  await conn.onSignature(txid, function (_signatureResult: any) {
     if (_signatureResult.err) {
       txidSuccessFlag = -1;
     } else {

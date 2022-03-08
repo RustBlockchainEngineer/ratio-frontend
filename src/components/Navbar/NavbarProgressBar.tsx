@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { nFormatter } from '../../utils/utils';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { ProgressBar } from 'react-bootstrap';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
@@ -29,7 +26,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
   const [globalState, setGlobalState] = useState<any>(null);
   const userOverview = useUserOverview();
   const connection = useConnection();
-  const { wallet, connected } = useWallet();
+  const { wallet } = useWallet();
 
   React.useEffect(() => {
     if (wallet && wallet.publicKey) {

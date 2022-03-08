@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { API_ENDPOINT } from '../constants/constants';
 import { useConnectionConfig } from '../contexts/connection';
 

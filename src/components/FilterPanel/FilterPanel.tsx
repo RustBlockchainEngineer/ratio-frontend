@@ -4,7 +4,6 @@ import { useMediaQuery } from 'react-responsive';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import classNames from 'classnames';
 import Select from 'react-select';
-import Switch from 'react-switch';
 import FilterSelect from '../FilterSelect';
 import { actionTypes, selectors } from '../../features/dashboard';
 
@@ -18,13 +17,10 @@ import list from '../../assets/images/list.svg';
 import titleDark from '../../assets/images/tile-dark.svg';
 import listDark from '../../assets/images/list-dark.svg';
 
-import stepIcon from '../../assets/images/STEP.svg';
 import usdcIcon from '../../assets/images/USDC.svg';
 import rayIcon from '../../assets/images/RAY.svg';
 import solIcon from '../../assets/images/SOL.svg';
 import ethIcon from '../../assets/images/ETH.svg';
-import srmIcon from '../../assets/images/SRM.svg';
-import mediaIcon from '../../assets/images/MEDIA.svg';
 
 type FilterPanelProps = {
   label: string;
@@ -74,6 +70,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
     dispatch({ type: actionTypes.SET_FILTER_DATA, payload: values });
   };
 
+  // eslint-disable-next-line
   const handleCompareVaults = () => {
     setCompareVaults(!compareVaults);
     dispatch({ type: actionTypes.SET_COMPARE_VAULTS, payload: !compareVaults });

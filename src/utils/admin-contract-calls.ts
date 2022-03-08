@@ -12,7 +12,6 @@ import {
   defaultPrograms,
   GLOBAL_TVL_LIMIT,
   GLOBAL_DEBT_CEILING,
-  VAULT_SEED,
   USER_DEBT_CEILING,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
@@ -20,7 +19,6 @@ import BN from 'bn.js';
 import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
-import { Console } from 'console';
 
 export const ADMIN_SETTINGS_DECIMALS = 6;
 
@@ -392,21 +390,27 @@ export async function setHarvestFee(
   }
   return true;
 }
+// eslint-disable-next-line
 export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setBorrowFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setPaybackFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setPaybackFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setStakeFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setStakeFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setSwapFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setSwapFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setWithdrawFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setWithdrawFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setDepositFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setDepositFee yet not implemented');
 }

@@ -1,26 +1,23 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useAccountByMint, useMint } from '../../../contexts/accounts';
+import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { repayUSDr } from '../../../utils/ratio-lending';
-import { TokenAmount } from '../../../utils/safe-math';
-
-import Button from '../../Button';
-import PaybackModal from '../PaybackModal';
 
 import usdrIcon from '../../../assets/images/USDr.png';
-import { useUpdateRFStates } from '../../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 const VaultDebt = ({ data }: any) => {
   const connection = useConnection();
-  const { wallet, connected } = useWallet();
+  const { wallet } = useWallet();
   const usdrMint = useMint(data.usdrMint);
 
   const [didMount, setDidMount] = React.useState(false);
   const updateRFStates = useUpdateRFStates();
 
+  // eslint-disable-next-line
   const paybackData = {
     mint: data.mint,
     icons: [usdrIcon],
@@ -38,6 +35,7 @@ const VaultDebt = ({ data }: any) => {
     return null;
   }
 
+  // eslint-disable-next-line
   const repay = () => {
     console.log('Paying back at all', data.usdrValue);
     if (!data.usdrValue) {

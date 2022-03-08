@@ -1,4 +1,4 @@
-import { createElement, useState, useEffect } from 'react';
+import { createElement } from 'react';
 import { Route } from 'react-router-dom';
 import { useWallet } from '../../contexts/wallet';
 import { useAuthContextProvider } from '../../contexts/authAPI';

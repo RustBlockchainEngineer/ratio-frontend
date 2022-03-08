@@ -41,7 +41,8 @@ const ContractUpdatersMap = {
   global_max_deposit: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {
     await setGlobalTvlLimit(connection, wallet, Number(data.global_max_deposit));
   },
-  price_interval: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {}, // There's no update on the contact side for this property
+  // eslint-disable-next-line
+  price_interval: async (connection: Connection, wallet: WalletAdapter, data: GlobalParams) => {}, // There's no update on the contract side for this property
 };
 
 export default function GlobalParamsAdminForm() {

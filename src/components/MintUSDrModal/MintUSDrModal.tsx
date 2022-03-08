@@ -1,51 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
-import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import Button from '../Button';
 import CustomInput from '../CustomInput';
-import { PairType } from '../../models/UInterface';
-import ComingSoon from '../ComingSoon';
 
-import riskLevel from '../../assets/images/risklevel.svg';
-import highRisk from '../../assets/images/highrisk.svg';
-import { depositCollateral, borrowUSDr } from '../../utils/ratio-lending';
+import { borrowUSDr } from '../../utils/ratio-lending';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 import { useConnection } from '../../contexts/connection';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../contexts/wallet';
-import { getOneFilteredTokenAccountsByOwner } from '../../utils/web3';
-import { useAccountByMint, useMint } from '../../contexts/accounts';
+import { useAccountByMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
-import { sleep } from '../../utils/utils';
 import usdrIcon from '../../assets/images/USDr.png';
 import {
   UPDATE_USER_STATE,
   useUpdateRFStates,
   useUSDrMintInfo,
   useUserInfo,
-  useVaultInfo,
   useVaultMintInfo,
 } from '../../contexts/state';
 
-type LockVaultModalProps = {
-  data: PairType;
-};
-
 const MintUSDrModal = ({ data }: any) => {
-  const history = useHistory();
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
 
-  const vault = useVaultInfo(data.mint);
-
+  // eslint-disable-next-line
   const [mintTime, setMintTime] = React.useState('');
 
   const tokenPrice = usePrice(data.mint);
@@ -56,15 +42,16 @@ const MintUSDrModal = ({ data }: any) => {
 
   const collAccount = useAccountByMint(data.mint);
 
-  const [lockAmount, setLockAmount] = React.useState(0);
-
   const [borrowAmount, setBorrowAmount] = React.useState(0);
   const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
 
+  // eslint-disable-next-line
   const [maxLPAmount, setMaxLockAmount] = React.useState(0);
   const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
   const [mintStatus, setMintStatus] = React.useState(false);
+
+  // eslint-disable-next-line
   const [lockStatus, setLockStatus] = React.useState(false);
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 

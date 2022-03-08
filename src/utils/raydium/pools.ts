@@ -3,14 +3,7 @@ import { cloneDeep } from 'lodash-es';
 
 import SERUM_MARKETS from '@project-serum/serum/lib/markets.json';
 
-import {
-  LIQUIDITY_POOL_PROGRAM_ID_V2,
-  LIQUIDITY_POOL_PROGRAM_ID_V3,
-  LIQUIDITY_POOL_PROGRAM_ID_V4,
-  SERUM_PROGRAM_ID_V2,
-  SERUM_PROGRAM_ID_V3,
-} from './ids';
-import { LP_TOKENS, NATIVE_SOL, TokenInfo, TOKENS } from './tokens';
+import { TokenInfo } from './tokens';
 
 export interface LiquidityPoolInfo {
   name: string;

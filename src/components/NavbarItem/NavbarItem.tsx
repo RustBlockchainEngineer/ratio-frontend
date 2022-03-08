@@ -16,17 +16,9 @@ type NavbarItemProps = {
   positionValues?: any;
 };
 
-const NavbarItem = ({
-  icon,
-  name,
-  active,
-  navIndex,
-  collapseFlag,
-  expands,
-  expandData,
-  positionValues,
-  onItemClick,
-}: NavbarItemProps) => {
+const NavbarItem = (navBarItemProps: NavbarItemProps) => {
+  const { icon, name, active, navIndex, collapseFlag, expands, positionValues, onItemClick } = navBarItemProps;
+
   const [expandStatus, setExpandStatus] = useState(false);
 
   const changeExpandStatus = (e: any) => {

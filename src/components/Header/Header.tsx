@@ -1,27 +1,21 @@
 import React, { useEffect } from 'react';
 import classNames from 'classnames';
-import { useHistory } from 'react-router-dom';
-import { useMediaQuery } from 'react-responsive';
 import { FaCheck } from 'react-icons/fa';
 import { IoMdCloseCircle } from 'react-icons/io';
 import Button from '../Button';
 import SwitchButton from '../SwitchButton';
-import GuideModal from '../GuideModal';
 import { NavbarProgressBar, ProgressBarType } from '../Navbar/NavbarProgressBar';
 
 import { shortenAddress } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
-
-import logo from '../../assets/images/logo-side.svg';
-import darkLogo from '../../assets/images/dark-logoside.svg';
-import { useConnection } from '../../contexts/connection';
 
 type HeaderProps = {
   onClickWalletBtn: () => void;
   darkMode: boolean;
 };
 
-const Header = ({ onClickWalletBtn, darkMode }: HeaderProps) => {
+const Header = (headerProps: HeaderProps) => {
+  const { onClickWalletBtn } = headerProps;
   const { connected, connect, wallet } = useWallet();
   const [hover, setHover] = React.useState(false);
 

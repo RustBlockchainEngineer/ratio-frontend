@@ -12,6 +12,7 @@ function makeRatioApiEndpointSaberLpPrices(): string {
 }
 
 export const useFetchSaberLpPrices = () => {
+  // eslint-disable-next-line
   const [status, setStatus] = useState<any>('Data not loaded yet');
   const [lpPrices, setLpPrices] = useState<[SaberLpPrices]>();
   const [error, setError] = useState<any>(null);

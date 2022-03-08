@@ -20,7 +20,6 @@ export default function LPAssetAdditionModal({
   close: () => void;
   onAdd: (newAsset: LPAssetCreationData) => void;
 }) {
-  const [validated, setValidated] = useState(false);
   const defaultValues: LPAssetCreationData = {
     token_pool_size: 0,
     token_address_id: '',
@@ -68,7 +67,6 @@ export default function LPAssetAdditionModal({
       evt.stopPropagation();
       return;
     }
-    setValidated(true);
     onAdd(data);
     close();
   };

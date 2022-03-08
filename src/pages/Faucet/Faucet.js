@@ -25,9 +25,11 @@ const Faucet = () => {
   const wallet = gWallet.wallet;
   const connect = gWallet.connect;
   const history = useHistory();
+  // eslint-disable-next-line
   const [amount, setAmount] = React.useState(0);
   const [option, setOption] = React.useState(TOKEN_VAULT_OPTIONS[0]);
 
+  // eslint-disable-next-line
   const [submitState, setSubmitState] = React.useState(false);
   const [isCreated, setIsCreated] = React.useState(false);
   const [faucetStatus, setFaucetStatus] = React.useState('');
@@ -42,13 +44,13 @@ const Faucet = () => {
     history.goBack();
   };
 
-  const getInputValue = (value) => {
-    if (value === '') {
-      setAmount(0);
-    } else {
-      setAmount(parseInt(value));
-    }
-  };
+  // const getInputValue = (value) => {
+  //   if (value === '') {
+  //     setAmount(0);
+  //   } else {
+  //     setAmount(parseInt(value));
+  //   }
+  // };
 
   const onCreateFaucet = async () => {
     await createFaucetState(connection, wallet);
@@ -76,6 +78,7 @@ const Faucet = () => {
       console.log(e);
       setFaucetStatus('Error occured! please check your transaction.');
     }
+    return tx;
   };
 
   const onChangeLp = (value) => {

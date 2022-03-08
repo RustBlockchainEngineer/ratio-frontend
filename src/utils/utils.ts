@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable no-restricted-properties */
 /* eslint-disable no-nested-ternary */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { MintInfo } from '@solana/spl-token';
 
 import { Connection, PublicKey } from '@solana/web3.js';
@@ -12,7 +12,6 @@ import { TokenAccount } from './../models';
 import { getUserState, USDR_MINT_KEY } from '../utils/ratio-lending';
 import { TokenAmount } from '../utils/safe-math';
 import { getUSDrAmount } from '../utils/risk';
-import { cache, MintParser } from '../contexts/accounts';
 import * as serumCmn from '@project-serum/common';
 import * as anchor from '@project-serum/anchor';
 

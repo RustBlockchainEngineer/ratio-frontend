@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { AccountInfo, Connection, PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { StableSwap, loadExchangeInfoFromSwapAccount } from '@saberhq/stableswap-sdk';
 import { getDevnetPools, getMainnetPools } from './saber/ids';
 import { sleep } from './utils';

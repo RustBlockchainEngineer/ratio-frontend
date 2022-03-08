@@ -1,28 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
-import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import Button from '../Button';
 import CustomInput from '../CustomInput';
-import { PairType } from '../../models/UInterface';
-import ComingSoon from '../ComingSoon';
 
-import riskLevel from '../../assets/images/risklevel.svg';
-import highRisk from '../../assets/images/highrisk.svg';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 import { useConnection } from '../../contexts/connection';
-import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../contexts/wallet';
-import { getOneFilteredTokenAccountsByOwner } from '../../utils/web3';
-import { useAccountByMint, useMint } from '../../contexts/accounts';
+import { useAccountByMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
-import { sleep } from '../../utils/utils';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
@@ -35,16 +27,12 @@ import {
   useVaultMintInfo,
 } from '../../contexts/state';
 
-type LockVaultModalProps = {
-  data: PairType;
-};
-
 const LockVaultModal = ({ data }: any) => {
-  const history = useHistory();
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
 
+  // eslint-disable-next-line
   const [mintTime, setMintTime] = React.useState('');
 
   const tokenPrice = usePrice(data.mint);
@@ -59,13 +47,12 @@ const LockVaultModal = ({ data }: any) => {
 
   const [lockAmount, setLockAmount] = React.useState(0);
 
-  const [borrowAmount, setBorrowAmount] = React.useState(0);
+  // eslint-disable-next-line
   const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
 
   const [maxLPAmount, setMaxLockAmount] = React.useState(0);
   const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
-  const [mintStatus, setMintStatus] = React.useState(false);
   const [lockStatus, setLockStatus] = React.useState(false);
 
   const { vaults } = useVaultsContextProvider();
@@ -127,7 +114,6 @@ const LockVaultModal = ({ data }: any) => {
   }
 
   const depositLP = () => {
-    //zhao
     poolInfoProviderFactory
       ?.depositLP(
         connection,
@@ -144,7 +130,6 @@ const LockVaultModal = ({ data }: any) => {
         console.log(e);
       })
       .finally(() => {
-        // history.push(`/dashboard/vaultdashboard/${data.mint}`);
         toast('Successfully Deposited!');
         setShow(false);
       });

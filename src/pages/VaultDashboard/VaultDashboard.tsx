@@ -1,15 +1,12 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 
-import ComingSoon from '../../components/ComingSoon';
 import RiskLevel from '../../components/Dashboard/RiskLevel';
-import SpeedoMetor from '../../components/Dashboard/SpeedoMeter';
 import VaultDebt from '../../components/Dashboard/VaultDebt';
 import PriceCard from '../../components/Dashboard/PriceCard';
 import ModalCard from '../../components/Dashboard/ModalCard';
-import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
 import AmountPanel from '../../components/Dashboard/AmountPanel';
 import WalletBalances from '../../components/Dashboard/AmountPanel/WalletBalances';
 
@@ -18,8 +15,7 @@ import usdrIcon from '../../assets/images/USDr.png';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { USDR_MINT_KEY } from '../../utils/ratio-lending';
-import { PublicKey } from '@solana/web3.js';
-import { useAccountByMint, useMint } from '../../contexts/accounts';
+import { useAccountByMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { getRiskLevelNumber, calculateRemainingGlobalDebt, calculateRemainingUserDebt } from '../../utils/utils';
 import { usePrice } from '../../contexts/price';
@@ -40,10 +36,9 @@ const priceCardData = [
 ];
 
 const VaultDashboard = () => {
-  const history = useHistory();
   const { mint: vault_mint } = useParams<{ mint: string }>();
   const connection = useConnection();
-  const { wallet, connected } = useWallet();
+  const { wallet } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
 
   const usdrMint = useUSDrMintInfo();
@@ -66,6 +61,7 @@ const VaultDashboard = () => {
   const [withdrawValue, setWithdrawValue] = useState(0);
   const [generateValue, setGenerateValue] = useState(0);
   const [debtValue, setDebtValue] = useState(0);
+  // eslint-disable-next-line
   const [hasReachedDebtLimit, setHasReachedDebtLimit] = useState(false);
 
   const allVaults = useSelector(selectors.getAllVaults);
@@ -171,8 +167,6 @@ const VaultDashboard = () => {
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
-
-  const isBigScreen = useMediaQuery({ query: '(min-width: 1539px)' });
 
   if (isLoading)
     return (

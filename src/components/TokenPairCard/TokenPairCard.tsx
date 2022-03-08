@@ -2,26 +2,19 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
-import { PublicKey } from '@solana/web3.js';
-import { sleep } from '@project-serum/common';
 
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
-import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 
-import { useUpdateHistory } from '../../contexts/auth';
-import liskLevelIcon from '../../assets/images/risklevel.svg';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
-import highriskIcon from '../../assets/images/highrisk.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
@@ -35,7 +28,8 @@ import {
   useVaultMintInfo,
 } from '../../contexts/state';
 
-const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: TokenPairCardProps) => {
+const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
+  const { data, onCompareVault } = tokenPairCardProps;
   const history = useHistory();
 
   const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
@@ -47,18 +41,21 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
   const usdrMint = useUSDrMintInfo();
   const collMint = useVaultMintInfo(data.mint);
 
-  const [isOpen, setOpen] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
 
   const userState = useUserInfo(data.mint);
   const vaultState = useVaultInfo(data.mint);
   const updateRFStates = useUpdateRFStates();
 
+  // eslint-disable-next-line
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
+  // eslint-disable-next-line
   const [tvlUSD, setTVLUSD] = React.useState(0);
+  // eslint-disable-next-line
   const [totalDebt, setTotalDebt] = React.useState(0);
 
+  // eslint-disable-next-line
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
 
   const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
@@ -106,6 +103,7 @@ const TokenPairCard = ({ data, onCompareVault, isGlobalDebtLimitReached }: Token
     };
   }, [tokenPrice, userState, collMint]);
 
+  // eslint-disable-next-line
   const harvest = () => {
     console.log('harvesting');
     poolInfoProviderFactory

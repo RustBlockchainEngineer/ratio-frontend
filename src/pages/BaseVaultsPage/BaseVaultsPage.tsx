@@ -11,7 +11,6 @@ import ComparingFooter from '../../components/ComparingFooter';
 import TokenPairCard from '../../components/TokenPairCard';
 import ActivePairCard from '../../components/ActivePairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
-import { TokenAmount } from '../../utils/safe-math';
 import { getCoinPicSymbol } from '../../utils/helper';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { LPair } from '../../types/VaultTypes';
@@ -39,8 +38,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const overview = useSelector(selectors.getOverview);
   const viewType = useSelector(selectors.getViewType);
   const [factorial, setFactorial] = useState<any>([]);
+  // eslint-disable-next-line
   const [globalState, setGlobalState] = React.useState(null);
   const [vaultsDebtData, setVaultsDebtData] = React.useState<any>([]);
+  // eslint-disable-next-line
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
   const [hasReachedGlobalDebtLimit, setHasReachedGlobalDebtLimit] = React.useState(false);
   const [remainingGlobalDebtLimit, setRemainingGlobalDebt] = React.useState(0);
@@ -50,7 +51,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   const onViewType = (type: string) => {
     dispatch({ type: actionTypes.SET_VIEW_TYPE, payload: type });
-    // setViewType(type);
   };
 
   const { status, error, vaults } = useVaultsContextProvider();
@@ -59,6 +59,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   const [vaultsWithAllData, setVaultsWithAllData] = useState<any>(vaults);
 
+  // eslint-disable-next-line
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
       return array1;

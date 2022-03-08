@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import risklevel from '../../../assets/images/risklevel.svg';
 import { useFetchCollateralRatio } from '../../../hooks/useFetchCollateralRatio';
 

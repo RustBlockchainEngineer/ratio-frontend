@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getFactory } from '../utils/PoolInfoProvider/PoolInfoProviderFactory';
 import { LPair } from '../types/VaultTypes';
-import { useConnection } from '../contexts/connection';
-import { useWallet } from '../contexts/wallet';
 import { useMercurialPools, useOrcaPools, useRaydiumPools, useSaberPools } from '../contexts/pools';
 import { useRFState } from '../contexts/state';
 
@@ -20,8 +18,6 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
   const orcaPools = useOrcaPools();
   const mercurialPools = useMercurialPools();
 
-  const connection = useConnection();
-  const { wallet, connected } = useWallet();
   const totalState = useRFState();
   //Initialize the provider factory with the pools information of all the supported platforms.
   const poolInfoProviderFactory = useMemo(

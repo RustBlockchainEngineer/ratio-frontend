@@ -2,14 +2,9 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
-import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
-import { usePrice } from '../../../contexts/price';
 import { useWallet } from '../../../contexts/wallet';
 import { borrowUSDr } from '../../../utils/ratio-lending';
-import { getUSDrAmount } from '../../../utils/risk';
-import { TokenAmount } from '../../../utils/safe-math';
-import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import moment from 'moment';
@@ -17,21 +12,11 @@ import { toast } from 'react-toastify';
 import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 
-type PairType = {
-  mint: string;
-  icons: Array<string>;
-  usdrValue: string;
-};
-
-type GenerateModalProps = {
-  data: PairType;
-};
-
 const GenerateModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
-  const { wallet, connected } = useWallet();
-  const [vault, setVault] = React.useState({});
+  const { wallet } = useWallet();
+  // eslint-disable-next-line
   const [mintTime, setMintTime] = React.useState('');
 
   const userState = useUserInfo(data.mint);

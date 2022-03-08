@@ -1,12 +1,10 @@
 import * as anchor from '@project-serum/anchor';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as serumCmn from '@project-serum/common';
-import BN from 'bn.js';
 
 import {
   getProgramInstance,
   GLOBAL_STATE_TAG,
-  PlatformType,
   VAULT_SEED,
   TYPE_ID_SABER,
   TROVE_POOL_SEED,
@@ -15,16 +13,7 @@ import {
   PRICE_FEED_TAG,
   getUserState,
 } from '../ratio-lending';
-import {
-  PublicKey,
-  Keypair,
-  SystemProgram,
-  Transaction,
-  SYSVAR_CLOCK_PUBKEY,
-  SYSVAR_RENT_PUBKEY,
-  LAMPORTS_PER_SOL,
-  Connection,
-} from '@solana/web3.js';
+import { PublicKey, SystemProgram, Transaction, Connection } from '@solana/web3.js';
 import {
   findMinerAddress,
   findMinterAddress,
@@ -34,9 +23,8 @@ import {
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { createAssociatedTokenAccount, findAssociatedTokenAddress } from '../raydium/web3';
 import { getOneFilteredTokenAccountsByOwner, sendTransaction } from '../web3';
-import { FEE_OWNER, SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_MINT } from './constants';
+import { SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_MINT } from './constants';
 import { WalletAdapter } from '../../contexts/wallet';
 import { TokenAmount } from '../safe-math';
 
@@ -56,11 +44,10 @@ export async function createSaberTokenVault(
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_STATE_TAG)],
     program.programId
   );
-  const globalState = await program.account.globalState.fetch(globalStateKey);
 
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
@@ -69,7 +56,7 @@ export async function createSaberTokenVault(
   console.log('tokenVaultKey', tokenVaultKey.toBase58());
 
   try {
-    const [priceFeedKey, priceFeedBump] = await anchor.web3.PublicKey.findProgramAddress(
+    const [priceFeedKey] = await anchor.web3.PublicKey.findProgramAddress(
       [Buffer.from(PRICE_FEED_TAG), mintCollKey.toBuffer()],
       program.programId
     );
@@ -139,7 +126,7 @@ export async function createSaberUserTrove(
 
   const program = getProgramInstance(connection, wallet);
 
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
@@ -226,27 +213,27 @@ export async function depositToSaber(
   console.log('Deposit to Saber', amount);
 
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_STATE_TAG)],
     program.programId
   );
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
-  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
-  const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userTroveTokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
   const [quarryKey] = await findQuarryAddress(SABER_REWARDER, mintCollKey);
 
-  const [userMinerKey, userMinerBump] = await findMinerAddress(quarryKey, userTroveKey);
+  const [userMinerKey] = await findMinerAddress(quarryKey, userTroveKey);
 
-  const [userMinerVaultKey, userMinerVaultBump] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userMinerVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
@@ -295,19 +282,19 @@ export async function withdrawFromSaber(
   console.log('Withdraw from Saber', amount);
 
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_STATE_TAG)],
     program.programId
   );
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
-  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
-  const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userTroveTokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
@@ -319,9 +306,9 @@ export async function withdrawFromSaber(
 
   const quarryKey = await rewarder.getQuarryKeyForMint(mintCollKey);
 
-  const [userMinerKey, userMinerBump] = await findMinerAddress(quarryKey, userTroveKey);
+  const [userMinerKey] = await findMinerAddress(quarryKey, userTroveKey);
 
-  const [userMinerVaultKey, userMinerVaultBump] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userMinerVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
@@ -362,20 +349,20 @@ export async function withdrawFromSaber(
 export async function harvestFromSaber(connection: Connection, wallet: any, mintCollKey: PublicKey, needTx = false) {
   console.log('Harvesting from Saber');
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_STATE_TAG)],
     program.programId
   );
   const globalState = await program.account.globalState.fetch(globalStateKey);
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
     program.programId
   );
-  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
-  const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userTroveTokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
@@ -386,14 +373,14 @@ export async function harvestFromSaber(connection: Connection, wallet: any, mint
 
   const [quarryKey] = await findQuarryAddress(SABER_REWARDER, mintCollKey);
 
-  const [userMinerKey, userMinerBump] = await findMinerAddress(quarryKey, userTroveKey);
+  const [userMinerKey] = await findMinerAddress(quarryKey, userTroveKey);
 
-  const [userMinerVaultKey, userMinerVaultBump] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userMinerVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
 
-  const [userTroveRewardKey, userTroveRewardNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [userTroveRewardKey] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), SABER_REWARD_MINT.toBuffer()],
     program.programId
   );
@@ -494,11 +481,11 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
   try {
     const program = getProgramInstance(connection, wallet);
 
-    const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
       [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
       program.programId
     );
-    const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
+    const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
       [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
       program.programId
     );

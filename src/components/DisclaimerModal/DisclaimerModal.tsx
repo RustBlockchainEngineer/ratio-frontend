@@ -3,11 +3,8 @@ import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import LockVaultModal from '../LockVaultModal';
 import Button from '../Button';
-import { useConnection } from '../../contexts/connection';
-import { useWallet } from '../../contexts/wallet';
 
 import { PairType } from '../../models/UInterface';
-import { useVaultInfo } from '../../contexts/state';
 
 type LockVaultModalProps = {
   data: PairType;
@@ -15,9 +12,6 @@ type LockVaultModalProps = {
 
 const DisclaimerModal = ({ data }: LockVaultModalProps) => {
   const [show, setShow] = React.useState(false);
-  const connection = useConnection();
-  const { wallet, connected } = useWallet();
-  const vault = useVaultInfo(data.mint);
 
   const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
@@ -30,19 +24,6 @@ const DisclaimerModal = ({ data }: LockVaultModalProps) => {
   }
   return (
     <>
-      {/* {!vault ? (
-        <Button
-          className="button--fill generate"
-          onClick={() => createTokenVault(connection, wallet, new PublicKey(data.mint))}
-        >
-          Create Vaults
-        </Button>
-      ) : (
-        <Button className="button--fill generate" onClick={() => setShow(!show)}>
-          Mint USDr
-        </Button>
-      )} */}
-
       <Button className="button--fill generate" onClick={() => setShow(!show)}>
         Mint USDr
       </Button>

@@ -1,6 +1,5 @@
-import { connection, sleep } from '@project-serum/common';
-import { Connection } from '@solana/web3.js';
-import React, { useContext, useEffect, useState } from 'react';
+import { sleep } from '@project-serum/common';
+import React, { useEffect, useState } from 'react';
 import {
   calculateRewardByPlatform,
   getGlobalState,
@@ -41,7 +40,7 @@ export const UPDATE_REWARD_STATE: UpdateStateType = 3;
 
 export function RFStateProvider({ children = undefined as any }) {
   const connection = useConnection();
-  const { wallet, publicKey } = useWallet();
+  const { wallet } = useWallet();
   const { vaults } = useVaultsContextProvider();
 
   const [globalState, setGlobalState] = useState<any>(null);
