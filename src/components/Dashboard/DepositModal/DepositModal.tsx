@@ -139,7 +139,8 @@ const DepositModal = ({ data }: any) => {
             </div>
             <h4>Deposit assets into vault</h4>
             <h5>
-              Deposit more <strong>{data.title}</strong> into your vault
+              {/* Deposit more <strong>{data.title}</strong> into your vault */}
+              Deposit up to {data.value} of {data.title} into your vault
             </h5>
           </div>
         </Modal.Header>

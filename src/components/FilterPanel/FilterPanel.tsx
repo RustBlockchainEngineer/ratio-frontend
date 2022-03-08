@@ -115,14 +115,15 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             placeholder="Search vaults by token"
             isMulti
           />
-          <Select
-            components={{ Option: CustomOption }}
-            options={platformOptions}
-            value={platform_data}
-            onChange={onPlatformChange}
-            classNamePrefix="platform-select"
-            defaultValue={platformOptions[0]}
-          />
+          {/* HIDE this filter, until we have more than one platform to be filtered */}
+          {/*<Select*/}
+          {/*components={{ Option: CustomOption }}*/}
+          {/*options={platformOptions}*/}
+          {/*value={platform_data}*/}
+          {/*onChange={onPlatformChange}*/}
+          {/*classNamePrefix="platform-select"*/}
+          {/*defaultValue={platformOptions[0]}*/}
+          {/*/>*/}
           {/* <Switch
             onChange={handleCompareVaults}
             checked={compareVaults}
@@ -159,11 +160,11 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             <>
               <img
                 src={darkMode ? titleDark : title}
-                alt="tile"
-                onClick={() => onViewType('tile')}
+                alt="grid"
+                onClick={() => onViewType('grid')}
                 className={classNames([
                   'ml-4 filterpanel__viewtype',
-                  { 'filterpanel__viewtype-active': viewType === 'tile' },
+                  { 'filterpanel__viewtype-active': viewType === 'grid' },
                 ])}
                 aria-hidden="true"
               />

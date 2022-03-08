@@ -30,7 +30,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
     ) : (
       <tr>
         <td colSpan={4} className="text-center">
-          <h6>There is no transactions</h6>
+          <h6>There are no transactions</h6>
         </td>
       </tr>
     );

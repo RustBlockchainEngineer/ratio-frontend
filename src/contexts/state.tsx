@@ -113,6 +113,9 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateUserState = async () => {
     const userInfos: any = {};
+    if (!vaultState) {
+      return;
+    }
     try {
       for (const mint of Object.keys(vaultState)) {
         const vaultInfo = vaultState[mint];
@@ -180,7 +183,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOverview = async () => {
-    if (!userState) return;
+    if (!userState || Object.keys(userState).length === 0) return;
     try {
       const activeVaults: any = {};
       let vaultCount = 0;
