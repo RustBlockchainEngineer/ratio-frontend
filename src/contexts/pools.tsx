@@ -30,6 +30,9 @@ export function PoolProvider({ children = undefined as any }) {
 
   useEffect(() => {
     try {
+      // TODO: we are using only Saber
+      return;
+
       getRaydiumPools(connection).then((res: any) => {
         setRaydiumPools(res);
       });
@@ -50,6 +53,9 @@ export function PoolProvider({ children = undefined as any }) {
 
   useEffect(() => {
     try {
+      // TODO: we are using only Saber
+      return;
+
       getOrcaSwapPoolInfo().then((res: any) => {
         setOrcaPools(res);
       });
@@ -60,6 +66,9 @@ export function PoolProvider({ children = undefined as any }) {
 
   useEffect(() => {
     try {
+      // TODO: we are using only Saber
+      return;
+
       getMercurialSwapPoolsInfo().then((res: any) => {
         setMercurialPools(res);
       });
