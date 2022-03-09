@@ -16,7 +16,36 @@
       width: 150px;
     }
   }
+
+  &__progressbar {
+    width: 9.375rem;
+    .navbarprogressbar__header {
+      justify-content: flex-end;
+    }
+  }
   // min-height: 85px;
+
+  &__gap {
+    margin-left: 0.7rem;
+    margin-right: 0.7rem;
+    background-color: var(--unnamed-color-f9fbfe);
+    width: 2px;
+    height: 1.5rem;
+
+  }
+
+  &__tvl {
+    &::before {
+      content: 'Total TVL Cap' !important;
+    }
+  }
+
+  &__debt {
+    margin-right: 1rem;
+    &::before {
+      content: 'Total USDr Debt' !important;
+    }
+  }
 
   &__connected {
     cursor: pointer;

@@ -12,12 +12,14 @@ import { TVL_DECIMAL } from '../../constants/constants';
 import { useUserOverview } from '../../contexts/state';
 
 type NavbarProgressBarProps = {
+  className?: string;
   type: ProgressBarType;
+  label?: boolean;
 };
 
 export enum ProgressBarType {
   TVL = 'TVL Cap',
-  USDr = 'USDr Debt',
+  USDr = 'My USDr Debt',
 }
 
 export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
@@ -71,6 +73,7 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
   return (
     <div
       className={classNames(
+        data.className,
         'navbarprogressbar',
         { 'navbarprogressbar--warning': warning },
         { 'navbarprogressbar--tvl': data.type === ProgressBarType.TVL && !warning },
@@ -78,9 +81,11 @@ export const NavbarProgressBar = (data: NavbarProgressBarProps) => {
       )}
     >
       <div className={classNames('navbarprogressbar__header')}>
-        <div>
-          <p>{data.type}</p>
-        </div>
+        {data.label && (
+          <div>
+            <p>{data.type}</p>
+          </div>
+        )}
         <div className={classNames('detailBox')}>
           <p className={classNames('detailBox__value')}>
             {data.type === ProgressBarType.TVL && '$'}

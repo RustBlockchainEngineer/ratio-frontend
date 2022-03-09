@@ -1,13 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { Connection } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Form, FormGroup, InputGroup, Row } from 'react-bootstrap';
+import { Button, Form, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
 import { useWallet, WalletAdapter } from '../../contexts/wallet';
+import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { IIndexable } from '../../types/admin-types';
 import {
   getHarvestFee,
@@ -80,6 +81,10 @@ export default function FeesAdminForm() {
   };
   const [data, setData] = useState<Fees>(defaultValues);
   const [changedTracker, setChangedTracker] = useState<FeesChanged>(defaultValuesTrackers);
+  const superOwner = useSuperOwner();
+  const connection = useConnection();
+  const gWallet = useWallet();
+  const wallet = gWallet.wallet;
 
   const handleChange = (event: any) => {
     setData((values) => ({
@@ -144,11 +149,11 @@ export default function FeesAdminForm() {
     }
   }, [fetchData]);
 
-  const connection = useConnection();
-  const gWallet = useWallet();
-  const wallet = gWallet.wallet;
-
   const updateContractValues = async () => {
+    if (wallet?.publicKey?.toBase58() !== superOwner) {
+      toast.error('Connected user is not the contract authority');
+      throw 'Connected user is not the contract authority';
+    }
     await Promise.all(
       Object.keys(data)
         .filter((item) => (changedTracker as IIndexable)[item])

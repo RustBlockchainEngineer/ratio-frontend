@@ -16,8 +16,6 @@
   bottom: 0px;
   &--collapse {
     width: 120px;
-
-    
     &:before {
       width: 120px !important;
       box-shadow: var(--nav-boxshadow);
@@ -60,6 +58,13 @@
     // opacity: 0.4;
     border-right: 1px solid var(--unnamed-color-f9fbfe);
   }
+
+  &__progressbar {
+    padding-left: 2.5rem;
+    padding-right: 1.25rem;
+    padding-top: 0.9rem;
+  }
+
   &__collapsemenu {
     cursor: pointer;
     position: absolute;
@@ -96,20 +101,6 @@
         position: absolute;
         left: 30px;
         top: -12px;
-        background-color: var(--unnamed-color-17161f);
-        padding: 0px 8px;
-        font-family: 'Poppins-Medium';
-        font-size: 12px;
-        color: var(--unnamed-color-3c4760);
-      }
-    }
-    .ratio-platform {
-      position: relative;
-      &::before {
-        content: 'Ratio Platform';
-        position: absolute;
-        left: 30px;
-        top: -11px;
         background-color: var(--unnamed-color-17161f);
         padding: 0px 8px;
         font-family: 'Poppins-Medium';

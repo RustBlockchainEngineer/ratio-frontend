@@ -10,6 +10,7 @@ import {
   SET_PLATFORM_DATA,
   SET_ACTIVE_VAULT,
   SET_INACTIVE_VAULT,
+  SET_VIEW_TYPE,
 } from './actionTypes';
 import { dashboardActionTypes } from './types';
 
@@ -22,6 +23,7 @@ const initialState = {
   all_vaults: [],
   active_vaults: [],
   overview: {},
+  view_type: 'grid',
   platform_data: { value: 'ALL', label: 'All platforms' },
 };
 
@@ -47,6 +49,8 @@ export default (state = initialState, action: dashboardActionTypes) => {
       return { ...state, platform_data: action.payload };
     case SET_OVERVIEW:
       return { ...state, overview: action.payload };
+    case SET_VIEW_TYPE:
+      return { ...state, view_type: action.payload };
     default:
       return state;
   }

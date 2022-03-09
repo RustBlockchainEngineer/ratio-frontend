@@ -19,6 +19,12 @@ import BN from 'bn.js';
 import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
+import {
+  COLL_RATIOS_DECIMALS,
+  GLOBAL_DEBT_CEILING_DECIMALS,
+  TVL_DECIMAL,
+  USER_DEBT_CEILING_DECIMALS,
+} from '../constants';
 
 export const ADMIN_SETTINGS_DECIMALS = 6;
 
@@ -173,7 +179,7 @@ export async function setGlobalTvlLimit(
   try {
     const transaction = new Transaction();
     const signers: Keypair[] = [];
-    const ix = await program.instruction.setGlobalTvlLimit(new anchor.BN(newTvlLimit * 10 ** ADMIN_SETTINGS_DECIMALS), {
+    const ix = await program.instruction.setGlobalTvlLimit(new anchor.BN(newTvlLimit * 10 ** TVL_DECIMAL), {
       accounts: {
         authority: wallet.publicKey,
         globalState: globalStateKey,
@@ -196,7 +202,7 @@ export async function setGlobalTvlLimit(
 export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.tvlLimit as number) / 10 ** ADMIN_SETTINGS_DECIMALS;
+    return (globalState.tvlLimit as number) / 10 ** TVL_DECIMAL;
   } catch (e) {
     console.error('Error while fetching the tvl limiy');
     throw e;
@@ -206,7 +212,7 @@ export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAd
 export async function getGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.debtCeiling as number) / 10 ** ADMIN_SETTINGS_DECIMALS;
+    return (globalState.debtCeiling as number) / 10 ** GLOBAL_DEBT_CEILING_DECIMALS;
   } catch (e) {
     console.error('Error while fetching the global debt ceiling');
     throw e;
@@ -216,7 +222,7 @@ export async function getGlobalDebtCeiling(connection: Connection, wallet: Walle
 export async function getUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.userDebtCeiling as number) / 10 ** ADMIN_SETTINGS_DECIMALS;
+    return (globalState.userDebtCeiling as number) / 10 ** USER_DEBT_CEILING_DECIMALS;
   } catch (e) {
     console.error('Error while fetching the global user debt ceiling');
     throw e;
@@ -236,7 +242,7 @@ export async function setGlobalDebtCeiling(
     const transaction = new Transaction();
     const signers: Keypair[] = [];
     const ix = await program.instruction.setGlobalDebtCeiling(
-      new anchor.BN(newDebtCeiling * 10 ** ADMIN_SETTINGS_DECIMALS),
+      new anchor.BN(newDebtCeiling * 10 ** GLOBAL_DEBT_CEILING_DECIMALS),
       {
         accounts: {
           authority: wallet.publicKey,
@@ -300,7 +306,7 @@ export async function setUserDebtCeiling(connection: Connection, wallet: any, ne
     const transaction = new Transaction();
     const signers: Keypair[] = [];
     const ix = await program.instruction.setUserDebtCeiling(
-      new anchor.BN(newDebtCeiling * 10 ** ADMIN_SETTINGS_DECIMALS),
+      new anchor.BN(newDebtCeiling * 10 ** USER_DEBT_CEILING_DECIMALS),
       {
         accounts: {
           authority: wallet.publicKey,
@@ -329,16 +335,16 @@ export async function getCollateralRatio(
     const { globalState } = await getGlobalState(connection, wallet);
     const readValues = globalState.collPerRisklv as number[];
     const result: CollateralizationRatios = {
-      cr_aaa_ratio: readValues[0] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_aa_ratio: readValues[1] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_a_ratio: readValues[2] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_bbb_ratio: readValues[3] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_bb_ratio: readValues[4] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_b_ratio: readValues[5] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_ccc_ratio: readValues[6] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_cc_ratio: readValues[7] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_c_ratio: readValues[8] / 10 ** ADMIN_SETTINGS_DECIMALS,
-      cr_d_ratio: readValues[9] / 10 ** ADMIN_SETTINGS_DECIMALS,
+      cr_aaa_ratio: readValues[0] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_aa_ratio: readValues[1] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_a_ratio: readValues[2] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_bbb_ratio: readValues[3] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_bb_ratio: readValues[4] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_b_ratio: readValues[5] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_ccc_ratio: readValues[6] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_cc_ratio: readValues[7] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_c_ratio: readValues[8] / 10 ** COLL_RATIOS_DECIMALS,
+      cr_d_ratio: readValues[9] / 10 ** COLL_RATIOS_DECIMALS,
     };
     return result;
   } catch (e) {
@@ -356,7 +362,7 @@ export async function setCollateralRatio(
   const globalStateKey = await getGlobalStateKey();
 
   const bigNumberValues = Object.values(values)?.map((value: string) => {
-    return new BN(parseFloat(value) * 10 ** ADMIN_SETTINGS_DECIMALS);
+    return new BN(parseFloat(value) * 10 ** COLL_RATIOS_DECIMALS);
   });
   console.log('BIG NUMBER VALUES');
   console.log(bigNumberValues);
@@ -380,9 +386,9 @@ export async function setCollateralRatio(
 export async function getHarvestFee(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return parseFloat(((globalState.feeNum.toNumber() / globalState.feeDeno.toNumber()) * 100).toFixed(2));
+    return globalState.feeNum.toNumber() / globalState.feeDeno.toNumber();
   } catch (e) {
-    console.error('Error while fetching the tvl limiy');
+    console.error('Error while fetching the harvest fee');
     throw e;
   }
 }
@@ -393,13 +399,13 @@ export async function setHarvestFee(
   feeNum: number
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
+  const { globalState, globalStateKey } = await getGlobalState(connection, wallet);
 
-  const MY_FEE_DENO = 1000_000;
-  const feeNumNew = (feeNum / 100) * MY_FEE_DENO;
-  console.log(`Set Harvest fees ${feeNumNew} / ${MY_FEE_DENO}`);
+  const feeDeno = globalState.feeDeno.toNumber();
+  const feeNumNew = feeNum * feeDeno;
+  console.log(`Set Harvest fees ${feeNumNew} / ${feeDeno}`);
   try {
-    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(MY_FEE_DENO), {
+    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(feeDeno), {
       accounts: {
         authority: wallet?.publicKey,
         globalState: globalStateKey,

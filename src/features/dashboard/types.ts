@@ -9,6 +9,7 @@ import {
   SET_PLATFORM_DATA,
   SET_ACTIVE_VAULT,
   SET_INACTIVE_VAULT,
+  SET_VIEW_TYPE,
 } from './actionTypes';
 
 interface setCompareVaultsAction {
@@ -60,6 +61,11 @@ interface setInactiveVaultsAction {
   payload: any;
 }
 
+interface setViewType {
+  type: typeof SET_VIEW_TYPE;
+  payload: any;
+}
+
 export interface SystemState {
   dashboard: {
     compare_vaults: false;
@@ -72,6 +78,7 @@ export interface SystemState {
     active_vaults: [];
     inactive_vaults: [];
     overview: any;
+    view_type: string;
   };
 }
 
@@ -85,4 +92,5 @@ export type dashboardActionTypes =
   | setOverview
   | setPlatformData
   | setActiveVaultsAction
-  | setInactiveVaultsAction;
+  | setInactiveVaultsAction
+  | setViewType;

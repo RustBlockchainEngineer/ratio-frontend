@@ -30,7 +30,6 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
-  const [viewType, setViewType] = useState('tile');
   const usdrMint = useMint(USDR_MINT_KEY);
   const compareVaultsList = useSelector(selectors.getCompareVaultsList);
   const filter_data = useSelector(selectors.getFilterData);
@@ -38,6 +37,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const view_data = useSelector(selectors.getViewData);
   const platform_data = useSelector(selectors.getPlatformData);
   const overview = useSelector(selectors.getOverview);
+  const viewType = useSelector(selectors.getViewType);
   const [factorial, setFactorial] = useState<any>([]);
   const [globalState, setGlobalState] = React.useState(null);
   const [vaultsDebtData, setVaultsDebtData] = React.useState<any>([]);
@@ -49,7 +49,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const { wallet, connected } = useWallet();
 
   const onViewType = (type: string) => {
-    setViewType(type);
+    dispatch({ type: actionTypes.SET_VIEW_TYPE, payload: type });
+    // setViewType(type);
   };
 
   const { status, error, vaults } = useVaultsContextProvider();
@@ -221,7 +222,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       }
     };
 
-    if (vtype === 'tile') {
+    if (vtype === 'grid') {
       return (
         <div className="row">
           {factorial.map((item: any) => {
