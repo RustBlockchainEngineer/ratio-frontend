@@ -53,6 +53,10 @@ export async function toggleEmergencyState(connection: Connection, wallet: any, 
     const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('------ SET EMERGENCY STATE TX --------');
     console.log(tx);
+    const txResult = await connection.confirmTransaction(tx);
+    if (txResult.value.err) {
+      throw txResult.value.err;
+    }
   } catch (error) {
     console.error('ERROR when changing the emergency state.', error);
     throw error;
@@ -154,6 +158,10 @@ export async function changeSuperOwner(connection: Connection, wallet: WalletAda
     const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('------ CHANGE AUTHORITY TX --------');
     console.log(tx);
+    const txResult = await connection.confirmTransaction(tx);
+    if (txResult.value.err) {
+      throw txResult.value.err;
+    }
   } catch (error) {
     console.error('ERROR when changing the authority.', error);
     throw error;
@@ -181,6 +189,10 @@ export async function setGlobalTvlLimit(
     const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('------ TX GLOBAL TVL LIMIT --------');
     console.log('tx id->', tx);
+    const txResult = await connection.confirmTransaction(tx);
+    if (txResult.value.err) {
+      throw txResult.value.err;
+    }
   } catch (error) {
     console.log('There was an error while setting the global tvl limit', error);
     throw error;
@@ -242,6 +254,10 @@ export async function setGlobalDebtCeiling(
     const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('----- TX GLOBAL DEBT CEILING ------');
     console.log(tx);
+    const txResult = await connection.confirmTransaction(tx);
+    if (txResult.value.err) {
+      throw txResult.value.err;
+    }
     return true;
   } catch (error) {
     console.log('There was an error while setting the global debt ceiling', error);
@@ -274,6 +290,10 @@ export async function setVaultDebtCeiling(
   );
   transaction.add(ix);
   const tx = await sendTransaction(connection, wallet, transaction, signers);
+  const txResult = await connection.confirmTransaction(tx);
+  if (txResult.value.err) {
+    throw txResult.value.err;
+  }
   console.log('tx id->', tx);
   return 'Set Vault Debt Ceiling to' + vaultDebtCeiling + ', transaction id = ' + tx;
 }
@@ -297,6 +317,10 @@ export async function setUserDebtCeiling(connection: Connection, wallet: any, ne
     transaction.add(ix);
     const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('tx id->', tx);
+    const txResult = await connection.confirmTransaction(tx);
+    if (txResult.value.err) {
+      throw txResult.value.err;
+    }
   } catch (error) {
     console.log('There was an error while setting the user debt  ceiling', error);
     throw error;
@@ -418,20 +442,29 @@ export async function setDepositFee(connection: Connection, wallet: WalletAdapte
 export async function changeTreasury(connection: Connection, wallet: any, newTreasury: PublicKey) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
 
-  const program = getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
-  const transaction = new Transaction();
-  const ix = await program.instruction.changeTreasury({
-    accounts: {
-      authority: wallet.publicKey,
-      globalState: globalStateKey,
-      newTreasury,
-    },
-  });
-  transaction.add(ix);
-  const tx = await sendTransaction(connection, wallet, transaction);
-  console.log('tx id->', tx);
-  return 'Set Treasury to' + newTreasury.toBase58() + ', transaction id = ' + tx;
+  try {
+    const program = getProgramInstance(connection, wallet);
+    const globalStateKey = await getGlobalStateKey();
+    const transaction = new Transaction();
+    const ix = await program.instruction.changeTreasury({
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+        newTreasury,
+      },
+    });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction);
+    console.log('tx id->', tx);
+    const txResult = await connection.confirmTransaction(tx);
+    if (txResult.value.err) {
+      throw txResult.value.err;
+    }
+    return 'Set Treasury to' + newTreasury.toBase58() + ', transaction id = ' + tx;
+  } catch (e) {
+    console.error('Error while setting the treasury wallet');
+    throw e;
+  }
 }
 
 export async function getCurrentTreasuryWallet(connection: Connection, wallet: any): Promise<PublicKey> {
@@ -439,7 +472,7 @@ export async function getCurrentTreasuryWallet(connection: Connection, wallet: a
     const { globalState } = await getGlobalState(connection, wallet);
     return globalState.treasury;
   } catch (e) {
-    console.error('Error while fetching the super owner');
+    console.error('Error while fetching the treasury wallet');
     throw e;
   }
 }
