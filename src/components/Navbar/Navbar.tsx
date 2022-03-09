@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 import NavbarItem from './../NavbarItem/NavbarItem';
-import { NavbarProgressBar, ProgressBarType } from './NavbarProgressBar';
 import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
@@ -21,6 +20,7 @@ import { actionTypes, selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useUSDrMintInfo, useUserOverview } from '../../contexts/state';
+import { NavBarProgressBarUSDr } from './NavBarProgressBarUSDr';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -168,8 +168,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
                 <h6>USDr Minted</h6>
                 <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
-              {/* <NavbarProgressBar type={ProgressBarType.TVL} /> */}
-              <NavbarProgressBar label={true} className="navbar-vertical__progressbar" type={ProgressBarType.USDr} />
+              <NavBarProgressBarUSDr className="navbar-vertical__progressbar" />
             </div>
           ) : null
         ) : (

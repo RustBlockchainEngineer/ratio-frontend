@@ -4,10 +4,11 @@ import { FaCheck } from 'react-icons/fa';
 import { IoMdCloseCircle } from 'react-icons/io';
 import Button from '../Button';
 import SwitchButton from '../SwitchButton';
-import { NavbarProgressBar, ProgressBarType } from '../Navbar/NavbarProgressBar';
 
 import { shortenAddress } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
+import { NavBarProgressBarTVL } from '../Navbar/NavBarProgressBarTVL';
+import { NavBarProgressBarUSDr } from '../Navbar/NavBarProgressBarUSDr';
 
 type HeaderProps = {
   onClickWalletBtn: () => void;
@@ -56,7 +57,7 @@ const Header = (headerProps: HeaderProps) => {
   const renderTotalTVLCap = () => {
     return connected ? (
       <div className="header__connected header__tvl">
-        <NavbarProgressBar className="header__progressbar" type={ProgressBarType.TVL} />
+        <NavBarProgressBarTVL className="header__progressbar" shouldDisplayLabel={false} />
       </div>
     ) : null;
   };
@@ -64,7 +65,7 @@ const Header = (headerProps: HeaderProps) => {
   const renderTotalUSDrDebt = () => {
     return connected ? (
       <div className="header__connected header__debt">
-        <NavbarProgressBar className="header__progressbar" type={ProgressBarType.USDr} />
+        <NavBarProgressBarUSDr className="header__progressbar" shouldDisplayLabel={false} />
       </div>
     ) : null;
   };
