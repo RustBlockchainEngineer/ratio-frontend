@@ -83,6 +83,10 @@ export default function AdminTasksForm() {
 
   const handleToggleEmergencyStateClick = async (evt: any) => {
     evt.preventDefault();
+    if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
     await setEmergencyStateOnContract(
       connection,
       wallet,
@@ -92,6 +96,10 @@ export default function AdminTasksForm() {
 
   const handleChangeSuperOwnerSubmit = async (evt: any) => {
     evt.preventDefault();
+    if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
     const form = evt.currentTarget;
     if (form.checkValidity() === false) {
       evt.stopPropagation();
@@ -103,6 +111,7 @@ export default function AdminTasksForm() {
     setValidated(true);
     try {
       await changeSuperOwner(connection, wallet, new PublicKey(superOwner));
+      setOriginalSuperOwner(superOwner);
       toast.info('Super owner changed successfully');
     } catch (error: unknown) {
       toast.error('There was an error when changing the super owner');
@@ -113,6 +122,10 @@ export default function AdminTasksForm() {
 
   const handleChangeTreasuryWalletSubmit = async (evt: any) => {
     evt.preventDefault();
+    if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
     const form = evt.currentTarget;
     if (form.checkValidity() === false) {
       evt.stopPropagation();

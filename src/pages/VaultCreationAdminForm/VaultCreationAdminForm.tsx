@@ -10,9 +10,10 @@ import { useConnection } from '../../contexts/connection';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useWallet } from '../../contexts/wallet';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
+import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { Platform, RISK_RATING } from '../../types/VaultTypes';
 import { createGlobalState, createTokenVault } from '../../utils/admin-contract-calls';
-import { getTokenVaultAddress, isGlobalStateCreated } from '../../utils/ratio-lending';
+import { getTokenVaultAddress, getTokenVaultByMint, isGlobalStateCreated } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 import LPAssetAdditionModal, { LPAssetCreationData } from './LPAssetAdditionModal/LPAssetAdditionModal';
 
@@ -37,6 +38,8 @@ export default function VaultCreationAdminForm() {
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
+  const superOwner = useSuperOwner();
+
   const onCreateProgramState = async () => {
     await createGlobalState(connection, wallet);
     setGlobalStateCreated(await isGlobalStateCreated(connection, wallet));
@@ -109,11 +112,14 @@ export default function VaultCreationAdminForm() {
     connection: Connection,
     data: LPCreationData
   ): Promise<PublicKey | undefined> => {
-    let vaultProgramAddress = await getTokenVaultAddress(data?.address_id);
-    if (vaultProgramAddress) {
+    if (await getTokenVaultByMint(connection, data?.address_id)) {
       toast.info('Token vault program already exists');
     } else {
       try {
+        if (wallet?.publicKey?.toBase58() !== superOwner) {
+          toast.error("Can't create vault, connected user is not the contract authority");
+          return;
+        }
         const riskRatingValue: number = RISK_RATING[data?.risk_rating as keyof typeof RISK_RATING];
         const platformName: string | undefined = platforms.find((item) => item.id === data.platform_id)?.name;
         if (!platformName) {
@@ -134,9 +140,10 @@ export default function VaultCreationAdminForm() {
       } catch (error: any) {
         console.error(error);
       }
-      vaultProgramAddress = await getTokenVaultAddress(data?.address_id);
-      vaultProgramAddress && toast.info('Token vault program created successfully');
+      (await getTokenVaultByMint(connection, data?.address_id)) &&
+        toast.info('Token vault program created successfully');
     }
+    const vaultProgramAddress = await getTokenVaultAddress(data?.address_id);
     if (!vaultProgramAddress) {
       toast.error("Couldn't get the vault's address");
       return;
