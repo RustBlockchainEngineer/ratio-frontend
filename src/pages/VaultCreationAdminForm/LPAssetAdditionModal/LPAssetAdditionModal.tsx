@@ -109,16 +109,6 @@ export default function LPAssetAdditionModal({
                 ))}
               </AdminFormInput>
             </Row>
-            <Row>
-              <AdminFormInput
-                handleChange={handleChange}
-                label="Pool size"
-                name="token_pool_size"
-                required={false}
-                value={data?.token_pool_size}
-                md="12"
-              />
-            </Row>
             <Button className="button--blue bottomBtn" type="submit">
               Add
             </Button>
