@@ -36,7 +36,7 @@ import { Token as SToken } from '@saberhq/token-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { createAssociatedTokenAccount, findAssociatedTokenAddress } from '../raydium/web3';
 import { getOneFilteredTokenAccountsByOwner, sendTransaction } from '../web3';
-import { FEE_OWNER, SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_MINT } from './constants';
+import { SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_MINT } from './constants';
 import { WalletAdapter } from '../../contexts/wallet';
 import { TokenAmount } from '../safe-math';
 
@@ -509,6 +509,7 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     const rewarder = await sdk.mine.loadRewarderWrapper(SABER_REWARDER);
 
     const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
+    const rewardMintInfo = await serumCmn.getMintInfo(program.provider, SABER_REWARD_MINT);
 
     const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
     const quarry = await rewarder.getQuarry(poolMintToken);
@@ -526,7 +527,7 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
         miner?.rewardsEarned as anchor.BN
       )
     ).toNumber();
-    return parseFloat(new TokenAmount(expectedWagesEarned, collMintInfo.decimals).fixed());
+    return parseFloat(new TokenAmount(expectedWagesEarned, rewardMintInfo.decimals).fixed());
   } catch (e) {
     console.log(e);
     return 0;
