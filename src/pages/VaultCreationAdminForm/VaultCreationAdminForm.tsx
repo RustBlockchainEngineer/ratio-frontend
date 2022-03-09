@@ -206,14 +206,6 @@ export default function VaultCreationAdminForm() {
             <AdminFormInput handleChange={handleChange} label="Symbol" name="symbol" value={data?.symbol} />
             <AdminFormInput
               handleChange={handleChange}
-              label="Collateralization ratio"
-              name="collateralization_ratio"
-              type="number"
-              required={false}
-              value={data?.collateralization_ratio}
-            />
-            <AdminFormInput
-              handleChange={handleChange}
               label="Page url"
               required={false}
               name="page_url"
@@ -314,7 +306,6 @@ export default function VaultCreationAdminForm() {
               <th>Vault address</th>
               <th>LP mint address</th>
               <th>Name</th>
-              <th>Collateralization ratio</th>
               <th>Created on</th>
               <th>Platform</th>
               <th>Risk rating</th>
@@ -326,7 +317,6 @@ export default function VaultCreationAdminForm() {
                 <td>{item.vault_address_id}</td>
                 <td>{item.address_id}</td>
                 <td>{item.symbol}</td>
-                <td>{item.collateralization_ratio}</td>
                 <td>{item.created_on}</td>
                 <td>{item.platform_name}</td>
                 <td>{item.risk_rating}</td>
