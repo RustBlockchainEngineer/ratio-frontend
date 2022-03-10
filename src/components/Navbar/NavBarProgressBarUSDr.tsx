@@ -2,10 +2,9 @@ import React from 'react';
 import classNames from 'classnames';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import { getGlobalState } from '../../utils/ratio-lending';
-import { TokenAmount } from '../../utils/safe-math';
-import { useUserOverview } from '../../contexts/state';
 import { NavBarProgressBar, ProgressBarLabelType } from './NavBarProgressBar';
+import { useUserOverview } from '../../contexts/state';
+import { TokenAmount } from '../../utils/safe-math';
 
 interface NavBarProgressBarUSDrProps {
   className: string;
@@ -18,46 +17,38 @@ export const NavBarProgressBarUSDr = (data: NavBarProgressBarUSDrProps) => {
   const [currentValue, setValue] = React.useState(0);
   const [percentage, setPercentage] = React.useState(0);
   const [warning, setWarning] = React.useState(false);
-  const [globalState, setGlobalState] = React.useState<any>(null);
 
   const userOverview = useUserOverview();
   const connection = useConnection();
   const { wallet } = useWallet();
 
   React.useEffect(() => {
-    if (wallet && wallet.publicKey) {
-      getGlobalState(connection, wallet).then((res) => {
-        if (!res) {
-          return;
-        }
-        setGlobalState(res?.globalState);
-      });
-    }
-    return () => {
-      setGlobalState(null);
-    };
-  }, [wallet, connection, userOverview]);
-
-  React.useEffect(() => {
-    if (!wallet || !wallet.publicKey || !globalState) {
+    if (!wallet || !wallet.publicKey || !userOverview.activeVaults) {
       return;
     }
 
-    // globalState.totalDebt ? globalState.totalDebt.toNumber() : 1;
-    const currentValue = Number(new TokenAmount(globalState.totalDebt as string, 6).fixed());
-    setValue(currentValue);
+    const activeVaults = Object.values(userOverview.activeVaults);
+    const debt = activeVaults.reduce((acc: number, obj: any) => {
+      return (acc + obj.debt) as number;
+    }, 0);
+    const debtLimit = activeVaults.reduce((acc: number, obj: any) => {
+      return (acc + obj.debtLimit) as number;
+    }, 0);
 
-    const maxValue = Number(new TokenAmount(globalState.debtCeiling as string, 6).fixed());
+    // Current Value
+    setValue(debt);
+
+    const maxValue = debt + debtLimit;
 
     if (maxValue === 0 || isNaN(maxValue)) {
       setPercentage(0);
       setWarning(false);
     } else {
-      const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
+      const percentageFull = ((debt / maxValue) * 100).toFixed(2);
       setPercentage(parseFloat(percentageFull));
-      setWarning(currentValue / maxValue === 1);
+      setWarning(debt / maxValue === 1);
     }
-  }, [wallet, connection, globalState]);
+  }, [wallet, connection, userOverview]);
 
   const label = shouldDisplayLabel ? ProgressBarLabelType.USDr : ProgressBarLabelType.None;
 
@@ -69,8 +60,8 @@ export const NavBarProgressBarUSDr = (data: NavBarProgressBarUSDrProps) => {
         { 'navbarprogressbar--usdr': !warning }
       )}
       label={label}
-      shouldDisplayCurrency={false}
-      currentValue={currentValue}
+      shouldDisplayCurrency={true}
+      currentValue={+new TokenAmount(currentValue, 6).fixed()}
       percentage={percentage}
     />
   );
