@@ -1,4 +1,4 @@
-enum RiskRating {
+export enum RiskRating {
   AAA = 101,
   AA = 102.25,
   A = 103.5,
