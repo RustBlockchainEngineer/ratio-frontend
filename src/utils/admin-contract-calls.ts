@@ -386,7 +386,7 @@ export async function setCollateralRatio(
 export async function getHarvestFee(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.feeNum.toNumber() / globalState.feeDeno.toNumber();
+    return (globalState.feeNum.toNumber() / globalState.feeDeno.toNumber()) * 100;
   } catch (e) {
     console.error('Error while fetching the harvest fee');
     throw e;
@@ -402,7 +402,7 @@ export async function setHarvestFee(
   const { globalState, globalStateKey } = await getGlobalState(connection, wallet);
 
   const feeDeno = globalState.feeDeno.toNumber();
-  const feeNumNew = feeNum * feeDeno;
+  const feeNumNew = (feeNum / 100) * feeDeno;
   console.log(`Set Harvest fees ${feeNumNew} / ${feeDeno}`);
   try {
     const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(feeDeno), {
