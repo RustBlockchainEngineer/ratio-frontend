@@ -71,7 +71,7 @@ const TokensEarned = ({ data }: any) => {
               {getTokenNameByPlatform(data?.platform?.name)}
             </td>
             <td className="align-middle">
-              {userState?.reward?.toFixed(PRICE_DECIMAL)} {getTokenNameByPlatform(data?.platform?.name)}
+              {userState?.reward} {getTokenNameByPlatform(data?.platform?.name)}
             </td>
             <td className="text-right align-middle">${(userState?.reward * SBR_PRICE)?.toFixed(PRICE_DECIMAL)}</td>
           </tr>

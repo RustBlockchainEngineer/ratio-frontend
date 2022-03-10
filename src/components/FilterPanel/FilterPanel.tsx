@@ -46,6 +46,7 @@ const filter_options = [
   { value: 'USDC', label: 'USDC', network: 'solana', icon: [usdcIcon] },
 ];
 
+// eslint-disable-next-line
 const platformOptions = [
   { value: 'ALL', label: 'All platforms', icon: null },
   { value: 'RAYDIUM', label: 'Raydium', icon: raydiumIcon },
@@ -64,6 +65,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
   const view_data = useSelector(selectors.getViewData);
+  // eslint-disable-next-line
   const platform_data = useSelector(selectors.getPlatformData);
 
   const onFilterChange = (values: any) => {
@@ -84,10 +86,12 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
     dispatch({ type: actionTypes.SET_VIEW_DATA, payload: values });
   };
 
+  // eslint-disable-next-line
   const onPlatformChange = (values: any) => {
     dispatch({ type: actionTypes.SET_PLATFORM_DATA, payload: values });
   };
 
+  // eslint-disable-next-line
   const CustomOption = (props: any) => {
     const { children, innerProps, data } = props;
     return (
@@ -112,14 +116,15 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
             placeholder="Search vaults by token"
             isMulti
           />
-          <Select
-            components={{ Option: CustomOption }}
-            options={platformOptions}
-            value={platform_data}
-            onChange={onPlatformChange}
-            classNamePrefix="platform-select"
-            defaultValue={platformOptions[0]}
-          />
+          {/* HIDE this filter, until we have more than one platform to be filtered */}
+          {/*<Select*/}
+          {/*components={{ Option: CustomOption }}*/}
+          {/*options={platformOptions}*/}
+          {/*value={platform_data}*/}
+          {/*onChange={onPlatformChange}*/}
+          {/*classNamePrefix="platform-select"*/}
+          {/*defaultValue={platformOptions[0]}*/}
+          {/*/>*/}
           {/* <Switch
             onChange={handleCompareVaults}
             checked={compareVaults}

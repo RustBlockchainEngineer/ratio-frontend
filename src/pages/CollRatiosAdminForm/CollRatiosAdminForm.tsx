@@ -6,6 +6,7 @@ import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
+import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { CollateralizationRatios } from '../../types/admin-types';
 import { getCollateralRatio, setCollateralRatio } from '../../utils/admin-contract-calls';
 import AdminFormLayout from '../AdminFormLayout';
@@ -25,6 +26,10 @@ export default function CollRatiosAdminForm() {
     cr_d_ratio: 0,
   };
   const [data, setData] = useState<CollateralizationRatios>(defaultValues);
+  const connection = useConnection();
+  const gWallet = useWallet();
+  const wallet = gWallet.wallet;
+  const superOwner = useSuperOwner();
 
   const handleChange = (event: any) => {
     setData((values) => ({
@@ -66,10 +71,6 @@ export default function CollRatiosAdminForm() {
     }
   }, [getCollateralRatio]);
 
-  const connection = useConnection();
-  const gWallet = useWallet();
-  const wallet = gWallet.wallet;
-
   const updateDatabaseValues = async () => {
     const response = await fetch(`${API_ENDPOINT}/ratioconfig/collateralratio`, {
       body: JSON.stringify(data),
@@ -89,6 +90,10 @@ export default function CollRatiosAdminForm() {
 
   const handleSubmit = async (evt: any) => {
     evt.preventDefault();
+    if (wallet?.publicKey?.toBase58() !== superOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
     const form = evt.currentTarget;
     if (form.checkValidity() === false) {
       evt.stopPropagation();

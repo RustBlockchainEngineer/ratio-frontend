@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { EmergencyState } from '../../types/admin-types';
@@ -23,6 +24,8 @@ export default function AdminTasksForm() {
   const [validated, setValidated] = useState(false);
   const [treasuryWalletFormValidated, setTreasuryWalletFormValidated] = useState(false);
   const [currEmerState, setCurrEmerState] = useState(EmergencyState.UNKNOWN);
+  const [emerStateChanging, setEmerStateChanging] = useState(false);
+  const [emerStateVersion, setEmerStateVersion] = useState(1);
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
@@ -71,7 +74,7 @@ export default function AdminTasksForm() {
     return () => {
       active = false;
     };
-  }, [connection, wallet]);
+  }, [connection, wallet, emerStateVersion]);
 
   const handleSuperOwnerInputChange = (event: any) => {
     setSuperOwner(event.target.value);
@@ -83,15 +86,32 @@ export default function AdminTasksForm() {
 
   const handleToggleEmergencyStateClick = async (evt: any) => {
     evt.preventDefault();
-    await setEmergencyStateOnContract(
-      connection,
-      wallet,
-      currEmerState === EmergencyState.RUNNING ? EmergencyState.PAUSED : EmergencyState.RUNNING
-    );
+    if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
+    try {
+      setEmerStateChanging(true);
+      await setEmergencyStateOnContract(
+        connection,
+        wallet,
+        currEmerState === EmergencyState.RUNNING ? EmergencyState.PAUSED : EmergencyState.RUNNING
+      );
+      setEmerStateVersion(emerStateVersion + 1);
+      setEmerStateChanging(false);
+      toast.info('Emergency state changed successfully');
+    } catch (error: unknown) {
+      toast.error('There was an error when toggling the emergency state');
+      throw error;
+    }
   };
 
   const handleChangeSuperOwnerSubmit = async (evt: any) => {
     evt.preventDefault();
+    if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
     const form = evt.currentTarget;
     if (form.checkValidity() === false) {
       evt.stopPropagation();
@@ -103,6 +123,7 @@ export default function AdminTasksForm() {
     setValidated(true);
     try {
       await changeSuperOwner(connection, wallet, new PublicKey(superOwner));
+      setOriginalSuperOwner(superOwner);
       toast.info('Super owner changed successfully');
     } catch (error: unknown) {
       toast.error('There was an error when changing the super owner');
@@ -113,6 +134,10 @@ export default function AdminTasksForm() {
 
   const handleChangeTreasuryWalletSubmit = async (evt: any) => {
     evt.preventDefault();
+    if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
     const form = evt.currentTarget;
     if (form.checkValidity() === false) {
       evt.stopPropagation();
@@ -174,8 +199,13 @@ export default function AdminTasksForm() {
           Current emergency state: <span className="font-italic">{EmergencyState[currEmerState]}</span>
         </Form.Label>
         <Col md="auto" sm={4}>
-          <Button variant="primary" type="button" onClick={handleToggleEmergencyStateClick}>
-            Toggle emergency state
+          <Button
+            disabled={emerStateChanging}
+            variant="primary"
+            type="button"
+            onClick={handleToggleEmergencyStateClick}
+          >
+            {emerStateChanging ? <LoadingSpinner className="spinner-border-sm text-info" /> : 'Toggle emergency state'}
           </Button>
         </Col>
       </Form.Group>
