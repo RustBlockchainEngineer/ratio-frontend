@@ -61,3 +61,5 @@ export enum Roles {
 }
 
 export const REFRESH_TIMER = 30_000;
+
+export const DEFAULT_NETWORK = process.env.REACT_APP_DEFAULT_NETWORK || 'devnet';
