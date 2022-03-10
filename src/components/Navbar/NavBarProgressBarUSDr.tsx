@@ -28,12 +28,12 @@ export const NavBarProgressBarUSDr = (data: NavBarProgressBarUSDrProps) => {
     }
 
     const activeVaults = Object.values(userOverview.activeVaults);
-    const debt = activeVaults.reduce((acc: number, obj: any) => {
-      return (acc + obj.debt) as number;
-    }, 0);
-    const debtLimit = activeVaults.reduce((acc: number, obj: any) => {
-      return (acc + obj.debtLimit) as number;
-    }, 0);
+    const { debt, debtLimit } = activeVaults.reduce(
+      (acc: { debt: number; debtLimit: number }, obj: any) => {
+        return { debt: (acc.debt + obj.debt) as number, debtLimit: (acc.debtLimit + obj.debtLimit) as number };
+      },
+      { debt: 0, debtLimit: 0 }
+    );
 
     // Current Value
     setValue(debt);
