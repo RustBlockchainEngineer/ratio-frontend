@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Connection } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Form, Row } from 'react-bootstrap';

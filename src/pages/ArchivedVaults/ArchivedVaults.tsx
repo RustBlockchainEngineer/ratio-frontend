@@ -1,7 +1,6 @@
 import React from 'react';
 import { IoWarningOutline } from 'react-icons/io5';
 import { useMediaQuery } from 'react-responsive';
-import { getRiskLevel } from '../../libs/helper';
 import classNames from 'classnames';
 import BootstrapTable from 'react-bootstrap-table-next';
 import Button from '../../components/Button';

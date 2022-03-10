@@ -57,7 +57,6 @@ const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
 
 export const getCoinPicUrl = (mintAddress: string | undefined) => {
   let token;
-  let coinName;
   let coinPicUrl;
   if (mintAddress === NATIVE_SOL.mintAddress) {
     token = Object.values(TOKENS).find((item) => item.mintAddress === mintAddress);
@@ -65,7 +64,7 @@ export const getCoinPicUrl = (mintAddress: string | undefined) => {
     token = Object.values(TOKENS).find((item) => item.mintAddress === mintAddress);
   }
   if (token) {
-    coinName = token.symbol.toLowerCase();
+    // coinName = token.symbol.toLowerCase();
     // coinPicUrl = `https://sdk.raydium.io/icons/${mintAddress}.png`;
     coinPicUrl = token.picUrl;
   } else {

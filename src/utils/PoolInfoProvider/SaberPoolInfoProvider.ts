@@ -1,7 +1,7 @@
 import { LPair } from '../../types/VaultTypes';
 import { GenericInfoProvider } from './GenericInfoProvider';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { calculateRewardByPlatform, getUserState, TYPE_ID_SABER } from '../ratio-lending';
+import { calculateRewardByPlatform, TYPE_ID_SABER } from '../ratio-lending';
 import { depositToSaber, harvestFromSaber, withdrawFromSaber } from '../saber/saber-utils';
 
 export class SaberPoolInfoProvider extends GenericInfoProvider {

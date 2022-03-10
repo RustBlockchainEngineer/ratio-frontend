@@ -1,8 +1,7 @@
-import { Connection } from '@solana/web3.js';
 import React, { useContext, useEffect, useState } from 'react';
 import { getMercurialSwapPoolsInfo } from '../utils/mercurial-pools';
 import { getOrcaSwapPoolInfo } from '../utils/orca-pools';
-import { getRaydiumPools, getRaydiumPoolsInfo } from '../utils/ray-pools';
+import { getRaydiumPools } from '../utils/ray-pools';
 import { getSaberSwapPoolsInfo } from '../utils/saber-pools';
 import { useConnection, useConnectionConfig } from './connection';
 
@@ -31,10 +30,15 @@ export function PoolProvider({ children = undefined as any }) {
 
   useEffect(() => {
     try {
+      // TODO: we are using only Saber
+      return;
+
       getRaydiumPools(connection).then((res: any) => {
         setRaydiumPools(res);
       });
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
   }, [connection]);
 
   useEffect(() => {
@@ -42,11 +46,16 @@ export function PoolProvider({ children = undefined as any }) {
       getSaberSwapPoolsInfo(connection, connectionConfig.env).then((res: any) => {
         setSaberPools(res);
       });
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
   }, [connection]);
 
   useEffect(() => {
     try {
+      // TODO: we are using only Saber
+      return;
+
       getOrcaSwapPoolInfo().then((res: any) => {
         setOrcaPools(res);
       });
@@ -57,6 +66,9 @@ export function PoolProvider({ children = undefined as any }) {
 
   useEffect(() => {
     try {
+      // TODO: we are using only Saber
+      return;
+
       getMercurialSwapPoolsInfo().then((res: any) => {
         setMercurialPools(res);
       });

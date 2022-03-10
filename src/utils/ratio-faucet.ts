@@ -2,16 +2,8 @@ import idl from './ratio-faucet-idl.json';
 
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from '@project-serum/anchor';
-import {
-  Connection,
-  Keypair,
-  SystemProgram,
-  SYSVAR_RENT_PUBKEY,
-  Transaction,
-  TransactionInstruction,
-} from '@solana/web3.js';
+import { Connection, SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { checkWalletATA, createAssociatedTokenAccountIfNotExist, sendTransaction } from './web3';
 import { FAUCET_PROGRAM_ID } from './ids';
 
 const FAUCET_IDL = idl;
@@ -111,7 +103,7 @@ export async function createFaucetState(connection: Connection, wallet: any) {
   console.log('samoRay', samoRayKey.toBase58());
 
   try {
-    const globalState = await program.account.faucet.fetch(globalStateKey);
+    await program.account.faucet.fetch(globalStateKey);
     console.log('already created');
     return;
   } catch (e) {

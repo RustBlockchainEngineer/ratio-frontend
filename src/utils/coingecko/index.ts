@@ -1,4 +1,4 @@
-import { CoinGeckoAPI, APIError } from '@coingecko/cg-api-ts';
+import { CoinGeckoAPI } from '@coingecko/cg-api-ts';
 import { CoinGeckoTokenList } from './constants';
 export const COINGECKO_API = 'https://api.coingecko.com/api/v3/';
 

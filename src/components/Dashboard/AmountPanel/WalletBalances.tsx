@@ -1,7 +1,7 @@
 import { Table } from 'react-bootstrap';
 import USDr from '../../../assets/images/USDr.png';
 
-const WalletBalances = ({ data, icon, tokenName, collAmount, collAmountUSD, usdrAmount }: any) => {
+const WalletBalances = ({ icon, tokenName, collAmount, collAmountUSD, usdrAmount }: any) => {
   return (
     <div className="walletbalance">
       <h4>Wallet Balances</h4>

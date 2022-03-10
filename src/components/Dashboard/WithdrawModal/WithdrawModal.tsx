@@ -15,17 +15,6 @@ import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 
-type PairType = {
-  mint: string;
-  icons: Array<string>;
-  title: string;
-  value: string;
-};
-
-type WithdrawModalProps = {
-  data: PairType;
-};
-
 const WithdrawModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
 

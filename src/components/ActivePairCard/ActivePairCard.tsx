@@ -3,8 +3,6 @@ import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { PublicKey } from '@solana/web3.js';
-import { sleep } from '@project-serum/common';
 
 import { useConnection } from '../../contexts/connection';
 import { formatUSD } from '../../utils/utils';
@@ -45,12 +43,12 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const userState = useUserInfo(data.mint);
   const vaultState = useUserInfo(data.mint);
 
-  const [isOpen, setOpen] = React.useState(false);
+  // eslint-disable-next-line
   const [tvl, setTVL] = React.useState(0);
-  const [tvlUSD, setTVLUSD] = React.useState(0);
   const [totalDebt, setTotalDebt] = React.useState(0);
 
   const [positionValue, setPositionValue] = React.useState(0);
+  // eslint-disable-next-line
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
 
   const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);

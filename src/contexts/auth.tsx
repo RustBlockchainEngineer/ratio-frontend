@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 interface AuthConfig {
   loggedIn: boolean;

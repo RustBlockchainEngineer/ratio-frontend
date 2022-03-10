@@ -11,7 +11,9 @@ function makeRatioApiEndpointCoinGeckoSimplePrice(coinId: string): string {
 }
 
 export const useCoinGeckoPrice = (coinId: string) => {
+  // eslint-disable-next-line
   const [price, setPrice] = useState<any>({ DATA: 'DATA NOT LOADED YET' });
+  // eslint-disable-next-line
   const [error, setError] = useState<any>(null);
   const { accessToken } = useAuthContextProvider();
 

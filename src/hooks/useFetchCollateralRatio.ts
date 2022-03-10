@@ -51,7 +51,6 @@ const fetchAllCollateralRatios = async (accessToken: any) => {
 };
 
 const getCollateralRatio = (collateralRatios: any, riskRating: string): number => {
-  console.log(riskRating);
   const mapValue: any | undefined = collateralRatioToRiskRating[riskRating];
   return collateralRatios[mapValue?.index];
 };

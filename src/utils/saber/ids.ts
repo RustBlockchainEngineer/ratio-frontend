@@ -1,7 +1,5 @@
 /* eslint-disable prettier/prettier */
 import Axios from 'axios';
-import { access } from 'fs';
-// import { SABER_QUARRY_NEW } from './constants';
 
 export const SWAP_PROGRAM_ID = 'SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ';
 
@@ -69,10 +67,6 @@ async function getTokenAccountBalance(account: string) {
 // IT IS NOT EXACTLY THE TVL OF EACH POOL. INSTEAD IT IS JUST THE TVL OF THE COMPLET TOKENS.
 export async function getMainnetTVLTokens() {
   const { data: saberPools } = await Axios.get('https://registry.saber.so/data/llama.mainnet.json');
-
-  const objectR: {
-    [k: string]: any;
-  } = {};
 
   const pools = await Promise.all(
     saberPools.map(async ({ reserveA = '', reserveB = '', tokenACoingecko = '', tokenBCoingecko = '' }) => {

@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import Axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react';
 import { useRaydiumPools } from './pools';
 
 interface PriceConfig {

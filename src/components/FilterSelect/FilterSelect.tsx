@@ -33,6 +33,7 @@ const FilterSelect = ({ options, onFilterChange, filterValue, isMulti, placehold
     );
   };
 
+  // eslint-disable-next-line
   const Control = ({ children, selectProps, ...rest }: any) => {
     return (
       <components.Control {...rest}>

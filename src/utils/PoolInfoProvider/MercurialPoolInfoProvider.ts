@@ -15,6 +15,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return vaultInfo?.tvl as number;
   }
 
+  // eslint-disable-next-line
   async depositLP(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
     // TODO Implement this function
 
@@ -24,6 +25,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
+  // eslint-disable-next-line
   async withdrawLP(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
     // TODO Implement this function
 
@@ -33,6 +35,7 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
     return true;
   }
 
+  // eslint-disable-next-line
   async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
     // TODO Implement this function
 

@@ -3,26 +3,14 @@ import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
-import CustomDropDownInput from '../../CustomDropDownInput';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import { PublicKey } from '@solana/web3.js';
-import { getUsdrMintKey, repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { repayUSDr } from '../../../utils/ratio-lending';
 import { useMint } from '../../../contexts/accounts';
 import { toast } from 'react-toastify';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
-
-type PairType = {
-  icons: Array<string>;
-  title: string;
-  usdrValue: string;
-};
-
-type PaybackModalProps = {
-  data: PairType;
-};
 
 const PaybackModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);

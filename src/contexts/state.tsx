@@ -1,6 +1,5 @@
-import { connection, sleep } from '@project-serum/common';
-import { Connection } from '@solana/web3.js';
-import React, { useContext, useEffect, useState } from 'react';
+import { sleep } from '@project-serum/common';
+import React, { useEffect, useState } from 'react';
 import {
   calculateRewardByPlatform,
   getGlobalState,
@@ -8,11 +7,12 @@ import {
   getUserState,
   USDR_MINT_KEY,
 } from '../utils/ratio-lending';
-import { getMint } from '../utils/utils';
+import { calculateRemainingUserDebt, getMint } from '../utils/utils';
 import { useUpdateWallet } from './auth';
 import { useConnection } from './connection';
 import { useVaultsContextProvider } from './vaults';
 import { useWallet } from './wallet';
+import { TokenAmount } from '../utils/raydium/safe-math';
 
 interface RFStateConfig {
   tokenState: any;
@@ -41,7 +41,7 @@ export const UPDATE_REWARD_STATE: UpdateStateType = 3;
 
 export function RFStateProvider({ children = undefined as any }) {
   const connection = useConnection();
-  const { wallet, publicKey } = useWallet();
+  const { wallet } = useWallet();
   const { vaults } = useVaultsContextProvider();
 
   const [globalState, setGlobalState] = useState<any>(null);
@@ -50,6 +50,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const [overview, setOverview] = useState<any>(null);
   const [tokenState, setTokenState] = useState<any>(null);
   const { updateWalletFlag, setUpdateWalletFlag } = useUpdateWallet();
+
   const updateRFState = async (action: UpdateStateType, mint = '') => {
     await sleep(3000);
     setUpdateWalletFlag(!updateWalletFlag);
@@ -112,11 +113,12 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateUserState = async () => {
-    const userInfos: any = {};
     if (!vaultState) {
       return;
     }
+
     try {
+      const userInfos: any = {};
       for (const mint of Object.keys(vaultState)) {
         const vaultInfo = vaultState[mint];
         const userInfo = await getUserState(connection, wallet, mint);
@@ -129,7 +131,7 @@ export function RFStateProvider({ children = undefined as any }) {
       }
       setUserState(userInfos);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -183,7 +185,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOverview = async () => {
-    if (!userState || Object.keys(userState).length === 0) {
+    if (!userState || !tokenState || Object.keys(userState).length === 0) {
       return setOverview({
         activeVaults: {},
         totalDebt: 0,
@@ -194,16 +196,35 @@ export function RFStateProvider({ children = undefined as any }) {
       const activeVaults: any = {};
       let vaultCount = 0;
       let totalDebt = 0;
+
+      const usdrMint = await getMint(connection, USDR_MINT_KEY);
+
       for (const mint of Object.keys(userState)) {
         const state = userState[mint];
-        if (state && state.lockedCollBalance.toString() !== '0') {
+
+        const vault = vaults.find((vault) => {
+          return vault.address_id.toLowerCase() === mint.toLowerCase();
+        });
+
+        const riskRating = vault?.risk_rating.toString() || 'D';
+
+        const debtLimit = await calculateRemainingUserDebt(
+          Number(process.env.REACT_APP_LP_TOKEN_PRICE), // TODO: fix this
+          riskRating,
+          state,
+          tokenState[mint], // Is the same as vaultState[mint].mintColl.toBase58()
+          usdrMint
+        );
+
+        if (state && state.lockedCollBalance.toNumber() !== 0) {
           activeVaults[mint] = {
             mint,
-            lockedAmount: Number(state.lockedCollBalance.toString()),
-            debt: Number(state.debt.toString()),
+            lockedAmount: state.lockedCollBalance.toNumber(),
+            debt: state.debt.toNumber(),
+            debtLimit: new TokenAmount(debtLimit * 10 ** 6, 6).toWei().toNumber(),
           };
           vaultCount++;
-          totalDebt += Number(state.debt.toString());
+          totalDebt += state.debt.toNumber();
         }
       }
 
@@ -252,7 +273,7 @@ export function RFStateProvider({ children = undefined as any }) {
     return () => {
       setUserState({});
     };
-  }, [connection, vaultState, wallet, wallet?.publicKey]);
+  }, [connection, wallet, wallet?.publicKey, vaultState]);
 
   useEffect(() => {
     if (connection && wallet && wallet.publicKey) {
@@ -262,7 +283,7 @@ export function RFStateProvider({ children = undefined as any }) {
     return () => {
       setOverview({});
     };
-  }, [connection, vaults, userState]);
+  }, [connection, wallet, wallet?.publicKey, vaults, tokenState, userState]);
 
   return (
     <RFStateContext.Provider

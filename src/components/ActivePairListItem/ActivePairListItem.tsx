@@ -2,13 +2,10 @@ import React from 'react';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
-import { PublicKey } from '@solana/web3.js';
 
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { TokenPairCardProps } from '../../models/UInterface';
-import { useMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
@@ -16,8 +13,6 @@ import { useConnection } from '../../contexts/connection';
 
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
-import { sleep } from '@project-serum/common';
-import { useUpdateHistory } from '../../contexts/auth';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import {
@@ -29,11 +24,12 @@ import {
   useVaultMintInfo,
 } from '../../contexts/state';
 
-const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
+const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
+  const { data } = tokenPairCardProps;
   const history = useHistory();
 
   const tokenPrice = usePrice(data.mint);
-  const { wallet, connected, publicKey } = useWallet();
+  const { wallet, connected } = useWallet();
   const connection = useConnection();
 
   const usdrMint = useUSDrMintInfo();
@@ -47,6 +43,7 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
 
   const [positionValue, setPositionValue] = React.useState(0);
   const [tvl, setTVL] = React.useState(0);
+  // eslint-disable-next-line
   const [tvlUSD, setTVLUSD] = React.useState(0);
   const [totalDebt, setTotalDebt] = React.useState(0);
 
@@ -140,6 +137,7 @@ const ActivePairListItem = ({ data, onCompareVault }: TokenPairCardProps) => {
     );
   };
 
+  // eslint-disable-next-line
   const showExpand = () => {
     setExpand(!expand);
   };

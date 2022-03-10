@@ -420,21 +420,27 @@ export async function setHarvestFee(
   }
   return true;
 }
+// eslint-disable-next-line
 export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setBorrowFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setPaybackFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setPaybackFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setStakeFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setStakeFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setSwapFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setSwapFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setWithdrawFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setWithdrawFee yet not implemented');
 }
+// eslint-disable-next-line
 export async function setDepositFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
   console.error('setDepositFee yet not implemented');
 }

@@ -4,7 +4,6 @@ import { useMediaQuery } from 'react-responsive';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import classNames from 'classnames';
 import Select from 'react-select';
-import Switch from 'react-switch';
 import FilterSelect from '../FilterSelect';
 import { actionTypes, selectors } from '../../features/dashboard';
 
@@ -18,13 +17,10 @@ import list from '../../assets/images/list.svg';
 import titleDark from '../../assets/images/tile-dark.svg';
 import listDark from '../../assets/images/list-dark.svg';
 
-import stepIcon from '../../assets/images/STEP.svg';
 import usdcIcon from '../../assets/images/USDC.svg';
 import rayIcon from '../../assets/images/RAY.svg';
 import solIcon from '../../assets/images/SOL.svg';
 import ethIcon from '../../assets/images/ETH.svg';
-import srmIcon from '../../assets/images/SRM.svg';
-import mediaIcon from '../../assets/images/MEDIA.svg';
 
 type FilterPanelProps = {
   label: string;
@@ -50,6 +46,7 @@ const filter_options = [
   { value: 'USDC', label: 'USDC', network: 'solana', icon: [usdcIcon] },
 ];
 
+// eslint-disable-next-line
 const platformOptions = [
   { value: 'ALL', label: 'All platforms', icon: null },
   { value: 'RAYDIUM', label: 'Raydium', icon: raydiumIcon },
@@ -68,12 +65,14 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
   const view_data = useSelector(selectors.getViewData);
+  // eslint-disable-next-line
   const platform_data = useSelector(selectors.getPlatformData);
 
   const onFilterChange = (values: any) => {
     dispatch({ type: actionTypes.SET_FILTER_DATA, payload: values });
   };
 
+  // eslint-disable-next-line
   const handleCompareVaults = () => {
     setCompareVaults(!compareVaults);
     dispatch({ type: actionTypes.SET_COMPARE_VAULTS, payload: !compareVaults });
@@ -87,10 +86,12 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
     dispatch({ type: actionTypes.SET_VIEW_DATA, payload: values });
   };
 
+  // eslint-disable-next-line
   const onPlatformChange = (values: any) => {
     dispatch({ type: actionTypes.SET_PLATFORM_DATA, payload: values });
   };
 
+  // eslint-disable-next-line
   const CustomOption = (props: any) => {
     const { children, innerProps, data } = props;
     return (

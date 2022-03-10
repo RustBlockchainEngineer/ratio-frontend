@@ -2,13 +2,11 @@ import React from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import Button from '../Button';
-import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 
 const GuideModal = () => {
   const [show, setShow] = React.useState(false);
-  const connection = useConnection();
-  const { wallet, connected } = useWallet();
+  const { connected } = useWallet();
 
   return (
     <div className="guidemodal">

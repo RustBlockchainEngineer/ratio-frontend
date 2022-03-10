@@ -1,7 +1,9 @@
-import { selectors } from '../features/dashboard';
-import { useSelector } from 'react-redux';
+import { useUserOverview } from '../contexts/state';
 
 export const useIsVaultActive = (mint: string): boolean => {
-  const overview = useSelector(selectors.getOverview);
-  return Object.keys(overview.activeVaults).indexOf(mint) > -1;
+  const overview = useUserOverview();
+  if (overview && overview.activeVaults) {
+    return Object.keys(overview.activeVaults).indexOf(mint) > -1;
+  }
+  return false;
 };

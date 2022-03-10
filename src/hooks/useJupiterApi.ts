@@ -1,9 +1,9 @@
-/* eslint-disable prettier/prettier */
 import { useEffect, useMemo, useState } from 'react';
 import { JUPITER_API } from '../utils/jupiter/constants';
 import { setIntervalAsync, clearIntervalAsync, SetIntervalAsyncTimer } from 'set-interval-async/dynamic';
 import { useRatioPriceFetchingFrequency } from './useRatioPriceFetchingFrequency';
 
+// eslint-disable-next-line
 interface JupiterRoutePrice {
   startPlatform: string;
   endPlatform: string;
@@ -42,6 +42,7 @@ async function getJupiterRoute(endpoint: string) {
  * @param slippage : Slippage. It defaults to 0.5%.
  * @returns : JupiterRoutePrice interface.
  */
+// eslint-disable-next-line
 export function useJupiterRoute(inputMint: string, outputMint: string, amount = '1000000000', slippage = 0.5) {
   const [result, setResult] = useState<any>({ data: 'DATA NOT LOADED YET' });
   const [error, setError] = useState<any>(null);
@@ -77,6 +78,7 @@ export function useJupiterRoute(inputMint: string, outputMint: string, amount = 
  * Same function as before but with frequency enabled.
  * @returns : JupiterRoutePrice interface.
  */
+// eslint-disable-next-line
 export function useJupiterPriceWithFrequency(
   inputMint: string,
   outputMint: string,
@@ -90,7 +92,7 @@ export function useJupiterPriceWithFrequency(
 
   /**
    * use Ratio Price Fetching Frequency returns
-   * [frequency, errror]
+   * [frequency, error]
    * It checks for any error that it might occur.
    */
   if (data[1] === undefined || data[0] === undefined) {

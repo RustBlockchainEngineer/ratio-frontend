@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Table } from 'react-bootstrap';
 import Button from '../../Button';
 import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
@@ -6,7 +6,6 @@ import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
-import { useUpdateHistory } from '../../../contexts/auth';
 import { toast } from 'react-toastify';
 import { SBR_PRICE, PRICE_DECIMAL } from '../../../constants/constants';
 import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserInfo } from '../../../contexts/state';
@@ -17,7 +16,7 @@ const TokensEarned = ({ data }: any) => {
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mintAddress as string)), [vaults]);
 
   const connection = useConnection();
-  const { wallet, connected } = useWallet();
+  const { wallet } = useWallet();
   const updateRFStates = useUpdateRFStates();
   const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 

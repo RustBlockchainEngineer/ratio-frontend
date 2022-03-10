@@ -1,15 +1,11 @@
-import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
-import { usePrice } from '../../../contexts/price';
 import { useWallet } from '../../../contexts/wallet';
 
-import { TokenAmount } from '../../../utils/safe-math';
-import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import { isWalletApproveError } from '../../../utils/utils';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
@@ -17,16 +13,6 @@ import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
-
-type PairType = {
-  mint: string;
-  icons: Array<string>;
-  title: string;
-};
-
-type DepositModalProps = {
-  data: PairType;
-};
 
 const DepositModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);

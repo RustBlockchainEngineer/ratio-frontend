@@ -456,7 +456,7 @@ export function useMint(key?: string | PublicKey) {
           setMint(info);
         })
         .catch((e) => {
-          console.log("Can't fetch the mint address");
+          console.error(e);
         });
     }
     return () => {};

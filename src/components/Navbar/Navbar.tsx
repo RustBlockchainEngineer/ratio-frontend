@@ -1,11 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMediaQuery } from 'react-responsive';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 import NavbarItem from './../NavbarItem/NavbarItem';
-import { NavbarProgressBar, ProgressBarType } from './NavbarProgressBar';
 import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
@@ -15,14 +13,14 @@ import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import { useConnection } from '../../contexts/connection';
-import { useMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
-import { getMint, sleep } from '../../utils/utils';
+import { getMint } from '../../utils/utils';
 import { usePrices } from '../../contexts/price';
 import { actionTypes, selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useUSDrMintInfo, useUserOverview } from '../../contexts/state';
+import { NavBarProgressBarUSDr } from './NavBarProgressBarUSDr';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -170,8 +168,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
                 <h6>USDr Minted</h6>
                 <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
-              {/* <NavbarProgressBar type={ProgressBarType.TVL} /> */}
-              <NavbarProgressBar label={true} className="navbar-vertical__progressbar" type={ProgressBarType.USDr} />
+              <NavBarProgressBarUSDr className="navbar-vertical__progressbar" />
             </div>
           ) : null
         ) : (

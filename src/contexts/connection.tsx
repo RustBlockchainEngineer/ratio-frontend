@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { TokenListProvider, ENV as ChainID, TokenInfo } from '@solana/spl-token-registry';
 import { useLocalStorageState } from '../utils/utils';
 import { notify } from '../utils/notifications';
-// import { ExplorerLink } from '../components/ExplorerLink'
 import { setProgramIds } from '../utils/ids';
 import { WalletAdapter } from './wallet';
 import { cache, getMultipleAccounts, MintParser } from './accounts';
@@ -53,7 +52,9 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
   endpoint: DEFAULT.endpoint,
   setEndpoint: () => {},
   slippage: DEFAULT_SLIPPAGE,
+  // eslint-disable-next-line
   setSlippage: (val: number) => {},
+  // eslint-disable-next-line
   connection: new Connection(DEFAULT.endpoint, 'recent'),
   sendConnection: new Connection(DEFAULT.endpoint, 'recent'),
   env: ENDPOINTS[2].name,

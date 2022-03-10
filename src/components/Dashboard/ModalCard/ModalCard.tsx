@@ -3,26 +3,8 @@ import DepositModal from '../DepositModal';
 import PaybackModal from '../PaybackModal';
 import WithdrawModal from '../WithdrawModal';
 import GenerateModal from '../GenerateModal';
-import Button from '../../Button';
 import usdrIcon from '../../../assets/images/USDr.png';
-import rayIcon from '../../../assets/images/RAY.svg';
-import solIcon from '../../../assets/images/SOL.svg';
-import { getFaucetState } from '../../../utils/ratio-faucet';
-import { useConnection } from '../../../contexts/connection';
-import { useWallet } from '../../../contexts/wallet';
-import { getUsdrMintKey, USDR_MINT_KEY } from '../../../utils/ratio-lending';
-import { PublicKey } from '@solana/web3.js';
-
-interface ModalcardInterface {
-  title: string;
-  mint: string;
-  tokens: Array<string>;
-  tokenNames: string;
-  tokenValue: string;
-  type: string;
-  withdrawValue?: string;
-  GenerateValue?: string;
-}
+import { USDR_MINT_KEY } from '../../../utils/ratio-lending';
 
 const ModalCard = ({
   mintAddress,
@@ -35,7 +17,6 @@ const ModalCard = ({
   withdrawValue,
   generateValue,
   debtValue,
-
   riskLevel,
 }: any) => {
   const depositData = {
