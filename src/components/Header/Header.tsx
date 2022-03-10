@@ -8,7 +8,7 @@ import SwitchButton from '../SwitchButton';
 import { shortenAddress } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
 import { NavBarProgressBarTVL } from '../Navbar/NavBarProgressBarTVL';
-import { NavBarProgressBarUSDr } from '../Navbar/NavBarProgressBarUSDr';
+import { NavBarProgressBarTotalUSDr } from '../Navbar/NavBarProgressBarTotalUSDr';
 
 type HeaderProps = {
   onClickWalletBtn: () => void;
@@ -65,7 +65,7 @@ const Header = (headerProps: HeaderProps) => {
   const renderTotalUSDrDebt = () => {
     return connected ? (
       <div className="header__connected header__debt">
-        <NavBarProgressBarUSDr className="header__progressbar" shouldDisplayLabel={false} />
+        <NavBarProgressBarTotalUSDr className="header__progressbar" shouldDisplayLabel={false} />
       </div>
     ) : null;
   };
