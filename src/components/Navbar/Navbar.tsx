@@ -20,7 +20,7 @@ import { actionTypes, selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useUSDrMintInfo, useUserOverview } from '../../contexts/state';
-import { NavBarProgressBarUSDr } from './NavBarProgressBarUSDr';
+import { NavBarProgressBarMyUSDr } from './NavBarProgressBarMyUSDr';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -168,7 +168,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
                 <h6>USDr Minted</h6>
                 <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
-              <NavBarProgressBarUSDr className="navbar-vertical__progressbar" />
+              <NavBarProgressBarMyUSDr className="navbar-vertical__progressbar" />
             </div>
           ) : null
         ) : (
