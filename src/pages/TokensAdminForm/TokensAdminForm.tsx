@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Form, Row, Table } from 'react-bootstrap';
+import { Button, Dropdown, Form, Row, Table } from 'react-bootstrap';
+import { IoMenuOutline, IoTrashOutline } from 'react-icons/io5';
+import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
@@ -47,7 +49,7 @@ export default function TokensAdminForm() {
       }
       return response.json();
     }
-  }, [accessToken]);
+  }, [accessToken, version]);
 
   const [data, setData] = useState<Token[]>([]);
 
@@ -91,6 +93,30 @@ export default function TokensAdminForm() {
     setVersion(version + 1);
     return response.json();
   };
+  const [disabledRemoves] = useState(() => new Map<string, boolean>());
+  const handleRemoveToken = async (address_id: string) => {
+    disabledRemoves.set(address_id, true);
+    if (await confirm('Are you sure?')) {
+      try {
+        const response = await fetch(`${API_ENDPOINT}/tokens/${address_id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': accessToken,
+          },
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          toast.info('Token deleted successfully');
+          setVersion(version + 1);
+        } else {
+          toast.error("Token wasn't removed. An error has occured");
+        }
+      } catch (error) {
+        toast.error("Token wasn't removed. A network problem has occured");
+      }
+    }
+    disabledRemoves.set(address_id, false);
+  };
   return (
     <AdminFormLayout>
       <h5 className="mt-3">Add new token:</h5>
@@ -104,13 +130,16 @@ export default function TokensAdminForm() {
           Save
         </Button>
       </Form>
-      <h5 className="mt-3">Current users:</h5>
+      <h5 className="mt-3">Current tokens:</h5>
       <Table className="mt-3" striped bordered hover size="sm">
         <thead>
           <tr>
             <th>Address</th>
             <th>Symbol</th>
             <th>Icon url</th>
+            <th>
+              <IoMenuOutline size={20} />
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -119,6 +148,25 @@ export default function TokensAdminForm() {
               <td>{token.address_id}</td>
               <td>{token.symbol}</td>
               <td>{token.icon}</td>
+              <td>
+                <Dropdown>
+                  <Dropdown.Toggle id="dropdown-basic">
+                    <IoMenuOutline size={20} />
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Item href="#/action-1">
+                      <Button
+                        variant="primary"
+                        disabled={disabledRemoves.get(token.address_id) ?? false}
+                        onClick={() => handleRemoveToken(token.address_id)}
+                      >
+                        <IoTrashOutline size={20} /> Remove
+                      </Button>
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </td>
             </tr>
           ))}
         </tbody>
