@@ -20,7 +20,7 @@ type PriceCardProps = {
 const PriceCard = ({ data, tokenName, risk }: PriceCardProps) => {
   const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(risk);
   return (
-    <div className="col-lg-6 ">
+    <div>
       <div className="pricecard">
         <div className="pricecard__header">
           <div className="pricecard__title">

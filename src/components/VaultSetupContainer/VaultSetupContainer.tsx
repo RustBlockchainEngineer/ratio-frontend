@@ -1,105 +1,42 @@
 import React, { useMemo } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import moment from 'moment';
-
-import Button from '../Button';
-import CustomInput from '../CustomInput';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config();
+import { IoIosArrowRoundForward } from 'react-icons/io';
+import { toast } from 'react-toastify';
+import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import { useAccountByMint } from '../../contexts/accounts';
-import { TokenAmount } from '../../utils/safe-math';
-import { usePrice } from '../../contexts/price';
-import { getUSDrAmount } from '../../utils/risk';
-import { toast } from 'react-toastify';
-import { IoIosArrowRoundForward } from 'react-icons/io';
+
+import { isWalletApproveError } from '../../utils/utils';
+import Button from '../Button';
+import CustomInput from '../CustomInput';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
-import { useUpdateRFStates, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
 
 const VaultSetupContainer = ({ data }: any) => {
-  // eslint-disable-next-line
-  const { mint: vault_mint } = useParams<{ mint?: string }>();
-  const history = useHistory();
-  // eslint-disable-next-line
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
-  const { wallet } = useWallet();
-
-  // eslint-disable-next-line
-  const [mintTime, setMintTime] = React.useState('');
-
-  const tokenPrice = usePrice(data.mint);
-
-  const userState = useUserInfo(data.mint);
-  const usdrMint = useUSDrMintInfo();
-  const collMint = useVaultMintInfo(data.mint);
-
-  const collAccount = useAccountByMint(data.mint);
-
-  const [lockAmount, setLockAmount] = React.useState(0);
-
-  // eslint-disable-next-line
-  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
-
-  const [maxLPAmount, setMaxLockAmount] = React.useState(0);
-  const [lpWalletBalance, setLpWalletBalance] = React.useState(0);
-
-  const [lockStatus, setLockStatus] = React.useState(false);
+  const { wallet, connected } = useWallet();
+  const collMint = useMint(data?.mint);
 
   const { vaults } = useVaultsContextProvider();
-  const vaultFound = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
+  const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
+  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vaultFound);
+  const collAccount = useAccountByMint(data.mint);
+  const [depositAmount, setDepositAmount] = React.useState(0);
 
-  React.useEffect(() => {
-    if (userState && tokenPrice && collMint && usdrMint) {
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
-      const availableAmount = getUSDrAmount(data.riskPercentage, tokenPrice * Number(lpLockedAmount.fixed()));
+  const [didMount, setDidMount] = React.useState(false);
 
-      const maxAmount = availableAmount - Number(new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed());
-      setMaxUSDrAmount(Number(maxAmount.toFixed(usdrMint?.decimals)));
-    }
-    if (userState) {
-      const endDateOfLock = (userState as any).lastMintTime.toNumber() + 3600;
-      const unlockDateString = moment(new Date(endDateOfLock * 1000)).format('MM / DD /YYYY HH : MM : SS');
-
-      setMintTime(unlockDateString);
-    }
-    return () => {
-      setMaxUSDrAmount(0);
-    };
-  }, [tokenPrice, userState, usdrMint, collMint]);
-
-  React.useEffect(() => {
-    if (tokenPrice && collMint) {
-      const initLPAmount = Number(process.env.REACT_APP_LP_AMOUNT_IN_USD) / tokenPrice;
-      setMaxLockAmount(Number(Math.min(initLPAmount, lpWalletBalance).toFixed(collMint?.decimals)));
-    }
-    return () => {
-      setMaxLockAmount(0);
-    };
-  }, [tokenPrice, lpWalletBalance, collMint]);
-
-  React.useEffect(() => {
-    if (wallet && wallet.publicKey && data.mint) {
-      if (collAccount && collMint) {
-        const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
-        setLpWalletBalance(Number(tokenAmount.fixed()));
-      }
-    }
-    return () => {
-      setLpWalletBalance(0);
-    };
-  }, [wallet, collAccount, connection, collMint, data]);
+  const [depositStatus, setDepositStatus] = React.useState(false);
+  const [invalidStr, setInvalidStr] = React.useState('');
+  const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   const updateRFStates = useUpdateRFStates();
 
-  const [didMount, setDidMount] = React.useState(false);
   React.useEffect(() => {
     setDidMount(true);
+    setDepositAmount(0);
     return () => setDidMount(false);
   }, []);
 
@@ -108,28 +45,39 @@ const VaultSetupContainer = ({ data }: any) => {
   }
 
   const depositLP = () => {
-    if (!(lpWalletBalance >= lockAmount && lockAmount > 0)) {
-      // toast('Insufficient funds!');
-      setLockStatus(true);
+    console.log('Depositing', depositAmount, data.value);
+    console.log(data.mint);
+    if (!(depositAmount && data?.value >= depositAmount)) {
+      setDepositStatus(true);
+      setInvalidStr('Insufficient funds to deposit!');
       return;
     }
-    if (collAccount) {
-      //Zhao
-      poolInfoProviderFactory
-        ?.depositLP(connection, wallet, vaultFound as LPair, lockAmount, collAccount?.pubkey.toString() as string)
-        .then(() => {
-          updateRFStates(true);
-          setShow(false);
-        })
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          history.push(`/dashboard/vaultdashboard/${data.mint}`);
-          toast('Successfully Deposited!');
-          setShow(false);
-        });
+    if (!(collAccount && collMint && connected)) {
+      setDepositStatus(true);
+      setInvalidStr('Invalid  User Collateral account to deposit!');
+      return;
     }
+    poolInfoProviderFactory
+      ?.depositLP(
+        connection,
+        wallet,
+        vault as LPair,
+        depositAmount * Math.pow(10, collMint?.decimals ?? 0),
+        collAccount?.pubkey.toString() as string
+      )
+      .then(() => {
+        updateRFStates(UPDATE_USER_STATE, data.mint);
+        setDepositAmount(0);
+        toast.success('Successfully Deposited!');
+      })
+      .catch((e) => {
+        console.log(e);
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
+      })
+      .finally(() => {
+        setShow(!show);
+      });
   };
 
   return (
@@ -142,21 +90,22 @@ const VaultSetupContainer = ({ data }: any) => {
           <p className="vaultsetupcontainer-label">
             Deposit {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} LP
           </p>
-          <p className="vaultsetupcontainer-smallLabel">Balance {lpWalletBalance}</p>
+          <p className="vaultsetupcontainer-smallLabel">Balance {data.value}</p>
         </div>
         <div className="mt-2">
           <CustomInput
             appendStr="Max"
-            initValue={lockAmount.toString()}
-            appendValueStr={'' + maxLPAmount}
-            tokenStr={`${data.title} LP`}
+            initValue={'0'}
+            appendValueStr={data.value}
+            tokenStr={`${data.title}`}
             onTextChange={(value) => {
-              setLockAmount(Number(value));
-              setLockStatus(false);
+              setDepositAmount(Number(value));
+              setDepositStatus(false);
+              setButtonDisabled(false);
             }}
-            maxValue={maxLPAmount}
-            valid={lockStatus}
-            invalidStr="Insufficient funds!"
+            maxValue={data.value}
+            valid={depositStatus}
+            invalidStr={invalidStr}
           />
           <p className="vaultsetupcontainer-label mt-2">
             USD: <strong className="vaultsetupcontainer-value">$164.21</strong>
@@ -188,7 +137,11 @@ const VaultSetupContainer = ({ data }: any) => {
           </strong>
         </div>
         <div>
-          <Button className="button--fill setup" onClick={depositLP}>
+          <Button
+            disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount)}
+            className="button--blue setup"
+            onClick={depositLP}
+          >
             Set up vault
           </Button>
         </div>

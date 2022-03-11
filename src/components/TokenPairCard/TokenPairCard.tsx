@@ -118,17 +118,27 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
         toast('Successfully Harvested!');
       });
   };
-  const renderModalButton = () => {
+  const renderModalButton = (status: boolean) => {
     return (
       <div className="col">
         <div className="d-flex">
-          <Button
-            disabled={!connected}
-            className="button button--blue tokenpaircard__generate mt-2"
-            onClick={showDashboard}
-          >
-            Open Vault
-          </Button>
+          {status ? (
+            <Button
+              disabled={!connected}
+              className="button button--blue tokenpaircard__generate mt-2"
+              onClick={showDashboard}
+            >
+              Enter Vault
+            </Button>
+          ) : (
+            <Button
+              disabled={!connected}
+              className="button button--blue tokenpaircard__generate mt-2"
+              onClick={onClickDeposit}
+            >
+              Deposit
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -137,6 +147,14 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const handleChangeComparison = (e: any) => {
     setChecked(e.target.checked);
     onCompareVault(data, e.target.checked);
+  };
+
+  const onClickDeposit = () => {
+    if (!connected) {
+      toast('Please connect your wallet!');
+    } else {
+      history.push(`/dashboard/vaultsetup/${data.mint}`);
+    }
   };
 
   const showDashboard = () => {
@@ -211,7 +229,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
           ) : (
             <div className="tokenpaircard__btnBox d-flex">
               {connected ? (
-                renderModalButton()
+                renderModalButton(data.activeStatus)
               ) : (
                 <OverlayTrigger
                   placement="top"
