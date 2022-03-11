@@ -12,7 +12,6 @@ import TokenPairCard from '../../components/TokenPairCard';
 import ActivePairCard from '../../components/ActivePairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 import { getCoinPicSymbol } from '../../utils/helper';
-import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { LPair } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { getDebtLimitForAllVaults, calculateRemainingGlobalDebt } from '../../utils/utils';
@@ -26,6 +25,7 @@ import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useMint } from '../../contexts/accounts';
 
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
+import { FetchingStatus } from '../../types/fetching-types';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -335,15 +335,15 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       <div className="allvaults">
         <FilterPanel label={title} viewType={viewType} onViewType={onViewType} />
 
-        {status === VaultsFetchingStatus.Error && toast.error(error)}
-        {(status === VaultsFetchingStatus.Loading || status === VaultsFetchingStatus.NotAsked) && (
+        {status === FetchingStatus.Error && toast.error(error)}
+        {(status === FetchingStatus.Loading || status === FetchingStatus.NotAsked) && (
           <div className="col allvaults__loading">
             <div className="spinner-border text-info" role="status">
               <span className="sr-only">Loading...</span>
             </div>
           </div>
         )}
-        {status === VaultsFetchingStatus.Finish && showContent(viewType)}
+        {status === FetchingStatus.Finish && showContent(viewType)}
         {compareVaultsList.length > 0 && <ComparingFooter list={compareVaultsList} />}
       </div>
     </>

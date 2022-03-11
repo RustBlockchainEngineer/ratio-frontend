@@ -1,5 +1,5 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Row, Table } from 'react-bootstrap';
 import { IoMenuOutline, IoTrashOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
@@ -10,9 +10,10 @@ import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useWallet } from '../../contexts/wallet';
-import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
+import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
 import { useSuperOwner } from '../../hooks/useSuperOwner';
-import { Platform, RISK_RATING } from '../../types/VaultTypes';
+import { FetchingStatus } from '../../types/fetching-types';
+import { RISK_RATING } from '../../types/VaultTypes';
 import { createGlobalState, createTokenVault } from '../../utils/admin-contract-calls';
 import { getTokenVaultAddress, getTokenVaultByMint, isGlobalStateCreated } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
@@ -69,34 +70,7 @@ export default function VaultCreationAdminForm() {
   const [data, setData] = useState<LPCreationData>(defaultValues);
   const [showModal, setShowModal] = useState(false);
   const { accessToken } = useAuthContextProvider();
-  const fetchPlatforms = useCallback(async (): Promise<Platform[]> => {
-    const response = await fetch(`${API_ENDPOINT}/platforms`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': JSON.stringify(accessToken),
-      },
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw await response.json();
-    }
-    return response.json();
-  }, [accessToken]);
-  const [platforms, setPlatforms] = useState<Platform[]>([]);
-  useEffect(() => {
-    let active = true;
-    load();
-    return () => {
-      active = false;
-    };
-    async function load() {
-      const res = await fetchPlatforms();
-      if (!active) {
-        return;
-      }
-      setPlatforms(res);
-    }
-  }, [fetchPlatforms]);
+  const { platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
   const { status, error, vaults, forceUpdate } = useVaultsContextProvider();
   const resetValues = () => {
     setData(defaultValues);
@@ -122,7 +96,7 @@ export default function VaultCreationAdminForm() {
           return;
         }
         const riskRatingValue: number = RISK_RATING[data?.risk_rating as keyof typeof RISK_RATING];
-        const platformName: string | undefined = platforms.find((item) => item.id === data.platform_id)?.name;
+        const platformName: string | undefined = platforms?.find((item) => item.id === data.platform_id)?.name;
         if (!platformName) {
           toast.error('Platform needs to be selected to create a vault');
           return;
@@ -215,6 +189,8 @@ export default function VaultCreationAdminForm() {
   };
   return (
     <AdminFormLayout>
+      {platformFetchStatus === FetchingStatus.Error &&
+        toast.error(`There was an error when fetching the platforms: ${platformFetchError}`)}
       <h5 className="mt-3">Add new vault:</h5>
       {!globalStateCreated && (
         <div className="global-state-not-found-container">
@@ -320,11 +296,11 @@ export default function VaultCreationAdminForm() {
         </Form>
       )}
       <h5 className="mt-3">Current vaults:</h5>
-      {status === VaultsFetchingStatus.Error && toast.error(error)}
-      {(status === VaultsFetchingStatus.Loading || status === VaultsFetchingStatus.NotAsked) && (
+      {status === FetchingStatus.Error && toast.error(error)}
+      {(status === FetchingStatus.Loading || status === FetchingStatus.NotAsked) && (
         <LoadingSpinner className="spinner-border-lg text-info" />
       )}
-      {status === VaultsFetchingStatus.Finish && (
+      {status === FetchingStatus.Finish && (
         <Table className="mt-3" striped bordered hover size="sm">
           <thead>
             <tr>
