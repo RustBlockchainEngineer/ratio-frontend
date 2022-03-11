@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { IoIosArrowRoundForward } from 'react-icons/io';
+// import { IoIosArrowRoundForward } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { useConnection } from '../../contexts/connection';
@@ -117,25 +117,25 @@ const VaultSetupContainer = ({ data }: any) => {
           <p className="vaultsetupcontainer-title">Details</p>
           <strong className="vaultsetupcontainer-value">0.50%</strong>
         </div>
-        <div className="d-flex justify-content-between align-items-start mt-3">
+        {/* <div className="d-flex justify-content-between align-items-start mt-3">
           <p className="vaultsetupcontainer-label">Slippage</p>
           <strong className="vaultsetupcontainer-value">
             <IoIosArrowRoundForward size="25" color="#A5B1B6" />
             300.00%
           </strong>
-        </div>
+        </div> */}
         <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Collateral ratio</p>
           <strong className="vaultsetupcontainer-value">0.00%</strong>
         </div>
-        <div className="d-flex justify-content-between mt-3">
+        {/* <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Outstanding debt</p>
           <strong className="vaultsetupcontainer-value">
             0.001 DAI
             <IoIosArrowRoundForward size="25" color="#A5B1B6" />
             15,304.82 DAI
           </strong>
-        </div>
+        </div> */}
         <div>
           <Button
             disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount)}
