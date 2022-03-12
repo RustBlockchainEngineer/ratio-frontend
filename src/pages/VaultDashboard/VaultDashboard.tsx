@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 
 import RiskLevel from '../../components/Dashboard/RiskLevel';
@@ -24,6 +24,7 @@ import { selectors } from '../../features/dashboard';
 import Breadcrumb from '../../components/Breadcrumb';
 import { Banner, BannerIcon } from '../../components/Banner';
 import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
+import { DEFAULT_NETWORK } from '../../constants';
 
 const priceCardData = [
   {
@@ -70,6 +71,11 @@ const VaultDashboard = () => {
     usdrMint: USDR_MINT_KEY,
     usdrValue: 0,
   });
+
+  const solanaBeachUrl = useMemo(
+    () => `https://solanabeach.io/address/${vault_mint}?cluster=${DEFAULT_NETWORK}`,
+    [vault_mint]
+  );
 
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
@@ -198,10 +204,10 @@ const VaultDashboard = () => {
               <div>
                 <h3>{vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault</h3>
                 {isMobile && (
-                  <Link to="/">
+                  <a href={solanaBeachUrl} rel="noreferrer" target="_blank">
                     View on Solana Beach
                     <img src={share} alt="share" />
-                  </Link>
+                  </a>
                 )}
                 <RiskLevel level={vaultData.risk} />
               </div>
@@ -223,8 +229,12 @@ const VaultDashboard = () => {
             {isDefault && (
               <div className="text-right mt-4">
                 <img src={share} alt="share" />
-                <Link to="/">View on</Link>
-                <Link to="/">Solana Beach</Link>
+                <a href={solanaBeachUrl} rel="noopener noreferrer" target="_blank">
+                  View on
+                </a>
+                <a href={solanaBeachUrl} rel="noopener noreferrer" target="_blank">
+                  Solana Beach
+                </a>
               </div>
             )}
             {/* <div className="vaultdashboard__header_speedometerBox">
