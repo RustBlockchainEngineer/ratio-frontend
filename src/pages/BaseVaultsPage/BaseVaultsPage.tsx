@@ -139,9 +139,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }
 
   useEffect(() => {
-    if (overview && overview.activeVaults) {
-      setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
-    }
+    setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
   }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
 
   React.useEffect(() => {
