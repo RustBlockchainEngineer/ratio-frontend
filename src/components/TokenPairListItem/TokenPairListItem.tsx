@@ -38,8 +38,6 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const updateRFStates = useUpdateRFStates();
 
-  const [expand, setExpand] = React.useState(false);
-
   const userState = useUserInfo(data.mint);
   const vaultState = useVaultInfo(data.mint);
 
@@ -122,27 +120,37 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         toast('Successfully Harvested!');
       });
   };
-  const renderModalButton = () => {
+  const renderModalButton = (status: boolean) => {
     return (
       <div>
-        {/* <Button disabled={!connected} onClick={harvest} className="button button--blue tokenpaircard__generate">
-          Harvest
-        </Button> */}
         <div className="mx-1"></div>
-        <Button
-          disabled={!connected}
-          className="button button--blue tokenpaircard__generate mt-2"
-          onClick={showDashboard}
-        >
-          Open Vault
-        </Button>
+        {status ? (
+          <Button
+            disabled={!connected}
+            className="button button--blue tokenpaircard__generate mt-2"
+            onClick={showDashboard}
+          >
+            Enter Vault
+          </Button>
+        ) : (
+          <Button
+            disabled={!connected}
+            className="button button--blue tokenpaircard__generate mt-2"
+            onClick={onClickDeposit}
+          >
+            Deposit
+          </Button>
+        )}
       </div>
     );
   };
 
-  // eslint-disable-next-line
-  const showExpand = () => {
-    setExpand(!expand);
+  const onClickDeposit = () => {
+    if (!connected) {
+      toast('Please connect your wallet!');
+    } else {
+      history.push(`/dashboard/vaultsetup/${data.mint}`);
+    }
   };
 
   const printTvl = () => {
@@ -179,7 +187,6 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
               </p>
             </div>
           )}
-          {/* <div className="mt-1 d-block">{renderModalButton()}</div> */}
         </td>
         <td>
           <div className="tokenpaircard__table__td">
@@ -197,68 +204,17 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
             </a>
           </div>
         </td>
-        {/* <td>
-          <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{formatUSD.format(Number(totalDebt.toFixed(2)))}</h6>
-          </div>
-        </td>
-        <td>
-          <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
-          </div>
-        </td>
-        <td>
-          <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
-          </div>
-        </td>
-        <td>
-          <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{formatUSD.format(tvlUSD)}</h6>
-          </div>
-        </td> */}
         <td>
           <div className="d-flex justify-content-between align-items-start">
             <div className="tokenpaircard__table__td">
               <h6 className={classNames('ml-2 mt-1', data.risk)}>{data.risk} </h6>
             </div>
-            {/* <div className="mt-1 expand_arrow">
-              {expand ? (
-                <IoIosArrowUp size={20} onClick={showExpand} />
-              ) : (
-                <IoIosArrowDown size={20} onClick={showExpand} />
-              )}
-            </div> */}
           </div>
         </td>
         <td className="text-right">
-          <div className="tokenpaircard__table__td">{renderModalButton()}</div>
+          <div className="tokenpaircard__table__td">{renderModalButton(data.activeStatus)}</div>
         </td>
       </tr>
-      {/* {expand && (
-        <tr>
-          <td colSpan={4}>
-            <div className="tokenpaircard__detailBox__content d-flex justify-content-between">
-              <div>
-                Position value
-                <p>$ {positionValue.toFixed(2)}</p>
-              </div>
-              <div>
-                Rewards Earned
-                <p>{formatUSD.format(data.earned_rewards)}</p>
-              </div>
-              <div>
-                USDr Debt
-                <p>{formatUSD.format(Number(totalDebt.toFixed(2)))}</p>
-              </div>
-              <div>
-                Ratio TVL
-                <p>{formatUSD.format(tvlUSD)}</p>
-              </div>
-            </div>
-          </td>
-        </tr>
-      )} */}
     </>
   );
 };

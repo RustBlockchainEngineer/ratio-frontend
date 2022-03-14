@@ -14,7 +14,7 @@ import { useRFStateInfo, useUSDrMintInfo, useVaultMintInfo } from '../../context
 
 import linkIcon from '../../assets/images/link.svg';
 import { selectors } from '../../features/dashboard';
-import Breadcrumb from '../../components/Breadcrumb';
+// import Breadcrumb from '../../components/Breadcrumb';
 // import VaultHistoryCard from '../../components/VaultHistoryCard';
 import VaultSetupContainer from '../../components/VaultSetupContainer';
 import PriceCard from '../../components/Dashboard/PriceCard';
@@ -108,9 +108,9 @@ const VaultSetup = () => {
   return (
     <div className="vault-setup">
       <div>
-        <div className="pl-3">
+        {/* <div className="pl-3">
           <Breadcrumb vaultData={vaultData} availableVaults={allVaults} />
-        </div>
+        </div> */}
         <h3 className="vault-setup-header pl-3">
           Open {vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault
         </h3>
@@ -161,6 +161,7 @@ const VaultSetup = () => {
                   value: depositValue,
                   usdrMint: USDR_MINT_KEY,
                   riskLevel: getRiskLevelNumber(vault_mint),
+                  risk: vaultData?.risk,
                 }}
               />
             )}

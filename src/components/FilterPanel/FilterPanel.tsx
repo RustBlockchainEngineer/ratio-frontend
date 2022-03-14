@@ -1,11 +1,13 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
-import { ThemeContext } from '../../contexts/ThemeContext';
+
 import classNames from 'classnames';
 import Select from 'react-select';
 import FilterSelect from '../FilterSelect';
 import { actionTypes, selectors } from '../../features/dashboard';
+
+import { ThemeContext } from '../../contexts/ThemeContext';
 
 import raydiumIcon from '../../assets/images/raydium.svg';
 import orcaIcon from '../../assets/images/orca.svg';
@@ -18,9 +20,9 @@ import titleDark from '../../assets/images/tile-dark.svg';
 import listDark from '../../assets/images/list-dark.svg';
 
 import usdcIcon from '../../assets/images/USDC.svg';
-import rayIcon from '../../assets/images/RAY.svg';
-import solIcon from '../../assets/images/SOL.svg';
-import ethIcon from '../../assets/images/ETH.svg';
+// import rayIcon from '../../assets/images/RAY.svg';
+// import solIcon from '../../assets/images/SOL.svg';
+// import ethIcon from '../../assets/images/ETH.svg';
 
 type FilterPanelProps = {
   label: string;
@@ -40,9 +42,28 @@ const optionsViewBy = [
 ];
 
 const filter_options = [
-  { value: 'SOL', label: 'SOL', network: 'solana', icon: [solIcon] },
-  { value: 'RAY', label: 'RAY', network: 'solana', icon: [rayIcon] },
-  { value: 'ETH', label: 'ETH', network: 'solana', icon: [ethIcon] },
+  {
+    value: 'CASH',
+    label: 'CASH',
+    network: 'solana',
+    icon: [
+      'https://spl-token-icons.static-assets.ship.capital/icons/101/CASHVDm2wsJXfhj6VWxb7GiMdoLc17Du7paH4bNr5woT.png',
+    ],
+  },
+  {
+    value: 'USDT',
+    label: 'USDT',
+    network: 'solana',
+    icon: [
+      'https://spl-token-icons.static-assets.ship.capital/icons/103/EJwZgeZrdC8TXTQbQBoL6bfuAnFUUy1PVCMB4DYPzVaS.svg',
+    ],
+  },
+  {
+    value: 'PAI',
+    label: 'PAI',
+    network: 'solana',
+    icon: ['https://registry.saber.so/token-icons/pai.svg'],
+  },
   { value: 'USDC', label: 'USDC', network: 'solana', icon: [usdcIcon] },
 ];
 

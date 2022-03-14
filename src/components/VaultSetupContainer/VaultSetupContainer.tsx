@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 // import { IoIosArrowRoundForward } from 'react-icons/io';
 import { toast } from 'react-toastify';
+import { useHistory } from 'react-router-dom';
 import { useAccountByMint, useMint } from '../../contexts/accounts';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
@@ -9,15 +10,18 @@ import { isWalletApproveError } from '../../utils/utils';
 import Button from '../Button';
 import CustomInput from '../CustomInput';
 import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import { useFetchCollateralRatio } from '../../hooks/useFetchCollateralRatio';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
 
 const VaultSetupContainer = ({ data }: any) => {
+  const history = useHistory();
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const collMint = useMint(data?.mint);
+  const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(data?.risk);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
@@ -69,6 +73,7 @@ const VaultSetupContainer = ({ data }: any) => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         setDepositAmount(0);
         toast.success('Successfully Deposited!');
+        history.push(`/dashboard/vaultdashboard/${data.mint}`);
       })
       .catch((e) => {
         console.log(e);
@@ -77,6 +82,8 @@ const VaultSetupContainer = ({ data }: any) => {
       })
       .finally(() => {
         setShow(!show);
+        setDepositAmount(0);
+        setDepositStatus(false);
       });
   };
 
@@ -115,7 +122,6 @@ const VaultSetupContainer = ({ data }: any) => {
       <div className="vaultsetupcontainer-bottom p-4">
         <div className="d-flex justify-content-between">
           <p className="vaultsetupcontainer-title">Details</p>
-          <strong className="vaultsetupcontainer-value">0.50%</strong>
         </div>
         {/* <div className="d-flex justify-content-between align-items-start mt-3">
           <p className="vaultsetupcontainer-label">Slippage</p>
@@ -124,9 +130,11 @@ const VaultSetupContainer = ({ data }: any) => {
             300.00%
           </strong>
         </div> */}
-        <div className="d-flex justify-content-between mt-3">
+        <div className="d-flex justify-content-between mt-1">
           <p className="vaultsetupcontainer-label">Collateral ratio</p>
-          <strong className="vaultsetupcontainer-value">0.00%</strong>
+          <strong className="vaultsetupcontainer-value">
+            {collateralRatioError !== null ? '...' : (collateralRatio * 100).toFixed(2)}%
+          </strong>
         </div>
         {/* <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Outstanding debt</p>
