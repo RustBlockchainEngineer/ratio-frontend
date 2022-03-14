@@ -82,28 +82,34 @@ export default function TokensAdminForm() {
     }
   }, [fetchData, version]);
 
-  const handleSubmit = async (evt: any) => {
+  const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     const form = evt.currentTarget;
     if (form.checkValidity() === false) {
       evt.stopPropagation();
       return;
     }
-    setValidated(true);
-    const response = await fetch(`${API_ENDPOINT}/tokens`, {
-      body: JSON.stringify(values),
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': accessToken,
-      },
-      method: 'POST',
-    });
-    if (!response.ok) {
-      throw await response.json();
+    try {
+      setValidated(true);
+      const response = await fetch(`${API_ENDPOINT}/tokens`, {
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': accessToken,
+        },
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw await response.json();
+      } else {
+        toast.error(`There was a problem when saving the token: ${await response.json()}`);
+      }
+      resetValues();
+      setVersion(version + 1);
+      return response.json();
+    } catch {
+      toast.error('There was a problem when saving the token');
     }
-    resetValues();
-    setVersion(version + 1);
-    return response.json();
   };
   const [disabledRemoves] = useState(() => new Map<string, boolean>());
   const handleRemoveToken = async (address_id: string) => {

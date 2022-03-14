@@ -2,24 +2,22 @@ import { useState } from 'react';
 import { Button, Form, Modal, Row } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import AdminFormInput from '../../../components/AdminFormInput';
+import { FormControlElement } from '../../../components/AdminFormInput/AdminFormInput';
 import { Platform } from '../../../types/VaultTypes';
 
-export default function PlatformAdditionModal({
-  show,
-  platforms,
-  close,
-  onAdd,
-}: {
+interface PlatformAdditionModalProps {
   show: boolean;
   platforms: Platform[];
   close: () => void;
   onAdd: (platformId: string) => void;
-}) {
+}
+
+export default function PlatformAdditionModal({ show, platforms, close, onAdd }: PlatformAdditionModalProps) {
   const [data, setData] = useState<string>('');
-  const handleChange = (event: any) => {
+  const handleChange = (event: React.ChangeEvent<FormControlElement>) => {
     setData(event.target.value);
   };
-  const handleSubmit = async (evt: any) => {
+  const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     const form = evt.currentTarget;
     if (form.checkValidity() === false) {

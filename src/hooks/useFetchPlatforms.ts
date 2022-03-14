@@ -18,8 +18,8 @@ import { Platform } from '../types/VaultTypes';
 
 interface State {
   status: FetchingStatus;
-  error: string | null;
-  platforms: Platform[] | null;
+  error: Maybe<string>;
+  platforms: Maybe<Platform[]>;
 }
 
 export const useFetchPlatforms = () => {
@@ -45,7 +45,7 @@ export const useFetchPlatforms = () => {
 
   useEffect(() => {
     let cancelRequest = false;
-    if (!API_ENDPOINT || !API_ENDPOINT.trim()) return;
+    if (!API_ENDPOINT || !API_ENDPOINT.trim() || !accessToken) return;
 
     // Gets the data for all the existent platforms. If a cached version is found, it gets returned.
     const fetchData = async () => {
