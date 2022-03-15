@@ -79,36 +79,36 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
     if (d !== undefined) {
-      const allVaults = filterData(d, filter_data, platform_data).map((item: LPair, index: any) => {
-        return {
-          id: index,
-          mint: item.address_id, //MINTADDRESS[key]
-          icons: item.lpasset?.map((item) =>
-            item.token_icon?.trim() === '' || item.token_icon === undefined
-              ? getCoinPicSymbol(item.token_symbole)
-              : item.token_icon
-          ),
-          icon: item.icon,
-          title: item.symbol,
-          tvl: item.platform_tvl,
-          apr: item.platform_ratio_apy ?? 0,
-          earned_rewards: item.earned_rewards,
-          platform: {
-            link: item.platform_site,
-            name: item.platform_name,
-            icon: item.platform_icon,
-          },
-          risk: item.risk_rating,
-          riskLevel: getRiskLevelNumber(item.risk_rating),
-          item: item,
-        };
-      });
-
-      const filteredVaults = allVaults.filter((item: any) =>
-        showOnlyActive
-          ? Object.keys(overview.activeVaults).indexOf(item.mint) > -1
-          : !(Object.keys(overview.activeVaults).indexOf(item.mint) > -1)
-      );
+      const filteredVaults = filterData(d, filter_data, platform_data)
+        .filter(
+          (item: LPair) =>
+            showOnlyActive === false ||
+            (overview?.activeVaults && Object.keys(overview.activeVaults).indexOf(item.address_id) > -1)
+        )
+        .map((item: LPair, index: any) => {
+          return {
+            id: index,
+            mint: item.address_id, //MINTADDRESS[key]
+            icons: item.lpasset?.map((item) =>
+              item.token_icon?.trim() === '' || item.token_icon === undefined
+                ? getCoinPicSymbol(item.token_symbole)
+                : item.token_icon
+            ),
+            icon: item.icon,
+            title: item.symbol,
+            tvl: item.platform_tvl,
+            apr: item.platform_ratio_apy ?? 0,
+            earned_rewards: item.earned_rewards,
+            platform: {
+              link: item.platform_site,
+              name: item.platform_name,
+              icon: item.platform_icon,
+            },
+            risk: item.risk_rating,
+            riskLevel: getRiskLevelNumber(item.risk_rating),
+            item: item,
+          };
+        });
 
       let x;
       if (platform_data.value !== 'ALL') {
@@ -118,7 +118,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       }
       x.sort(dynamicSort(sort_data.value, view_data.value));
 
-      dispatch({ type: actionTypes.SET_ALL_VAULT, payload: allVaults });
+      dispatch({ type: actionTypes.SET_ALL_VAULT, payload: filteredVaults });
 
       dispatch({
         type: showOnlyActive ? actionTypes.SET_ACTIVE_VAULT : actionTypes.SET_INACTIVE_VAULT,
@@ -131,9 +131,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }
 
   useEffect(() => {
-    if (overview && overview.activeVaults) {
-      setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
-    }
+    setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
   }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
 
   React.useEffect(() => {
