@@ -190,6 +190,11 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
+            <h5>{data?.activeStatus && 'Active'}</h5>
+          </div>
+        </td>
+        <td>
+          <div className="tokenpaircard__table__td">
             <h6 className="semiBold">{Number(data?.apr).toFixed()}%</h6>
           </div>
         </td>

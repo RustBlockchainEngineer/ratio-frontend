@@ -190,21 +190,32 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
                 <p>TVL {printTvl()}</p>
               </div>
             </div>
-            <div className="tokenpaircard__riskBox">
-              <div className="text-right">
-                <div className="d-flex align-items-center">
-                  <img src={smallRatioIcon} alt="smallRatio" />
-                  <p className="mx-1">Risk Rating</p>
-                  {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
-                </div>
-                <div className="d-flex justify-content-end mt-1">
-                  <h6 className={classNames('ml-1', data.risk)}>{data.risk} </h6>
-                </div>
-              </div>
-            </div>
+            {data.activeStatus && <div className="tokenpaircard__header--activeSticker">● Active</div>}
           </div>
           <div className="tokenpaircard__aprBox">
-            <div>
+            <div className="d-flex justify-content-between align-items-center">
+              <h6>Platform</h6>
+              <a href={data.platform.link} target="_blank" rel="noreferrer">
+                <div className="d-flex align-items-center mt-1 position-relative">
+                  <img src={data.platform.icon} />
+                  <h6 className="semiBold ml-1 tokenpaircard__aprBox--platformName">{data.platform.name}</h6>
+                  <img src={linkIcon} alt="linkIcon" className="tokenpaircard__aprBox--linkIcon" />
+                </div>
+              </a>
+            </div>
+            <div className="d-flex justify-content-between align-items-center mt-2">
+              <h6>APY</h6>
+              <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
+            </div>
+            <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
+              <div className="d-flex align-items-center">
+                <img src={smallRatioIcon} alt="smallRatio" />
+                <p className="mx-1">Risk Rating</p>
+                {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
+              </div>
+              <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
+            </div>
+            {/* <div>
               <h5>Platform:</h5>
               <a href={data.platform.link} target="_blank" rel="noreferrer">
                 <div className="d-flex align-items-center mt-1 position-relative">
@@ -217,7 +228,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
             <div>
               <h5>APY:</h5>
               <h6 className="semiBold mt-1">{Number(data?.apr).toFixed(2)}%</h6>
-            </div>
+            </div> */}
           </div>
           {compare_vaults_status ? (
             <div className={classNames('tokenpaircard__btnBox', { 'tokenpaircard__btnBox--checked': checked })}>

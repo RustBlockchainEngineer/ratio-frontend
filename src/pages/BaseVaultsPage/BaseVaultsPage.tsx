@@ -114,7 +114,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               item: item,
               hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
               remainingDebt: item.remaining_debt,
-              activeStatus: Object.keys(overview.activeVaults).indexOf(item.address_id) > -1,
+              activeStatus: overview?.activeVaults && Object.keys(overview.activeVaults).indexOf(item.address_id) > -1,
             };
           }
         })
@@ -137,9 +137,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }
 
   useEffect(() => {
-    if (overview && overview.activeVaults) {
-      setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
-    }
+    setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
   }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
 
   React.useEffect(() => {
@@ -253,6 +251,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             {showOnlyActive === false ? (
               <tr>
                 <th scope="col">Asset</th>
+                <th scope="col">Ative Status</th>
                 <th scope="col">APY</th>
                 <th scope="col">Platform</th>
                 {/* <th scope="col">USDr Debt</th>
