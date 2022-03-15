@@ -48,6 +48,8 @@
    background-color: transparent;
    color: var(--unnamed-color-5fb5ff);
    border: 2px solid var(--unnamed-color-5fb5ff);
+   padding-top: 0.55rem !important;
+   padding-bottom: 0.55rem !important;
   }
   &--danger {
     border: 2px solid var(--unnamed-color-ff3131);

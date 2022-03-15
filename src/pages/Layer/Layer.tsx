@@ -16,6 +16,7 @@ import InstaBuyLp from '../InstaBuyLP';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import VaultDashboard from '../VaultDashboard';
+import VaultSetup from '../VaultSetup';
 import CompareVaults from '../CompareVaults';
 
 import { actionTypes } from '../../features/wallet';
@@ -153,6 +154,7 @@ const Layer = () => {
                   <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
                   <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
                   <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
+                  <Route path="/dashboard/vaultsetup/:mint" component={VaultSetup} exact />
                   <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
                   <Route exact path="/dashboard">
                     <Redirect to="/dashboard/available-vaults" />

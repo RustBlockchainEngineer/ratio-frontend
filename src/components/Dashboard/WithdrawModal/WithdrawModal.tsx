@@ -148,7 +148,7 @@ const WithdrawModal = ({ data }: any) => {
         </Modal.Header>
         <Modal.Body>
           <div className="dashboardModal__modal__body">
-            <label className="dashboardModal__modal__label">How much would you like to withdraw?</label>
+            <label>How much would you like to withdraw?</label>
             <CustomInput
               appendStr="Max"
               initValue={'0'}
@@ -170,6 +170,7 @@ const WithdrawModal = ({ data }: any) => {
             >
               Withdraw Assets
             </Button>
+            <h6 className="text-center">Withdrawing also claims your rewards</h6>
           </div>
         </Modal.Body>
       </Modal>

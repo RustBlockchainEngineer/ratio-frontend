@@ -19,6 +19,7 @@ export type PairType = {
   item: LPair;
   hasReachedUserDebtLimit: boolean;
   remainingDebt: number;
+  activeStatus: boolean;
 };
 
 export interface TokenPairCardProps {
