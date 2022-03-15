@@ -248,7 +248,9 @@ const VaultDashboard = () => {
         <div className="vaultdashboard__body row no-gutters">
           <div className="col-xxl-8">
             <div className="vaultdashboard__bodyleft row">
-              <PriceCard data={priceCardData[0]} tokenName={vaultData?.title} risk={vaultData?.risk} />
+              <div className="col-lg-6">
+                <PriceCard data={priceCardData[0]} tokenName={vaultData?.title} risk={vaultData?.risk} />
+              </div>
               <div className="col-lg-6">
                 <WalletBalances
                   mintAddress={vault_mint}

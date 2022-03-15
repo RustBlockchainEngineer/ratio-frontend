@@ -17,6 +17,7 @@ export type PairType = {
   details: string;
   riskPercentage: number;
   item: LPair;
+  activeStatus: boolean;
 };
 
 export interface TokenPairCardProps {

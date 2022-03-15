@@ -152,7 +152,7 @@ const DepositModal = ({ data }: any) => {
               className="button--blue bottomBtn"
               onClick={() => deposit()}
             >
-              Deposit LP
+              Deposit Assets
             </Button>
           </div>
         </Modal.Body>
