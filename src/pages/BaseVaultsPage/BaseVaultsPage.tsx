@@ -15,21 +15,19 @@ import { getCoinPicSymbol } from '../../utils/helper';
 import { VaultsFetchingStatus } from '../../hooks/useFetchVaults';
 import { LPair } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { getDebtLimitForAllVaults, calculateRemainingGlobalDebt } from '../../utils/utils';
-import { getGlobalState, USDR_MINT_KEY } from '../../utils/ratio-lending';
-import { useConnection } from '../../contexts/connection';
 import { Banner, BannerIcon } from '../../components/Banner';
 import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { useMint } from '../../contexts/accounts';
 
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
+import { useIsTotalUSDrLimitReached } from '../../hooks/useIsTotalUSDrLimitReached';
+import { useIsTVLLimitReached } from '../../hooks/useIsTVLLimitReached';
+import { useIsUserUSDrLimitReached } from '../../hooks/useIsUserUSDrLimitReached';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
-  const usdrMint = useMint(USDR_MINT_KEY);
   const compareVaultsList = useSelector(selectors.getCompareVaultsList);
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
@@ -38,16 +36,12 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const overview = useSelector(selectors.getOverview);
   const viewType = useSelector(selectors.getViewType);
   const [factorial, setFactorial] = useState<any>([]);
-  // eslint-disable-next-line
-  const [globalState, setGlobalState] = React.useState(null);
-  const [vaultsDebtData, setVaultsDebtData] = React.useState<any>([]);
-  // eslint-disable-next-line
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
-  const [hasReachedGlobalDebtLimit, setHasReachedGlobalDebtLimit] = React.useState(false);
-  const [remainingGlobalDebtLimit, setRemainingGlobalDebt] = React.useState(0);
 
-  const connection = useConnection();
-  const { wallet, connected } = useWallet();
+  const hasUserReachedUSDrLimit = useIsUserUSDrLimitReached();
+  const hasReachedGlobalDebtLimit = useIsTotalUSDrLimitReached();
+  const hasReachedTVLLimit = useIsTVLLimitReached();
+
+  const { connected } = useWallet();
 
   const onViewType = (type: string) => {
     dispatch({ type: actionTypes.SET_VIEW_TYPE, payload: type });
@@ -107,8 +101,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           risk: item.risk_rating,
           riskLevel: getRiskLevelNumber(item.risk_rating),
           item: item,
-          hasReachedUserDebtLimit: item.has_reached_user_debt_limit,
-          remainingDebt: item.remaining_debt,
         };
       });
 
@@ -145,66 +137,16 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
 
   React.useEffect(() => {
-    let active = true;
-    if (wallet && wallet.publicKey && usdrMint) {
-      getGlobalState(connection, wallet).then((res: any) => {
-        if (!active) {
-          return;
-        }
-        setGlobalState(res.globalState);
-        const remainingGlobalDebt = calculateRemainingGlobalDebt(res.globalState, usdrMint);
-        setRemainingGlobalDebt(remainingGlobalDebt);
-        setHasReachedGlobalDebtLimit(remainingGlobalDebt === 0);
-      });
-    }
-    return () => {
-      active = false;
-    };
-  }, [wallet, connection, usdrMint]);
-
-  React.useEffect(() => {
-    if (!connected || !connection || !wallet || !vaults.length) {
-      return;
-    }
-    let active = true;
-    getDebtLimitForAllVaults(connection, wallet, vaults).then((userVaults: any) => {
-      if (!active) {
-        return;
-      }
-      const reducer = (sum: any, currentValue: any) => sum || currentValue.hasReachedDebtLimit;
-      const hasReachedDebtLimitReduced: boolean = userVaults.reduce(reducer, false);
-      setHasUserReachedDebtLimit(hasReachedDebtLimitReduced);
-      setVaultsDebtData(userVaults);
-    });
-    return () => {
-      active = false;
-    };
-  }, [connected, connection, wallet, vaults]);
-
-  React.useEffect(() => {
     let vaultsWithData: any = vaults;
     if (vaultsWithPlatformInformation.length) {
       vaultsWithData = vaultsWithPlatformInformation;
     }
-    vaultsWithData = vaultsWithData.map((item: any) => {
-      const remainingUserDebt = vaultsDebtData.length
-        ? vaultsDebtData.find((userVault: any) => userVault.title === item.symbol).debtLimit
-        : 0;
-      const remainingDebt = Math.min(remainingGlobalDebtLimit, remainingUserDebt);
-      return {
-        ...item,
-        remaining_debt: remainingDebt,
-        has_reached_user_debt_limit: vaultsDebtData.length
-          ? vaultsDebtData.find((userVault: any) => userVault.title === item.symbol).hasReachedDebtLimit
-          : false,
-      };
-    });
     setVaultsWithAllData(vaultsWithData);
     return () => {
       setVaultsWithAllData([]);
     };
     //In case a cleanup function needs to be added, consider that setting state to default values might race against other pages that use this same base page.
-  }, [remainingGlobalDebtLimit, vaultsWithPlatformInformation, vaults, vaultsDebtData]);
+  }, [vaultsWithPlatformInformation, vaults]);
 
   const showContent = (vtype: string) => {
     if (overview && !overview.activeVaults)
@@ -228,23 +170,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
         <div className="row">
           {factorial.map((item: any) => {
             if (showOnlyActive === false)
-              return (
-                <TokenPairCard
-                  data={item}
-                  key={item.id}
-                  onCompareVault={onCompareVault}
-                  isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
-                />
-              );
-            else
-              return (
-                <ActivePairCard
-                  data={item}
-                  key={item.id}
-                  onCompareVault={onCompareVault}
-                  isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
-                />
-              );
+              return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+            else return <ActivePairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
           })}
         </div>
       );
@@ -257,10 +184,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 <th scope="col">Asset</th>
                 <th scope="col">APY</th>
                 <th scope="col">Platform</th>
-                {/* <th scope="col">USDr Debt</th>
-                <th scope="col">Positoin Value</th>
-                <th scope="col">Rewards earned</th>
-                <th scope="col">Ratio TVL</th> */}
                 <th scope="col">
                   <img src={smallRatioIcon} alt="lisklevel" className="allvaults__table-ratioIcon" />
                   Risk Rating
@@ -286,23 +209,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           <tbody>
             {factorial.map((item: any) => {
               if (showOnlyActive === false)
-                return (
-                  <TokenPairListItem
-                    data={item}
-                    key={item.id}
-                    onCompareVault={onCompareVault}
-                    isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
-                  />
-                );
-              else
-                return (
-                  <ActivePairListItem
-                    data={item}
-                    key={item.id}
-                    onCompareVault={onCompareVault}
-                    isGlobalDebtLimitReached={hasReachedGlobalDebtLimit}
-                  />
-                );
+                return <TokenPairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+              else return <ActivePairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
             })}
           </tbody>
         </table>
@@ -322,16 +230,30 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   return (
     <>
-      {
-        /* TODO: fix this */ false && (
-          <Banner
-            title="USDr Debt Limit Reached:"
-            message="You have reached your overall USDr Debt Limit"
-            bannerIcon={BannerIcon.riskLevel}
-            className="debt-limit-reached"
-          />
-        )
-      }
+      {hasUserReachedUSDrLimit && (
+        <Banner
+          title="USDr Debt Limit Reached:"
+          message="USDr Debt Limit Reached: You have reached your overall USDr Debt Limit."
+          bannerIcon={BannerIcon.riskLevel}
+          className="debt-limit-reached"
+        />
+      )}
+      {hasReachedGlobalDebtLimit && !hasUserReachedUSDrLimit && (
+        <Banner
+          title="USDr Debt Limit Reached:"
+          message="USDr Debt Limit Reached: The global debt ceiling on the Ratio platform has been reached."
+          bannerIcon={BannerIcon.riskLevel}
+          className="debt-limit-reached"
+        />
+      )}
+      {hasReachedTVLLimit && !hasReachedGlobalDebtLimit && (
+        <Banner
+          title="TVL Limit Reached:"
+          message="TVL Limit Reached: The global deposit ceiling on the Ratio platform has been reached."
+          bannerIcon={BannerIcon.riskLevel}
+          className="debt-limit-reached"
+        />
+      )}
       <div className="allvaults">
         <FilterPanel label={title} viewType={viewType} onViewType={onViewType} />
 
