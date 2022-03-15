@@ -5,13 +5,19 @@ import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
+import { useFetchData } from '../../hooks/useFetchData';
 import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
 import { FetchingStatus } from '../../types/fetching-types';
 import AdminFormLayout from '../AdminFormLayout';
 import PlatformAdditionModal from './PlatformAdditionModal';
+import PriceSourceAdditionModal from './PriceSourceAdditionModal';
 
 interface PlatformId {
   id: string;
+}
+export interface TokenSource {
+  source: string;
+  token_id: string;
 }
 
 interface TokenCreation {
@@ -19,18 +25,26 @@ interface TokenCreation {
   symbol: string;
   icon: string;
   platforms: PlatformId[];
+  token_ids: TokenSource[];
 }
 
 export default function TokensAdminForm() {
   const [version, setVersion] = React.useState(0);
   const [validated, setValidated] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const { platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
+  const [showPlatformAdditionModal, setShowPlatformAdditionModal] = useState(false);
+  const [showPriceSourceAdditionModal, setShowPriceSourceAdditionModal] = useState(false);
+  const { data: platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
+  const {
+    data: sources,
+    status: sourcesFetchStatus,
+    error: sourcesFetchError,
+  } = useFetchData<string[]>('/tokens/pricessources');
   const defaultValues: TokenCreation = {
     address_id: '',
     symbol: '',
     icon: '',
     platforms: [],
+    token_ids: [],
   };
   const [values, setValues] = useState(defaultValues);
   const resetValues = () => {
@@ -100,12 +114,12 @@ export default function TokensAdminForm() {
         method: 'POST',
       });
       if (!response.ok) {
-        throw await response.json();
-      } else {
         toast.error(`There was a problem when saving the token: ${await response.json()}`);
+        throw await response.json();
       }
       resetValues();
       setVersion(version + 1);
+      toast.info('Token was saved successfully');
       return response.json();
     } catch {
       toast.error('There was a problem when saving the token');
@@ -143,10 +157,20 @@ export default function TokensAdminForm() {
       platforms: platforms,
     }));
   };
+  const handleAddSource = async (newSource: TokenSource) => {
+    const prev = values.token_ids;
+    prev.push(newSource);
+    setValues((values) => ({
+      ...values,
+      token_ids: prev,
+    }));
+  };
   return (
     <AdminFormLayout>
       {platformFetchStatus === FetchingStatus.Error &&
         toast.error(`There was an error when fetching the platforms: ${platformFetchError}`)}
+      {sourcesFetchStatus === FetchingStatus.Error &&
+        toast.error(`There was an error when fetching the platforms: ${sourcesFetchError}`)}
       <h5 className="mt-3">Add new token:</h5>
       <Form validated={validated} onSubmit={handleSubmit}>
         <Row className="mb-3">
@@ -155,7 +179,43 @@ export default function TokensAdminForm() {
           <AdminFormInput handleChange={handleChange} label="Icon url" name="icon" value={values?.icon} />
         </Row>
         <Row>
-          <Button variant="info" className="float-end" type="button" onClick={() => setShowModal(true)}>
+          <Button
+            variant="info"
+            className="float-end"
+            type="button"
+            onClick={() => setShowPriceSourceAdditionModal(true)}
+          >
+            Add a price source for this token
+          </Button>
+          <Table className="mt-3" striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>Source token Id</th>
+                <th>Source Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {values.token_ids.length === 0 && (
+                <tr>
+                  <td colSpan={2} className="text-center">
+                    The token has no source yet
+                  </td>
+                </tr>
+              )}
+              {values.token_ids.length > 0 &&
+                values.token_ids.map((item) => {
+                  return (
+                    <tr key={item.token_id}>
+                      <td key={item.token_id}>{item.token_id}</td>
+                      <td key={item.source}>{item.source}</td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </Table>
+        </Row>
+        <Row>
+          <Button variant="info" className="float-end" type="button" onClick={() => setShowPlatformAdditionModal(true)}>
             Link a platform to this token
           </Button>
           <Table className="mt-3" striped bordered hover size="sm">
@@ -198,6 +258,7 @@ export default function TokensAdminForm() {
             <th>Symbol</th>
             <th>Icon url</th>
             <th>Platforms</th>
+            <th>Sources</th>
             <th>
               <IoMenuOutline size={20} />
             </th>
@@ -213,6 +274,13 @@ export default function TokensAdminForm() {
                 {token.platforms
                   .map((item) => {
                     return platforms?.find((platform) => platform.id === item.id)?.name;
+                  })
+                  .join(',')}
+              </td>
+              <td>
+                {token.token_ids
+                  .map((item) => {
+                    return `${item.source}(${item.token_id})`;
                   })
                   .join(',')}
               </td>
@@ -240,11 +308,17 @@ export default function TokensAdminForm() {
         </tbody>
       </Table>
       <PlatformAdditionModal
-        show={showModal}
+        show={showPlatformAdditionModal}
         platforms={platforms ?? []}
-        close={() => setShowModal(false)}
+        close={() => setShowPlatformAdditionModal(false)}
         onAdd={handleLinkPlatform}
       ></PlatformAdditionModal>
+      <PriceSourceAdditionModal
+        show={showPriceSourceAdditionModal}
+        sources={sources ?? []}
+        close={() => setShowPriceSourceAdditionModal(false)}
+        onAdd={handleAddSource}
+      ></PriceSourceAdditionModal>
     </AdminFormLayout>
   );
 }

@@ -70,7 +70,7 @@ export default function VaultCreationAdminForm() {
   const [data, setData] = useState<LPCreationData>(defaultValues);
   const [showModal, setShowModal] = useState(false);
   const { accessToken } = useAuthContextProvider();
-  const { platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
+  const { data: platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
   const { status, error, vaults, forceUpdate } = useVaultsContextProvider();
   const resetValues = () => {
     setData(defaultValues);
