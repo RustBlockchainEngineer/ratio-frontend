@@ -10,10 +10,12 @@ function makeRatioApiEndpointCoinGeckoSimplePrice(coinId: string): string {
   return `${API_ENDPOINT}/coingecko/${coinId}`;
 }
 
+function makeRatioApiEndpointSaberPrice(): string {
+  return `${API_ENDPOINT}/coingecko/saber`;
+}
+
 export const useCoinGeckoPrice = (coinId: string) => {
-  // eslint-disable-next-line
   const [price, setPrice] = useState<any>({ DATA: 'DATA NOT LOADED YET' });
-  // eslint-disable-next-line
   const [error, setError] = useState<any>(null);
   const { accessToken } = useAuthContextProvider();
 
@@ -43,6 +45,11 @@ export const useCoinGeckoPrice = (coinId: string) => {
       cancelRequest = true;
     };
   }, [coinId]);
+
+  return {
+    price,
+    error,
+  };
 };
 
 export const useCoinGeckoPrices = () => {
@@ -79,6 +86,44 @@ export const useCoinGeckoPrices = () => {
 
   return {
     prices,
+    error,
+  };
+};
+
+export const useFetchSaberPrice = async () => {
+  const [saberPrice, setSaberPrice] = useState<any>({ DATA: 'DATA NOT LOADED YET' });
+  const [error, setError] = useState<any>(null);
+  const { accessToken } = useAuthContextProvider();
+
+  useEffect(() => {
+    let cancelRequest = false;
+    async function getSaberPrice() {
+      try {
+        const res = await fetch(makeRatioApiEndpointSaberPrice(), {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': JSON.stringify(accessToken),
+          },
+          method: 'GET',
+        });
+        const tokenPrices = await res.json();
+        if (cancelRequest) return;
+        setSaberPrice(tokenPrices);
+        setError(null);
+      } catch (error) {
+        if (cancelRequest) return;
+        setError(error);
+      }
+    }
+
+    getSaberPrice();
+    return function cleanup() {
+      cancelRequest = true;
+    };
+  }, []);
+
+  return {
+    saberPrice,
     error,
   };
 };
