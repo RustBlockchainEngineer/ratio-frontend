@@ -243,7 +243,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           className="debt-limit-reached"
         />
       )}
-      {hasReachedTVLLimit && (!hasReachedGlobalDebtLimit || !hasUserReachedUSDrLimit) && (
+      {hasReachedTVLLimit && (
         <Banner
           title="TVL Limit Reached:"
           message="TVL Limit Reached: The global deposit ceiling on the Ratio platform has been reached."
