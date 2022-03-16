@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { useAuthContextProvider } from '../contexts/authAPI';
+import { FetchingStatus } from '../types/fetching-types';
 
 interface SaberLpPrices {
   poolName: string;
@@ -20,7 +21,7 @@ function makeRatioApiEndpointSaberLpPrice(poolName: string): string {
 }
 
 export const useFetchSaberLpPrices = () => {
-  const [status, setStatus] = useState<any>('Data not loaded yet');
+  const [status, setStatus] = useState<FetchingStatus>(FetchingStatus.NotAsked);
   const [lpPrices, setLpPrices] = useState<Array<SaberLpPrices>>([]);
   const [error, setError] = useState<any>(null);
   const { accessToken } = useAuthContextProvider();
@@ -36,14 +37,20 @@ export const useFetchSaberLpPrices = () => {
           },
           method: 'GET',
         });
+        if (!res.ok) {
+          setStatus(FetchingStatus.Error);
+          setError('There was an error on the server side: ' + (await res.json()));
+          return;
+        }
+        setStatus(FetchingStatus.Loading);
         const tokenPrice = await res.json();
         if (cancelRequest) return;
         setLpPrices(tokenPrice);
-        setStatus('Data loaded successfully');
+        setStatus(FetchingStatus.Finish);
         setError(null);
       } catch (error) {
         if (cancelRequest) return;
-        setStatus('ERROR FETCHING SABER LP PRICES');
+        setStatus(FetchingStatus.Error);
         setError(error);
       }
     }
@@ -62,7 +69,7 @@ export const useFetchSaberLpPrices = () => {
 };
 
 export const useFetchSaberLpPrice = async (poolName: string) => {
-  const [status, setStatus] = useState<any>('Data not loaded yet');
+  const [status, setStatus] = useState<FetchingStatus>(FetchingStatus.NotAsked);
   const [lpPrice, setLpPrice] = useState<SaberLpPrices>();
   const [error, setError] = useState<any>(null);
   const { accessToken } = useAuthContextProvider();
@@ -78,14 +85,20 @@ export const useFetchSaberLpPrice = async (poolName: string) => {
           },
           method: 'GET',
         });
+        setStatus(FetchingStatus.Loading);
+        if (!res.ok) {
+          setStatus(FetchingStatus.Error);
+          setError('There was an error on the server side: ' + (await res.json()));
+          return;
+        }
         const tokenPrices = await res.json();
         if (cancelRequest) return;
         setLpPrice(tokenPrices);
-        setStatus('Data loaded successfully');
+        setStatus(FetchingStatus.Finish);
         setError(null);
       } catch (error) {
         if (cancelRequest) return;
-        setStatus('ERROR FETCHING SABER LP PRICES');
+        setStatus(FetchingStatus.Error);
         setError(error);
       }
     }
