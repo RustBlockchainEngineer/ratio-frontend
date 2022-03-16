@@ -1,41 +1,17 @@
-import React from 'react';
 import { Table } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import share from '../../../assets/images/share.svg';
-import { useAuthContextProvider } from '../../../contexts/authAPI';
+import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { useWallet } from '../../../contexts/wallet';
 import { useFetchVaultTxHistoryRatioApi } from '../../../hooks/useFetchRatioApi';
+import { FetchingStatus } from '../../../types/fetching-types';
+import { FormattedTX } from '../../../types/transaction-types';
 
 const VaultHistoryTable = ({ mintAddress }: any) => {
-  const { accessToken } = useAuthContextProvider();
   const { publicKey } = useWallet();
   const wallet = publicKey?.toString();
 
-  const txHistory = useFetchVaultTxHistoryRatioApi(wallet, mintAddress, accessToken);
-
-  const vaultHistory =
-    txHistory[0].length > 0 ? (
-      txHistory.map((tx: any) => {
-        return (
-          <tr>
-            <td className="w-50">{tx?.date}</td>
-            <td className="activity">{tx?.txType}</td>
-            <td className="activity">{tx?.status}</td>
-            <td className="tx_hash text-right">
-              `${tx?.txSignature?.slice(31, 35)}...`
-              <img src={share} alt="share" />
-            </td>
-          </tr>
-        );
-      })
-    ) : (
-      <tr>
-        <td colSpan={4} className="text-center">
-          <h6>There are no transactions</h6>
-        </td>
-      </tr>
-    );
-
-  console.log();
+  const { result: txHistory, status, error } = useFetchVaultTxHistoryRatioApi(wallet, mintAddress);
 
   return (
     <div className="vaulthistorytable">
@@ -51,7 +27,40 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
               <th className="text-right">Tx Signature</th>
             </tr>
           </thead>
-          <tbody>{vaultHistory}</tbody>
+          <tbody>
+            {status === FetchingStatus.Loading && (
+              <tr>
+                <td colSpan={4} className="text-center">
+                  <LoadingSpinner />
+                </td>
+              </tr>
+            )}
+            {status === FetchingStatus.Error &&
+              toast.error('There was an error when fetching the transactions history') &&
+              console.error(error)}
+            {status === FetchingStatus.Finish &&
+              (txHistory.length > 0 ? (
+                txHistory.map((tx: FormattedTX) => {
+                  return (
+                    <tr>
+                      <td className="w-50">{tx?.date}</td>
+                      <td className="activity">{tx?.txType}</td>
+                      <td className="activity">{tx?.status}</td>
+                      <td className="tx_hash text-right">
+                        `${tx?.txSignature?.slice(31, 35)}...`
+                        <img src={share} alt="share" />
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={4} className="text-center">
+                    <h6>There are no transactions</h6>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
         </Table>
       </div>
     </div>
