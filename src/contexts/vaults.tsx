@@ -1,14 +1,15 @@
 import React from 'react';
-import { useFetchVaults, VaultsFetchingStatus } from '../hooks/useFetchVaults';
+import { useFetchVaults } from '../hooks/useFetchVaults';
+import { FetchingStatus } from '../types/fetching-types';
 import { LPair } from '../types/VaultTypes';
 
 export const VAULTS_CONTEXT_DEFAULT_VALUE: {
-  status: VaultsFetchingStatus;
+  status: FetchingStatus;
   vaults: LPair[];
   error: any;
   forceUpdate: () => void;
 } = {
-  status: VaultsFetchingStatus.NotAsked,
+  status: FetchingStatus.NotAsked,
   vaults: [],
   error: undefined,
   forceUpdate: () => {},
