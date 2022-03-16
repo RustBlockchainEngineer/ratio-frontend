@@ -82,6 +82,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   };
 
   React.useEffect(() => {
+    console.log(userOverview);
+    console.log(usdrMint);
     if (userOverview && usdrMint) {
       dispatch({ type: actionTypes.SET_OVERVIEW, payload: userOverview });
 
