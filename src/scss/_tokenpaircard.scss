@@ -64,6 +64,7 @@
     font-size: 15px;
     padding: 0.7rem 1.5rem;
     width: 100%;
+    min-width: 150px;
   }
   &__header {
     padding: 20px;
@@ -80,6 +81,18 @@
       width: 25px;
       border: none;
       border-radius: 0%;
+    }
+
+    &--activeSticker {
+      position: absolute;
+      right: 16px;
+      top: 25px;
+      background-color: rgba(7, 177, 39, 0.2);
+      color: var(--unnamed-color-07b127);
+      font-family: 'Poppins-Light';
+      font-size: 0.75rem;
+      padding: 3px 9px;
+      border-top-right-radius: 8px;
     }
   }
   &__titleBox {
@@ -101,7 +114,7 @@
   &__riskBox {
     p {
       font-family: 'Poppins-Regular';
-      font-size: 12px;
+      font-size: 1rem;
       color: var(--unnamed-color-3c4760);
     }
     h6 {
@@ -116,7 +129,7 @@
       border-radius: 0px;
     }
     img {
-      width: 12px;
+      width: 15px !important;
       margin-top: -2px;
     }
     .DDD {
@@ -134,8 +147,8 @@
   }
   &__aprBox {
     padding: 20px;
-    display: flex;
-    justify-content: space-between;
+    // display: flex;
+    // justify-content: space-between;
     background-color: var(--unnamed-color-171A23);
     border-top: 1px solid rgba(#4c646f, 0.2);
     border-bottom: 1px solid rgba(#4c646f, 0.2);
@@ -145,7 +158,7 @@
       font-size: 1rem;
       color: var(--unnamed-color-3c4760);
       margin-bottom: 0px;
-      font-family: 'Poppins-Medium';
+      font-family: 'Poppins-Regular';
      
     }
     &--platformName {
@@ -230,8 +243,8 @@
       }
     }
     h5 {
-      font-size: 12px;
-      color: var(--unnamed-color-3c4760);
+      font-size: 0.875rem;
+      color: var(--unnamed-color-07b127);
       margin-bottom: 0px;
       font-family: 'Poppins-Regular';
     }

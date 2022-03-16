@@ -129,7 +129,7 @@ const PaybackModal = ({ data }: any) => {
               className="button--blue bottomBtn"
               onClick={() => repay()}
             >
-              Pay Back Debt
+              Pay Back USDr
             </Button>
           </div>
         </Modal.Body>
