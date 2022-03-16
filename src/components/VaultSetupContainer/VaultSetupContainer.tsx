@@ -115,10 +115,7 @@ const VaultSetupContainer = ({ data }: any) => {
             invalidStr={invalidStr}
           />
           <p className="vaultsetupcontainer-label mt-2">
-            Amounts:{' '}
-            <strong className="vaultsetupcontainer-value">
-              {depositAmount} {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}
-            </strong>
+            USD: <strong className="vaultsetupcontainer-value">${data.tokenPrice * depositAmount}</strong>
           </p>
         </div>
       </div>

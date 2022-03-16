@@ -1,4 +1,3 @@
-import risklevel from '../../../assets/images/risklevel.svg';
 import { useFetchCollateralRatio } from '../../../hooks/useFetchCollateralRatio';
 
 interface PricecardInterface {
@@ -25,7 +24,6 @@ const PriceCard = ({ data, tokenName, risk }: PriceCardProps) => {
         <div className="pricecard__header">
           <div className="pricecard__title">
             <p>Collateralization Ratio</p>
-            <img src={risklevel} alt="risklevel" />
           </div>
           <div className="pricecard__value">
             <h3>{collateralRatioError !== null ? '...' : (collateralRatio * 100).toFixed(2)}%</h3>
