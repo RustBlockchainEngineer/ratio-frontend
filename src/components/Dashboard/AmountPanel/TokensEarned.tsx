@@ -7,9 +7,11 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { SBR_PRICE, PRICE_DECIMAL } from '../../../constants/constants';
+import { PRICE_DECIMAL } from '../../../constants/constants';
 import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
+import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
+import { FetchingStatus } from '../../../types/fetching-types';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -21,6 +23,7 @@ const TokensEarned = ({ data }: any) => {
   const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
 
   const userState = useUserInfo(data.mintAddress);
+  const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
 
   const harvest = () => {
     console.log('harvesting');
@@ -73,7 +76,12 @@ const TokensEarned = ({ data }: any) => {
             <td className="align-middle">
               {userState?.reward} {getTokenNameByPlatform(data?.platform?.name)}
             </td>
-            <td className="text-right align-middle">${(userState?.reward * SBR_PRICE)?.toFixed(PRICE_DECIMAL)}</td>
+            <td className="text-right align-middle">
+              $
+              {saberPriceError === null && saberPriceStatus === FetchingStatus.Finish
+                ? (userState?.reward * saberPrice)?.toFixed(PRICE_DECIMAL)
+                : '...'}
+            </td>
           </tr>
         </tbody>
       </Table>
