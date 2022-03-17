@@ -15,7 +15,7 @@ import { FetchingStatus } from '../types/fetching-types';
     const { status, error, vaults } = useFetchVaults();
 */
 
-export function useFetchData<T>(dataUri: string) {
+export function useFetchData<T>(dataUri: string, useAccessToken = true) {
   interface State {
     status: FetchingStatus;
     error: Maybe<string>;
@@ -43,16 +43,19 @@ export function useFetchData<T>(dataUri: string) {
 
   useEffect(() => {
     let cancelRequest = false;
-    if (!API_ENDPOINT || !API_ENDPOINT.trim() || !accessToken) return;
+    if (!API_ENDPOINT || !API_ENDPOINT.trim() || (!accessToken && useAccessToken)) return;
 
     const fetchData = async () => {
       dispatch({ type: 'FETCHING' });
       try {
+        const headers: { [k: string]: any } = {
+          'Content-Type': 'application/json',
+        };
+        if (useAccessToken) {
+          headers['x-access-token'] = JSON.stringify(accessToken);
+        }
         const response = await fetch(`${API_ENDPOINT}${dataUri}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-access-token': JSON.stringify(accessToken),
-          },
+          headers: headers,
           method: 'GET',
         });
 
