@@ -186,11 +186,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateOverview = async () => {
     if (!userState || !tokenState || Object.keys(userState).length === 0) {
-      return setOverview({
-        activeVaults: {},
-        totalDebt: 0,
-        vaultCount: 0,
-      });
+      return setOverview({});
     }
     try {
       const activeVaults: any = {};

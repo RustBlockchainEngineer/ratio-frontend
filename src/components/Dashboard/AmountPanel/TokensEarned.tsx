@@ -60,7 +60,7 @@ const TokensEarned = ({ data }: any) => {
           <tr>
             <th>Name</th>
             <th>Rewards</th>
-            <th className="text-right">USD</th>
+            <th>USD</th>
           </tr>
         </thead>
         <tbody>
@@ -73,7 +73,7 @@ const TokensEarned = ({ data }: any) => {
             <td className="align-middle">
               {userState?.reward} {getTokenNameByPlatform(data?.platform?.name)}
             </td>
-            <td className="text-right align-middle">${(userState?.reward * SBR_PRICE)?.toFixed(PRICE_DECIMAL)}</td>
+            <td className="align-middle">${(userState?.reward * SBR_PRICE)?.toFixed(PRICE_DECIMAL)}</td>
           </tr>
         </tbody>
       </Table>

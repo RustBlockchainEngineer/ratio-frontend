@@ -80,7 +80,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   function factorialOf(d: any, filter_data: any, sort_data: any, view_data: any, platform_data: any) {
     if (d !== undefined) {
       const p = filterData(d, filter_data, platform_data)
-        .map((item: LPair, index: any) => {
+        ?.map((item: LPair, index: any) => {
           if (
             showOnlyActive === false ||
             (showOnlyActive && Object.keys(overview.activeVaults).indexOf(item.address_id) > -1)
