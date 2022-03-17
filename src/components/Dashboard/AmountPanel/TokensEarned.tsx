@@ -12,6 +12,7 @@ import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserInfo } from '../../../co
 import { isWalletApproveError } from '../../../utils/utils';
 import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
 import { FetchingStatus } from '../../../types/fetching-types';
+import LoadingSpinner from '../../../atoms/LoadingSpinner';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -77,10 +78,14 @@ const TokensEarned = ({ data }: any) => {
               {userState?.reward} {getTokenNameByPlatform(data?.platform?.name)}
             </td>
             <td className="text-right align-middle">
-              $
-              {saberPriceError === null && saberPriceStatus === FetchingStatus.Finish
-                ? (userState?.reward * saberPrice)?.toFixed(PRICE_DECIMAL)
-                : '...'}
+              {saberPriceStatus === FetchingStatus.Loading && (
+                <LoadingSpinner className="spinner-border-sm text-info" />
+              )}
+              {saberPriceStatus === FetchingStatus.Error &&
+                toast.error('There was an error when fetching the saber pricehistory') &&
+                console.error(saberPriceError)}
+              {saberPriceStatus === FetchingStatus.Finish &&
+                `$  ${(userState?.reward * saberPrice)?.toFixed(PRICE_DECIMAL)}`}
             </td>
           </tr>
         </tbody>

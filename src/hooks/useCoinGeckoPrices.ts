@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { useAuthContextProvider } from '../contexts/authAPI';
 import { FetchingStatus } from '../types/fetching-types';
+import { useFetchData } from './useFetchData';
 
 function makeRatioApiEndpointCoinGecko(): string {
   return `${API_ENDPOINT}/coingecko`;
@@ -12,7 +13,7 @@ function makeRatioApiEndpointCoinGeckoSimplePrice(coinId: string): string {
 }
 
 function makeRatioApiEndpointSaberPrice(): string {
-  return `${API_ENDPOINT}/coingecko/saberprice`;
+  return '/coingecko/saberprice';
 }
 
 export const useCoinGeckoPrice = (coinId: string) => {
@@ -112,46 +113,7 @@ export const useCoinGeckoPrices = () => {
 };
 
 export const useFetchSaberPrice = () => {
-  const [status, setStatus] = useState<FetchingStatus>(FetchingStatus.NotAsked);
-  const [saberPrice, setSaberPrice] = useState<any>();
-  const [error, setError] = useState<any>(null);
-  const { accessToken } = useAuthContextProvider();
-
-  useEffect(() => {
-    let cancelRequest = false;
-    async function getSaberPrice() {
-      try {
-        const res = await fetch(makeRatioApiEndpointSaberPrice(), {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-access-token': JSON.stringify(accessToken),
-          },
-          method: 'GET',
-        });
-        setStatus(FetchingStatus.Loading);
-        if (!res.ok) {
-          setStatus(FetchingStatus.Error);
-          setError('There was an error on the server side: ' + (await res.json()));
-          return;
-        }
-        const price = await res.json();
-        if (cancelRequest) return;
-        setSaberPrice(price?.saber?.usd);
-        setStatus(FetchingStatus.Finish);
-        setError(null);
-      } catch (error) {
-        if (cancelRequest) return;
-        setError(error);
-        setStatus(FetchingStatus.Error);
-      }
-    }
-
-    getSaberPrice();
-    return function cleanup() {
-      cancelRequest = true;
-    };
-  }, []);
-
+  const { data: saberPrice, status, error } = useFetchData<number>(makeRatioApiEndpointSaberPrice(), false);
   return {
     saberPrice,
     status,
