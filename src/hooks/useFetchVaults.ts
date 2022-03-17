@@ -1,5 +1,6 @@
 import { useEffect, useRef, useReducer, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
+import { FetchingStatus } from '../types/fetching-types';
 import { LPair } from '../types/VaultTypes';
 
 /* 
@@ -13,18 +14,12 @@ import { LPair } from '../types/VaultTypes';
   Example usage: 
     const { status, error, vaults } = useFetchVaults();
 */
-export enum VaultsFetchingStatus {
-  NotAsked,
-  Loading,
-  Finish,
-  Error,
-}
 export const useFetchVaults = () => {
   const cache = useRef<LPair[]>([]);
   const [update, setUpdate] = useState(true);
 
   const initialState = {
-    status: VaultsFetchingStatus.NotAsked,
+    status: FetchingStatus.NotAsked,
     error: null,
     vaults: [],
   };
@@ -32,11 +27,11 @@ export const useFetchVaults = () => {
   const [state, dispatch] = useReducer((state: any, action: any) => {
     switch (action.type) {
       case 'FETCHING':
-        return { ...initialState, status: VaultsFetchingStatus.Loading };
+        return { ...initialState, status: FetchingStatus.Loading };
       case 'FETCHED':
-        return { ...initialState, status: VaultsFetchingStatus.Finish, vaults: action.payload };
+        return { ...initialState, status: FetchingStatus.Finish, vaults: action.payload };
       case 'FETCH_ERROR':
-        return { ...initialState, status: VaultsFetchingStatus.Error, error: action.payload };
+        return { ...initialState, status: FetchingStatus.Error, error: action.payload };
       default:
         return state;
     }
@@ -58,9 +53,12 @@ export const useFetchVaults = () => {
           const response = await fetch(url);
           let data: LPair[] = [];
 
-          if (response.status === 200) {
+          if (response.ok) {
             data = await response.json();
             cache.current = data;
+          } else {
+            if (cancelRequest) return;
+            dispatch({ type: 'FETCH_ERROR', payload: await response.json() });
           }
 
           if (cancelRequest) return;

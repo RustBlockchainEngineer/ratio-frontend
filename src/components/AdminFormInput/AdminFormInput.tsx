@@ -1,6 +1,7 @@
 import { ElementType } from 'react';
 import { Col, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+export declare type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export default function AdminFormInput({
   label,
   value,
@@ -22,7 +23,7 @@ export default function AdminFormInput({
   md?: string;
   xs?: string;
   type?: string;
-  handleChange: any;
+  handleChange?: React.ChangeEventHandler<FormControlElement>;
   required?: boolean;
   yetNotImplemented?: boolean;
   as?: ElementType<any>;

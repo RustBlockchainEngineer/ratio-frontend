@@ -221,6 +221,7 @@ export function RFStateProvider({ children = undefined as any }) {
             mint,
             lockedAmount: state.lockedCollBalance.toNumber(),
             debt: state.debt.toNumber(),
+            // Warning here, this is another debtLimit, not the userDebtCeiling from the global state
             debtLimit: new TokenAmount(debtLimit * 10 ** 6, 6).toWei().toNumber(),
           };
           vaultCount++;
