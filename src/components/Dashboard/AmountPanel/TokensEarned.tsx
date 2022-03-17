@@ -64,7 +64,7 @@ const TokensEarned = ({ data }: any) => {
           <tr>
             <th>Name</th>
             <th>Rewards</th>
-            <th className="text-right">USD</th>
+            <th>USD</th>
           </tr>
         </thead>
         <tbody>

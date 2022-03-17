@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { nFormatter } from '../../utils/utils';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -56,7 +57,9 @@ const NavbarItem = (navBarItemProps: NavbarItemProps) => {
             return (
               <div className="row navbarItem__expand no-gutters" key={index}>
                 <div className="text-left">
-                  <p className="navbarItem__expand-name">{item.title}</p>
+                  <Link to={`/dashboard/vaultdashboard/${item.mint}`} className="navbarItem__expand-name">
+                    {item.title}
+                  </Link>
                 </div>
                 <div className="d-flex">
                   <div>

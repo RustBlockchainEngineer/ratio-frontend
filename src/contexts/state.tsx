@@ -186,11 +186,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateOverview = async () => {
     if (!userState || !tokenState || Object.keys(userState).length === 0) {
-      return setOverview({
-        activeVaults: {},
-        totalDebt: 0,
-        vaultCount: 0,
-      });
+      return setOverview({});
     }
     try {
       const activeVaults: any = {};
@@ -221,6 +217,7 @@ export function RFStateProvider({ children = undefined as any }) {
             mint,
             lockedAmount: state.lockedCollBalance.toNumber(),
             debt: state.debt.toNumber(),
+            // Warning here, this is another debtLimit, not the userDebtCeiling from the global state
             debtLimit: new TokenAmount(debtLimit * 10 ** 6, 6).toWei().toNumber(),
           };
           vaultCount++;
