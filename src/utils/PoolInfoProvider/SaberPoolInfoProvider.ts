@@ -19,11 +19,15 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
     vault: LPair,
     amount: number,
     tokenAccount: string
-  ): Promise<boolean> {
-    // TODO Implement this function
-
-    await depositToSaber(connection, wallet, new PublicKey(vault.address_id), amount, new PublicKey(tokenAccount));
-    return true;
+  ): Promise<string> {
+    const txHash = await depositToSaber(
+      connection,
+      wallet,
+      new PublicKey(vault.address_id),
+      amount,
+      new PublicKey(tokenAccount)
+    );
+    return txHash;
   }
 
   async withdrawLP(

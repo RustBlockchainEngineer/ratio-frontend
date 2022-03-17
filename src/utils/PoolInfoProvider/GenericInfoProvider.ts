@@ -52,7 +52,7 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
     vault: LPair,
     amount: number,
     tokenAccount: string
-  ): Promise<boolean>;
+  ): Promise<string>;
 
   abstract withdrawLP(
     connection: Connection,

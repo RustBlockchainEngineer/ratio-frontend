@@ -16,13 +16,13 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
   }
 
   // eslint-disable-next-line
-  async depositLP(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
+  async depositLP(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     // TODO Implement this function
 
     alert('Orca: Deposit LP');
     console.error('Function not implemented yet');
 
-    return true;
+    return 'not implemented';
   }
 
   // eslint-disable-next-line

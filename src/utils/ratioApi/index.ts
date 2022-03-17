@@ -2,9 +2,14 @@
 import { API_ENDPOINT } from '../../constants';
 
 export async function postToRatioApi(data = {}, route = '', authToken?: any) {
+  console.log(authToken);
   if (authToken) {
+    console.log('PORQUE NO ENTRO ACA');
     return await postWithAuthToRatioApi(data, route, authToken);
   } else {
+    console.log('ENTRA ACA ?? ? ? ? ');
+    console.log(`${API_ENDPOINT}${route}`);
+    console.log(authToken);
     const response = await fetch(`${API_ENDPOINT}${route}`, {
       body: JSON.stringify(data),
       headers: {
@@ -20,6 +25,7 @@ export async function postToRatioApi(data = {}, route = '', authToken?: any) {
 }
 
 export async function postWithAuthToRatioApi(data: any, route: string, authToken: any) {
+  console.log('ME METO ACA WITH AUTH');
   const response = await fetch(`${API_ENDPOINT}${route}`, {
     body: JSON.stringify(data),
     headers: {
@@ -28,6 +34,7 @@ export async function postWithAuthToRatioApi(data: any, route: string, authToken
     },
     method: 'POST',
   });
+  console.log('RESPONSE ',response);
   if (!response.ok) {
     throw await response.json();
   }

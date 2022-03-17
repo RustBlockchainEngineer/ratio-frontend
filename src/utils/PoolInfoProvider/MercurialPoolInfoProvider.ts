@@ -16,13 +16,13 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
   }
 
   // eslint-disable-next-line
-  async depositLP(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
+  async depositLP(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     // TODO Implement this function
 
     alert('Mercurial: Deposit LP');
     console.error('Function not implemented yet');
 
-    return true;
+    return 'not implemented';
   }
 
   // eslint-disable-next-line

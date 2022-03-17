@@ -13,6 +13,8 @@ import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
+import { useAuthContextProvider } from '../../../contexts/authAPI';
+import { postToRatioApi } from '../../../utils/ratioApi';
 
 const DepositModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
@@ -32,6 +34,7 @@ const DepositModal = ({ data }: any) => {
   const [depositStatus, setDepositStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const { accessToken } = useAuthContextProvider();
 
   const updateRFStates = useUpdateRFStates();
 
@@ -66,10 +69,20 @@ const DepositModal = ({ data }: any) => {
         depositAmount * Math.pow(10, collMint?.decimals ?? 0),
         collAccount?.pubkey.toString() as string
       )
-      .then(() => {
+      .then((txSignature: string) => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         setDepositAmount(0);
         toast.success('Successfully Deposited!');
+        postToRatioApi(
+          {
+            tx_type: 'deposit',
+            signature: data.mint,
+          },
+          `/transaction/${wallet?.publicKey.toBase58()}/${txSignature}`,
+          accessToken
+        );
+        //:wallet_id/new
+        // https://backend.ratio.finance/transaction/766rCV2r3kLFPCCfUeu8UJhYFWNL8xMv5fvMXhc9NXLM/G9MTBg2RNEUHMMLCUmo1X3ZbmrLk49Ev7DxCVF7YTu8hu3XPnLc37qnrbJKAaTMifHjNhduabSCeagjBjrkbAGy
       })
       .catch((e) => {
         console.log(e);

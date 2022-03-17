@@ -6,7 +6,7 @@ export interface IPoolInfoProvider {
 
   getRatioAPYbyVault(vault: LPair): Promise<number>;
 
-  depositLP(connection: Connection, wallet: any, vault: LPair, amount: number, tokenAccount: string): Promise<boolean>;
+  depositLP(connection: Connection, wallet: any, vault: LPair, amount: number, tokenAccount: string): Promise<string>;
 
   withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number, tokenAccount: string): Promise<boolean>;
 
