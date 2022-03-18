@@ -162,7 +162,9 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
               </div>
               <div className="navbar-vertical__item">
                 <h6>Total Vault Value</h6>
-                <h6 className="navbar-vertical__item--yellow">$ {totalLocked.toFixed(2)}</h6>
+                <h6 className="navbar-vertical__item--yellow">
+                  $ {totalLocked.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </h6>
               </div>
               <div className="navbar-vertical__item pt-3">
                 <h6>USDr Minted</h6>

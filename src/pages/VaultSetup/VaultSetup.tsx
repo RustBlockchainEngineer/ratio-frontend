@@ -19,6 +19,7 @@ import { selectors } from '../../features/dashboard';
 import VaultSetupContainer from '../../components/VaultSetupContainer';
 import PriceCard from '../../components/Dashboard/PriceCard';
 import WalletBalances from '../../components/Dashboard/AmountPanel/WalletBalances';
+import RiskLevel from '../../components/Dashboard/RiskLevel';
 
 const priceCardData = [
   {
@@ -111,24 +112,31 @@ const VaultSetup = () => {
         {/* <div className="pl-3">
           <Breadcrumb vaultData={vaultData} availableVaults={allVaults} />
         </div> */}
-        <h3 className="vault-setup-header pl-3">
-          Open {vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault
-        </h3>
-        <div className="mt-2 d-flex align-items-center pl-3">
-          <p className="vault-setup-header-label mr-1">Platform:</p>
-          {vaultData.platform && (
-            <a href={vaultData.platform.link} target="_blank" rel="noreferrer" className="d-flex">
-              <img src={vaultData.platform.icon} alt="platform" />
-              <p className="vault-setup-header-value ml-1">{vaultData.platform.name}</p>
-              <img src={linkIcon} alt="linkIcon" className="vault-setup-header-linkIcon" />
-            </a>
-          )}
-          <p className="vault-setup-header-gap mx-3">|</p>
-          <p className="vault-setup-header-label mr-1">APR:</p>
-          <p className="vault-setup-header-value">{Number(vaultData?.apr).toFixed(2)}%</p>
-          <p className="vault-setup-header-gap mx-3">|</p>
-          <p className="vault-setup-header-label mr-1">TVL:</p>
-          <p className="vault-setup-header-value">{formatUSD.format(vaultData.tvl)}</p>
+        <div className="d-flex justify-content-between align-items-end">
+          <div>
+            <h3 className="vault-setup-header pl-3">
+              Open {vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault
+            </h3>
+            <div className="mt-2 d-flex align-items-center pl-3">
+              <p className="vault-setup-header-label mr-1">Platform:</p>
+              {vaultData.platform && (
+                <a href={vaultData.platform.link} target="_blank" rel="noreferrer" className="d-flex">
+                  <img src={vaultData.platform.icon} alt="platform" />
+                  <p className="vault-setup-header-value ml-1">{vaultData.platform.name}</p>
+                  <img src={linkIcon} alt="linkIcon" className="vault-setup-header-linkIcon" />
+                </a>
+              )}
+              <p className="vault-setup-header-gap mx-3">|</p>
+              <p className="vault-setup-header-label mr-1">APR:</p>
+              <p className="vault-setup-header-value">{Number(vaultData?.apr).toFixed(2)}%</p>
+              <p className="vault-setup-header-gap mx-3">|</p>
+              <p className="vault-setup-header-label mr-1">TVL:</p>
+              <p className="vault-setup-header-value">{formatUSD.format(vaultData.tvl)}</p>
+            </div>
+          </div>
+          <div>
+            <RiskLevel level={vaultData.risk} />
+          </div>
         </div>
         <div className="row no-gutters">
           <div className="col-xxl-8 col-lg-6 col-md-12">
