@@ -71,7 +71,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
       return {
         value: symbol,
         label: symbol,
-        network: 'solana',
+        network: null, // For the moment we leave it as null, since we will have to integrate the rest of the platforms later on
         icon: [icon],
       };
     });
