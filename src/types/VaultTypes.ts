@@ -78,3 +78,23 @@ export interface Token {
   created_on?: number;
   updated_on?: number;
 }
+
+export interface LPAssetCreationData {
+  token_address_id: string;
+  token_pool_size: number;
+}
+
+export interface LPEditionData {
+  address_id: string;
+  vault_address_id: string | null;
+  page_url: string | null;
+  icon: string | null;
+  platform_id: string | null;
+  platform_symbol: string | null;
+  pool_size: number | null;
+  symbol: string | null;
+  collateralization_ratio: number | null;
+  liquidation_ratio: number | null;
+  risk_rating: string | null;
+  lpasset: LPAssetCreationData[];
+}

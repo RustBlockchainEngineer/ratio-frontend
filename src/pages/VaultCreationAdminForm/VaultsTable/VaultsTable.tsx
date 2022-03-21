@@ -1,22 +1,22 @@
 import { useState } from 'react';
 import { Button, Dropdown, Table } from 'react-bootstrap';
-import { IoMenuOutline, IoTrashOutline } from 'react-icons/io5';
+import { IoHammerOutline, IoMenuOutline, IoTrashOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { API_ENDPOINT } from '../../../constants';
 import { useAuthContextProvider } from '../../../contexts/authAPI';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { FetchingStatus } from '../../../types/fetching-types';
-
-export interface LPAssetCreationData {
-  token_address_id: string;
-  token_pool_size: number;
-}
+import { LPair } from '../../../types/VaultTypes';
+import VaultEditionModal from '../VaultEditionModal';
 
 export default function VaultsTable() {
   const { status, error, vaults, forceUpdate } = useVaultsContextProvider();
   const [disabledRemoves] = useState(() => new Map<string, boolean>());
   const { accessToken } = useAuthContextProvider();
+  const [disableEdit, setDisableEdit] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [currentEdit, setCurrentEdit] = useState<Maybe<LPair>>(null);
   const handleRemoveVault = async (address_id: string) => {
     disabledRemoves.set(address_id, true);
     if (await confirm('Are you sure?')) {
@@ -39,6 +39,11 @@ export default function VaultsTable() {
       }
     }
     disabledRemoves.set(address_id, false);
+  };
+  const handleEditVault = async (item: LPair) => {
+    setDisableEdit(true);
+    setShowEditModal(true);
+    setCurrentEdit(item);
   };
   return (
     <div>
@@ -78,7 +83,12 @@ export default function VaultsTable() {
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>
-                      <Dropdown.Item href="#/action-1">
+                      <Dropdown.Item href={`#${item.address_id}/edit`}>
+                        <Button variant="primary" disabled={disableEdit} onClick={() => handleEditVault(item)}>
+                          <IoHammerOutline size={20} /> Edit
+                        </Button>
+                      </Dropdown.Item>
+                      <Dropdown.Item href={`#${item.address_id}/remove`}>
                         <Button
                           variant="primary"
                           disabled={disabledRemoves.get(item.address_id) ?? false}
@@ -95,6 +105,15 @@ export default function VaultsTable() {
           </tbody>
         </Table>
       )}
+      <VaultEditionModal
+        show={showEditModal}
+        vault={currentEdit}
+        close={() => {
+          setDisableEdit(false);
+          setShowEditModal(false);
+          setCurrentEdit(null);
+        }}
+      />
     </div>
   );
 }
