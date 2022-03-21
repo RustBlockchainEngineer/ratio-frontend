@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useConnection } from '../../contexts/connection';
-import { formatUSD } from '../../utils/utils';
+import { calculateRemainingGlobalDebt, calculateRemainingUserDebt, formatUSD } from '../../utils/utils';
 
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
@@ -26,6 +26,7 @@ import {
   useUserInfo,
   useVaultMintInfo,
   UPDATE_REWARD_STATE,
+  useRFStateInfo,
 } from '../../contexts/state';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
@@ -40,16 +41,18 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const usdrMint = useUSDrMintInfo();
   const collMint = useVaultMintInfo(data.mint);
 
+  const globalState = useRFStateInfo();
   const userState = useUserInfo(data.mint);
   const vaultState = useUserInfo(data.mint);
 
   // eslint-disable-next-line
   const [tvl, setTVL] = React.useState(0);
   const [totalDebt, setTotalDebt] = React.useState(0);
+  const [remainingDebt, setRemainingDebt] = React.useState(0);
 
   const [positionValue, setPositionValue] = React.useState(0);
   // eslint-disable-next-line
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
 
   const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
 
@@ -64,17 +67,18 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   }, [tokenPrice, userState, collMint]);
 
   React.useEffect(() => {
-    // replace this boolean value with a function to determine wether user limit reached
-    const userLimitReached = false;
-    // replace this boolean value with a function to determine wether global limit reached
-    const globalLimitReached = false;
-    if (userLimitReached) {
-      setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
+    if (userState && tokenPrice && collMint && usdrMint && globalState) {
+      const remainingGlobalDebt = calculateRemainingGlobalDebt(globalState, usdrMint);
+      const remainingUserDebt = calculateRemainingUserDebt(tokenPrice, data.risk, userState, collMint, usdrMint);
+      const overalldebtLimit = Math.min(remainingGlobalDebt, remainingUserDebt);
+      setHasUserReachedDebtLimit(overalldebtLimit <= 0 && +userState?.debt > 0);
+      setRemainingDebt(overalldebtLimit);
     }
-    if (globalLimitReached) {
-      setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
-    }
-  }, [wallet, connection]);
+    return () => {
+      setHasUserReachedDebtLimit(false);
+      setRemainingDebt(0);
+    };
+  }, [tokenPrice, userState, globalState, usdrMint, collMint]);
 
   React.useEffect(() => {
     if (connection && collMint && usdrMint && data.mint && vaultState) {
@@ -202,7 +206,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Available to Mint:</h6>
-              <h6 className="semiBold">{Number(data?.remainingDebt).toFixed(2)}</h6>
+              <h6 className="semiBold">{Number(remainingDebt.toFixed(2)).toFixed(2)}</h6>
             </div>
           </div>
           <div className="activepaircard__detailBox">
