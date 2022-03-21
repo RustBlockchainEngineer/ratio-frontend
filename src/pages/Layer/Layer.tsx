@@ -95,7 +95,7 @@ const Layer = () => {
     return () => {
       setEnable(false);
     };
-  }, [userData, error]);
+  }, [userData, error, publicKey]);
 
   const dispatch = useDispatch();
 

@@ -17,7 +17,7 @@ export const WALLET_PROVIDERS = [
   {
     name: 'Phantom',
     url: 'https://phantom.app/',
-    icon: `https://raydium.io/_nuxt/img/phantom.d9e3c61.png`,
+    icon: `https://www.phantom.app/img/logo.png`,
     adapter: PhantomWalletAdapter,
   },
   {
