@@ -136,6 +136,14 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
           expandData={active_vaults}
           positionValues={activeVaultsData}
         />
+        <NavbarItem
+          icon={allVaultsIcon}
+          name="RATIO Fairdrop"
+          active={navIndex === '/dashboard/fairdrop'}
+          navIndex="/dashboard/fairdrop"
+          onItemClick={onItemClick}
+          collapseFlag={collapseFlag}
+        />
         {/* <NavbarItem
           icon={archivedVaultsIcon}
           name="My Archived Vaults"

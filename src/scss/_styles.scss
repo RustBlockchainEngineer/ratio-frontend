@@ -50,6 +50,8 @@
 @import './adminFormPage';
 @import './_walletBalance';
 @import './tokensEarned';
+@import './fairdroppage';
+@import './tasktable';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Bold', '../assets/fonts/Poppins-Bold');
