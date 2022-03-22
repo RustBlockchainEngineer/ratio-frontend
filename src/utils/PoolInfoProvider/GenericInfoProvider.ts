@@ -60,7 +60,7 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
     vault: LPair,
     amount: number,
     tokenAccount: string
-  ): Promise<boolean>;
+  ): Promise<string>;
 
   abstract harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean>;
 

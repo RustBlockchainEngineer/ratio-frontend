@@ -11,6 +11,7 @@ import moment from 'moment';
 import { toast } from 'react-toastify';
 import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
+import { postToRatioApi } from '../../../utils/ratioApi';
 
 const GenerateModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
@@ -70,10 +71,18 @@ const GenerateModal = ({ data }: any) => {
       return;
     }
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
-      .then((tx) => {
-        console.log('Success Generate txid=', tx);
+      .then((txSignature: string) => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         toast.success('Successfully minted USDr tokens!');
+        postToRatioApi(
+          {
+            tx_type: 'borrow',
+            signature: txSignature,
+          },
+          `/transaction/${wallet?.publicKey.toBase58()}/new`
+        ).then((res: string) => {
+          console.log('RES FROM BACKEND', res);
+        });
       })
       .catch((e) => {
         console.log(e);

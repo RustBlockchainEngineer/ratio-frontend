@@ -8,7 +8,7 @@ export interface IPoolInfoProvider {
 
   depositLP(connection: Connection, wallet: any, vault: LPair, amount: number, tokenAccount: string): Promise<string>;
 
-  withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number, tokenAccount: string): Promise<boolean>;
+  withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number, tokenAccount: string): Promise<string>;
 
   harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean>;
 

@@ -14,6 +14,7 @@ import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
+import { postToRatioApi } from '../../../utils/ratioApi';
 
 const WithdrawModal = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
@@ -75,9 +76,18 @@ const WithdrawModal = ({ data }: any) => {
         withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
         userCollAccount
       )
-      .then(() => {
+      .then((txSignature: string) => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         toast.success('Successfully Withdrawn!');
+        postToRatioApi(
+          {
+            tx_type: 'withdraw',
+            signature: txSignature,
+          },
+          `/transaction/${wallet?.publicKey.toBase58()}/new`
+        ).then((res: string) => {
+          console.log('RES FROM BACKEND', res);
+        });
       })
       .catch((e) => {
         console.log(e);

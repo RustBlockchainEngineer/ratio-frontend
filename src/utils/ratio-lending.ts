@@ -257,10 +257,10 @@ export async function borrowUSDr(
   transaction.add(ix1);
   transaction.add(borrowInstruction);
 
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
-  console.log('tx id->', tx);
+  const txHash = await sendTransaction(connection, wallet, transaction, signers);
+  console.log(`User borrowed ${amount / Math.pow(10, USD_DECIMALS)} USD , transaction id = ${txHash}`);
 
-  return 'User borrowed ' + amount / Math.pow(10, USD_DECIMALS) + ' USD , transaction id = ' + tx;
+  return txHash;
 }
 
 export async function getTokenVaultByMint(connection: Connection, mint: string | PublicKey): Promise<any | undefined> {
@@ -479,10 +479,10 @@ export async function repayUSDr(
     transaction.add(instruction);
   });
 
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
-  console.log('tx id->', tx);
+  const txHash = await sendTransaction(connection, wallet, transaction, signers);
+  console.log(`User repaid ${amount / Math.pow(10, USD_DECIMALS)} USD , transaction id = ${txHash}`);
 
-  return 'User repaid ' + amount / Math.pow(10, USD_DECIMALS) + ' USD , transaction id = ' + tx;
+  return txHash;
 }
 
 export async function withdrawCollateral(

@@ -41,13 +41,13 @@ export class RaydiumPoolInfoProvider extends GenericInfoProvider {
   }
 
   // eslint-disable-next-line
-  async withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number): Promise<boolean> {
+  async withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number): Promise<string> {
     // TODO Implement this function
 
     alert('Raydium: Withdraw LP');
     console.error('Function not implemented yet');
 
-    return true;
+    return 'not implemented';
   }
 
   // eslint-disable-next-line

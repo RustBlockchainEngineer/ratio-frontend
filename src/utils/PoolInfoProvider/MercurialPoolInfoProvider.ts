@@ -26,13 +26,13 @@ export class MercurialPoolInfoProvider extends GenericInfoProvider {
   }
 
   // eslint-disable-next-line
-  async withdrawLP(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
+  async withdrawLP(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     // TODO Implement this function
 
     alert('Mercurial: Withdraw LP');
     console.error('Function not implemented yet');
 
-    return true;
+    return 'not implemented';
   }
 
   // eslint-disable-next-line
