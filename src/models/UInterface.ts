@@ -10,8 +10,8 @@ export type PairType = {
   title: string;
   platform: any;
   tvl: number;
-  risk: number;
-  riskLevel: string;
+  risk: string;
+  riskLevel: number;
   apr: number;
   earned_rewards: number;
   details: string;
