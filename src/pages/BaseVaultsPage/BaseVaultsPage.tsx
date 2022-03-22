@@ -83,7 +83,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
         ?.map((item: LPair, index: any) => {
           if (
             showOnlyActive === false ||
-            (showOnlyActive && Object.keys(overview.activeVaults).indexOf(item.address_id) > -1)
+            (showOnlyActive &&
+              overview &&
+              overview.activeVaults &&
+              Object.keys(overview.activeVaults).indexOf(item.address_id) > -1)
           ) {
             return {
               id: index,
@@ -128,7 +131,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
     return [];
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
   }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
 
