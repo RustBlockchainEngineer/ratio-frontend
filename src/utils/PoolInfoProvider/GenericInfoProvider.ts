@@ -62,7 +62,7 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
     tokenAccount: string
   ): Promise<string>;
 
-  abstract harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean>;
+  abstract harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string>;
 
   abstract getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number>;
 

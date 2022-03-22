@@ -13,6 +13,7 @@ import { isWalletApproveError } from '../../../utils/utils';
 import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
 import { FetchingStatus } from '../../../types/fetching-types';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
+import { postToRatioApi } from '../../../utils/ratioApi';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -30,9 +31,18 @@ const TokensEarned = ({ data }: any) => {
     console.log('harvesting');
     poolInfoProviderFactory
       ?.harvestReward(connection, wallet, vault as LPair)
-      .then(() => {
+      .then((txSignature: string) => {
         updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
         toast.success('Successfully Harvested!');
+        postToRatioApi(
+          {
+            tx_type: 'reward',
+            signature: txSignature,
+          },
+          `/transaction/${wallet?.publicKey.toBase58()}/new`
+        ).then((res: string) => {
+          console.log('RES FROM BACKEND', res);
+        });
       })
       .catch((e) => {
         console.log(e);

@@ -36,13 +36,13 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
   }
 
   // eslint-disable-next-line
-  async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
+  async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     // TODO Implement this function
 
     alert('Orca: Harvest Reward');
     console.error('Function not implemented yet');
 
-    return true;
+    return 'not implemented';
   }
 
   async getRewards(): Promise<number> {

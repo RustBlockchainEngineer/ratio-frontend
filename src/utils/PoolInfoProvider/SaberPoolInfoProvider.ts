@@ -48,12 +48,10 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
     return txHash;
   }
 
-  async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
-    // TODO Implement this function
+  async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
+    const txHash = await harvestFromSaber(connection, wallet, new PublicKey(vault.address_id));
 
-    await harvestFromSaber(connection, wallet, new PublicKey(vault.address_id));
-
-    return true;
+    return txHash;
   }
 
   async getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number> {
