@@ -131,11 +131,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
     return [];
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
   }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let vaultsWithData: any = vaults;
     if (vaultsWithPlatformInformation.length) {
       vaultsWithData = vaultsWithPlatformInformation;
@@ -218,7 +218,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
     }
   };
 
-  const [didMount, setDidMount] = React.useState(false);
+  const [didMount, setDidMount] = useState(false);
   useEffect(() => {
     setDidMount(true);
     return () => setDidMount(false);
