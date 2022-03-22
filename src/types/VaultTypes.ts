@@ -86,15 +86,15 @@ export interface LPAssetCreationData {
 
 export interface LPEditionData {
   address_id: string;
-  vault_address_id: string | null;
-  page_url: string | null;
-  icon: string | null;
-  platform_id: string | null;
-  platform_symbol: string | null;
-  pool_size: number | null;
-  symbol: string | null;
-  collateralization_ratio: number | null;
-  liquidation_ratio: number | null;
-  risk_rating: string | null;
+  vault_address_id: Maybe<string>;
+  page_url: Maybe<string>;
+  icon: Maybe<string>;
+  platform_id: Maybe<string>;
+  platform_symbol: Maybe<string>;
+  pool_size: Maybe<number>;
+  symbol: Maybe<string>;
+  collateralization_ratio: Maybe<number>;
+  liquidation_ratio: Maybe<number>;
+  risk_rating: Maybe<string>;
   lpasset: LPAssetCreationData[];
 }

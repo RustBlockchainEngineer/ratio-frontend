@@ -1,5 +1,5 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Row, Button, Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
@@ -30,13 +30,12 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
   const { forceUpdate } = useVaultsContextProvider();
   const [showModal, setShowModal] = useState(false);
   const connection = useConnection();
-  const gWallet = useWallet();
-  const wallet = gWallet.wallet;
+  const { wallet } = useWallet();
   const resetValues = () => {
     setData(values);
     setValidated(false);
   };
-  const handleChange = (event: any) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setData((values) => ({
       ...values,
       [event.target.name]: event.target.value ?? 0,
@@ -48,7 +47,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
       toast.info('Token vault program already exists');
     } else {
       try {
-        if (wallet?.publicKey?.toBase58() !== superOwner) {
+        if (wallet?.publicKey?.toBase58()?.toLowerCase() !== superOwner?.toLowerCase()) {
           toast.error("Can't create vault, connected user is not the contract authority");
           return;
         }
@@ -69,11 +68,12 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
           toast.error('There was an error when creating the token vault program');
           return;
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error(error);
       }
-      (await getTokenVaultByMint(connection, data?.address_id)) &&
+      if (await getTokenVaultByMint(connection, data?.address_id)) {
         toast.info('Token vault program created successfully');
+      }
     }
     const vaultProgramAddress = await getTokenVaultAddress(data?.address_id);
     if (!vaultProgramAddress) {
@@ -83,7 +83,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     return vaultProgramAddress;
   };
 
-  const handleSubmit = async (evt: any) => {
+  const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     const form = evt.currentTarget;
     if (form.checkValidity() === false) {
@@ -121,10 +121,13 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
       lpasset: assets,
     }));
   };
+  useEffect(() => {
+    if (platformFetchStatus === FetchingStatus.Error) {
+      toast.error(`There was an error when fetching the platforms: ${platformFetchError}`);
+    }
+  }, [platformFetchStatus]);
   return (
     <>
-      {platformFetchStatus === FetchingStatus.Error &&
-        toast.error(`There was an error when fetching the platforms: ${platformFetchError}`)}
       <Form validated={validated} onSubmit={handleSubmit}>
         <Row className="mb-3">
           <AdminFormInput handleChange={handleChange} label="LP Address" name="address_id" value={data?.address_id} />
@@ -197,14 +200,14 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
               </tr>
             </thead>
             <tbody>
-              {data.lpasset.length === 0 && (
+              {data?.lpasset?.length === 0 && (
                 <tr>
                   <td colSpan={2} className="text-center">
                     The vault has no tokens added
                   </td>
                 </tr>
               )}
-              {data.lpasset.length > 0 &&
+              {data?.lpasset?.length > 0 &&
                 data.lpasset.map((item) => (
                   <tr key={item.token_address_id}>
                     <td key={item.token_address_id}>{item.token_address_id}</td>
