@@ -416,11 +416,12 @@ export async function harvestFromSaber(connection: Connection, wallet: any, mint
       ASSOCIATED_TOKEN_PROGRAM_ID,
       TOKEN_PROGRAM_ID,
       SABER_REWARD_MINT,
-      globalState.treasury
+      globalState.treasury,
+      true
     );
 
     feeCollectorKey = ata.toString();
-
+    console.log(globalState.treasury.toString(), feeCollectorKey);
     tx.add(
       Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,
