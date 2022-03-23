@@ -70,15 +70,15 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
     // /transaction/:wallet_id/new`
     try {
       const response = await postToRatioApi(
-        {           
+        {
           tx_type: txType,
           signature: txSignature,
         },
-        `/transaction/${walletPublicKey}/new`,
+        `/transaction/${walletPublicKey}/new`
       );
-      console.log('SUCCESSFUL RESPONSE FROM BACKEND',response);
-    } catch(error){
-      console.error('ERROR FROM BACKEND',error);
+      console.log('SUCCESSFUL RESPONSE FROM BACKEND', response);
+    } catch (error) {
+      console.error('ERROR FROM BACKEND', error);
       throw error;
     }
   }
