@@ -31,7 +31,7 @@ export async function postWithAuthToRatioApi(data: any, route: string, authToken
     },
     method: 'POST',
   });
-  console.log('RESPONSE ',response);
+  console.log('RESPONSE ', response);
   if (!response.ok) {
     throw await response.json();
   }
