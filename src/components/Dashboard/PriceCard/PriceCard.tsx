@@ -1,6 +1,7 @@
 import { useFetchCollateralRatio } from '../../../hooks/useFetchCollateralRatio';
+import { formatUSD } from '../../../utils/utils';
 
-interface PricecardInterface {
+export interface PriceCardInterface {
   title?: string;
   titleIcon?: boolean;
   mainValue?: string;
@@ -11,12 +12,12 @@ interface PricecardInterface {
 }
 
 type PriceCardProps = {
-  data: PricecardInterface;
+  price: PriceCardInterface;
   tokenName: string;
   risk: string;
 };
 
-const PriceCard = ({ data, tokenName, risk }: PriceCardProps) => {
+const PriceCard = ({ price, tokenName, risk }: PriceCardProps) => {
   const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(risk);
   return (
     <div>
@@ -30,21 +31,21 @@ const PriceCard = ({ data, tokenName, risk }: PriceCardProps) => {
           </div>
         </div>
         <div className="pricecard__body">
-          {data.currentPrice && (
+          {price?.currentPrice && (
             <div>
               <label>Current {tokenName} LP Token Price</label>
-              <p>{data?.currentPrice}</p>
+              <p>{formatUSD.format(+price?.currentPrice ?? 0)}</p>
             </div>
           )}
-          {data.minimumRatio && (
+          {price?.minimumRatio && (
             <div className="d-flex justify-content-between">
               <div>
                 <label>Minimum Ratio</label>
-                <p>{data?.minimumRatio}</p>
+                <p>{price?.minimumRatio}</p>
               </div>
               <div>
                 <label>Stability Fee</label>
-                <p className="text-right">{data?.stabilityFee}</p>
+                <p className="text-right">{price?.stabilityFee}</p>
               </div>
             </div>
           )}
