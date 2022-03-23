@@ -67,7 +67,7 @@ const VaultDashboard = () => {
   const [hasReachedDebtLimit, setHasReachedDebtLimit] = useState(false);
 
   const allVaults = useSelector(selectors.getAllVaults);
-  const [vauldDebtData, setVaultDebtData] = useState({
+  const [vaultDebtData, setVaultDebtData] = useState({
     mint: vault_mint,
     usdrMint: USDR_MINT_KEY,
     usdrValue: 0,
@@ -213,7 +213,7 @@ const VaultDashboard = () => {
                 <RiskLevel level={vaultData.risk} />
               </div>
               <div>
-                <VaultDebt data={vauldDebtData} />
+                <VaultDebt data={vaultDebtData} />
               </div>
             </div>
           </div>
