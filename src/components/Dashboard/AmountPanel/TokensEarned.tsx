@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Table } from 'react-bootstrap';
 import Button from '../../Button';
-import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
@@ -13,7 +13,6 @@ import { isWalletApproveError } from '../../../utils/utils';
 import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
 import { FetchingStatus } from '../../../types/fetching-types';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
-import { postToRatioApi } from '../../../utils/ratioApi';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -22,27 +21,17 @@ const TokensEarned = ({ data }: any) => {
   const connection = useConnection();
   const { wallet } = useWallet();
   const updateRFStates = useUpdateRFStates();
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
+  const PoolManagerFactory = useGetPoolManager(vault);
 
   const userState = useUserInfo(data.mintAddress);
   const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
 
   const harvest = () => {
     console.log('harvesting');
-    poolInfoProviderFactory
-      ?.harvestReward(connection, wallet, vault as LPair)
-      .then((txSignature: string) => {
+    PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair)
+      .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
         toast.success('Successfully Harvested!');
-        postToRatioApi(
-          {
-            tx_type: 'reward',
-            signature: txSignature,
-          },
-          `/transaction/${wallet?.publicKey.toBase58()}/new`
-        ).then((res: string) => {
-          console.log('RES FROM BACKEND', res);
-        });
       })
       .catch((e) => {
         console.log(e);

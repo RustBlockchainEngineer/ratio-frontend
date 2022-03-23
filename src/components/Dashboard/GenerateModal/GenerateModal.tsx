@@ -80,9 +80,14 @@ const GenerateModal = ({ data }: any) => {
             signature: txSignature,
           },
           `/transaction/${wallet?.publicKey.toBase58()}/new`
-        ).then((res: string) => {
-          console.log('RES FROM BACKEND', res);
-        });
+        )
+          .then((res: string) => {
+            console.log('RES FROM BACKEND', res);
+          })
+          .catch((error: any) => {
+            console.error('ERROR FROM BACKEND', error);
+            throw error;
+          });
       })
       .catch((e) => {
         console.log(e);
