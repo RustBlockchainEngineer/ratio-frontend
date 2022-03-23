@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useCountdown } from '../../../../hooks/useCountdown';
 
 const ExpiredNotice = () => {
   return (
@@ -35,7 +36,14 @@ const DateTimeDisplay = ({ value, type, isDanger }: any) => {
   );
 };
 
-const CountdownTimer = ({ days, hours, minutes, seconds, isDanger }: any) => {
+const CountdownTimer = ({ targetDate, setDanger }: any) => {
+  const [days, hours, minutes, seconds] = useCountdown(targetDate);
+  const isDanger = days <= 2 ? true : false;
+
+  useEffect(() => {
+    setDanger(isDanger);
+  }, [isDanger]);
+
   if (days + hours + minutes + seconds <= 0) {
     return <ExpiredNotice />;
   } else {
