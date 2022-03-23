@@ -1,8 +1,9 @@
 .fairdroppage {
+    padding-top: 1.625rem;
     padding-left: 5rem;
     padding-right: 5rem;
+    padding-bottom: 3rem;
     background-color: var(--background);
-    padding-bottom: 5rem;
     min-height: 70vh;
     @include respond-to(xl) {
         padding-left: 5rem;

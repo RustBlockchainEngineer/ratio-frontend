@@ -1,0 +1,37 @@
+.progressbox {
+    margin-top: 1.5rem;
+    border: 1px solid var(--primary-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    h5 {
+        color: var(--unnamed-color-3c4760);
+        font-size: 1rem;
+        font-family: 'Poppins-Medium';
+    }
+    .progress {
+        height: 0.875rem;
+        border-radius: 70px;
+        background-color: var(--unnamed-color-A4B0B5);
+    }
+    .progress-bar {
+        background-color: #07B127;
+    }
+    &__completedtext {
+        font-family: 'Poppins-Medium';
+        font-size: 0.75rem;
+        color: var(--unnamed-color-07b127);
+    }
+    &__currenttask {
+        font-family: 'Poppins-Medium';
+        font-size: 0.75rem;
+        color: var(--unnamed-color-002332);
+    }
+    &__percent {
+        font-family: 'Poppins-Medium';
+        font-size: 0.75rem;
+        color: var(--unnamed-color-07b127);
+        &--danger {
+            color: var(--unnamed-color-ff3131);
+        }
+    }
+}
