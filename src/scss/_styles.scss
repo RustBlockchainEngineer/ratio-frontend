@@ -50,6 +50,12 @@
 @import './adminFormPage';
 @import './_walletBalance';
 @import './tokensEarned';
+@import './fairdroppage';
+@import './tasktable';
+@import './roundbox';
+@import './progressbox';
+@import './claimbox';
+@import './_totalrewards';
 
 @include font-face('Poppins-SemiBold', '../assets/fonts/Poppins-SemiBold');
 @include font-face('Poppins-Bold', '../assets/fonts/Poppins-Bold');
@@ -75,6 +81,7 @@
   --unnamed-color-1B1E29: #1b1e29;
   --unnamed-color-171A23: #171a23;
   --unnamed-color-f8f9f9: #f8f9f9;
+  --unnamed-color-A4B0B5: #A4B0B5;
 }
 [data-theme='dark'] {
   --background: #17161f;
@@ -101,6 +108,7 @@
   --unnamed-color-17161f: #17161f;
   --unnamed-color-bg: #ffffff;
   --primary-color-bg: 23, 22, 31;
+  --unnamed-color-A4B0B5: rgba(164, 176, 181, 0.2);
 }
 
 [data-theme='light'] {
@@ -128,6 +136,7 @@
   --unnamed-color-bg: rgb(0, 35, 50, 0.4);
   --unnamed-color-17161f: #ffffff;
   --primary-color-bg: 219, 224, 226;
+  --unnamed-color-A4B0B5: rgba(164, 176, 181, 0.2);
 }
 
 p {

@@ -10,6 +10,7 @@ import darkLogo from '../../assets/images/dark-logoside.svg';
 import collapseLogo from '../../assets/images/image-logo.svg';
 import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
+import fairdropIcon from '../../assets/images/fairdrop.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import { useConnection } from '../../contexts/connection';
@@ -135,6 +136,14 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
           expands={true}
           expandData={active_vaults}
           positionValues={activeVaultsData}
+        />
+        <NavbarItem
+          icon={fairdropIcon}
+          name="RATIO Fairdrop"
+          active={navIndex === '/dashboard/fairdrop'}
+          navIndex="/dashboard/fairdrop"
+          onItemClick={onItemClick}
+          collapseFlag={collapseFlag}
         />
         {/* <NavbarItem
           icon={archivedVaultsIcon}

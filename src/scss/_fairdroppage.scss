@@ -1,0 +1,35 @@
+.fairdroppage {
+    padding-top: 1.625rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    padding-bottom: 3rem;
+    background-color: var(--background);
+    min-height: 70vh;
+    @include respond-to(xl) {
+        padding-left: 5rem;
+        padding-right: 5rem;
+    }
+    @include respond-to(lg) {
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+
+    @include respond-to(sm) {
+        padding-top: 2rem;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    h2 {
+        font-family: 'Poppins-Medium';
+        letter-spacing: -0.72px;
+        color: var(--unnamed-color-002332);
+        font-size: 24px;
+    }
+    h6 {
+        font-family: 'Poppins-Regular';
+        margin-top: 1rem;
+        font-size: 0.875rem;
+        color: var(--unnamed-color-4c646f);
+        line-height: 1.4rem;
+    }
+}
