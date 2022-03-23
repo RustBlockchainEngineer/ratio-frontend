@@ -23,13 +23,14 @@ function makeRatioApiEndpointSaberLpPrice(poolName: string): string {
 export const useFetchSaberLpPrices = () => {
   const [status, setStatus] = useState<FetchingStatus>(FetchingStatus.NotAsked);
   const [lpPrices, setLpPrices] = useState<Array<SaberLpPrices>>([]);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<Maybe<Error>>(null);
   const { accessToken } = useAuthContextProvider();
 
   useEffect(() => {
     let cancelRequest = false;
-    async function getLpPrices() {
+    const getLpPrices = async () => {
       try {
+        setStatus(FetchingStatus.Loading);
         const res = await fetch(makeRatioApiEndpointSaberLpPrices(), {
           headers: {
             'Content-Type': 'application/json',
@@ -37,26 +38,30 @@ export const useFetchSaberLpPrices = () => {
           },
           method: 'GET',
         });
+
         if (!res.ok) {
+          const errorResponse = await res.json();
           setStatus(FetchingStatus.Error);
-          setError('There was an error on the server side: ' + (await res.json()));
+          setError(new Error(`There was an error on the server side: ${errorResponse}`));
           return;
         }
-        setStatus(FetchingStatus.Loading);
+
         const tokenPrice = await res.json();
+
         if (cancelRequest) return;
         setLpPrices(tokenPrice);
         setStatus(FetchingStatus.Finish);
         setError(null);
       } catch (error) {
         if (cancelRequest) return;
+        setLpPrices([]);
         setStatus(FetchingStatus.Error);
         setError(error);
       }
-    }
+    };
 
     getLpPrices();
-    return function cleanup() {
+    return () => {
       cancelRequest = true;
     };
   }, []);
