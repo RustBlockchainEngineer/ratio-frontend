@@ -13,7 +13,7 @@ import { TokenAmount } from '../../utils/safe-math';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import Button from '../Button';
 import { useWallet } from '../../contexts/wallet';
-import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 
 import { TokenPairCardProps } from '../../models/UInterface';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
@@ -54,7 +54,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   // eslint-disable-next-line
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
 
-  const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
+  const PoolManagerFactory = useGetPoolManager(data.item);
 
   React.useEffect(() => {
     if (userState && tokenPrice && collMint) {
@@ -111,8 +111,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const harvest = () => {
     console.log('harvesting');
-    poolInfoProviderFactory
-      ?.harvestReward(connection, wallet, data.item)
+    PoolManagerFactory?.harvestReward(connection, wallet, data.item)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mint);
         toast.success('Successfully Harvested!');

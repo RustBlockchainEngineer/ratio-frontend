@@ -14,7 +14,7 @@ import { useConnection } from '../../contexts/connection';
 import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import {
   UPDATE_REWARD_STATE,
   useUpdateRFStates,
@@ -49,7 +49,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
 
-  const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
+  const PoolManagerFactory = useGetPoolManager(data.item);
 
   React.useEffect(() => {
     // replace this boolean value with a function to determine wether user limit reached
@@ -103,8 +103,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   };
   const harvest = () => {
     console.log('harvesting');
-    poolInfoProviderFactory
-      ?.harvestReward(connection, wallet, data.item)
+    PoolManagerFactory?.harvestReward(connection, wallet, data.item)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mint);
       })

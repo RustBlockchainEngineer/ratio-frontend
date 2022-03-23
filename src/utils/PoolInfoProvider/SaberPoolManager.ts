@@ -1,10 +1,10 @@
 import { LPair } from '../../types/VaultTypes';
-import { GenericInfoProvider } from './GenericInfoProvider';
+import { GenericPoolManager } from './GenericPoolManager';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { calculateRewardByPlatform, TYPE_ID_SABER } from '../ratio-lending';
 import { depositToSaber, harvestFromSaber, withdrawFromSaber } from '../saber/saber-utils';
 
-export class SaberPoolInfoProvider extends GenericInfoProvider {
+export class SaberPoolManager extends GenericPoolManager {
   getTVLbyVault(vault: LPair): number {
     if (!this.poolInfoCache) {
       return NaN;
@@ -19,11 +19,16 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
     vault: LPair,
     amount: number,
     tokenAccount: string
-  ): Promise<boolean> {
-    // TODO Implement this function
-
-    await depositToSaber(connection, wallet, new PublicKey(vault.address_id), amount, new PublicKey(tokenAccount));
-    return true;
+  ): Promise<string> {
+    const txHash = await depositToSaber(
+      connection,
+      wallet,
+      new PublicKey(vault.address_id),
+      amount,
+      new PublicKey(tokenAccount)
+    );
+    this.postTransactionToApi(txHash, 'deposit', wallet?.publicKey);
+    return txHash;
   }
 
   async withdrawLP(
@@ -32,20 +37,22 @@ export class SaberPoolInfoProvider extends GenericInfoProvider {
     vault: LPair,
     amount: number,
     tokenAccount: string
-  ): Promise<boolean> {
-    // TODO Implement this function
-
-    await withdrawFromSaber(connection, wallet, new PublicKey(vault.address_id), amount, new PublicKey(tokenAccount));
-
-    return true;
+  ): Promise<string> {
+    const txHash = await withdrawFromSaber(
+      connection,
+      wallet,
+      new PublicKey(vault.address_id),
+      amount,
+      new PublicKey(tokenAccount)
+    );
+    this.postTransactionToApi(txHash, 'withdraw', wallet?.publicKey);
+    return txHash;
   }
 
-  async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<boolean> {
-    // TODO Implement this function
-
-    await harvestFromSaber(connection, wallet, new PublicKey(vault.address_id));
-
-    return true;
+  async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
+    const txHash = await harvestFromSaber(connection, wallet, new PublicKey(vault.address_id));
+    this.postTransactionToApi(txHash, 'harvest', wallet?.publicKey);
+    return txHash;
   }
 
   async getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number> {

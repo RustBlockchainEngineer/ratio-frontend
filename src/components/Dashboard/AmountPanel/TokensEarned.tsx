@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Table } from 'react-bootstrap';
 import Button from '../../Button';
-import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
@@ -21,15 +21,14 @@ const TokensEarned = ({ data }: any) => {
   const connection = useConnection();
   const { wallet } = useWallet();
   const updateRFStates = useUpdateRFStates();
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
+  const PoolManagerFactory = useGetPoolManager(vault);
 
   const userState = useUserInfo(data.mintAddress);
   const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
 
   const harvest = () => {
     console.log('harvesting');
-    poolInfoProviderFactory
-      ?.harvestReward(connection, wallet, vault as LPair)
+    PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
         toast.success('Successfully Harvested!');

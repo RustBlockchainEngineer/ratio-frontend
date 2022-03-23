@@ -15,7 +15,7 @@ import { TokenAmount } from '../../utils/safe-math';
 import { usePrice } from '../../contexts/price';
 import { getUSDrAmount } from '../../utils/risk';
 import { toast } from 'react-toastify';
-import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import {
@@ -58,7 +58,7 @@ const LockVaultModal = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
   const vaultFound = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
 
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vaultFound);
+  const PoolManagerFactory = useGetPoolManager(vaultFound);
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
@@ -114,14 +114,13 @@ const LockVaultModal = ({ data }: any) => {
   }
 
   const depositLP = () => {
-    poolInfoProviderFactory
-      ?.depositLP(
-        connection,
-        wallet,
-        vault as LPair,
-        lockAmount * Math.pow(10, collMint?.decimals ?? 0),
-        collAccount?.pubkey.toString() as string
-      )
+    PoolManagerFactory?.depositLP(
+      connection,
+      wallet,
+      vault as LPair,
+      lockAmount * Math.pow(10, collMint?.decimals ?? 0),
+      collAccount?.pubkey.toString() as string
+    )
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         setShow(false);

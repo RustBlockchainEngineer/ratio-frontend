@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getFactory } from '../utils/PoolInfoProvider/PoolInfoProviderFactory';
+import { getPoolManager } from '../utils/PoolInfoProvider/PoolManagerFactory';
 import { LPair } from '../types/VaultTypes';
 import { useMercurialPools, useOrcaPools, useRaydiumPools, useSaberPools } from '../contexts/pools';
 import { useRFState } from '../contexts/state';
@@ -20,8 +20,8 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
 
   const totalState = useRFState();
   //Initialize the provider factory with the pools information of all the supported platforms.
-  const poolInfoProviderFactory = useMemo(
-    () => getFactory(raydiumPools, orcaPools, saberPools, mercurialPools),
+  const PoolManagerFactory = useMemo(
+    () => getPoolManager(raydiumPools, orcaPools, saberPools, mercurialPools),
     [raydiumPools, orcaPools, saberPools, mercurialPools]
   );
 
@@ -33,12 +33,11 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
       const promises = vaults.map(async (item: LPair) => {
         // Each information fetching should be safe, if any error is thrown from this method none information will be shown.
         try {
-          item.platform_tvl = poolInfoProviderFactory.getProviderForVault(item).getTVLbyVault(item);
+          item.platform_tvl = PoolManagerFactory.getProviderForVault(item).getTVLbyVault(item);
         } catch (error) {
           console.error("There was a problem fetching the platform's TVL.", error);
         }
-        item.platform_ratio_apy = await poolInfoProviderFactory
-          .getProviderForVault(item)
+        item.platform_ratio_apy = await PoolManagerFactory.getProviderForVault(item)
           .getRatioAPYbyVault(item)
           .catch((error) => {
             console.error("There was a problem fetching the platform's APR.", error);
@@ -57,7 +56,7 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
     };
 
     getPlatformInformation();
-  }, [totalState, vaults, poolInfoProviderFactory]);
+  }, [totalState, vaults, PoolManagerFactory]);
 
   return vaultsWithInformation;
 };

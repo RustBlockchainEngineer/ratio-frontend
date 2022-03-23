@@ -15,7 +15,7 @@ import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import {
   UPDATE_REWARD_STATE,
   useUpdateRFStates,
@@ -52,7 +52,7 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   // eslint-disable-next-line
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
 
-  const poolInfoProviderFactory = useGetPoolInfoProvider(data.item);
+  const PoolManagerFactory = useGetPoolManager(data.item);
 
   // React.useEffect(() => {
   //   if (data.hasReachedUserDebtLimit) {
@@ -108,8 +108,7 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   // eslint-disable-next-line
   const harvest = () => {
     console.log('harvesting');
-    poolInfoProviderFactory
-      ?.harvestReward(connection, wallet, data.item)
+    PoolManagerFactory?.harvestReward(connection, wallet, data.item)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mint);
       })
