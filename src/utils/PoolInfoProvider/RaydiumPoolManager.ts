@@ -1,9 +1,9 @@
 import { LPair } from '../../types/VaultTypes';
-import { GenericInfoProvider } from './GenericInfoProvider';
+import { GenericPoolManager } from './GenericPoolManager';
 import { randomInteger } from '../utils';
 import { Connection } from '@solana/web3.js';
 
-export class RaydiumPoolInfoProvider extends GenericInfoProvider {
+export class RaydiumPoolManager extends GenericPoolManager {
   getTVLbyVault(vault: LPair): number {
     if (!this.poolInfoCache) {
       return NaN;

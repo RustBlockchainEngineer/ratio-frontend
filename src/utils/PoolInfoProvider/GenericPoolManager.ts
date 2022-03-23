@@ -1,15 +1,15 @@
 /* eslint-disable prettier/prettier */
 import { LPair, LPairAPRLast } from '../../types/VaultTypes';
-import { IPoolInfoProvider } from './IPoolInfoProvider';
+import { IPoolManagerStrategy } from './IPoolManagerStrategy';
 import { API_ENDPOINT } from '../../constants';
 import { Connection } from '@solana/web3.js';
-import { postWithAuthToRatioApi } from '../ratioApi';
+import { postToRatioApi } from '../ratioApi';
 
 const ratioAPRCache: {
   [key: string]: any;
 } = {};
 
-export abstract class GenericInfoProvider implements IPoolInfoProvider {
+export abstract class GenericPoolManager implements IPoolManagerStrategy {
   poolInfoCache:
     | {
         [key: string]: any;
@@ -66,13 +66,20 @@ export abstract class GenericInfoProvider implements IPoolInfoProvider {
 
   abstract getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number>;
 
-  async postTransactionToApi(txSignature: string, txType: string, wallet: any, authToken: any): Promise<any> {
-    // /transaction/:wallet_id/add
-    const response = await postWithAuthToRatioApi(
-      { signature: txSignature, transaction_type: txType },
-      `/transaction/${wallet?.publicKey}/add`,
-      authToken
-    );
-    return response;
+  async postTransactionToApi(txSignature: string, txType: string, walletPublicKey: string): Promise<any> {
+    // /transaction/:wallet_id/new`
+    try {
+      const response = await postToRatioApi(
+        {           
+          tx_type: txType,
+          signature: txSignature,
+        },
+        `/transaction/${walletPublicKey}/new`,
+      );
+      console.log('SUCCESSFUL RESPONSE FROM BACKEND',response);
+    } catch(error){
+      console.error('ERROR FROM BACKEND',error);
+      throw error;
+    }
   }
 }

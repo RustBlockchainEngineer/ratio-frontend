@@ -1,7 +1,7 @@
 import { LPair } from '../../types/VaultTypes';
 import { Connection } from '@solana/web3.js';
 
-export interface IPoolInfoProvider {
+export interface IPoolManagerStrategy {
   getTVLbyVault(vault: LPair): number;
 
   getRatioAPYbyVault(vault: LPair): Promise<number>;

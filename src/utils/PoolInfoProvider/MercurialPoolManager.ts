@@ -1,14 +1,14 @@
 import { LPair } from '../../types/VaultTypes';
-import { GenericInfoProvider } from './GenericInfoProvider';
+import { GenericPoolManager } from './GenericPoolManager';
 import { randomInteger } from '../utils';
 import { Connection } from '@solana/web3.js';
 
-export class OrcaPoolInfoProvider extends GenericInfoProvider {
+export class MercurialPoolManager extends GenericPoolManager {
   getTVLbyVault(vault: LPair): number {
     if (!this.poolInfoCache) {
       return NaN;
     }
-    let vaultInfo = this.poolInfoCache[vault.symbol.replace('-', '/')];
+    let vaultInfo = this.poolInfoCache[vault.symbol];
     if (!vaultInfo) {
       vaultInfo = Object.values(this.poolInfoCache).find((item: any) => item.account === vault.address_id);
     }
@@ -19,7 +19,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
   async depositLP(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     // TODO Implement this function
 
-    alert('Orca: Deposit LP');
+    alert('Mercurial: Deposit LP');
     console.error('Function not implemented yet');
 
     return 'not implemented';
@@ -29,7 +29,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
   async withdrawLP(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     // TODO Implement this function
 
-    alert('Orca: Withdraw LP');
+    alert('Mercurial: Withdraw LP');
     console.error('Function not implemented yet');
 
     return 'not implemented';
@@ -39,7 +39,7 @@ export class OrcaPoolInfoProvider extends GenericInfoProvider {
   async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     // TODO Implement this function
 
-    alert('Orca: Harvest Reward');
+    alert('Mercurial: Harvest Reward');
     console.error('Function not implemented yet');
 
     return 'not implemented';
