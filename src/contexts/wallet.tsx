@@ -26,11 +26,6 @@ export const WALLET_PROVIDERS = [
     icon: `${ASSETS_URL}solflare.svg`,
   },
   {
-    name: 'Sollet',
-    url: 'https://www.sollet.io',
-    icon: `${ASSETS_URL}sollet.svg`,
-  },
-  {
     name: 'Ledger',
     url: 'https://www.ledger.com',
     icon: `${ASSETS_URL}ledger.svg`,
