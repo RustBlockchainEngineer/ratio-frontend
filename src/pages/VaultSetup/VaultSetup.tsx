@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 import { formatUSD, getRiskLevelNumber } from '../../utils/utils';
 import { TokenAmount } from '../../utils/safe-math';
@@ -14,22 +15,18 @@ import { useRFStateInfo, useUSDrMintInfo, useVaultMintInfo } from '../../context
 
 import linkIcon from '../../assets/images/link.svg';
 import { selectors } from '../../features/dashboard';
-// import Breadcrumb from '../../components/Breadcrumb';
-// import VaultHistoryCard from '../../components/VaultHistoryCard';
 import VaultSetupContainer from '../../components/VaultSetupContainer';
 import PriceCard from '../../components/Dashboard/PriceCard';
 import WalletBalances from '../../components/Dashboard/AmountPanel/WalletBalances';
 import RiskLevel from '../../components/Dashboard/RiskLevel';
+import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
+import { FetchingStatus } from '../../types/fetching-types';
+import { PriceCardInterface } from '../../components/Dashboard/PriceCard/PriceCard';
 
-const priceCardData = [
-  {
-    title: 'Liquidation threshold',
-    titleIcon: true,
-    mainValue: '90.00',
-    mainUnit: '(RAY/USD)',
-    currentPrice: '$1.00 USD',
-  },
-];
+const priceCardData: PriceCardInterface = {
+  mainUnit: '',
+  currentPrice: '0',
+};
 
 const VaultSetup = () => {
   const { mint: vault_mint } = useParams<{ mint?: string }>();
@@ -50,6 +47,24 @@ const VaultSetup = () => {
   const [lpWalletBalanceUSD, setLpWalletBalanceUSD] = useState(0);
   const [usdrWalletBalance, setUsdrWalletBalance] = useState(0);
   const [depositValue, setDepositValue] = useState(0);
+
+  const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.title);
+
+  useEffect(() => {
+    if (statusPrice === FetchingStatus.Error && errorPrice) {
+      toast.error(`There was an error when fetching the price: ${errorPrice?.message}`);
+    }
+  }, [statusPrice, errorPrice]);
+
+  useEffect(() => {
+    if (lpPrice) {
+      priceCardData.mainUnit = lpPrice.poolName;
+      priceCardData.currentPrice = lpPrice.lpPrice;
+    } else {
+      priceCardData.mainUnit = '';
+      priceCardData.currentPrice = '0';
+    }
+  }, [lpPrice]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
@@ -142,7 +157,7 @@ const VaultSetup = () => {
           <div className="col-xxl-8 col-lg-6 col-md-12">
             <div className="row">
               <div className="col-xxl-6 col-lg-12 col-md-12">
-                <PriceCard data={priceCardData[0]} tokenName={vaultData?.title} risk={vaultData?.risk} />
+                <PriceCard price={priceCardData} tokenName={vaultData?.title} risk={vaultData?.risk} />
               </div>
 
               <div className="col-xxl-6 col-lg-12 col-md-12">

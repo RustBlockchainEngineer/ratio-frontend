@@ -26,16 +26,14 @@ import { Banner, BannerIcon } from '../../components/Banner';
 import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
 import { DEFAULT_NETWORK } from '../../constants';
 import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
+import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
+import { FetchingStatus } from '../../types/fetching-types';
+import { toast } from 'react-toastify';
 
-const priceCardData = [
-  {
-    title: 'Liquidation threshold',
-    titleIcon: true,
-    mainValue: '90.00',
-    mainUnit: '(RAY/USD)',
-    currentPrice: '$1.00 USD',
-  },
-];
+const priceCardData = {
+  mainUnit: '',
+  currentPrice: '0',
+};
 
 const VaultDashboard = () => {
   const { mint: vault_mint } = useParams<{ mint: string }>();
@@ -77,6 +75,24 @@ const VaultDashboard = () => {
     () => `https://solanabeach.io/address/${vault_mint}?cluster=${DEFAULT_NETWORK}`,
     [vault_mint]
   );
+
+  const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.title);
+
+  useEffect(() => {
+    if (statusPrice === FetchingStatus.Error && errorPrice) {
+      toast.error(`There was an error when fetching the price: ${errorPrice?.message}`);
+    }
+  }, [statusPrice, errorPrice]);
+
+  useEffect(() => {
+    if (lpPrice) {
+      priceCardData.mainUnit = lpPrice.poolName;
+      priceCardData.currentPrice = lpPrice.lpPrice;
+    } else {
+      priceCardData.mainUnit = '';
+      priceCardData.currentPrice = '0';
+    }
+  }, [lpPrice]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
@@ -250,7 +266,7 @@ const VaultDashboard = () => {
           <div className="col-xxl-8">
             <div className="vaultdashboard__bodyleft row">
               <div className="col-lg-6">
-                <PriceCard data={priceCardData[0]} tokenName={vaultData?.title} risk={vaultData?.risk} />
+                <PriceCard price={priceCardData} tokenName={vaultData?.title} risk={vaultData?.risk} />
               </div>
               <div className="col-lg-6">
                 <WalletBalances
