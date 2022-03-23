@@ -1,4 +1,5 @@
 import { useFetchCollateralRatio } from '../../../hooks/useFetchCollateralRatio';
+import { formatUSD } from '../../../utils/utils';
 
 export interface PriceCardInterface {
   title?: string;
@@ -33,7 +34,7 @@ const PriceCard = ({ price, tokenName, risk }: PriceCardProps) => {
           {price?.currentPrice && (
             <div>
               <label>Current {tokenName} LP Token Price</label>
-              <p>{price?.currentPrice}</p>
+              <p>{formatUSD.format(+price?.currentPrice ?? 0)}</p>
             </div>
           )}
           {price?.minimumRatio && (
