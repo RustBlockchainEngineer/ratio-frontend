@@ -49,6 +49,7 @@ export const useFetchSaberLpPrices = () => {
         const tokenPrice = await res.json();
 
         if (cancelRequest) return;
+
         setLpPrices(tokenPrice);
         setStatus(FetchingStatus.Finish);
         setError(null);
@@ -61,6 +62,7 @@ export const useFetchSaberLpPrices = () => {
     };
 
     getLpPrices();
+
     return () => {
       cancelRequest = true;
     };
@@ -73,7 +75,7 @@ export const useFetchSaberLpPrices = () => {
   };
 };
 
-export const useFetchSaberLpPrice = async (poolName: string) => {
+export const useFetchSaberLpPrice = (poolName?: string) => {
   const [status, setStatus] = useState<FetchingStatus>(FetchingStatus.NotAsked);
   const [lpPrice, setLpPrice] = useState<Maybe<SaberLpPrices>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
@@ -81,6 +83,9 @@ export const useFetchSaberLpPrice = async (poolName: string) => {
 
   useEffect(() => {
     let cancelRequest = false;
+
+    if (!poolName) return;
+
     const getLpPrice = async () => {
       try {
         setStatus(FetchingStatus.Loading);
@@ -98,7 +103,9 @@ export const useFetchSaberLpPrice = async (poolName: string) => {
           return;
         }
         const tokenPrice = await res.json();
+
         if (cancelRequest) return;
+
         setLpPrice(tokenPrice);
         setStatus(FetchingStatus.Finish);
         setError(null);
@@ -111,6 +118,7 @@ export const useFetchSaberLpPrice = async (poolName: string) => {
     };
 
     getLpPrice();
+
     return () => {
       cancelRequest = true;
     };
