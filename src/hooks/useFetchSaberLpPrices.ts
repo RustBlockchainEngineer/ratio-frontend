@@ -58,6 +58,7 @@ export const useFetchSaberLpPrices = () => {
         setLpPrices([]);
         setStatus(FetchingStatus.Error);
         setError(error);
+        console.error(error);
       }
     };
 
@@ -114,6 +115,7 @@ export const useFetchSaberLpPrice = (poolName?: string) => {
         setLpPrice(null);
         setStatus(FetchingStatus.Error);
         setError(error);
+        console.error(error);
       }
     };
 
