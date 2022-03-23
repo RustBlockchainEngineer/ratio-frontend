@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
+import { toast } from 'react-toastify';
 
 import classNames from 'classnames';
 import Select from 'react-select';
@@ -21,9 +22,6 @@ import listDark from '../../assets/images/list-dark.svg';
 
 import { useFetchTokens } from '../../hooks/useFetchTokens';
 import { FetchingStatus } from '../../types/fetching-types';
-// import rayIcon from '../../assets/images/RAY.svg';
-// import solIcon from '../../assets/images/SOL.svg';
-// import ethIcon from '../../assets/images/ETH.svg';
 
 type FilterPanelProps = {
   label: string;
@@ -53,17 +51,18 @@ const platformOptions = [
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const dispatch = useDispatch();
-  const theme = React.useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
   const { darkMode } = theme.state;
   const isDefault = useMediaQuery({ minWidth: 992 });
-  const [compareVaults, setCompareVaults] = React.useState(false);
+  const [compareVaults, setCompareVaults] = useState(false);
 
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
   const view_data = useSelector(selectors.getViewData);
 
-  const { tokens, status } = useFetchTokens();
-  const filterOptions = React.useMemo(() => {
+  const { tokens, status, error } = useFetchTokens();
+
+  const filterOptions = useMemo(() => {
     if (tokens.length === 0 || status !== FetchingStatus.Finish) {
       return [];
     }
@@ -76,6 +75,13 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
       };
     });
   }, [tokens, status]);
+
+  // We check here for errors when fetch the tokens
+  useEffect(() => {
+    if (status === FetchingStatus.Error && error) {
+      toast.error(`There was an error when fetching the tokens: ${error?.message}`);
+    }
+  }, [status, error]);
 
   // eslint-disable-next-line
   const platform_data = useSelector(selectors.getPlatformData);
