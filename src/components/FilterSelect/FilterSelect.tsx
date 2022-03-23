@@ -6,7 +6,7 @@ import Select, { components } from 'react-select';
 interface Option {
   value: string;
   label: string;
-  network?: string;
+  network: Maybe<string>;
   icon: Array<any>;
 }
 
