@@ -30,13 +30,13 @@ const PriceCard = ({ data, tokenName, risk }: PriceCardProps) => {
           </div>
         </div>
         <div className="pricecard__body">
-          {data.currentPrice && (
+          {data?.currentPrice && (
             <div>
               <label>Current {tokenName} LP Token Price</label>
               <p>{data?.currentPrice}</p>
             </div>
           )}
-          {data.minimumRatio && (
+          {data?.minimumRatio && (
             <div className="d-flex justify-content-between">
               <div>
                 <label>Minimum Ratio</label>
