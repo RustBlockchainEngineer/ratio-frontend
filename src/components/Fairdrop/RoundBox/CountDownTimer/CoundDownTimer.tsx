@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import classNames from 'classnames';
 import { useCountdown } from '../../../../hooks/useCountdown';
 
 const ExpiredNotice = () => {
@@ -15,11 +16,11 @@ const ShowCounter = ({ days, hours, minutes, seconds, isDanger }: any) => {
     <div className="roundbox__countdown">
       <div className="d-flex">
         <DateTimeDisplay value={days} type={'Days'} isDanger={isDanger} />
-        <h4 className={isDanger ? 'danger' : ''}>:</h4>
+        <h4 className={classNames({ danger: isDanger })}>:</h4>
         <DateTimeDisplay value={hours} type={'Hours'} isDanger={isDanger} />
-        <h4 className={isDanger ? 'danger' : ''}>:</h4>
+        <h4 className={classNames({ danger: isDanger })}>:</h4>
         <DateTimeDisplay value={minutes} type={'Mins'} isDanger={isDanger} />
-        <h4 className={isDanger ? 'danger' : ''}>:</h4>
+        <h4 className={classNames({ danger: isDanger })}>:</h4>
         <DateTimeDisplay value={seconds} type={'Seconds'} isDanger={isDanger} />
       </div>
       {isDanger && <h5 className="danger">Complete tasks to receive max allocation</h5>}
@@ -38,7 +39,7 @@ const DateTimeDisplay = ({ value, type, isDanger }: any) => {
 
 const CountdownTimer = ({ targetDate, setDanger }: any) => {
   const [days, hours, minutes, seconds] = useCountdown(targetDate);
-  const isDanger = days <= 2 ? true : false;
+  const isDanger = days <= 1 ? true : false;
 
   useEffect(() => {
     setDanger(isDanger);
