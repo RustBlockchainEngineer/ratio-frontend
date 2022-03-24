@@ -44,6 +44,7 @@ export interface LPair {
   platform_tvl: number;
   platform_ratio_apy: number;
   platform_id: string;
+  platform_symbol?: string;
   platform_name?: string;
   platform_site?: string;
   platform_icon?: string;
