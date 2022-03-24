@@ -114,14 +114,15 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     PoolManagerFactory?.harvestReward(connection, wallet, data.item)
       .then(() => {
         updateRFStates(UPDATE_REWARD_STATE, data.mint);
-        toast.success('Successfully Harvested!');
       })
       .catch((e) => {
         console.log(e);
         if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
         else toast.error('Transaction Error!');
       })
-      .finally(() => {});
+      .finally(() => {
+        toast.success('Successfully Harvested!');
+      });
   };
 
   const renderModalButton = () => {

@@ -8,7 +8,7 @@ import Button from '../Button';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
-import { formatUSD } from '../../utils/utils';
+import { formatUSD, isWalletApproveError } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 
 import linkIcon from '../../assets/images/link.svg';
@@ -109,6 +109,8 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
       })
       .catch((e) => {
         console.log(e);
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
       })
       .finally(() => {
         toast('Successfully Harvested!');
