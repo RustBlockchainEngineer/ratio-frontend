@@ -367,5 +367,5 @@ export const randomInteger = (min: number, max: number) => {
 };
 
 export const isWalletApproveError = (e: any) => {
-  return e.code === 4001 || e.code === -32603;
+  return e && (e.code === 4001 || e.code === -32603);
 };
