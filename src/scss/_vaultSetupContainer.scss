@@ -2,9 +2,7 @@
     border: 1px solid rgba(var(--secondary-border), 0.2);
     border-radius: 1rem;
     padding: 0px !important;
-    margin: 1.5rem;
-    margin-left: 0rem;
-    margin-bottom: 0rem;
+    margin-top: 1.5rem;
     &-title {
         font-family: 'Poppins-Medium';
         font-size: 1.2rem;
@@ -32,7 +30,7 @@
         border-bottom-right-radius: 1rem;
     }
     .setup {
-        margin-top: 16px;
+        // margin-top: 16px;
         font-family: 'Poppins-Medium';
         font-size: 15px;
         padding: 0.9rem 0rem;

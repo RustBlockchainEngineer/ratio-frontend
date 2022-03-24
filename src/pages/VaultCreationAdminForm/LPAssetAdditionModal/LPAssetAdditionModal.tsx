@@ -4,12 +4,7 @@ import { IoMdClose } from 'react-icons/io';
 import AdminFormInput from '../../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../../constants';
 import { useAuthContextProvider } from '../../../contexts/authAPI';
-import { Token } from '../../../types/VaultTypes';
-
-export interface LPAssetCreationData {
-  token_address_id: string;
-  token_pool_size: number;
-}
+import { LPAssetCreationData, Token } from '../../../types/VaultTypes';
 
 export default function LPAssetAdditionModal({
   show,

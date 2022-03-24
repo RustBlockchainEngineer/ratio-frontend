@@ -1,0 +1,82 @@
+.roundbox {
+    margin-top: 2.5rem;
+    &__top {
+        border: 1px solid var(--primary-border);
+        background-color: var(--unnamed-color-f8f9f9);
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding: 1.5rem;
+        h5 {
+            color: var(--unnamed-color-3c4760);
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
+        &--danger {
+            border-color: var(--unnamed-color-ff3131);
+        }
+        &--info {
+            cursor: pointer;
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+        &--tooltip {
+            & > div {
+                display: flex;
+                font-size: 0.75rem;
+                font-family: 'Poppins-Regular';
+            }
+        }
+    }
+    &__bottom {
+        padding: 1.18rem 1.5rem;
+        border: 1px solid var(--primary-border);
+        border-top: 0px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        h6 {
+            margin:0px;
+            font-size: 0.875rem;
+            font-family: 'Poppins-Light';
+            img {
+                margin-top: -3px;
+                margin-right: 0.3rem;
+            }
+        }
+        h5 {
+            font-size: 1rem;
+            font-family: 'Poppins-Semibold';
+            margin:0px;
+            color: var(--unnamed-color-002332);
+        }
+    }
+    &__countdown {
+        .danger {
+            color: red !important;
+        }
+        h5 {
+            font-family: 'Poppins-Regular';
+            font-size: 0.813rem;
+            color: var(--unnamed-color-002332);
+        }
+        h3 {
+            font-family: 'Poppins-Medium';
+            font-size: 1.75rem;
+            margin-bottom: 0px;
+            text-align: center;
+            color: var(--unnamed-color-002332);
+        }
+        h4 {
+            padding-left: 0.6rem;
+            padding-right: 0.6rem;
+            color: var(--unnamed-color-002332);
+        }
+        h6 {
+            font-size: 0.68rem;
+            font-family: 'Poppins-Light';
+            margin-top: 0px;
+            text-align: center;
+            color: var(--unnamed-color-002332);
+        }
+    }
+}

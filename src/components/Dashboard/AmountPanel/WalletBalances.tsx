@@ -26,7 +26,7 @@ const WalletBalances = ({ icon, tokenName, collAmount, collAmountUSD, usdrAmount
           </tr>
           <tr>
             <td>
-              <img src={USDr} alt="RAY" style={{ width: 32 }} /> USDr
+              <img src={USDr} alt="RAY" style={{ width: 32, marginRight: '0.5rem' }} /> USDr
             </td>
             <td className="align-middle">{usdrAmount?.toFixed(2)}</td>
             <td className="text-right align-middle">${usdrAmount?.toFixed(2)}</td>

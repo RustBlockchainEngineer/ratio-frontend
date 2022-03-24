@@ -209,7 +209,7 @@ export async function depositToSaber(
   mintCollKey: PublicKey,
   amount: number,
   userCollAddress: PublicKey
-) {
+): string {
   console.log('Deposit to Saber', amount);
 
   const program = getProgramInstance(connection, wallet);
@@ -269,7 +269,7 @@ export async function depositToSaber(
   transaction.add(ix);
   const txHash = await sendTransaction(connection, wallet, transaction);
   console.log('Saber deposit tx', txHash);
-  return txHash;
+  return txHash.toString();
 }
 
 export async function withdrawFromSaber(
@@ -421,7 +421,7 @@ export async function harvestFromSaber(connection: Connection, wallet: any, mint
     );
 
     feeCollectorKey = ata.toString();
-
+    console.log(globalState.treasury.toString(), feeCollectorKey);
     tx.add(
       Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,

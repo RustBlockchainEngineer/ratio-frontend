@@ -17,18 +17,13 @@ export const WALLET_PROVIDERS = [
   {
     name: 'Phantom',
     url: 'https://phantom.app/',
-    icon: `https://raydium.io/_nuxt/img/phantom.d9e3c61.png`,
+    icon: `https://www.phantom.app/img/logo.png`,
     adapter: PhantomWalletAdapter,
   },
   {
     name: 'Solflare',
     url: 'https://solflare.com/access-wallet',
     icon: `${ASSETS_URL}solflare.svg`,
-  },
-  {
-    name: 'Sollet',
-    url: 'https://www.sollet.io',
-    icon: `${ASSETS_URL}sollet.svg`,
   },
   {
     name: 'Ledger',

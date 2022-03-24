@@ -10,6 +10,7 @@ import darkLogo from '../../assets/images/dark-logoside.svg';
 import collapseLogo from '../../assets/images/image-logo.svg';
 import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
+import fairdropIcon from '../../assets/images/fairdrop.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
 import { useConnection } from '../../contexts/connection';
@@ -136,6 +137,14 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
           expandData={active_vaults}
           positionValues={activeVaultsData}
         />
+        <NavbarItem
+          icon={fairdropIcon}
+          name="RATIO Fairdrop"
+          active={navIndex === '/dashboard/fairdrop'}
+          navIndex="/dashboard/fairdrop"
+          onItemClick={onItemClick}
+          collapseFlag={collapseFlag}
+        />
         {/* <NavbarItem
           icon={archivedVaultsIcon}
           name="My Archived Vaults"
@@ -162,7 +171,9 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
               </div>
               <div className="navbar-vertical__item">
                 <h6>Total Vault Value</h6>
-                <h6 className="navbar-vertical__item--yellow">$ {totalLocked.toFixed(2)}</h6>
+                <h6 className="navbar-vertical__item--yellow">
+                  $ {totalLocked.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </h6>
               </div>
               <div className="navbar-vertical__item pt-3">
                 <h6>USDr Minted</h6>

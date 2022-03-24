@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 import { formatUSD, getRiskLevelNumber } from '../../utils/utils';
 import { TokenAmount } from '../../utils/safe-math';
@@ -14,21 +15,18 @@ import { useRFStateInfo, useUSDrMintInfo, useVaultMintInfo } from '../../context
 
 import linkIcon from '../../assets/images/link.svg';
 import { selectors } from '../../features/dashboard';
-// import Breadcrumb from '../../components/Breadcrumb';
-// import VaultHistoryCard from '../../components/VaultHistoryCard';
 import VaultSetupContainer from '../../components/VaultSetupContainer';
 import PriceCard from '../../components/Dashboard/PriceCard';
 import WalletBalances from '../../components/Dashboard/AmountPanel/WalletBalances';
+import RiskLevel from '../../components/Dashboard/RiskLevel';
+import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
+import { FetchingStatus } from '../../types/fetching-types';
+import { PriceCardInterface } from '../../components/Dashboard/PriceCard/PriceCard';
 
-const priceCardData = [
-  {
-    title: 'Liquidation threshold',
-    titleIcon: true,
-    mainValue: '90.00',
-    mainUnit: '(RAY/USD)',
-    currentPrice: '$1.00 USD',
-  },
-];
+const priceCardData: PriceCardInterface = {
+  mainUnit: '',
+  currentPrice: '0',
+};
 
 const VaultSetup = () => {
   const { mint: vault_mint } = useParams<{ mint?: string }>();
@@ -49,6 +47,24 @@ const VaultSetup = () => {
   const [lpWalletBalanceUSD, setLpWalletBalanceUSD] = useState(0);
   const [usdrWalletBalance, setUsdrWalletBalance] = useState(0);
   const [depositValue, setDepositValue] = useState(0);
+
+  const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.title);
+
+  useEffect(() => {
+    if (statusPrice === FetchingStatus.Error && errorPrice) {
+      toast.error(`There was an error when fetching the price: ${errorPrice?.message}`);
+    }
+  }, [statusPrice, errorPrice]);
+
+  useEffect(() => {
+    if (lpPrice) {
+      priceCardData.mainUnit = lpPrice.poolName;
+      priceCardData.currentPrice = lpPrice.lpPrice;
+    } else {
+      priceCardData.mainUnit = '';
+      priceCardData.currentPrice = '0';
+    }
+  }, [lpPrice]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
@@ -111,30 +127,37 @@ const VaultSetup = () => {
         {/* <div className="pl-3">
           <Breadcrumb vaultData={vaultData} availableVaults={allVaults} />
         </div> */}
-        <h3 className="vault-setup-header pl-3">
-          Open {vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault
-        </h3>
-        <div className="mt-2 d-flex align-items-center pl-3">
-          <p className="vault-setup-header-label mr-1">Platform:</p>
-          {vaultData.platform && (
-            <a href={vaultData.platform.link} target="_blank" rel="noreferrer" className="d-flex">
-              <img src={vaultData.platform.icon} alt="platform" />
-              <p className="vault-setup-header-value ml-1">{vaultData.platform.name}</p>
-              <img src={linkIcon} alt="linkIcon" className="vault-setup-header-linkIcon" />
-            </a>
-          )}
-          <p className="vault-setup-header-gap mx-3">|</p>
-          <p className="vault-setup-header-label mr-1">APR:</p>
-          <p className="vault-setup-header-value">{Number(vaultData?.apr).toFixed(2)}%</p>
-          <p className="vault-setup-header-gap mx-3">|</p>
-          <p className="vault-setup-header-label mr-1">TVL:</p>
-          <p className="vault-setup-header-value">{formatUSD.format(vaultData.tvl)}</p>
+        <div className="d-flex justify-content-between align-items-end">
+          <div>
+            <h3 className="vault-setup-header pl-3">
+              Open {vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault
+            </h3>
+            <div className="mt-2 d-flex align-items-center pl-3">
+              <p className="vault-setup-header-label mr-1">Platform:</p>
+              {vaultData.platform && (
+                <a href={vaultData.platform.link} target="_blank" rel="noreferrer" className="d-flex">
+                  <img src={vaultData.platform.icon} alt="platform" />
+                  <p className="vault-setup-header-value ml-1">{vaultData.platform.name}</p>
+                  <img src={linkIcon} alt="linkIcon" className="vault-setup-header-linkIcon" />
+                </a>
+              )}
+              <p className="vault-setup-header-gap mx-3">|</p>
+              <p className="vault-setup-header-label mr-1">APR:</p>
+              <p className="vault-setup-header-value">{Number(vaultData?.apr).toFixed(2)}%</p>
+              <p className="vault-setup-header-gap mx-3">|</p>
+              <p className="vault-setup-header-label mr-1">TVL:</p>
+              <p className="vault-setup-header-value">{formatUSD.format(vaultData.tvl)}</p>
+            </div>
+          </div>
+          <div>
+            <RiskLevel level={vaultData.risk} />
+          </div>
         </div>
         <div className="row no-gutters">
           <div className="col-xxl-8 col-lg-6 col-md-12">
             <div className="row">
               <div className="col-xxl-6 col-lg-12 col-md-12">
-                <PriceCard data={priceCardData[0]} tokenName={vaultData?.title} risk={vaultData?.risk} />
+                <PriceCard price={priceCardData} tokenName={vaultData?.title} risk={vaultData?.risk} />
               </div>
 
               <div className="col-xxl-6 col-lg-12 col-md-12">
@@ -162,6 +185,7 @@ const VaultSetup = () => {
                   usdrMint: USDR_MINT_KEY,
                   riskLevel: getRiskLevelNumber(vault_mint),
                   risk: vaultData?.risk,
+                  tokenPrice: tokenPrice,
                 }}
               />
             )}

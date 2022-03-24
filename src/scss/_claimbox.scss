@@ -1,0 +1,27 @@
+.claimbox {
+    margin-top: 1.5rem;
+    border: 1px solid var(--primary-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    &__btn {
+        padding: 0.813rem 2.375rem;
+        font-size: 0.938rem;
+    }
+    &__label {
+        img {
+            margin-top: -2px;
+            margin-right: 0.3rem;
+        }
+        color: var(--unnamed-color-4c646f);
+        font-size: 0.875rem;
+        font-family: 'Poppins-Light';
+    }
+    &__value {
+        margin-top: 0.3rem;
+        color: var(--unnamed-color-002332);
+        font-family: 'Poppins-Medium';
+        letter-spacing: -0.32px;
+    }
+}

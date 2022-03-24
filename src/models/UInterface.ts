@@ -10,20 +10,17 @@ export type PairType = {
   title: string;
   platform: any;
   tvl: number;
-  risk: number;
-  riskLevel: string;
+  risk: string;
+  riskLevel: number;
   apr: number;
   earned_rewards: number;
   details: string;
   riskPercentage: number;
   item: LPair;
-  hasReachedUserDebtLimit: boolean;
-  remainingDebt: number;
   activeStatus: boolean;
 };
 
 export interface TokenPairCardProps {
   data: PairType;
   onCompareVault: (data: PairType, status: boolean) => void;
-  isGlobalDebtLimitReached: boolean;
 }

@@ -9,8 +9,8 @@ import { useWallet } from '../../contexts/wallet';
 import { isWalletApproveError } from '../../utils/utils';
 import Button from '../Button';
 import CustomInput from '../CustomInput';
-import { useGetPoolInfoProvider } from '../../hooks/useGetPoolInfoProvider';
-import { useFetchCollateralRatio } from '../../hooks/useFetchCollateralRatio';
+import { useGetPoolManager } from '../../hooks/useGetPoolManager';
+// import { useFetchCollateralRatio } from '../../hooks/useFetchCollateralRatio';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
@@ -21,11 +21,11 @@ const VaultSetupContainer = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const collMint = useMint(data?.mint);
-  const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(data?.risk);
+  // const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(data?.risk);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
+  const PoolManagerFactory = useGetPoolManager(vault);
 
   const collAccount = useAccountByMint(data.mint);
   const [depositAmount, setDepositAmount] = React.useState(0);
@@ -61,14 +61,13 @@ const VaultSetupContainer = ({ data }: any) => {
       setInvalidStr('Invalid  User Collateral account to deposit!');
       return;
     }
-    poolInfoProviderFactory
-      ?.depositLP(
-        connection,
-        wallet,
-        vault as LPair,
-        depositAmount * Math.pow(10, collMint?.decimals ?? 0),
-        collAccount?.pubkey.toString() as string
-      )
+    PoolManagerFactory?.depositLP(
+      connection,
+      wallet,
+      vault as LPair,
+      depositAmount * Math.pow(10, collMint?.decimals ?? 0),
+      collAccount?.pubkey.toString() as string
+    )
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         setDepositAmount(0);
@@ -115,17 +114,14 @@ const VaultSetupContainer = ({ data }: any) => {
             invalidStr={invalidStr}
           />
           <p className="vaultsetupcontainer-label mt-2">
-            Amounts:{' '}
-            <strong className="vaultsetupcontainer-value">
-              {depositAmount} {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}
-            </strong>
+            USD: <strong className="vaultsetupcontainer-value">${data.tokenPrice * depositAmount}</strong>
           </p>
         </div>
       </div>
       <div className="vaultsetupcontainer-bottom p-4">
-        <div className="d-flex justify-content-between">
+        {/* <div className="d-flex justify-content-between">
           <p className="vaultsetupcontainer-title">Details</p>
-        </div>
+        </div> */}
         {/* <div className="d-flex justify-content-between align-items-start mt-3">
           <p className="vaultsetupcontainer-label">Slippage</p>
           <strong className="vaultsetupcontainer-value">
@@ -133,12 +129,12 @@ const VaultSetupContainer = ({ data }: any) => {
             300.00%
           </strong>
         </div> */}
-        <div className="d-flex justify-content-between mt-1">
+        {/* <div className="d-flex justify-content-between mt-1">
           <p className="vaultsetupcontainer-label">Collateral ratio</p>
           <strong className="vaultsetupcontainer-value">
             {collateralRatioError !== null ? '...' : (collateralRatio * 100).toFixed(2)}%
           </strong>
-        </div>
+        </div> */}
         {/* <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Outstanding debt</p>
           <strong className="vaultsetupcontainer-value">

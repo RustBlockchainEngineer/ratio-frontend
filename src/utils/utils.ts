@@ -171,6 +171,8 @@ export function formatTokenAmount(
 export const formatUSD = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 4,
 });
 
 export const numberFormatter = new Intl.NumberFormat('en-US', {
@@ -365,5 +367,5 @@ export const randomInteger = (min: number, max: number) => {
 };
 
 export const isWalletApproveError = (e: any) => {
-  return e.code === 4001 || e.code === -32603;
+  return e && (e.code === 4001 || e.code === -32603);
 };

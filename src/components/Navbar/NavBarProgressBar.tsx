@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { ProgressBar } from 'react-bootstrap';
+// import { formatUSD } from '../../utils/utils';
 
 type NavBarProgressBarProps = {
   className?: string;
@@ -18,7 +19,6 @@ export enum ProgressBarLabelType {
 
 export const NavBarProgressBar = (data: NavBarProgressBarProps) => {
   const { className, label, shouldDisplayCurrency = false, currentValue, percentage } = data;
-
   return (
     <div className={classNames(className, 'navbarprogressbar')}>
       <div className={classNames('navbarprogressbar__header')}>
@@ -30,7 +30,7 @@ export const NavBarProgressBar = (data: NavBarProgressBarProps) => {
         <div className={classNames('detailBox')}>
           <p className={classNames('detailBox__value')}>
             {shouldDisplayCurrency && '$'}
-            {currentValue.toFixed(2)}
+            {currentValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
           </p>
           <p className={classNames('detailBox__percentage')}>{percentage.toFixed(2)}%</p>
         </div>

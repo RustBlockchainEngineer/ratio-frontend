@@ -9,7 +9,7 @@ import { useWallet } from '../../../contexts/wallet';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
-import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
@@ -32,7 +32,7 @@ const WithdrawModal = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
 
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
+  const PoolManagerFactory = useGetPoolManager(vault);
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -67,14 +67,13 @@ const WithdrawModal = ({ data }: any) => {
       setInvalidStr('Invalid  User Collateral account to withdraw!');
       return;
     }
-    poolInfoProviderFactory
-      ?.withdrawLP(
-        connection,
-        wallet,
-        vault as LPair,
-        withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
-        userCollAccount
-      )
+    PoolManagerFactory?.withdrawLP(
+      connection,
+      wallet,
+      vault as LPair,
+      withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
+      userCollAccount
+    )
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         toast.success('Successfully Withdrawn!');

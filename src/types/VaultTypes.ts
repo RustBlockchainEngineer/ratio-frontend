@@ -44,6 +44,7 @@ export interface LPair {
   platform_tvl: number;
   platform_ratio_apy: number;
   platform_id: string;
+  platform_symbol?: string;
   platform_name?: string;
   platform_site?: string;
   platform_icon?: string;
@@ -77,4 +78,24 @@ export interface Token {
   icon: string;
   created_on?: number;
   updated_on?: number;
+}
+
+export interface LPAssetCreationData {
+  token_address_id: string;
+  token_pool_size: number;
+}
+
+export interface LPEditionData {
+  address_id: string;
+  vault_address_id: Maybe<string>;
+  page_url: Maybe<string>;
+  icon: Maybe<string>;
+  platform_id: Maybe<string>;
+  platform_symbol: Maybe<string>;
+  pool_size: Maybe<number>;
+  symbol: Maybe<string>;
+  collateralization_ratio: Maybe<number>;
+  liquidation_ratio: Maybe<number>;
+  risk_rating: Maybe<string>;
+  lpasset: LPAssetCreationData[];
 }

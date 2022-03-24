@@ -1,15 +1,18 @@
 import { useMemo } from 'react';
 import { Table } from 'react-bootstrap';
 import Button from '../../Button';
-import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { SBR_PRICE, PRICE_DECIMAL } from '../../../constants/constants';
+import { PRICE_DECIMAL } from '../../../constants/constants';
 import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
+import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
+import { FetchingStatus } from '../../../types/fetching-types';
+import LoadingSpinner from '../../../atoms/LoadingSpinner';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -18,24 +21,26 @@ const TokensEarned = ({ data }: any) => {
   const connection = useConnection();
   const { wallet } = useWallet();
   const updateRFStates = useUpdateRFStates();
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
+  const PoolManagerFactory = useGetPoolManager(vault);
 
   const userState = useUserInfo(data.mintAddress);
+  const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
 
-  const harvest = () => {
-    console.log('harvesting');
-    poolInfoProviderFactory
-      ?.harvestReward(connection, wallet, vault as LPair)
-      .then(() => {
-        updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
-        toast.success('Successfully Harvested!');
-      })
-      .catch((e) => {
-        console.log(e);
-        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-        else toast.error('Transaction Error!');
-      })
-      .finally(() => {});
+  const harvest = async () => {
+    try {
+      if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
+        throw new Error('Pool manager factory not initialized');
+      }
+
+      console.log('Harvesting...');
+      await PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair);
+      await updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
+      toast.success('Successfully Harvested!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
+    }
   };
 
   const getTokenNameByPlatform = (name: string) => {
@@ -60,7 +65,7 @@ const TokensEarned = ({ data }: any) => {
           <tr>
             <th>Name</th>
             <th>Rewards</th>
-            <th className="text-right">USD</th>
+            <th>USD</th>
           </tr>
         </thead>
         <tbody>
@@ -73,7 +78,17 @@ const TokensEarned = ({ data }: any) => {
             <td className="align-middle">
               {userState?.reward} {getTokenNameByPlatform(data?.platform?.name)}
             </td>
-            <td className="text-right align-middle">${(userState?.reward * SBR_PRICE)?.toFixed(PRICE_DECIMAL)}</td>
+            <td className="text-right align-middle">
+              {saberPriceStatus === FetchingStatus.Loading && (
+                <LoadingSpinner className="spinner-border-sm text-info" />
+              )}
+              {saberPriceStatus === FetchingStatus.Error &&
+                toast.error('There was an error when fetching the saber pricehistory') &&
+                console.error(saberPriceError)}
+              {saberPriceStatus === FetchingStatus.Finish &&
+                saberPrice &&
+                `$  ${(userState?.reward * saberPrice)?.toFixed(PRICE_DECIMAL)}`}
+            </td>
           </tr>
         </tbody>
       </Table>

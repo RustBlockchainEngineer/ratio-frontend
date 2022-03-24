@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import useFetch from 'react-fetch-hook';
 import { useWallet } from '../../contexts/wallet';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import MobileMenuTrigger from '../../components/MobileMenuTrigger';
@@ -18,6 +17,7 @@ import Footer from '../../components/Footer';
 import VaultDashboard from '../VaultDashboard';
 import VaultSetup from '../VaultSetup';
 import CompareVaults from '../CompareVaults';
+import FairdropPage from '../FairdropPage';
 
 import { actionTypes } from '../../features/wallet';
 import logoside from '../../assets/images/logo-side.svg';
@@ -33,8 +33,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { API_ENDPOINT } from '../../constants/constants';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-
-const NOT_FOUND_STATUS_CODE = 404;
+import useFetch from 'react-fetch-hook';
 
 const Layer = () => {
   const theme = useContext(ThemeContext);
@@ -44,12 +43,11 @@ const Layer = () => {
   const [collapseFlag, setCollapseFlag] = useState(false);
   const history = useHistory();
   const { connected, publicKey } = useWallet();
-
   const [enable, setEnable] = useState(false);
   const {
-    isLoading,
-    data: userData,
-    error,
+    isLoading: authFetchLoading,
+    data: userAuthorized,
+    error: authFetchError,
   } = useFetch<boolean | undefined>(`${API_ENDPOINT}/users/auth/${publicKey}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -57,45 +55,30 @@ const Layer = () => {
     method: 'GET',
     depends: [!!publicKey],
   });
-
+  useEffect(() => {
+    if (authFetchError) {
+      toast.error('An error occured when fetching authorization');
+      console.error(authFetchError.message);
+    }
+  }, [authFetchError]);
   useEffect(() => {
     if (connected) {
-      if (isLoading) {
+      if (authFetchLoading || authFetchError || userAuthorized === undefined) {
         setEnable(false);
         return;
       }
-      if (error?.status === NOT_FOUND_STATUS_CODE || userData === false) {
-        setEnable(false);
+      const shouldEnable = !!userAuthorized;
+      if (!shouldEnable) {
         toast('Please add your address to whitelist.');
-        return;
-      } else {
-        // This can be done on background, we are not updating the interface with this result
-        fetch(`${API_ENDPOINT}/users/${publicKey}`).then((res) => {
-          if (res.status === NOT_FOUND_STATUS_CODE) {
-            fetch(`${API_ENDPOINT}/users/register`, {
-              method: 'POST',
-              body: JSON.stringify({ wallet_address_id: publicKey }),
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }).then((result) => {
-              if (result.ok) {
-                toast.info('User registered successfully.');
-              } else {
-                toast.warn("User couldn't be registered correctly.");
-              }
-            });
-          }
-        });
       }
-      setEnable(!isLoading && !error && (userData ?? false));
+      setEnable(shouldEnable);
     } else {
       history.push('/dashboard');
     }
     return () => {
       setEnable(false);
     };
-  }, [userData, error]);
+  }, [userAuthorized, authFetchError, authFetchLoading, publicKey]);
 
   const dispatch = useDispatch();
 
@@ -123,12 +106,12 @@ const Layer = () => {
         draggable={false}
         pauseOnHover
       />
-      {isLoading && (
+      {authFetchLoading && (
         <div className="text-center mt-5">
           <LoadingSpinner className="spinner-border-lg text-primary" />
         </div>
       )}
-      {!isLoading && (
+      {!authFetchLoading && (
         <div
           className={classNames('layer_container', {
             'layer_container--collapse': collapseFlag,
@@ -155,6 +138,7 @@ const Layer = () => {
                   <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
                   <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
                   <Route path="/dashboard/vaultsetup/:mint" component={VaultSetup} exact />
+                  <Route path="/dashboard/fairdrop" component={FairdropPage} exact />
                   <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
                   <Route exact path="/dashboard">
                     <Redirect to="/dashboard/available-vaults" />

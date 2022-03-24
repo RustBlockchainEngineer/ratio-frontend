@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
+import { toast } from 'react-toastify';
 
 import classNames from 'classnames';
 import Select from 'react-select';
@@ -19,10 +20,8 @@ import list from '../../assets/images/list.svg';
 import titleDark from '../../assets/images/tile-dark.svg';
 import listDark from '../../assets/images/list-dark.svg';
 
-import usdcIcon from '../../assets/images/USDC.svg';
-// import rayIcon from '../../assets/images/RAY.svg';
-// import solIcon from '../../assets/images/SOL.svg';
-// import ethIcon from '../../assets/images/ETH.svg';
+import { useFetchTokens } from '../../hooks/useFetchTokens';
+import { FetchingStatus } from '../../types/fetching-types';
 
 type FilterPanelProps = {
   label: string;
@@ -41,32 +40,6 @@ const optionsViewBy = [
   { value: 'descending', label: 'Descending' },
 ];
 
-const filter_options = [
-  {
-    value: 'CASH',
-    label: 'CASH',
-    network: 'solana',
-    icon: [
-      'https://spl-token-icons.static-assets.ship.capital/icons/101/CASHVDm2wsJXfhj6VWxb7GiMdoLc17Du7paH4bNr5woT.png',
-    ],
-  },
-  {
-    value: 'USDT',
-    label: 'USDT',
-    network: 'solana',
-    icon: [
-      'https://spl-token-icons.static-assets.ship.capital/icons/103/EJwZgeZrdC8TXTQbQBoL6bfuAnFUUy1PVCMB4DYPzVaS.svg',
-    ],
-  },
-  {
-    value: 'PAI',
-    label: 'PAI',
-    network: 'solana',
-    icon: ['https://registry.saber.so/token-icons/pai.svg'],
-  },
-  { value: 'USDC', label: 'USDC', network: 'solana', icon: [usdcIcon] },
-];
-
 // eslint-disable-next-line
 const platformOptions = [
   { value: 'ALL', label: 'All platforms', icon: null },
@@ -78,14 +51,38 @@ const platformOptions = [
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const dispatch = useDispatch();
-  const theme = React.useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
   const { darkMode } = theme.state;
   const isDefault = useMediaQuery({ minWidth: 992 });
-  const [compareVaults, setCompareVaults] = React.useState(false);
+  const [compareVaults, setCompareVaults] = useState(false);
 
   const filter_data = useSelector(selectors.getFilterData);
   const sort_data = useSelector(selectors.getSortData);
   const view_data = useSelector(selectors.getViewData);
+
+  const { tokens, status, error } = useFetchTokens();
+
+  const filterOptions = useMemo(() => {
+    if (tokens.length === 0 || status !== FetchingStatus.Finish) {
+      return [];
+    }
+    return tokens.map(({ symbol, icon }) => {
+      return {
+        value: symbol,
+        label: symbol,
+        network: null, // For the moment we leave it as null, since we will have to integrate the rest of the platforms later on
+        icon: [icon],
+      };
+    });
+  }, [tokens, status]);
+
+  // We check here for errors when fetch the tokens
+  useEffect(() => {
+    if (status === FetchingStatus.Error && error) {
+      toast.error(`There was an error when fetching the tokens: ${error?.message}`);
+    }
+  }, [status, error]);
+
   // eslint-disable-next-line
   const platform_data = useSelector(selectors.getPlatformData);
 
@@ -131,7 +128,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
       <div className="d-flex flex-wrap justify-content-between align-items-start filterpanel__gap">
         <div className="d-flex flex-wrap align-items-center filterpanel__gap">
           <FilterSelect
-            options={filter_options}
+            options={filterOptions}
             onFilterChange={onFilterChange}
             filterValue={filter_data}
             placeholder="Search vaults by token"

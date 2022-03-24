@@ -9,7 +9,7 @@ import { useWallet } from '../../../contexts/wallet';
 import { isWalletApproveError } from '../../../utils/utils';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
-import { useGetPoolInfoProvider } from '../../../hooks/useGetPoolInfoProvider';
+import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
@@ -22,7 +22,7 @@ const DepositModal = ({ data }: any) => {
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
-  const poolInfoProviderFactory = useGetPoolInfoProvider(vault);
+  const PoolManagerFactory = useGetPoolManager(vault);
 
   const collAccount = useAccountByMint(data.mint);
   const [depositAmount, setDepositAmount] = React.useState(0);
@@ -58,14 +58,13 @@ const DepositModal = ({ data }: any) => {
       setInvalidStr('Invalid  User Collateral account to deposit!');
       return;
     }
-    poolInfoProviderFactory
-      ?.depositLP(
-        connection,
-        wallet,
-        vault as LPair,
-        depositAmount * Math.pow(10, collMint?.decimals ?? 0),
-        collAccount?.pubkey.toString() as string
-      )
+    PoolManagerFactory?.depositLP(
+      connection,
+      wallet,
+      vault as LPair,
+      depositAmount * Math.pow(10, collMint?.decimals ?? 0),
+      collAccount?.pubkey.toString() as string
+    )
       .then(() => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         setDepositAmount(0);
@@ -77,6 +76,7 @@ const DepositModal = ({ data }: any) => {
         else toast.error('Transaction Error!');
       })
       .finally(() => {
+        console.log('TX SENT SUCCESSFULLY');
         setShow(!show);
       });
   };
