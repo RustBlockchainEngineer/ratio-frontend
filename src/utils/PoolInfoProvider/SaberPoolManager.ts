@@ -9,7 +9,7 @@ export class SaberPoolManager extends GenericPoolManager {
     if (!this.poolInfoCache) {
       return NaN;
     }
-    const vaultInfo = this.poolInfoCache[vault.symbol];
+    const vaultInfo = this.poolInfoCache[vault.platform_symbol ?? vault.symbol];
     return vaultInfo?.tvl as number;
   }
 

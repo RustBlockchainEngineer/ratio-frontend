@@ -8,7 +8,7 @@ export class RaydiumPoolManager extends GenericPoolManager {
     if (!this.poolInfoCache) {
       return NaN;
     }
-    let vaultInfo = this.poolInfoCache[vault.symbol];
+    let vaultInfo = this.poolInfoCache[vault.platform_symbol ?? vault.symbol];
     if (!vaultInfo) {
       vaultInfo = this.poolInfoCache[vault.symbol.split('-').reverse().join('-')];
     }

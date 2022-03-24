@@ -8,7 +8,7 @@ export class MercurialPoolManager extends GenericPoolManager {
     if (!this.poolInfoCache) {
       return NaN;
     }
-    let vaultInfo = this.poolInfoCache[vault.symbol];
+    let vaultInfo = this.poolInfoCache[vault.platform_symbol ?? vault.symbol];
     if (!vaultInfo) {
       vaultInfo = Object.values(this.poolInfoCache).find((item: any) => item.account === vault.address_id);
     }
