@@ -8,7 +8,7 @@ import Button from '../Button';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
-import { formatUSD } from '../../utils/utils';
+import { formatUSD, isWalletApproveError } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 
 import linkIcon from '../../assets/images/link.svg';
@@ -101,18 +101,21 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
       history.push(`/dashboard/vaultdashboard/${data.mint}`);
     }
   };
-  const harvest = () => {
-    console.log('harvesting');
-    PoolManagerFactory?.harvestReward(connection, wallet, data.item)
-      .then(() => {
-        updateRFStates(UPDATE_REWARD_STATE, data.mint);
-      })
-      .catch((e) => {
-        console.log(e);
-      })
-      .finally(() => {
-        toast('Successfully Harvested!');
-      });
+  const harvest = async () => {
+    try {
+      if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
+        throw new Error('Pool manager factory not initialized');
+      }
+
+      console.log('Harvesting...');
+      await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
+      await updateRFStates(UPDATE_REWARD_STATE, data.mint);
+      toast.success('Successfully Harvested!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
+    }
   };
   const renderModalButton = () => {
     return (

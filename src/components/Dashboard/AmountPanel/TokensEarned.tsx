@@ -26,19 +26,21 @@ const TokensEarned = ({ data }: any) => {
   const userState = useUserInfo(data.mintAddress);
   const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
 
-  const harvest = () => {
-    console.log('harvesting');
-    PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair)
-      .then(() => {
-        updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
-        toast.success('Successfully Harvested!');
-      })
-      .catch((e) => {
-        console.log(e);
-        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-        else toast.error('Transaction Error!');
-      })
-      .finally(() => {});
+  const harvest = async () => {
+    try {
+      if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
+        throw new Error('Pool manager factory not initialized');
+      }
+
+      console.log('Harvesting...');
+      await PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair);
+      await updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
+      toast.success('Successfully Harvested!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
+    }
   };
 
   const getTokenNameByPlatform = (name: string) => {
@@ -84,6 +86,7 @@ const TokensEarned = ({ data }: any) => {
                 toast.error('There was an error when fetching the saber pricehistory') &&
                 console.error(saberPriceError)}
               {saberPriceStatus === FetchingStatus.Finish &&
+                saberPrice &&
                 `$  ${(userState?.reward * saberPrice)?.toFixed(PRICE_DECIMAL)}`}
             </td>
           </tr>

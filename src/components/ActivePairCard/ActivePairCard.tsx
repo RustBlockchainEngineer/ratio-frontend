@@ -109,19 +109,21 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     }
   };
 
-  const harvest = () => {
-    console.log('harvesting');
-    PoolManagerFactory?.harvestReward(connection, wallet, data.item)
-      .then(() => {
-        updateRFStates(UPDATE_REWARD_STATE, data.mint);
-        toast.success('Successfully Harvested!');
-      })
-      .catch((e) => {
-        console.log(e);
-        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-        else toast.error('Transaction Error!');
-      })
-      .finally(() => {});
+  const harvest = async () => {
+    try {
+      if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
+        throw new Error('Pool manager factory not initialized');
+      }
+
+      console.log('Harvesting...');
+      await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
+      await updateRFStates(UPDATE_REWARD_STATE, data.mint);
+      toast.success('Successfully Harvested!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
+    }
   };
 
   const renderModalButton = () => {
