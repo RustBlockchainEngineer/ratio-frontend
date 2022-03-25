@@ -27,7 +27,7 @@ export class SaberPoolManager extends GenericPoolManager {
       amount,
       new PublicKey(tokenAccount)
     );
-    this.postTransactionToApi(txHash, 'deposit', wallet?.publicKey);
+    this.postTransactionToApi(txHash, tokenAccount, 'deposit', wallet?.publicKey);
     return txHash;
   }
 
@@ -45,13 +45,13 @@ export class SaberPoolManager extends GenericPoolManager {
       amount,
       new PublicKey(tokenAccount)
     );
-    this.postTransactionToApi(txHash, 'withdraw', wallet?.publicKey);
+    this.postTransactionToApi(txHash, tokenAccount, 'withdraw', wallet?.publicKey);
     return txHash;
   }
 
   async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     const txHash = await harvestFromSaber(connection, wallet, new PublicKey(vault.address_id));
-    this.postTransactionToApi(txHash, 'harvest', wallet?.publicKey);
+    this.postTransactionToApi(txHash, vault.address_id, 'harvest', wallet?.publicKey);
     return txHash;
   }
 
