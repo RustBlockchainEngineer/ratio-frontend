@@ -200,6 +200,7 @@ const VaultDashboard = () => {
       </div>
     );
 
+  console.log(vaultData);
   return (
     <>
       {

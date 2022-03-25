@@ -4,7 +4,7 @@ import { Networks } from '../../constants';
 
 const initialState = {
   connected_status: false,
-  network: Networks[0],
+  network: Networks[1],
   whitelist_data: [],
 };
 

@@ -6,7 +6,7 @@ import { FaCheck } from 'react-icons/fa';
 import { IoMdCloseCircle } from 'react-icons/io';
 import Button from '../Button';
 import SwitchButton from '../SwitchButton';
-import NetworkSelector from '../NetworkSelector';
+// import NetworkSelector from '../NetworkSelector';
 
 import { shortenAddress } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
@@ -92,7 +92,7 @@ const Header = (headerProps: HeaderProps) => {
       {renderTotalTVLCap()}
       {connected && <div className="header__gap" />}
       <SwitchButton />
-      <NetworkSelector />
+      {/* <NetworkSelector /> */}
       {renderWalletConnection()}
     </div>
   );
