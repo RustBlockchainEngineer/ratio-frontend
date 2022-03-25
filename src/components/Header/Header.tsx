@@ -77,15 +77,15 @@ const Header = (headerProps: HeaderProps) => {
     <div className="header d-flex">
       {/* {isTable && <img src={darkMode ? darkLogo : logo} alt="logo" />} */}
 
-      {renderTotalUSDrDebt()}
-      {renderTotalTVLCap()}
-      {connected && <div className="header__gap" />}
       {connected && <GuideModal />}
       {connected && (
-        <Button disabled={!connected} className="button--blue walletBtn mr-3" onClick={() => history.push('/faucet')}>
+        <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
           Faucet
         </Button>
       )}
+      {connected && <div className="header__gap" />}
+      {renderTotalUSDrDebt()}
+      {renderTotalTVLCap()}
       <SwitchButton />
       {renderWalletConnection()}
     </div>
