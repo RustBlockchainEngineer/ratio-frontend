@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
@@ -46,17 +46,17 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const vaultState = useUserInfo(data.mint);
 
   // eslint-disable-next-line
-  const [tvl, setTVL] = React.useState(0);
-  const [totalDebt, setTotalDebt] = React.useState(0);
-  const [remainingDebt, setRemainingDebt] = React.useState(0);
+  const [tvl, setTVL] = useState(0);
+  const [totalDebt, setTotalDebt] = useState(0);
+  const [remainingDebt, setRemainingDebt] = useState(0);
 
-  const [positionValue, setPositionValue] = React.useState(0);
+  const [positionValue, setPositionValue] = useState(0);
   // eslint-disable-next-line
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = useState(false);
 
   const PoolManagerFactory = useGetPoolManager(data.item);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (userState && tokenPrice && collMint) {
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
       setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
@@ -66,7 +66,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     };
   }, [tokenPrice, userState, collMint]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint && globalState) {
       const remainingGlobalDebt = calculateRemainingGlobalDebt(globalState, usdrMint);
       const remainingUserDebt = calculateRemainingUserDebt(tokenPrice, data.risk, userState, collMint, usdrMint);
@@ -80,7 +80,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     };
   }, [tokenPrice, userState, globalState, usdrMint, collMint]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (connection && collMint && usdrMint && data.mint && vaultState) {
       const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
       const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
