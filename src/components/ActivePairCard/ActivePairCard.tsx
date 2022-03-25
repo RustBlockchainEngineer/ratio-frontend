@@ -45,6 +45,8 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const userState = useUserInfo(data.mint);
   const vaultState = useUserInfo(data.mint);
 
+  const [isHarvesting, setIsHarvesting] = useState(false);
+
   // eslint-disable-next-line
   const [tvl, setTVL] = useState(0);
   const [totalDebt, setTotalDebt] = useState(0);
@@ -110,6 +112,8 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   };
 
   const harvest = async () => {
+    setIsHarvesting(true);
+
     try {
       if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
         throw new Error('Pool manager factory not initialized');
@@ -124,6 +128,8 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
       else toast.error('Transaction Error!');
     }
+
+    setIsHarvesting(false);
   };
 
   const renderModalButton = () => {
@@ -131,7 +137,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
       <div className="col">
         <div className="d-flex">
           <Button
-            disabled={!connected}
+            disabled={!connected || isHarvesting}
             className="button button--gradientBorder activepaircard__generate mt-2"
             onClick={harvest}
           >

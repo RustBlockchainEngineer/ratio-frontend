@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
@@ -48,6 +48,8 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const [totalDebt, setTotalDebt] = useState(0);
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = useState('');
+
+  const [isHarvesting, setIsHarvesting] = useState(false);
 
   const PoolManagerFactory = useGetPoolManager(data.item);
 
@@ -102,6 +104,8 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
     }
   };
   const harvest = async () => {
+    setIsHarvesting(true);
+
     try {
       if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
         throw new Error('Pool manager factory not initialized');
@@ -116,12 +120,14 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
       else toast.error('Transaction Error!');
     }
+
+    setIsHarvesting(false);
   };
   const renderModalButton = () => {
     return (
       <div>
         <Button
-          disabled={!connected}
+          disabled={!connected || isHarvesting}
           onClick={harvest}
           className="button button--gradientBorder activepaircard__generate"
         >
