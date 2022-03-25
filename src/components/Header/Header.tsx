@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { FaCheck } from 'react-icons/fa';
 import { IoMdCloseCircle } from 'react-icons/io';
@@ -11,6 +12,7 @@ import { shortenAddress } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
 import { NavBarProgressBarTVL } from '../Navbar/NavBarProgressBarTVL';
 import { NavBarProgressBarTotalUSDr } from '../Navbar/NavBarProgressBarTotalUSDr';
+import { walletSelectors } from '../../features/wallet';
 import GuideModal from '../GuideModal';
 
 type HeaderProps = {
@@ -21,6 +23,7 @@ type HeaderProps = {
 const Header = (headerProps: HeaderProps) => {
   const { onClickWalletBtn } = headerProps;
   const { connected, connect, wallet } = useWallet();
+  const network = useSelector(walletSelectors.getNetwork);
   const [hover, setHover] = React.useState(false);
   const history = useHistory();
 
@@ -78,15 +81,16 @@ const Header = (headerProps: HeaderProps) => {
     <div className="header d-flex">
       {/* {isTable && <img src={darkMode ? darkLogo : logo} alt="logo" />} */}
 
-      {connected && <GuideModal />}
-      {connected && (
+      {connected && network.value === 'devnet' && <GuideModal />}
+      {connected && network.value === 'devnet' && (
         <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
           Faucet
         </Button>
       )}
-      {connected && <div className="header__gap" />}
+      {connected && network.value === 'devnet' && <div className="header__gap" />}
       {renderTotalUSDrDebt()}
       {renderTotalTVLCap()}
+      {connected && <div className="header__gap" />}
       <SwitchButton />
       <NetworkSelector />
       {renderWalletConnection()}

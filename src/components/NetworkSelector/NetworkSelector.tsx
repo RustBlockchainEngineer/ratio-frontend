@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { Networks } from '../../constants/constants';
@@ -10,9 +10,13 @@ const NetworkSelector = () => {
   const network = useSelector(walletSelectors.getNetwork);
   const [selectedOption, setSelectedOption] = useState(network);
 
+  useEffect(() => {
+    setSelectedOption(network);
+  }, [network]);
+
   const onSelectOption = (data: any) => {
     setSelectedOption(data);
-    dispatch({ type: actionTypes.SET_NETWORK, payload: data.value });
+    dispatch({ type: actionTypes.SET_NETWORK, payload: data });
   };
 
   return (
