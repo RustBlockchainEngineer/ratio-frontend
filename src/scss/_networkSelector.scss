@@ -1,0 +1,14 @@
+.networkSelector {
+    min-width: 130px;
+    margin-right: 1rem;
+    .network-select__single-value {
+        font-family: 'Poppins-Regular';
+        font-size: 0.875rem;
+    }
+    .network-select__option {
+        font-size: 0.875rem;
+        &:hover {
+            background-color: var(--unnamed-color-5fb5ff);
+        }
+    }
+}
