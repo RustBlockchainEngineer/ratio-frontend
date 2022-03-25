@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
@@ -35,23 +35,23 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const usdrMint = useUSDrMintInfo();
   const collMint = useVaultMintInfo(data.mint);
 
-  const [expand, setExpand] = React.useState(false);
+  const [expand, setExpand] = useState(false);
 
   const userState = useUserInfo(data.mint);
   const vaultState = useVaultInfo(data.mint);
   const updateRFStates = useUpdateRFStates();
 
-  const [positionValue, setPositionValue] = React.useState(0);
-  const [tvl, setTVL] = React.useState(0);
+  const [positionValue, setPositionValue] = useState(0);
+  const [tvl, setTVL] = useState(0);
   // eslint-disable-next-line
-  const [tvlUSD, setTVLUSD] = React.useState(0);
-  const [totalDebt, setTotalDebt] = React.useState(0);
+  const [tvlUSD, setTVLUSD] = useState(0);
+  const [totalDebt, setTotalDebt] = useState(0);
 
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = useState('');
 
   const PoolManagerFactory = useGetPoolManager(data.item);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // replace this boolean value with a function to determine wether user limit reached
     const userLimitReached = false;
     // replace this boolean value with a function to determine wether global limit reached
@@ -64,7 +64,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
     }
   }, [wallet, connection]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (connection && collMint && usdrMint && data.mint) {
       const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
       const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
@@ -78,13 +78,13 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
     };
   }, [connection, collMint, usdrMint, vaultState]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (tokenPrice && tvl) {
       setTVLUSD(Number((tokenPrice * tvl).toFixed(2)));
     }
   }, [tvl, tokenPrice]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (userState && tokenPrice && collMint) {
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
       setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
