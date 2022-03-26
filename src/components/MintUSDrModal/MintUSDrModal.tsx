@@ -27,12 +27,12 @@ import {
 } from '../../contexts/state';
 
 const MintUSDrModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
 
   // eslint-disable-next-line
-  const [mintTime, setMintTime] = React.useState('');
+  const [mintTime, setMintTime] = useState('');
 
   const tokenPrice = usePrice(data.mint);
 
@@ -42,20 +42,21 @@ const MintUSDrModal = ({ data }: any) => {
 
   const collAccount = useAccountByMint(data.mint);
 
-  const [borrowAmount, setBorrowAmount] = React.useState(0);
-  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
+  const [borrowAmount, setBorrowAmount] = useState(0);
+  const [maxUSDrAmount, setMaxUSDrAmount] = useState(0);
 
   // eslint-disable-next-line
-  const [maxLPAmount, setMaxLockAmount] = React.useState(0);
+  const [maxLPAmount, setMaxLockAmount] = useState(0);
   const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
-  const [mintStatus, setMintStatus] = React.useState(false);
+  const [mintStatus, setMintStatus] = useState(false);
 
   // eslint-disable-next-line
-  const [lockStatus, setLockStatus] = React.useState(false);
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const [lockStatus, setLockStatus] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  const [isMinting, setIsMinting] = React.useState(false);
+  const [isMinting, setIsMinting] = useState(false);
+  const [didMount, setDidMount] = useState(false);
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
@@ -100,7 +101,6 @@ const MintUSDrModal = ({ data }: any) => {
 
   const updateRFStates = useUpdateRFStates();
 
-  const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
     return () => setDidMount(false);
