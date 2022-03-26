@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import Button from '../../Button';
@@ -14,21 +14,21 @@ import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
 const PaybackModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
   const usdrMint = useMint(data.usdrMint);
 
-  const [paybackAmount, setPayBackAmount] = React.useState(Number(data.usdrValue));
+  const [paybackAmount, setPayBackAmount] = useState(Number(data.usdrValue));
   const updateRFStates = useUpdateRFStates();
 
-  const [paybackStatus, setPaybackStatus] = React.useState(false);
-  const [invalidStr, setInvalidStr] = React.useState('');
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const [paybackStatus, setPaybackStatus] = useState(false);
+  const [invalidStr, setInvalidStr] = useState('');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  const [didMount, setDidMount] = React.useState(false);
+  const [didMount, setDidMount] = useState(false);
 
-  const [isPayingBack, setIsPayingBack] = React.useState(false);
+  const [isPayingBack, setIsPayingBack] = useState(false);
 
   useEffect(() => {
     setDidMount(true);
