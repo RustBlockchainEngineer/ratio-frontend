@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
@@ -16,19 +16,19 @@ import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 
 const WithdrawModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [userCollAccount, setUserCollAccount] = React.useState('');
+  const [userCollAccount, setUserCollAccount] = useState('');
   const collMint = useMint(data.mint);
 
-  const [withdrawAmount, setWithdrawAmount] = React.useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
   const updateRFStates = useUpdateRFStates();
-  const [withdrawStatus, setWithdrawStatus] = React.useState(false);
-  const [invalidStr, setInvalidStr] = React.useState('');
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
-  const [isWithdrawing, setIsWithdrawing] = React.useState(false);
+  const [withdrawStatus, setWithdrawStatus] = useState(false);
+  const [invalidStr, setInvalidStr] = useState('');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
@@ -46,7 +46,7 @@ const WithdrawModal = ({ data }: any) => {
     };
   }, [connected]);
 
-  const [didMount, setDidMount] = React.useState(false);
+  const [didMount, setDidMount] = useState(false);
   useEffect(() => {
     setDidMount(true);
     return () => setDidMount(false);
