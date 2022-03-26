@@ -107,12 +107,12 @@ const DepositModal = ({ data }: any) => {
               }}
             />
             <div>
-              {data.icons ? (
+              {data?.icons.length ? (
                 <>
-                  <img src={data.icons[0]} alt={data.icons[0].toString()} />
+                  <img src={data?.icons[0]} alt={data?.icons[0]?.toString()} />
                   <img
-                    src={data.icons[1]}
-                    alt={data.icons[1].toString()}
+                    src={data?.icons[1]}
+                    alt={data?.icons[1]?.toString()}
                     className="dashboardModal__modal__header-icon"
                   />
                 </>
