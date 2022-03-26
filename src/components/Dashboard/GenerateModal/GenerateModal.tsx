@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useConnection } from '../../../contexts/connection';
@@ -14,22 +14,23 @@ import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
 const GenerateModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
   // eslint-disable-next-line
-  const [mintTime, setMintTime] = React.useState('');
+  const [mintTime, setMintTime] = useState('');
 
   const userState = useUserInfo(data.mint);
   const usdrMint = useUSDrMintInfo();
 
-  const [borrowAmount, setBorrowAmount] = React.useState(0);
+  const [borrowAmount, setBorrowAmount] = useState(0);
   const updateRFStates = useUpdateRFStates();
-  const [mintStatus, setMintStatus] = React.useState(false);
-  const [invalidStr, setInvalidStr] = React.useState('');
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const [mintStatus, setMintStatus] = useState(false);
+  const [invalidStr, setInvalidStr] = useState('');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  const [isMinting, setIsMinting] = React.useState(false);
+  const [isMinting, setIsMinting] = useState(false);
+  const [didMount, setDidMount] = useState(false);
 
   useEffect(() => {
     if (userState) {
@@ -43,7 +44,6 @@ const GenerateModal = ({ data }: any) => {
     };
   }, [userState]);
 
-  const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
     return () => setDidMount(false);
