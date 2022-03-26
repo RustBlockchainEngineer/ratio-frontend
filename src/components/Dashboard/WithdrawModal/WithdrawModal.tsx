@@ -118,20 +118,10 @@ const WithdrawModal = ({ data }: any) => {
               }}
             />
             <div>
-              {data?.icons.length > 0 ? (
-                <>
-                  <img src={data?.icons[0]} alt={data?.icons[0]?.toString()} />
-                  <img
-                    src={data?.icons[1]}
-                    alt={data?.icons[1]?.toString()}
-                    className="dashboardModal__modal__header-icon"
-                  />
-                </>
-              ) : (
-                <>
-                  <img />
-                  <img className="dashboardModal__modal__header-icon" />
-                </>
+              {data.icon && (
+                <div className="dashboardModal__modal__header-icon">
+                  <img src={data.icon} alt={data.title} />
+                </div>
               )}
             </div>
             <h4>Withdraw assets from vault</h4>

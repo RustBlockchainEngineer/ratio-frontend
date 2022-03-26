@@ -107,21 +107,7 @@ const DepositModal = ({ data }: any) => {
               }}
             />
             <div>
-              {data?.icons.length ? (
-                <>
-                  <img src={data?.icons[0]} alt={data?.icons[0]?.toString()} />
-                  <img
-                    src={data?.icons[1]}
-                    alt={data?.icons[1]?.toString()}
-                    className="dashboardModal__modal__header-icon"
-                  />
-                </>
-              ) : (
-                <>
-                  <img />
-                  <img className="dashboardModal__modal__header-icon" />
-                </>
-              )}
+              {data.icon && <img src={data.icon} className="dashboardModal__modal__header-icon" alt={data.title} />}
             </div>
             <h4>Deposit assets into vault</h4>
             <h5>
