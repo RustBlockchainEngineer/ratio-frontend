@@ -69,7 +69,7 @@ const DepositModal = ({ data }: any) => {
         collAccount?.pubkey.toString() as string
       );
 
-      updateRFStates(UPDATE_USER_STATE, data.mint);
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
       setDepositAmount(0);
       toast.success('Successfully Deposited!');
     } catch (err) {

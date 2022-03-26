@@ -55,6 +55,8 @@ const MintUSDrModal = ({ data }: any) => {
   const [lockStatus, setLockStatus] = React.useState(false);
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
+  const [isMinting, setIsMinting] = React.useState(false);
+
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
@@ -108,25 +110,33 @@ const MintUSDrModal = ({ data }: any) => {
     return null;
   }
 
-  const mintUSDr = () => {
-    if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {
-      // toast('Amount is invalid to mint USDr!');
-      setMintStatus(true);
-      return;
+  const mintUSDr = async () => {
+    try {
+      console.log('Minting', borrowAmount);
+
+      if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {
+        setMintStatus(true);
+        return;
+      }
+
+      setIsMinting(true);
+
+      await borrowUSDr(
+        connection,
+        wallet,
+        borrowAmount * Math.pow(10, usdrMint?.decimals as number),
+        new PublicKey(data.mint)
+      );
+
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      toast('Successfully Minted!');
+    } catch (err) {
+      console.error(err);
+      toast.error('Transaction Error!');
     }
 
-    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
-      .then(() => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
-      })
-      .catch((e) => {
-        console.log(e);
-      })
-      .finally(() => {
-        toast('Successfully Minted!');
-        setShow(false);
-        // history.push(`/dashboard/vaultdashboard/${data.mint}`);
-      });
+    setIsMinting(false);
+    setShow(false);
   };
 
   return (
@@ -163,9 +173,9 @@ const MintUSDrModal = ({ data }: any) => {
               invalidStr="Amount is invalid to mint USDr!"
             />
             <Button
-              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount)}
+              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount) || isMinting}
               className="button--fill lockBtn"
-              onClick={() => mintUSDr()}
+              onClick={mintUSDr}
             >
               Mint USDr
             </Button>

@@ -29,6 +29,8 @@ const GenerateModal = ({ data }: any) => {
   const [invalidStr, setInvalidStr] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
+  const [isMinting, setIsMinting] = React.useState(false);
+
   useEffect(() => {
     if (userState) {
       const endDateOfLock = userState.lastMintTime.toNumber() + 3600;
@@ -51,52 +53,55 @@ const GenerateModal = ({ data }: any) => {
     return null;
   }
 
-  const borrow = () => {
-    console.log('Borrowing USDr', borrowAmount);
-    // FixMe: Let's ignore this at the moment.
-    // If this is really necessary, we should add some codes on contract also.
-    /*if (borrowAmount < 10) {
-      setMintStatus(true);
-      setInvalidStr('You must mint at least 10 USDr');
-      return;
-    }*/
-    if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
-      setMintStatus(true);
-      setInvalidStr('Amount is invalid to generate USDr!');
-      return;
+  const borrow = async () => {
+    try {
+      console.log('Borrowing USDr', borrowAmount);
+      // FixMe: Let's ignore this at the moment.
+      // If this is really necessary, we should add some codes on contract also.
+      /*if (borrowAmount < 10) {
+        setMintStatus(true);
+        setInvalidStr('You must mint at least 10 USDr');
+        return;
+      }*/
+      if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
+        setMintStatus(true);
+        setInvalidStr('Amount is invalid to generate USDr!');
+        return;
+      }
+      if (!usdrMint) {
+        setMintStatus(true);
+        setInvalidStr('Invalid USDr Mint address to generate!');
+        return;
+      }
+
+      setIsMinting(true);
+
+      const txtSignature = await borrowUSDr(
+        connection,
+        wallet,
+        borrowAmount * Math.pow(10, usdrMint.decimals),
+        new PublicKey(data.mint)
+      );
+
+      const response = await postToRatioApi(
+        {
+          tx_type: 'borrow',
+          signature: txtSignature,
+        },
+        `/transaction/${wallet?.publicKey?.toBase58()}/new`
+      );
+
+      console.log('Response from backend', response);
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      toast.success('Successfully minted USDr tokens!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
     }
-    if (!usdrMint) {
-      setMintStatus(true);
-      setInvalidStr('Invalid USDr Mint address to generate!');
-      return;
-    }
-    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
-      .then((txSignature: string) => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
-        toast.success('Successfully minted USDr tokens!');
-        postToRatioApi(
-          {
-            tx_type: 'borrow',
-            signature: txSignature,
-          },
-          `/transaction/${wallet?.publicKey.toBase58()}/new`
-        )
-          .then((res: string) => {
-            console.log('RES FROM BACKEND', res);
-          })
-          .catch((error: any) => {
-            console.error('ERROR FROM BACKEND', error);
-            throw error;
-          });
-      })
-      .catch((e) => {
-        console.log(e);
-        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-        else toast.error('Transaction Error!');
-      })
-      .finally(() => {
-        setShow(!show);
-      });
+
+    setIsMinting(false);
+    setShow(false);
   };
 
   return (
@@ -126,7 +131,7 @@ const GenerateModal = ({ data }: any) => {
               }}
             />
             <div>
-              <img src={data.icons[0]} alt={data.icons[0].toString()} />
+              <img src={data?.icons[0]} alt={data?.icons[0]?.toString()} />
             </div>
             <h4>Mint more USDr</h4>
             <h5>
@@ -158,9 +163,9 @@ const GenerateModal = ({ data }: any) => {
               There will be a 2% stability fee associated with this transaction.
             </p> */}
             <Button
-              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount)}
+              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount) || isMinting}
               className="button--blue bottomBtn"
-              onClick={() => borrow()}
+              onClick={borrow}
             >
               Mint USDr
             </Button>

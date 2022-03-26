@@ -72,6 +72,7 @@ const WithdrawModal = ({ data }: any) => {
       }
 
       setIsWithdrawing(true);
+
       await PoolManagerFactory?.withdrawLP(
         connection,
         wallet,
@@ -79,7 +80,7 @@ const WithdrawModal = ({ data }: any) => {
         withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
         userCollAccount
       );
-      updateRFStates(UPDATE_USER_STATE, data.mint);
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');
     } catch (err) {

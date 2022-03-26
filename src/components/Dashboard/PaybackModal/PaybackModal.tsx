@@ -27,6 +27,9 @@ const PaybackModal = ({ data }: any) => {
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   const [didMount, setDidMount] = React.useState(false);
+
+  const [isPayingBack, setIsPayingBack] = React.useState(false);
+
   useEffect(() => {
     setDidMount(true);
     if (paybackAmount > 0) {
@@ -41,47 +44,51 @@ const PaybackModal = ({ data }: any) => {
     return null;
   }
 
-  const repay = () => {
-    console.log('PayBack', paybackAmount);
-    if (!(paybackAmount && data.usdrValue >= paybackAmount)) {
-      setPaybackStatus(true);
-      setInvalidStr('Insufficient funds to payback!');
-      return;
+  const repay = async () => {
+    try {
+      console.log('PayBack', paybackAmount);
+      if (!(paybackAmount && data.usdrValue >= paybackAmount)) {
+        setPaybackStatus(true);
+        setInvalidStr('Insufficient funds to payback!');
+        return;
+      }
+
+      if (!usdrMint) {
+        setPaybackStatus(true);
+        setInvalidStr('Invalid USDr Mint address to payback!');
+        return;
+      }
+
+      setIsPayingBack(true);
+
+      const txtSignature = await repayUSDr(
+        connection,
+        wallet,
+        paybackAmount * Math.pow(10, usdrMint.decimals),
+        new PublicKey(data.mint)
+      );
+
+      const response = await postToRatioApi(
+        {
+          tx_type: 'payback',
+          address_id: new PublicKey(data.mint).toString(),
+          signature: txtSignature,
+        },
+        `/transaction/${wallet?.publicKey?.toBase58()}/new`
+      );
+
+      console.log('Response from backend', response);
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      setPayBackAmount(0);
+      toast.success('Successfully Paid back!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
     }
-    if (!usdrMint) {
-      setPaybackStatus(true);
-      setInvalidStr('Invalid USDr Mint address to payback!');
-      return;
-    }
-    repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
-      .then((txSignature: string) => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
-        setPayBackAmount(0);
-        toast.success('Successfully Paid back!');
-        postToRatioApi(
-          {
-            tx_type: 'payback',
-            address_id: new PublicKey(data.mint).toString(),
-            signature: txSignature,
-          },
-          `/transaction/${wallet?.publicKey.toBase58()}/new`
-        )
-          .then((res: string) => {
-            console.log('RES FROM BACKEND', res);
-          })
-          .catch((error: any) => {
-            console.error('ERROR FROM BACKEND', error);
-            throw error;
-          });
-      })
-      .catch((e) => {
-        console.log(e);
-        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-        else toast.error('Transaction Error!');
-      })
-      .finally(() => {
-        setShow(false);
-      });
+
+    setIsPayingBack(false);
+    setShow(false);
   };
 
   return (
@@ -141,7 +148,7 @@ const PaybackModal = ({ data }: any) => {
             {/* <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
             <CustomDropDownInput /> */}
             <Button
-              disabled={paybackAmount <= 0 || buttonDisabled || isNaN(paybackAmount)}
+              disabled={paybackAmount <= 0 || buttonDisabled || isNaN(paybackAmount) || isPayingBack}
               className="button--blue bottomBtn"
               onClick={() => repay()}
             >
