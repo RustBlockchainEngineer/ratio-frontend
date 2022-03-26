@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
@@ -15,7 +15,7 @@ import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 const DepositModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const collMint = useMint(data?.mint);
@@ -25,14 +25,14 @@ const DepositModal = ({ data }: any) => {
   const PoolManagerFactory = useGetPoolManager(vault);
 
   const collAccount = useAccountByMint(data.mint);
-  const [depositAmount, setDepositAmount] = React.useState(0);
+  const [depositAmount, setDepositAmount] = useState(0);
 
-  const [didMount, setDidMount] = React.useState(false);
+  const [didMount, setDidMount] = useState(false);
 
-  const [depositStatus, setDepositStatus] = React.useState(false);
-  const [invalidStr, setInvalidStr] = React.useState('');
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
-  const [isDepositing, setIsDepositing] = React.useState(false);
+  const [depositStatus, setDepositStatus] = useState(false);
+  const [invalidStr, setInvalidStr] = useState('');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [isDepositing, setIsDepositing] = useState(false);
 
   const updateRFStates = useUpdateRFStates();
 
