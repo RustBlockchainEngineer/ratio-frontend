@@ -1,16 +1,16 @@
 .vaultdashboard {
   margin-top: 1rem;
   &__header {
-    display: flex;
+    // display: flex;
     @include respond-to(sm) {
       display: block;
     }
     &_titleBox {
       border-top: 1px solid var(--unnamed-color-f9fbfe);
       border-bottom: 1px solid var(--unnamed-color-f9fbfe);
-      padding: 3rem 5rem !important;
-      padding-top: 1rem !important;
-      width: 80%;
+      padding: 1rem 4rem !important;
+      // padding-top: 1rem !important;
+      // width: 80%;
       @include respond-to(lg) {
         padding: 2rem 2rem !important;
         width: 100%;
@@ -43,9 +43,9 @@
     }
     &_rightBox {
       // margin-bottom: 50px;
-      border-top: 1px solid var(--unnamed-color-f9fbfe);
-      border-bottom: 1px solid var(--unnamed-color-f9fbfe);
-      width: 20%;
+      // border-top: 1px solid var(--unnamed-color-f9fbfe);
+      // border-bottom: 1px solid var(--unnamed-color-f9fbfe);
+      // width: 20%;
       display: flex;
       justify-content: flex-end;
       align-items: center;

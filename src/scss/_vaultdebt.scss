@@ -1,27 +1,40 @@
 .vaultdebt {
-  margin-left: 2.1rem;
-  margin-top: 3.565rem;
-
-  @include respond-to(sm) {
-    margin-top: 5rem;
+  
+  
+  cursor: pointer;
+  display: flex;
+  min-width: 180px;
+  align-items: center;
+  padding: 12px 22px;
+  border: 1px solid var(--unnamed-color-f9fbfe);
+  border-radius: 8px;
+  position: relative;
+  @include respond-to(md) {
+    margin-left: 0rem;
+    margin-right: 0rem;
+    margin-top: 1rem;
   }
 
-  .paybackusdr {
-    min-width: 130px;
-    margin-bottom: 16px;
+  &::before {
+    content: 'Vault Debt';
+    position: absolute;
+    top: -10px;
+    left: -3px;
     font-family: 'Poppins-Medium';
-    font-size: 15px;
-    padding: 0.8rem 1.1rem;
+    font-size: 12px;
+    background-color: var(--unnamed-color-17161f);
+    padding-right: 6px;
+    color: var(--unnamed-color-002332);
   }
-  h4 {
-    font-family: 'Poppins-Medium';
-    color: var(--unnamed-color-3c4760);
-    font-size: 16px;
-    margin-bottom: 7px;
-  }
+  
   p {
-    font-family: 'Poppins-Medium';
+    font-family: 'Poppins-Regular';
     color: var(--unnamed-color-4c646f);
-    font-size: 14px;
+    font-size: 0.75rem;
+  }
+  strong {
+    margin-left: 0.3rem;
+    font-family: 'Poppins-Medium';
+    color: var(--unnamed-color-002332);
   }
 }

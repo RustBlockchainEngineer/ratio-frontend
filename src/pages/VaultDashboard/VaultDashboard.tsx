@@ -29,6 +29,7 @@ import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
 import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
 import { FetchingStatus } from '../../types/fetching-types';
 import { toast } from 'react-toastify';
+import MintableProgressBar from '../../components/Dashboard/MintableProgressBar';
 
 const priceCardData = {
   mainUnit: '',
@@ -188,7 +189,7 @@ const VaultDashboard = () => {
     setIsLoading(false);
   }, [allVaults, vault_mint]);
 
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  // const isMobile = useMediaQuery({ maxWidth: 767 });
   const isDefault = useMediaQuery({ minWidth: 768 });
 
   if (isLoading)
@@ -216,51 +217,52 @@ const VaultDashboard = () => {
       }
       <div className="vaultdashboard">
         <div className="vaultdashboard__header">
-          <div className="vaultdashboard__header_titleBox">
-            <Breadcrumb vaultData={vaultData} availableVaults={allVaults} />
-            <div className="d-flex">
+          <div className="vaultdashboard__header_titleBox row no-gutters">
+            <div className="col-12">
+              <Breadcrumb vaultData={vaultData} availableVaults={allVaults} />
+            </div>
+            <div className="col-md-12 col-sm-12">
               <div>
                 <h3>{vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault</h3>
-                {isMobile && (
+                {/* {isMobile && (
                   <a href={solanaBeachUrl} rel="noreferrer" target="_blank">
                     View on Solana Beach
                     <img src={share} alt="share" />
                   </a>
-                )}
-                <RiskLevel level={vaultData.risk} />
+                )} */}
               </div>
-              <div>
-                <VaultDebt data={vaultDebtData} />
-              </div>
-            </div>
-          </div>
-
-          {/* {isDefault && (
-            <div className="text-right mt-4">
-              <img src={share} alt="share" />
-              <Link to="/">View on</Link>
-              <Link to="/">Solana Beach</Link>
-            </div>
-          )} */}
-
-          <div className="vaultdashboard__header_rightBox">
-            {isDefault && (
-              <div className="text-right mt-4">
-                <img src={share} alt="share" />
-                <a href={solanaBeachUrl} rel="noopener noreferrer" target="_blank">
-                  View on
-                </a>
-                <a href={solanaBeachUrl} rel="noopener noreferrer" target="_blank">
-                  Solana Beach
-                </a>
-              </div>
-            )}
-            {/* <div className="vaultdashboard__header_speedometerBox">
+              <div className="row align-items-center">
+                <div className="col-md-auto col-sm-12">
+                  <RiskLevel level={vaultData.risk} />
+                </div>
+                <div className="col-md-auto col-sm-12">
+                  <MintableProgressBar />
+                </div>
+                {isDefault && <div className="header__gap"></div>}
+                <div className="col-md-auto col-sm-12">
+                  <VaultDebt data={vaultDebtData} />
+                </div>
+                <div className="col-md-auto vaultdashboard__header_rightBox col-md-2 col-sm-12 ml-auto">
+                  {isDefault && (
+                    <div className="text-right mb-4">
+                      <img src={share} alt="share" />
+                      <a href={solanaBeachUrl} rel="noopener noreferrer" target="_blank">
+                        View on
+                      </a>
+                      <a href={solanaBeachUrl} rel="noopener noreferrer" target="_blank">
+                        Solana Beach
+                      </a>
+                    </div>
+                  )}
+                  {/* <div className="vaultdashboard__header_speedometerBox">
             <SpeedoMetor risk={VaultData.risk} />
           </div> */}
-            {/*<div className="vaultdashboard__header_vaultdebtBox">*/}
-            {/*<VaultDebt data={vauldDebtData} />*/}
-            {/*</div>*/}
+                  {/*<div className="vaultdashboard__header_vaultdebtBox">*/}
+                  {/*<VaultDebt data={vauldDebtData} />*/}
+                  {/*</div>*/}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div className="vaultdashboard__body row no-gutters">

@@ -1,0 +1,35 @@
+.mintableProgressbar {
+    cursor: pointer;
+    display: flex;
+    min-width: 180px;
+    align-items: center;
+    padding: 12px 22px;
+    border: 1px solid var(--unnamed-color-f9fbfe);
+    border-radius: 8px;
+    position: relative;
+    @include respond-to(md) {
+      margin-left: 0rem;
+      margin-right: 0rem;
+      margin-top: 1rem;
+    }
+    &::before {
+      content: 'Vault Mintable USDr';
+      position: absolute;
+      top: -10px;
+      left: -3px;
+      font-family: 'Poppins-Medium';
+      font-size: 12px;
+      background-color: var(--unnamed-color-17161f);
+      padding-right: 6px;
+      color: var(--unnamed-color-002332);
+    }
+    &__progressbar {
+      width: 9.375rem;
+      @include respond-to(sm) {
+        width: 100%;
+      }
+      .navbarprogressbar__header {
+        justify-content: flex-end;
+      }
+    }
+}
