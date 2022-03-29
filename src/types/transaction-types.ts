@@ -4,7 +4,7 @@ export interface WalletTXDetail {
   address_id: string;
   amount: number;
   transaction_type: TRANSACTION_TYPE;
-  slot: number; //timestamp
+  created_on: string;
   sawp_group: string;
   conversion_rate: number;
   base_address_id: string;
@@ -25,4 +25,5 @@ export interface FormattedTX {
   txType: string;
   status: string;
   txSignature: string;
+  txExplorerUrl: string;
 }
