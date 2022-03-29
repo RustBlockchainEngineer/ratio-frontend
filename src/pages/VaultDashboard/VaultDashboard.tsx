@@ -62,10 +62,13 @@ const VaultDashboard = () => {
   const [withdrawValue, setWithdrawValue] = useState(0);
   const [generateValue, setGenerateValue] = useState(0);
   const [debtValue, setDebtValue] = useState(0);
+  const [activeVaults, setActiveVaults] = useState<any>();
   // eslint-disable-next-line
   const [hasReachedDebtLimit, setHasReachedDebtLimit] = useState(false);
 
   const allVaults = useSelector(selectors.getAllVaults);
+  const overview = useSelector(selectors.getOverview);
+
   const [vaultDebtData, setVaultDebtData] = useState({
     mint: vault_mint,
     usdrMint: USDR_MINT_KEY,
@@ -78,6 +81,18 @@ const VaultDashboard = () => {
   );
 
   const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.title);
+
+  useEffect(() => {
+    const p = allVaults
+      .map((item: any) => {
+        if (overview && overview.activeVaults && Object.keys(overview.activeVaults).indexOf(item.mint) > -1) {
+          return item;
+        }
+      })
+      .filter(Boolean);
+    console.log(p);
+    setActiveVaults(p);
+  }, [overview, allVaults]);
 
   useEffect(() => {
     if (statusPrice === FetchingStatus.Error && errorPrice) {
@@ -189,8 +204,10 @@ const VaultDashboard = () => {
     setIsLoading(false);
   }, [allVaults, vault_mint]);
 
-  // const isMobile = useMediaQuery({ maxWidth: 767 });
-  const isDefault = useMediaQuery({ minWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 1024 });
+  // const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
+  // const isDefault = useMediaQuery({ minWidth: 1024 });
+  const isDesktop = useMediaQuery({ minWidth: 1025 });
 
   if (isLoading)
     return (
@@ -201,7 +218,6 @@ const VaultDashboard = () => {
       </div>
     );
 
-  console.log(vaultData);
   return (
     <>
       {
@@ -219,31 +235,31 @@ const VaultDashboard = () => {
         <div className="vaultdashboard__header">
           <div className="vaultdashboard__header_titleBox row no-gutters">
             <div className="col-12">
-              <Breadcrumb vaultData={vaultData} availableVaults={allVaults} />
+              {activeVaults && <Breadcrumb vaultData={vaultData} availableVaults={activeVaults} />}
             </div>
             <div className="col-md-12 col-sm-12">
               <div>
                 <h3>{vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault</h3>
-                {/* {isMobile && (
+                {isMobile && (
                   <a href={solanaBeachUrl} rel="noreferrer" target="_blank">
                     View on Solana Beach
                     <img src={share} alt="share" />
                   </a>
-                )} */}
+                )}
               </div>
-              <div className="row align-items-center">
-                <div className="col-md-auto col-sm-12">
+              <div className="row align-items-center no-md-gutters">
+                <div className="col-lg-auto col-md-4 col-sm-12">
                   <RiskLevel level={vaultData.risk} />
                 </div>
-                <div className="col-md-auto col-sm-12">
+                <div className="col-lg-auto col-md-4 col-sm-12">
                   <MintableProgressBar />
                 </div>
-                {isDefault && <div className="header__gap"></div>}
-                <div className="col-md-auto col-sm-12">
+                {/* {isDefault && <div className="header__gap"></div>} */}
+                <div className="col-lg-auto col-md-4 col-sm-12">
                   <VaultDebt data={vaultDebtData} />
                 </div>
-                <div className="col-md-auto vaultdashboard__header_rightBox col-md-2 col-sm-12 ml-auto">
-                  {isDefault && (
+                <div className="col-lg-auto col-md-12 vaultdashboard__header_rightBox col-md-2 col-sm-12 ml-auto">
+                  {isDesktop && (
                     <div className="text-right mb-4">
                       <img src={share} alt="share" />
                       <a href={solanaBeachUrl} rel="noopener noreferrer" target="_blank">

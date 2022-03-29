@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
@@ -20,12 +21,19 @@ type HeaderProps = {
   darkMode: boolean;
 };
 
+// const isMobile = useMediaQuery({ maxWidth: 1024 });
+
+// const isDefault = useMediaQuery({ minWidth: 1024 });
+
 const Header = (headerProps: HeaderProps) => {
   const { onClickWalletBtn } = headerProps;
   const { connected, connect, wallet } = useWallet();
   const network = useSelector(walletSelectors.getNetwork);
   const [hover, setHover] = React.useState(false);
   const history = useHistory();
+  const isTabletOrMobile = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
+  const isDesktop = useMediaQuery({ minWidth: 1025 });
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
   useEffect(() => {
     if (connected) {
@@ -78,22 +86,73 @@ const Header = (headerProps: HeaderProps) => {
   };
 
   return (
-    <div className="header d-flex">
+    <div className="header row ">
       {/* {isTable && <img src={darkMode ? darkLogo : logo} alt="logo" />} */}
-
-      {connected && network.value === 'devnet' && <GuideModal />}
-      {connected && network.value === 'devnet' && (
-        <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
-          Faucet
-        </Button>
+      {isDesktop && (
+        <>
+          <div className="d-flex justify-content-end col-lg-auto ">
+            {connected && network.value === 'devnet' && <GuideModal />}
+            {connected && network.value === 'devnet' && (
+              <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
+                Faucet
+              </Button>
+            )}
+          </div>
+          {/* {connected && network.value === 'devnet' && <div className="header__gap" />} */}
+          <div className="col-lg-auto ">{renderTotalUSDrDebt()}</div>
+          <div className="col-lg-auto">{renderTotalTVLCap()}</div>
+          {/* {connected && <div className="header__gap" />} */}
+          <div className="d-flex justify-content-end col-lg-auto">
+            <SwitchButton />
+            {/* <NetworkSelector /> */}
+            {renderWalletConnection()}
+          </div>
+        </>
       )}
-      {connected && network.value === 'devnet' && <div className="header__gap" />}
-      {renderTotalUSDrDebt()}
-      {renderTotalTVLCap()}
-      {connected && <div className="header__gap" />}
-      <SwitchButton />
-      {/* <NetworkSelector /> */}
-      {renderWalletConnection()}
+      {isTabletOrMobile && (
+        <>
+          <div className="d-flex justify-content-end align-items-center w-100">
+            <div className="d-flex justify-content-end col ">
+              {connected && network.value === 'devnet' && <GuideModal />}
+              {connected && network.value === 'devnet' && (
+                <Button
+                  disabled={!connected}
+                  className="button--blue walletBtn"
+                  onClick={() => history.push('/faucet')}
+                >
+                  Faucet
+                </Button>
+              )}
+            </div>
+            <div className="d-flex justify-content-end col-sm-auto">
+              <SwitchButton />
+              {/* <NetworkSelector /> */}
+              {renderWalletConnection()}
+            </div>
+          </div>
+          <div className="col-md-6 mt-4 ">{renderTotalUSDrDebt()}</div>
+          <div className="col-md-6 mt-4">{renderTotalTVLCap()}</div>
+        </>
+      )}
+      {isMobile && (
+        <>
+          <div className="d-flex justify-content-end col-lg-auto">
+            <SwitchButton />
+            {/* <NetworkSelector /> */}
+            {renderWalletConnection()}
+          </div>
+          <div className="d-flex justify-content-end col mt-3 ">
+            {connected && network.value === 'devnet' && <GuideModal />}
+            {connected && network.value === 'devnet' && (
+              <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
+                Faucet
+              </Button>
+            )}
+          </div>
+          <div className="col-md-6 mt-4 ">{renderTotalUSDrDebt()}</div>
+          <div className="col-md-6 mt-4">{renderTotalTVLCap()}</div>
+        </>
+      )}
     </div>
   );
 };

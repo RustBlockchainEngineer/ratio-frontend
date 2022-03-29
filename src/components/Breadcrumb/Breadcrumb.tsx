@@ -20,6 +20,7 @@ const Breadcrumb = ({ vaultData, availableVaults }: any) => {
   const isVaultActive = useIsVaultActive(vaultData?.mint || '');
 
   useEffect(() => {
+    console.log(availableVaults);
     const p = availableVaults.map((item: any) => {
       return { label: item.title, icon1: item.icons[0], icon2: item.icons[1], icon: item.icon, value: item.mint };
     });

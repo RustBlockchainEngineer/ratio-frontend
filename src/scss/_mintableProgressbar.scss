@@ -7,10 +7,14 @@
     border: 1px solid var(--unnamed-color-f9fbfe);
     border-radius: 8px;
     position: relative;
+    @include respond-to(lg) {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
     @include respond-to(md) {
       margin-left: 0rem;
       margin-right: 0rem;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
     }
     &::before {
       content: 'Vault Mintable USDr';
