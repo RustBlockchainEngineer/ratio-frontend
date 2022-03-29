@@ -104,7 +104,7 @@ const Layer = () => {
         rtl={false}
         pauseOnFocusLoss
         draggable={false}
-        limit={1}
+        limit={2}
         pauseOnHover
       />
       {authFetchLoading && (
