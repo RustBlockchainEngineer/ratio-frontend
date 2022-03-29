@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
@@ -45,18 +45,20 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const userState = useUserInfo(data.mint);
   const vaultState = useUserInfo(data.mint);
 
-  // eslint-disable-next-line
-  const [tvl, setTVL] = React.useState(0);
-  const [totalDebt, setTotalDebt] = React.useState(0);
-  const [remainingDebt, setRemainingDebt] = React.useState(0);
+  const [isHarvesting, setIsHarvesting] = useState(false);
 
-  const [positionValue, setPositionValue] = React.useState(0);
   // eslint-disable-next-line
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState(false);
+  const [tvl, setTVL] = useState(0);
+  const [totalDebt, setTotalDebt] = useState(0);
+  const [remainingDebt, setRemainingDebt] = useState(0);
+
+  const [positionValue, setPositionValue] = useState(0);
+  // eslint-disable-next-line
+  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = useState(false);
 
   const PoolManagerFactory = useGetPoolManager(data.item);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (userState && tokenPrice && collMint) {
       const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
       setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
@@ -66,7 +68,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     };
   }, [tokenPrice, userState, collMint]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint && globalState) {
       const remainingGlobalDebt = calculateRemainingGlobalDebt(globalState, usdrMint);
       const remainingUserDebt = calculateRemainingUserDebt(tokenPrice, data.risk, userState, collMint, usdrMint);
@@ -80,7 +82,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     };
   }, [tokenPrice, userState, globalState, usdrMint, collMint]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (connection && collMint && usdrMint && data.mint && vaultState) {
       const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
       const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
@@ -110,6 +112,8 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   };
 
   const harvest = async () => {
+    setIsHarvesting(true);
+
     try {
       if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
         throw new Error('Pool manager factory not initialized');
@@ -124,6 +128,8 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
       else toast.error('Transaction Error!');
     }
+
+    setIsHarvesting(false);
   };
 
   const renderModalButton = () => {
@@ -131,7 +137,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
       <div className="col">
         <div className="d-flex">
           <Button
-            disabled={!connected}
+            disabled={!connected || isHarvesting}
             className="button button--gradientBorder activepaircard__generate mt-2"
             onClick={harvest}
           >

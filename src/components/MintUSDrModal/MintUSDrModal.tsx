@@ -27,12 +27,12 @@ import {
 } from '../../contexts/state';
 
 const MintUSDrModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
 
   // eslint-disable-next-line
-  const [mintTime, setMintTime] = React.useState('');
+  const [mintTime, setMintTime] = useState('');
 
   const tokenPrice = usePrice(data.mint);
 
@@ -42,18 +42,21 @@ const MintUSDrModal = ({ data }: any) => {
 
   const collAccount = useAccountByMint(data.mint);
 
-  const [borrowAmount, setBorrowAmount] = React.useState(0);
-  const [maxUSDrAmount, setMaxUSDrAmount] = React.useState(0);
+  const [borrowAmount, setBorrowAmount] = useState(0);
+  const [maxUSDrAmount, setMaxUSDrAmount] = useState(0);
 
   // eslint-disable-next-line
-  const [maxLPAmount, setMaxLockAmount] = React.useState(0);
+  const [maxLPAmount, setMaxLockAmount] = useState(0);
   const [lpWalletBalance, setLpWalletBalance] = useState(0);
 
-  const [mintStatus, setMintStatus] = React.useState(false);
+  const [mintStatus, setMintStatus] = useState(false);
 
   // eslint-disable-next-line
-  const [lockStatus, setLockStatus] = React.useState(false);
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const [lockStatus, setLockStatus] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+
+  const [isMinting, setIsMinting] = useState(false);
+  const [didMount, setDidMount] = useState(false);
 
   useEffect(() => {
     if (userState && tokenPrice && collMint && usdrMint) {
@@ -98,7 +101,6 @@ const MintUSDrModal = ({ data }: any) => {
 
   const updateRFStates = useUpdateRFStates();
 
-  const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
     return () => setDidMount(false);
@@ -108,25 +110,33 @@ const MintUSDrModal = ({ data }: any) => {
     return null;
   }
 
-  const mintUSDr = () => {
-    if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {
-      // toast('Amount is invalid to mint USDr!');
-      setMintStatus(true);
-      return;
+  const mintUSDr = async () => {
+    try {
+      console.log('Minting', borrowAmount);
+
+      if (!(maxUSDrAmount >= borrowAmount && borrowAmount > 0)) {
+        setMintStatus(true);
+        return;
+      }
+
+      setIsMinting(true);
+
+      await borrowUSDr(
+        connection,
+        wallet,
+        borrowAmount * Math.pow(10, usdrMint?.decimals as number),
+        new PublicKey(data.mint)
+      );
+
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      toast('Successfully Minted!');
+    } catch (err) {
+      console.error(err);
+      toast.error('Transaction Error!');
     }
 
-    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint?.decimals as number), new PublicKey(data.mint))
-      .then(() => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
-      })
-      .catch((e) => {
-        console.log(e);
-      })
-      .finally(() => {
-        toast('Successfully Minted!');
-        setShow(false);
-        // history.push(`/dashboard/vaultdashboard/${data.mint}`);
-      });
+    setIsMinting(false);
+    setShow(false);
   };
 
   return (
@@ -163,9 +173,9 @@ const MintUSDrModal = ({ data }: any) => {
               invalidStr="Amount is invalid to mint USDr!"
             />
             <Button
-              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount)}
+              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount) || isMinting}
               className="button--fill lockBtn"
-              onClick={() => mintUSDr()}
+              onClick={mintUSDr}
             >
               Mint USDr
             </Button>
