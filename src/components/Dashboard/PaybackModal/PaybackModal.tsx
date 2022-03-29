@@ -61,7 +61,7 @@ const PaybackModal = ({ data }: any) => {
         postToRatioApi(
           {
             tx_type: 'payback',
-            address_id: new PublicKey(data.mint).toString(),
+            address_id: data.mint,
             signature: txSignature,
           },
           `/transaction/${wallet?.publicKey.toBase58()}/new`

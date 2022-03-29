@@ -77,6 +77,7 @@ const GenerateModal = ({ data }: any) => {
         postToRatioApi(
           {
             tx_type: 'borrow',
+            address_id: data.mint,
             signature: txSignature,
           },
           `/transaction/${wallet?.publicKey.toBase58()}/new`
