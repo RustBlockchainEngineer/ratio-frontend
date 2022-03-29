@@ -142,7 +142,7 @@ const VaultSetup = () => {
                 </a>
               )}
               <p className="vault-setup-header-gap mx-3">|</p>
-              <p className="vault-setup-header-label mr-1">APR:</p>
+              <p className="vault-setup-header-label mr-1">APY:</p>
               <p className="vault-setup-header-value">{Number(vaultData?.apr).toFixed(2)}%</p>
               <p className="vault-setup-header-gap mx-3">|</p>
               <p className="vault-setup-header-label mr-1">TVL:</p>
