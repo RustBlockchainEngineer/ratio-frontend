@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
@@ -15,7 +15,7 @@ import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 const DepositModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const collMint = useMint(data?.mint);
@@ -25,13 +25,14 @@ const DepositModal = ({ data }: any) => {
   const PoolManagerFactory = useGetPoolManager(vault);
 
   const collAccount = useAccountByMint(data.mint);
-  const [depositAmount, setDepositAmount] = React.useState(0);
+  const [depositAmount, setDepositAmount] = useState(0);
 
-  const [didMount, setDidMount] = React.useState(false);
+  const [didMount, setDidMount] = useState(false);
 
-  const [depositStatus, setDepositStatus] = React.useState(false);
-  const [invalidStr, setInvalidStr] = React.useState('');
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const [depositStatus, setDepositStatus] = useState(false);
+  const [invalidStr, setInvalidStr] = useState('');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [isDepositing, setIsDepositing] = useState(false);
 
   const updateRFStates = useUpdateRFStates();
 
@@ -45,40 +46,39 @@ const DepositModal = ({ data }: any) => {
     return null;
   }
 
-  const deposit = () => {
-    console.log('Depositing', depositAmount, data.value);
-    console.log(data.mint);
-    if (!(depositAmount && data?.value >= depositAmount)) {
-      setDepositStatus(true);
-      setInvalidStr('Insufficient funds to deposit!');
-      return;
+  const deposit = async () => {
+    try {
+      console.log('Depositing', depositAmount);
+      if (!(depositAmount && data?.value >= depositAmount)) {
+        setDepositStatus(true);
+        setInvalidStr('Insufficient funds to deposit!');
+        return;
+      }
+      if (!(collAccount && collMint && connected)) {
+        setDepositStatus(true);
+        setInvalidStr('Invalid  User Collateral account to deposit!');
+        return;
+      }
+
+      setIsDepositing(true);
+      await PoolManagerFactory?.depositLP(
+        connection,
+        wallet,
+        vault as LPair,
+        depositAmount * Math.pow(10, collMint?.decimals ?? 0),
+        collAccount?.pubkey.toString() as string
+      );
+
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      setDepositAmount(0);
+      toast.success('Successfully Deposited!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
     }
-    if (!(collAccount && collMint && connected)) {
-      setDepositStatus(true);
-      setInvalidStr('Invalid  User Collateral account to deposit!');
-      return;
-    }
-    PoolManagerFactory?.depositLP(
-      connection,
-      wallet,
-      vault as LPair,
-      depositAmount * Math.pow(10, collMint?.decimals ?? 0),
-      collAccount?.pubkey.toString() as string
-    )
-      .then(() => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
-        setDepositAmount(0);
-        toast.success('Successfully Deposited!');
-      })
-      .catch((e) => {
-        console.log(e);
-        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-        else toast.error('Transaction Error!');
-      })
-      .finally(() => {
-        console.log('TX SENT SUCCESSFULLY');
-        setShow(!show);
-      });
+    setIsDepositing(false);
+    setShow(false);
   };
   return (
     <div className="dashboardModal">
@@ -134,7 +134,7 @@ const DepositModal = ({ data }: any) => {
               invalidStr={invalidStr}
             />
             <Button
-              disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount)}
+              disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount) || isDepositing}
               className="button--blue bottomBtn"
               onClick={() => deposit()}
             >

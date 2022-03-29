@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
@@ -16,18 +16,19 @@ import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 
 const WithdrawModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const [userCollAccount, setUserCollAccount] = React.useState('');
+  const [userCollAccount, setUserCollAccount] = useState('');
   const collMint = useMint(data.mint);
 
-  const [withdrawAmount, setWithdrawAmount] = React.useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(0);
   const updateRFStates = useUpdateRFStates();
-  const [withdrawStatus, setWithdrawStatus] = React.useState(false);
-  const [invalidStr, setInvalidStr] = React.useState('');
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const [withdrawStatus, setWithdrawStatus] = useState(false);
+  const [invalidStr, setInvalidStr] = useState('');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
@@ -45,7 +46,7 @@ const WithdrawModal = ({ data }: any) => {
     };
   }, [connected]);
 
-  const [didMount, setDidMount] = React.useState(false);
+  const [didMount, setDidMount] = useState(false);
   useEffect(() => {
     setDidMount(true);
     return () => setDidMount(false);
@@ -55,38 +56,40 @@ const WithdrawModal = ({ data }: any) => {
     return null;
   }
 
-  const withdraw = () => {
-    console.log('Withdrawing', withdrawAmount);
-    if (!(withdrawAmount && data.value >= withdrawAmount)) {
-      setWithdrawStatus(true);
-      setInvalidStr('Insufficient funds to withdraw!');
-      return;
+  const withdraw = async () => {
+    try {
+      console.log('Withdrawing', withdrawAmount);
+      if (!(withdrawAmount && data.value >= withdrawAmount)) {
+        setWithdrawStatus(true);
+        setInvalidStr('Insufficient funds to withdraw!');
+        return;
+      }
+
+      if (!(userCollAccount !== '' && collMint)) {
+        setWithdrawStatus(true);
+        setInvalidStr('Invalid  User Collateral account to withdraw!');
+        return;
+      }
+
+      setIsWithdrawing(true);
+
+      await PoolManagerFactory?.withdrawLP(
+        connection,
+        wallet,
+        vault as LPair,
+        withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
+        userCollAccount
+      );
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      setWithdrawAmount(0);
+      toast.success('Successfully Withdrawn!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
     }
-    if (!(userCollAccount !== '' && collMint)) {
-      setWithdrawStatus(true);
-      setInvalidStr('Invalid  User Collateral account to withdraw!');
-      return;
-    }
-    PoolManagerFactory?.withdrawLP(
-      connection,
-      wallet,
-      vault as LPair,
-      withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
-      userCollAccount
-    )
-      .then(() => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
-        toast.success('Successfully Withdrawn!');
-      })
-      .catch((e) => {
-        console.log(e);
-        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-        else toast.error('Transaction Error!');
-      })
-      .finally(() => {
-        setShow(false);
-      });
-    //disabled={Number(data.usdrValue) !== 0}
+    setIsWithdrawing(false);
+    setShow(false);
   };
 
   return (
@@ -154,8 +157,8 @@ const WithdrawModal = ({ data }: any) => {
             />
             <Button
               className="button--blue bottomBtn"
-              disabled={withdrawAmount <= 0 || buttonDisabled || Number(data.usdrValue) !== 0}
-              onClick={() => withdraw()}
+              disabled={withdrawAmount <= 0 || buttonDisabled || Number(data.usdrValue) !== 0 || isWithdrawing}
+              onClick={withdraw}
             >
               Withdraw Assets
             </Button>
