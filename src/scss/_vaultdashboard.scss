@@ -1,51 +1,56 @@
 .vaultdashboard {
   margin-top: 1rem;
   &__header {
-    display: flex;
+    // display: flex;
     @include respond-to(sm) {
       display: block;
     }
     &_titleBox {
       border-top: 1px solid var(--unnamed-color-f9fbfe);
       border-bottom: 1px solid var(--unnamed-color-f9fbfe);
-      padding: 3rem 5rem !important;
-      padding-top: 1rem !important;
-      width: 80%;
+      padding: 1rem 4rem !important;
+      // padding-top: 1rem !important;
+      // width: 80%;
       @include respond-to(lg) {
         padding: 2rem 2rem !important;
         width: 100%;
+        .row [class*='col']{
+          padding-left: 0;
+          padding-right: 0;
+        }
       }
       @include respond-to(sm) {
         padding-top: 0rem;
-        border-top: 0px;
+        // border-top: 0px;
+        
       }
       h3 {
         font-family: 'Poppins-Medium';
         color: var(--unnamed-color-3c4760);
         font-size: 24px;
         margin-bottom: 24px;
-        @include respond-to(sm) {
+        @include respond-to(lg) {
           margin-bottom: 12px;
         }
       }
       a {
         display: block;
         color: var(--unnamed-color-4c646f);
-        text-align: right;
+        // text-align: right;
         &:hover {
           color: var(--unnamed-color-4c646f);
         }
-        @include respond-to(sm) {
+        @include respond-to(lg) {
           text-align: left;
-          margin-bottom: 12px;
+          margin-bottom: 20px;
         }
       }
     }
     &_rightBox {
       // margin-bottom: 50px;
-      border-top: 1px solid var(--unnamed-color-f9fbfe);
-      border-bottom: 1px solid var(--unnamed-color-f9fbfe);
-      width: 20%;
+      // border-top: 1px solid var(--unnamed-color-f9fbfe);
+      // border-bottom: 1px solid var(--unnamed-color-f9fbfe);
+      // width: 20%;
       display: flex;
       justify-content: flex-end;
       align-items: center;
@@ -61,6 +66,7 @@
         display: block;
         color: var(--unnamed-color-4c646f);
         text-align: right;
+        margin-bottom: 0px;
         &:hover {
           color: var(--unnamed-color-4c646f);
         }

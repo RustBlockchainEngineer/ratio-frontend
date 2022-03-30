@@ -56,14 +56,8 @@ const VaultDebt = ({ data }: any) => {
 
   return (
     <div className="vaultdebt">
-      <h4>Vault Debt</h4>
-      {/* <PaybackModal data={paybackData} /> */}
-      {/* <Button className="button--fill paybackusdr" onClick={() => repay()}>
-        Pay Back
-      </Button> */}
-      <p>
-        You owe <strong>{Math.ceil(data.usdrValue * 100) / 100} USDr</strong>
-      </p>
+      <p>You owe</p>
+      <strong>{Math.ceil(data.usdrValue * 100) / 100} USDr</strong>
     </div>
   );
 };

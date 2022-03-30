@@ -14,6 +14,7 @@ import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
+import WarningLimitBox from './WarningLimitBox';
 
 const VaultSetupContainer = ({ data }: any) => {
   const history = useHistory();
@@ -143,6 +144,9 @@ const VaultSetupContainer = ({ data }: any) => {
             15,304.82 DAI
           </strong>
         </div> */}
+        <div>
+          <WarningLimitBox />
+        </div>
         <div>
           <Button
             disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount)}
