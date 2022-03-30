@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Table } from 'react-bootstrap';
 import Button from '../../Button';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
@@ -26,6 +26,8 @@ const TokensEarned = ({ data }: any) => {
   const userState = useUserInfo(data.mintAddress);
   const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
 
+  const [isHarvesting, setIsHarvesting] = useState(false);
+
   const harvest = async () => {
     try {
       if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
@@ -33,6 +35,7 @@ const TokensEarned = ({ data }: any) => {
       }
 
       console.log('Harvesting...');
+      setIsHarvesting(true);
       await PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair);
       await updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
       toast.success('Successfully Harvested!');
@@ -41,6 +44,7 @@ const TokensEarned = ({ data }: any) => {
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
       else toast.error('Transaction Error!');
     }
+    setIsHarvesting(false);
   };
 
   const getTokenNameByPlatform = (name: string) => {
@@ -93,7 +97,7 @@ const TokensEarned = ({ data }: any) => {
         </tbody>
       </Table>
       <div className="px-4">
-        <Button className="button--blue generate btn-block" onClick={harvest}>
+        <Button className="button--blue generate btn-block" onClick={harvest} disabled={isHarvesting}>
           Harvest
         </Button>
       </div>
