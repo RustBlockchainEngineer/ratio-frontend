@@ -119,30 +119,28 @@ const VaultSetupContainer = ({ data }: any) => {
         </div>
       </div>
       <div className="vaultsetupcontainer-bottom p-4">
-        {/* <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between">
           <p className="vaultsetupcontainer-title">Details</p>
-        </div> */}
-        {/* <div className="d-flex justify-content-between align-items-start mt-3">
+        </div>
+        <div className="d-flex justify-content-between align-items-start mt-3">
           <p className="vaultsetupcontainer-label">Slippage</p>
-          <strong className="vaultsetupcontainer-value">
-            <IoIosArrowRoundForward size="25" color="#A5B1B6" />
-            300.00%
-          </strong>
-        </div> */}
-        {/* <div className="d-flex justify-content-between mt-1">
+          <strong className="vaultsetupcontainer-value">300.00%</strong>
+        </div>
+        <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Collateral ratio</p>
           <strong className="vaultsetupcontainer-value">
-            {collateralRatioError !== null ? '...' : (collateralRatio * 100).toFixed(2)}%
+            <strong className="vaultsetupcontainer-value">0.00%</strong>
+            {/*  {collateralRatioError !== null ? '...' : (collateralRatio * 100).toFixed(2)}% */}
           </strong>
-        </div> */}
-        {/* <div className="d-flex justify-content-between mt-3">
+        </div>
+        <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Outstanding debt</p>
-          <strong className="vaultsetupcontainer-value">
-            0.001 DAI
-            <IoIosArrowRoundForward size="25" color="#A5B1B6" />
-            15,304.82 DAI
-          </strong>
-        </div> */}
+          <strong className="vaultsetupcontainer-value">0.001 DAI </strong>
+        </div>
+        <div className="d-flex justify-content-between mt-3">
+          <p className="vaultsetupcontainer-label">Vault mintable USDr</p>
+          <strong className="vaultsetupcontainer-value">15,304.82 DAI</strong>
+        </div>
         <div>
           <Button
             disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount)}
