@@ -16,20 +16,29 @@ function makeSolanaExplorerLink(txSignature: string, cluster = 'devnet'): string
   return `https://explorer.solana.com/tx/${txSignature}?cluster=${cluster}`;
 }
 
-function formatDate(timestamp = 0): string {
+function formatNumberWith2Digits(number: number): string {
+  return (number < 10 ? '0' : '') + number;
+}
+
+function formatDate(timestamp = ''): string {
   const date = new Date(timestamp);
-  const formatDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-  const timeDate = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  const formatDate = `${formatNumberWith2Digits(date.getDate())}/${formatNumberWith2Digits(
+    date.getMonth() + 1
+  )}/${date.getFullYear()}`;
+  const timeDate = `${formatNumberWith2Digits(date.getHours())}:${formatNumberWith2Digits(
+    date.getMinutes()
+  )}:${formatNumberWith2Digits(date.getSeconds())}`;
   return formatDate + ' ' + timeDate;
 }
 
 function formatTxHistory(transactions: WalletTXDetail[], cluster: string): FormattedTX[] {
   const formattedTxs = transactions.map((tx: WalletTXDetail) => {
     return {
-      date: formatDate(tx?.slot),
+      date: formatDate(tx?.created_on),
       txType: tx?.transaction_type.toString(),
       status: tx?.status,
-      txSignature: makeSolanaExplorerLink(tx?.transaction_id, cluster),
+      txSignature: tx?.transaction_id,
+      txExplorerUrl: makeSolanaExplorerLink(tx?.transaction_id, cluster),
     };
   });
   return formattedTxs;
