@@ -75,8 +75,7 @@ const VaultDashboard = () => {
     () => `https://solanabeach.io/address/${vault_mint}?cluster=${DEFAULT_NETWORK}`,
     [vault_mint]
   );
-
-  const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.title);
+  const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.platform?.symbol);
 
   useEffect(() => {
     if (statusPrice === FetchingStatus.Error && errorPrice) {

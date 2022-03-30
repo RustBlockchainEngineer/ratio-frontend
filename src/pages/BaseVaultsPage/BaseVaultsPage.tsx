@@ -105,6 +105,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 link: item.platform_site,
                 name: item.platform_name,
                 icon: item.platform_icon,
+                symbol: item.platform_symbol,
               },
               risk: item.risk_rating,
               riskLevel: getRiskLevelNumber(item.risk_rating),
