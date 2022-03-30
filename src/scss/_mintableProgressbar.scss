@@ -28,10 +28,7 @@
       color: var(--unnamed-color-002332);
     }
     &__progressbar {
-      width: 9.375rem;
-      @include respond-to(sm) {
-        width: 100%;
-      }
+      width: 100%;
       .navbarprogressbar__header {
         justify-content: flex-end;
       }
