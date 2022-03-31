@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import classNames from 'classnames';
 // import { IoIosArrowRoundForward } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
@@ -14,6 +15,7 @@ import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
+import { NavBarProgressBarVaultMintableUSDr } from '../Navbar/NavBarVaultMintableUSDr';
 
 const VaultSetupContainer = ({ data }: any) => {
   const history = useHistory();
@@ -22,7 +24,6 @@ const VaultSetupContainer = ({ data }: any) => {
   const { wallet, connected } = useWallet();
   const collMint = useMint(data?.mint);
   // const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(data?.risk);
-
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
   const PoolManagerFactory = useGetPoolManager(vault);
@@ -122,24 +123,12 @@ const VaultSetupContainer = ({ data }: any) => {
         <div className="d-flex justify-content-between">
           <p className="vaultsetupcontainer-title">Details</p>
         </div>
-        <div className="d-flex justify-content-between align-items-start mt-3">
-          <p className="vaultsetupcontainer-label">Slippage</p>
-          <strong className="vaultsetupcontainer-value">300.00%</strong>
-        </div>
-        <div className="d-flex justify-content-between mt-3">
-          <p className="vaultsetupcontainer-label">Collateral ratio</p>
-          <strong className="vaultsetupcontainer-value">
-            <strong className="vaultsetupcontainer-value">0.00%</strong>
-            {/*  {collateralRatioError !== null ? '...' : (collateralRatio * 100).toFixed(2)}% */}
-          </strong>
-        </div>
         <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Outstanding debt</p>
-          <strong className="vaultsetupcontainer-value">0.001 DAI </strong>
+          <strong className="vaultsetupcontainer-value">0.000</strong>
         </div>
-        <div className="d-flex justify-content-between mt-3">
-          <p className="vaultsetupcontainer-label">Vault mintable USDr</p>
-          <strong className="vaultsetupcontainer-value">15,304.82 DAI</strong>
+        <div>
+          <NavBarProgressBarVaultMintableUSDr className={classNames('')} mint={data?.mint} />
         </div>
         <div>
           <Button
