@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import classNames from 'classnames';
 // import { IoIosArrowRoundForward } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
@@ -15,7 +14,6 @@ import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
-import { NavBarProgressBarVaultMintableUSDr } from '../Navbar/NavBarVaultMintableUSDr';
 import WarningLimitBox from './WarningLimitBox';
 
 const VaultSetupContainer = ({ data }: any) => {
@@ -127,9 +125,6 @@ const VaultSetupContainer = ({ data }: any) => {
         <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Outstanding debt</p>
           <strong className="vaultsetupcontainer-value">0.000</strong>
-        </div>
-        <div>
-          <NavBarProgressBarVaultMintableUSDr className={classNames('')} mint={data?.mint} />
         </div>
         <div>
           <WarningLimitBox />
