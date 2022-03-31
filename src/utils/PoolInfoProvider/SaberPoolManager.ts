@@ -27,7 +27,7 @@ export class SaberPoolManager extends GenericPoolManager {
       amount,
       new PublicKey(tokenAccount)
     );
-    this.postTransactionToApi(txHash, tokenAccount, 'deposit', wallet?.publicKey);
+    this.postTransactionToApi(txHash, vault.address_id, 'deposit', wallet?.publicKey);
     return txHash;
   }
 
@@ -45,7 +45,7 @@ export class SaberPoolManager extends GenericPoolManager {
       amount,
       new PublicKey(tokenAccount)
     );
-    this.postTransactionToApi(txHash, tokenAccount, 'withdraw', wallet?.publicKey);
+    this.postTransactionToApi(txHash, vault.address_id, 'withdraw', wallet?.publicKey);
     return txHash;
   }
 

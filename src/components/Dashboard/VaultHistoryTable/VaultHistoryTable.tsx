@@ -41,14 +41,17 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
             {status === FetchingStatus.Finish &&
               (txHistory.length > 0 ? (
                 txHistory.map((tx: FormattedTX) => {
+                  console.log('tx=>', tx);
                   return (
                     <tr>
                       <td className="w-50">{tx?.date}</td>
                       <td className="activity">{tx?.txType}</td>
                       <td className="activity">{tx?.status}</td>
                       <td className="tx_hash text-right">
-                        `${tx?.txSignature?.slice(31, 35)}...`
-                        <img src={share} alt="share" />
+                        <a className="d-flex" target="_blank" rel="noreferrer" href={tx?.txExplorerUrl}>
+                          {`${tx?.txSignature?.slice(0, 4)}...`}
+                          <img src={share} alt="share" />
+                        </a>
                       </td>
                     </tr>
                   );
@@ -56,7 +59,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
               ) : (
                 <tr>
                   <td colSpan={4} className="text-center">
-                    <h6>Coming Soon</h6>
+                    <h6>There&apos;s no transaction history</h6>
                   </td>
                 </tr>
               ))}

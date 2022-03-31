@@ -82,7 +82,7 @@ const TokensEarned = ({ data }: any) => {
             <td className="align-middle">
               {userState?.reward} {getTokenNameByPlatform(data?.platform?.name)}
             </td>
-            <td className="text-right align-middle">
+            <td className="align-middle">
               {saberPriceStatus === FetchingStatus.Loading && (
                 <LoadingSpinner className="spinner-border-sm text-info" />
               )}

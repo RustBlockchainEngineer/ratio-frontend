@@ -16,6 +16,7 @@ import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
 import { NavBarProgressBarVaultMintableUSDr } from '../Navbar/NavBarVaultMintableUSDr';
+import WarningLimitBox from './WarningLimitBox';
 
 const VaultSetupContainer = ({ data }: any) => {
   const history = useHistory();
@@ -129,6 +130,9 @@ const VaultSetupContainer = ({ data }: any) => {
         </div>
         <div>
           <NavBarProgressBarVaultMintableUSDr className={classNames('')} mint={data?.mint} />
+        </div>
+        <div>
+          <WarningLimitBox />
         </div>
         <div>
           <Button
