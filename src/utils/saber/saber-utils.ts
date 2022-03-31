@@ -268,6 +268,11 @@ export async function depositToSaber(
   });
   transaction.add(ix);
   const txHash = await sendTransaction(connection, wallet, transaction);
+  await connection.confirmTransaction(txHash);
+  if (txHash.value.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
   console.log('Saber deposit tx', txHash);
   return txHash.toString();
 }
@@ -341,6 +346,11 @@ export async function withdrawFromSaber(
   transaction.add(harvest_ix);
 
   const txHash = await sendTransaction(connection, wallet, transaction);
+  await connection.confirmTransaction(txHash);
+  if (txHash.value.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
   console.log('Saber withdraw tx', txHash);
 
   return txHash;

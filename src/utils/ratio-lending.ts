@@ -258,6 +258,11 @@ export async function borrowUSDr(
   transaction.add(borrowInstruction);
 
   const txHash = await sendTransaction(connection, wallet, transaction, signers);
+  await connection.confirmTransaction(txHash);
+  if (txHash.value.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
   console.log(`User borrowed ${amount / Math.pow(10, USD_DECIMALS)} USD , transaction id = ${txHash}`);
 
   return txHash;
@@ -480,6 +485,11 @@ export async function repayUSDr(
   });
 
   const txHash = await sendTransaction(connection, wallet, transaction, signers);
+  await connection.confirmTransaction(txHash);
+  if (txHash.value.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
   console.log(`User repaid ${amount / Math.pow(10, USD_DECIMALS)} USD , transaction id = ${txHash}`);
 
   return txHash;
