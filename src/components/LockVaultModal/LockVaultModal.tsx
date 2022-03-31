@@ -151,8 +151,8 @@ const LockVaultModal = ({ data }: any) => {
           <div className="lockvaultmodal__footer">
             <IoMdClose size={32} className="lockvaultmodal__header-close" onClick={() => setShow(false)} />
             <div>
-              <img src={data.icons[0]} alt={data.icons[0].toString()} className="lockvaultmodal__header-icon1" />
-              <img src={data.icons[1]} alt={data.icons[1].toString()} className="lockvaultmodal__header-icon2" />
+              <img src={data?.icons[0]} alt={data?.icons[0]?.toString()} className="lockvaultmodal__header-icon1" />
+              <img src={data?.icons[1]} alt={data?.icons[1]?.toString()} className="lockvaultmodal__header-icon2" />
             </div>
             <h3 className="mt-3">Deposit {data.title} LP into vault</h3>
             <label className="lockvaultmodal__label1 mb-2">How much would you like to deposit?</label>

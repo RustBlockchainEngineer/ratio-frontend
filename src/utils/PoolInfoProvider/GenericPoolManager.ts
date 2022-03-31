@@ -66,7 +66,12 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
 
   abstract getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number>;
 
-  async postTransactionToApi(txSignature: string, lp_token_address: string, txType: string, walletPublicKey: string): Promise<any> {
+  async postTransactionToApi(
+    txSignature: string,
+    lp_token_address: string,
+    txType: string,
+    walletPublicKey: string
+  ): Promise<any> {
     // /transaction/:wallet_id/new`
     try {
       const response = await postToRatioApi(

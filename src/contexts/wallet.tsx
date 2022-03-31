@@ -9,7 +9,6 @@ import { notify } from './../utils/notifications';
 import { useConnectionConfig } from './connection';
 import { useLocalStorageState } from './../utils/utils';
 import { LedgerWalletAdapter } from '../wallet-adapters/ledger';
-import { SolongWalletAdapter } from '../wallet-adapters/solong';
 import { PhantomWalletAdapter } from '../wallet-adapters/phantom';
 
 const ASSETS_URL = 'https://raw.githubusercontent.com/solana-labs/oyster/main/assets/wallets/';
@@ -30,12 +29,6 @@ export const WALLET_PROVIDERS = [
     url: 'https://www.ledger.com',
     icon: `${ASSETS_URL}ledger.svg`,
     adapter: LedgerWalletAdapter,
-  },
-  {
-    name: 'Solong',
-    url: 'https://solongwallet.com',
-    icon: `${ASSETS_URL}solong.png`,
-    adapter: SolongWalletAdapter,
   },
   {
     name: 'MathWallet',

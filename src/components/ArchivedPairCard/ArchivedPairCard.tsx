@@ -29,8 +29,8 @@ const ArchivedPairCard = ({ data }: ArchivedCardProps) => {
           <div className="archivedpaircard__header">
             <div className="d-flex">
               <div>
-                <img src={data.icons[0]} alt={data.icons[0].toString()} />
-                <img src={data.icons[1]} alt={data.icons[1].toString()} className="archivedpaircard__header-icon" />
+                <img src={data?.icons[0]} alt={data?.icons[0]?.toString()} />
+                <img src={data?.icons[1]} alt={data?.icons[1]?.toString()} className="archivedpaircard__header-icon" />
               </div>
               <div className={classNames('archivedpaircard__titleBox')}>
                 <h6>{data?.title}</h6>

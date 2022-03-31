@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useConnection } from '../../../contexts/connection';
@@ -14,20 +14,23 @@ import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
 const GenerateModal = ({ data }: any) => {
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
   // eslint-disable-next-line
-  const [mintTime, setMintTime] = React.useState('');
+  const [mintTime, setMintTime] = useState('');
 
   const userState = useUserInfo(data.mint);
   const usdrMint = useUSDrMintInfo();
 
-  const [borrowAmount, setBorrowAmount] = React.useState(0);
+  const [borrowAmount, setBorrowAmount] = useState(0);
   const updateRFStates = useUpdateRFStates();
-  const [mintStatus, setMintStatus] = React.useState(false);
-  const [invalidStr, setInvalidStr] = React.useState('');
-  const [buttonDisabled, setButtonDisabled] = React.useState(true);
+  const [mintStatus, setMintStatus] = useState(false);
+  const [invalidStr, setInvalidStr] = useState('');
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+
+  const [isMinting, setIsMinting] = useState(false);
+  const [didMount, setDidMount] = useState(false);
 
   useEffect(() => {
     if (userState) {
@@ -41,7 +44,6 @@ const GenerateModal = ({ data }: any) => {
     };
   }, [userState]);
 
-  const [didMount, setDidMount] = React.useState(false);
   useEffect(() => {
     setDidMount(true);
     return () => setDidMount(false);
@@ -51,24 +53,51 @@ const GenerateModal = ({ data }: any) => {
     return null;
   }
 
-  const borrow = () => {
-    console.log('Borrowing USDr', borrowAmount);
-    // FixMe: Let's ignore this at the moment.
-    // If this is really necessary, we should add some codes on contract also.
-    /*if (borrowAmount < 10) {
-      setMintStatus(true);
-      setInvalidStr('You must mint at least 10 USDr');
-      return;
-    }*/
-    if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
-      setMintStatus(true);
-      setInvalidStr('Amount is invalid to generate USDr!');
-      return;
-    }
-    if (!usdrMint) {
-      setMintStatus(true);
-      setInvalidStr('Invalid USDr Mint address to generate!');
-      return;
+  const borrow = async () => {
+    try {
+      console.log('Borrowing USDr', borrowAmount);
+      // FixMe: Let's ignore this at the moment.
+      // If this is really necessary, we should add some codes on contract also.
+      /*if (borrowAmount < 10) {
+        setMintStatus(true);
+        setInvalidStr('You must mint at least 10 USDr');
+        return;
+      }*/
+      if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
+        setMintStatus(true);
+        setInvalidStr('Amount is invalid to generate USDr!');
+        return;
+      }
+      if (!usdrMint) {
+        setMintStatus(true);
+        setInvalidStr('Invalid USDr Mint address to generate!');
+        return;
+      }
+
+      setIsMinting(true);
+
+      const txtSignature = await borrowUSDr(
+        connection,
+        wallet,
+        borrowAmount * Math.pow(10, usdrMint.decimals),
+        new PublicKey(data.mint)
+      );
+
+      const response = await postToRatioApi(
+        {
+          tx_type: 'borrow',
+          signature: txtSignature,
+        },
+        `/transaction/${wallet?.publicKey?.toBase58()}/new`
+      );
+
+      console.log('Response from backend', response);
+      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      toast.success('Successfully minted USDr tokens!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
     }
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
       .then((txSignature: string) => {
@@ -98,6 +127,9 @@ const GenerateModal = ({ data }: any) => {
       .finally(() => {
         setShow(!show);
       });
+
+    setIsMinting(false);
+    setShow(false);
   };
 
   return (
@@ -127,7 +159,7 @@ const GenerateModal = ({ data }: any) => {
               }}
             />
             <div>
-              <img src={data.icons[0]} alt={data.icons[0].toString()} />
+              <img src={data?.icons[0]} alt={data?.icons[0]?.toString()} />
             </div>
             <h4>Mint more USDr</h4>
             <h5>
@@ -159,9 +191,9 @@ const GenerateModal = ({ data }: any) => {
               There will be a 2% stability fee associated with this transaction.
             </p> */}
             <Button
-              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount)}
+              disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount) || isMinting}
               className="button--blue bottomBtn"
-              onClick={() => borrow()}
+              onClick={borrow}
             >
               Mint USDr
             </Button>
