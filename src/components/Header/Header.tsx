@@ -19,6 +19,7 @@ import GuideModal from '../GuideModal';
 type HeaderProps = {
   onClickWalletBtn: () => void;
   darkMode: boolean;
+  enable: boolean;
 };
 
 // const isMobile = useMediaQuery({ maxWidth: 1024 });
@@ -26,7 +27,7 @@ type HeaderProps = {
 // const isDefault = useMediaQuery({ minWidth: 1024 });
 
 const Header = (headerProps: HeaderProps) => {
-  const { onClickWalletBtn } = headerProps;
+  const { onClickWalletBtn, enable } = headerProps;
   const { connected, connect, wallet } = useWallet();
   const network = useSelector(walletSelectors.getNetwork);
   const [hover, setHover] = React.useState(false);
@@ -70,7 +71,7 @@ const Header = (headerProps: HeaderProps) => {
   };
 
   const renderTotalTVLCap = () => {
-    return connected ? (
+    return enable && connected ? (
       <div className="header__connected header__tvl">
         <NavBarProgressBarTVL className="header__progressbar" shouldDisplayLabel={false} />
       </div>
@@ -78,7 +79,7 @@ const Header = (headerProps: HeaderProps) => {
   };
 
   const renderTotalUSDrDebt = () => {
-    return connected ? (
+    return enable && connected ? (
       <div className="header__connected header__debt">
         <NavBarProgressBarTotalUSDr className="header__progressbar" shouldDisplayLabel={false} />
       </div>
@@ -91,8 +92,8 @@ const Header = (headerProps: HeaderProps) => {
       {isDesktop && (
         <>
           <div className="d-flex justify-content-end col-lg-auto col-md-auto ">
-            {connected && network.value === 'devnet' && <GuideModal />}
-            {connected && network.value === 'devnet' && (
+            {connected && network.value === 'devnet' && enable && <GuideModal />}
+            {connected && network.value === 'devnet' && enable && (
               <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
                 Faucet
               </Button>
@@ -113,8 +114,8 @@ const Header = (headerProps: HeaderProps) => {
         <>
           <div className="d-flex justify-content-end align-items-center w-100">
             <div className="d-flex justify-content-end col ">
-              {connected && network.value === 'devnet' && <GuideModal />}
-              {connected && network.value === 'devnet' && (
+              {connected && network.value === 'devnet' && enable && <GuideModal />}
+              {connected && network.value === 'devnet' && enable && (
                 <Button
                   disabled={!connected}
                   className="button--blue walletBtn"
@@ -142,8 +143,8 @@ const Header = (headerProps: HeaderProps) => {
             {renderWalletConnection()}
           </div>
           <div className="d-flex justify-content-end col mt-3 ">
-            {connected && network.value === 'devnet' && <GuideModal />}
-            {connected && network.value === 'devnet' && (
+            {connected && network.value === 'devnet' && enable && <GuideModal />}
+            {connected && network.value === 'devnet' && enable && (
               <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
                 Faucet
               </Button>
