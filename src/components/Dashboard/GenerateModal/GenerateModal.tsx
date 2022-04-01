@@ -102,6 +102,34 @@ const GenerateModal = ({ data }: any) => {
       if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
       else toast.error('Transaction Error!');
     }
+    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+      .then((txSignature: string) => {
+        updateRFStates(UPDATE_USER_STATE, data.mint);
+        toast.success('Successfully minted USDr tokens!');
+        postToRatioApi(
+          {
+            tx_type: 'borrow',
+            address_id: data.mint,
+            signature: txSignature,
+          },
+          `/transaction/${wallet?.publicKey.toBase58()}/new`
+        )
+          .then((res: string) => {
+            console.log('RES FROM BACKEND', res);
+          })
+          .catch((error: any) => {
+            console.error('ERROR FROM BACKEND', error);
+            throw error;
+          });
+      })
+      .catch((e) => {
+        console.log(e);
+        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
+        else toast.error('Transaction Error!');
+      })
+      .finally(() => {
+        setShow(!show);
+      });
 
     setIsMinting(false);
     setShow(false);
