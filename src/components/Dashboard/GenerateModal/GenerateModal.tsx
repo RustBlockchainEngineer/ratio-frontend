@@ -1,9 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
+import { ThemeContext } from '../../../contexts/ThemeContext';
 import { borrowUSDr } from '../../../utils/ratio-lending';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
@@ -14,6 +15,8 @@ import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
 const GenerateModal = ({ data }: any) => {
+  const theme = useContext(ThemeContext);
+  const { darkMode } = theme.state;
   const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
@@ -119,6 +122,7 @@ const GenerateModal = ({ data }: any) => {
         aria-labelledby="contained-modal-title-vcenter"
         centered
         className="dashboardModal__modal"
+        data-theme={darkMode ? 'dark' : 'light'}
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">

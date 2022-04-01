@@ -1,11 +1,12 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
+import { ThemeContext } from '../../../contexts/ThemeContext';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
@@ -16,6 +17,8 @@ import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 
 const WithdrawModal = ({ data }: any) => {
+  const theme = useContext(ThemeContext);
+  const { darkMode } = theme.state;
   const [show, setShow] = useState(false);
 
   const connection = useConnection();
@@ -107,6 +110,7 @@ const WithdrawModal = ({ data }: any) => {
         aria-labelledby="contained-modal-title-vcenter"
         centered
         className="dashboardModal__modal"
+        data-theme={darkMode ? 'dark' : 'light'}
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">

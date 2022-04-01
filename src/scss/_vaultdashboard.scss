@@ -115,7 +115,7 @@
   &__bodyright {
     margin-bottom: 50px;
     margin-top: 2.5rem;
-    border: 1px solid rgba(#214769, 0.2);
+    border: 1px solid var(--unnamed-color-f9fbfe);
     border-radius: 25px;
     margin-right: 4rem;
     @include respond-to(xxl) {
@@ -128,7 +128,7 @@
       
     }
     @include respond-to(sm) {
-      border: 1px solid rgba(#214769, 0.2);
+      border: 1px solid var(--unnamed-color-f9fbfe);
       border-radius: 25px;
     }
   }

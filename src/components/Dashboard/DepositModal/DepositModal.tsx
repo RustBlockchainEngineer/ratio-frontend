@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useAccountByMint, useMint } from '../../../contexts/accounts';
+import { ThemeContext } from '../../../contexts/ThemeContext';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 
@@ -15,6 +16,8 @@ import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 const DepositModal = ({ data }: any) => {
+  const theme = useContext(ThemeContext);
+  const { darkMode } = theme.state;
   const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
@@ -95,6 +98,7 @@ const DepositModal = ({ data }: any) => {
         aria-labelledby="contained-modal-title-vcenter"
         centered
         className="dashboardModal__modal"
+        data-theme={darkMode ? 'dark' : 'light'}
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">

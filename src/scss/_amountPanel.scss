@@ -1,5 +1,5 @@
 .amountPanel {
-
+  
   h4 {
     font-family: 'Poppins-Medium';
     font-size: 18px;
@@ -37,6 +37,7 @@
     margin-right: 10px;
   }
 
+
   table td {
     font-family: 'Poppins-SemiBold';
     font-size: 14px;
@@ -48,11 +49,14 @@
     padding-left: 1rem;
     // padding-right: 1.5rem;
   }
+  .table {
+  }
   .table th {
     padding-bottom: 0.5rem;
     color: var(--unnamed-color-3c4760);
     font-weight: 400;
     font-size: 12px;
+    border-bottom: 2px solid var(--unnamed-color-f9fbfe);
   }
 
   .systemInfo {

@@ -1,16 +1,17 @@
 .customInput {
   .form-control {
     padding: 13px 16px;
-    border: 1px solid rgba(#4c646f, 0.2);
+    border: 1px solid var(--unnamed-color-f9fbfe);
     border-radius: 4px;
     border-right: 0px;
-    color: #3c4760;
-    background-color: white;
+    color: var(--unnamed-color-3c4760);
+    background-color: var(--unnamed-color-17161f);
     &:focus {
-      border: 1px solid rgba(#4c646f, 0.2) !important;
+      border: 1px solid var(--unnamed-color-f9fbfe);
       border-right: 0px !important;
       box-shadow: none !important;
-      background-color: transparent;
+      background-color: var(--unnamed-color-17161f);
+      color: var(--unnamed-color-3c4760);
     }
   }
   .onlytext {
@@ -28,10 +29,12 @@
     right: 0px;
     padding-right: 10px;
     padding-top: 12px;
-    color: rgba(#3c4760, 0.7);
+    color: var(--unnamed-color-3c4760);
     font-size: 16px;
-    border-top: 1px solid rgba(#4c646f, 0.2);
-    border-bottom: 1px solid rgba(#4c646f, 0.2);
+    border-top: 1px solid var(--unnamed-color-f9fbfe);
+    border-bottom: 1px solid var(--unnamed-color-f9fbfe);
+    background-color: var(--unnamed-color-17161f);
+    opacity: 0.7;
     &--onlytext {
       right: 15px;
     }
