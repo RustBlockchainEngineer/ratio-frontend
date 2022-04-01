@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
@@ -8,16 +8,18 @@ import { NavBarProgressBar, ProgressBarLabelType } from '../Navbar/NavBarProgres
 import highriskIcon from '../../assets/images/highrisk.svg';
 
 const WarningLimitBox = () => {
-  const [currentValue, setValue] = React.useState(0);
-  const [percentage, setPercentage] = React.useState(0);
-  //   const [warning, setWarning] = React.useState(false);
+  const [currentValue, setValue] = useState(0);
+  const [percentage, setPercentage] = useState(0);
+  const [success, setSuccess] = useState(false);
+  const [caution, setCaution] = useState(false);
+  const [warning, setWarning] = useState(false);
 
   const globalState = useRFStateInfo();
 
   const connection = useConnection();
   const { wallet } = useWallet();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!wallet || !wallet.publicKey || !globalState) {
       return;
     }
@@ -32,9 +34,21 @@ const WarningLimitBox = () => {
       setPercentage(0);
       //   setWarning(false);
     } else {
-      const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
-      setPercentage(parseFloat(percentageFull));
-      //   setWarning(currentValue / maxValue === 1);
+      const percentageFull = (currentValue / maxValue) * 100;
+      if (percentageFull >= 0 && percentageFull <= 80) {
+        setSuccess(true);
+        setCaution(false);
+        setWarning(false);
+      } else if (percentageFull > 80 && percentageFull < 100) {
+        setSuccess(false);
+        setCaution(true);
+        setWarning(false);
+      } else if (percentageFull >= 100) {
+        setSuccess(false);
+        setCaution(false);
+        setWarning(true);
+      }
+      setPercentage(parseFloat(percentageFull.toFixed(2)));
     }
   }, [wallet, connection, globalState]);
 
@@ -42,7 +56,11 @@ const WarningLimitBox = () => {
     <div className="warningLimitBox">
       <NavBarProgressBar
         label={ProgressBarLabelType.VaultMint}
-        className={classNames('warningLimitBox__progressbar')}
+        className={classNames(
+          { 'navbarprogressbar--warning': warning && !caution && !success },
+          { 'navbarprogressbar--caution': caution && !warning && !success },
+          { 'navbarprogressbar--success': success && !caution && !warning }
+        )}
         shouldDisplayCurrency={true}
         currentValue={currentValue}
         percentage={percentage}

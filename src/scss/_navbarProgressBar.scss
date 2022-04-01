@@ -29,6 +29,24 @@
       display:flex;
       gap: 10px;
     }
+
+    &--success {
+      .progress-bar {
+        background-color: #07B127;
+      }
+      .detailBox {
+        color: #07B127;
+      }
+    }
+
+    &--caution {
+      .progress-bar {
+        background-color: #F48C57;
+      }
+      .detailBox {
+        color: #F48C57;
+      }
+    }
   
     &--warning {
       .progress-bar {
