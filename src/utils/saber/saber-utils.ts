@@ -209,7 +209,7 @@ export async function depositToSaber(
   mintCollKey: PublicKey,
   amount: number,
   userCollAddress: PublicKey
-): string {
+): Promise<string> {
   console.log('Deposit to Saber', amount);
 
   const program = getProgramInstance(connection, wallet);
@@ -269,7 +269,7 @@ export async function depositToSaber(
   transaction.add(ix);
   const txHash = await sendTransaction(connection, wallet, transaction);
   await connection.confirmTransaction(txHash);
-  if (txHash.value.err) {
+  if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
   }
@@ -347,7 +347,7 @@ export async function withdrawFromSaber(
 
   const txHash = await sendTransaction(connection, wallet, transaction);
   await connection.confirmTransaction(txHash);
-  if (txHash.value.err) {
+  if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
   }
@@ -481,6 +481,11 @@ export async function harvestFromSaber(connection: Connection, wallet: any, mint
 
   if (needTx === false) {
     const txHash = await sendTransaction(connection, wallet, tx);
+    await connection.confirmTransaction(txHash);
+    if (txHash?.value?.err) {
+      console.error('ERROR ON TX ', txHash.value.err);
+      throw txHash.value.err;
+    }
     console.log('Harvest finished', txHash);
     return txHash;
   } else {

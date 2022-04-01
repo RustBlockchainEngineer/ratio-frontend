@@ -259,7 +259,7 @@ export async function borrowUSDr(
 
   const txHash = await sendTransaction(connection, wallet, transaction, signers);
   await connection.confirmTransaction(txHash);
-  if (txHash.value.err) {
+  if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
   }
@@ -486,7 +486,7 @@ export async function repayUSDr(
 
   const txHash = await sendTransaction(connection, wallet, transaction, signers);
   await connection.confirmTransaction(txHash);
-  if (txHash.value.err) {
+  if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
   }
