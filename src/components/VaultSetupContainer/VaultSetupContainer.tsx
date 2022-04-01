@@ -23,7 +23,6 @@ const VaultSetupContainer = ({ data }: any) => {
   const { wallet, connected } = useWallet();
   const collMint = useMint(data?.mint);
   // const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(data?.risk);
-
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
   const PoolManagerFactory = useGetPoolManager(vault);
@@ -120,30 +119,13 @@ const VaultSetupContainer = ({ data }: any) => {
         </div>
       </div>
       <div className="vaultsetupcontainer-bottom p-4">
-        {/* <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between">
           <p className="vaultsetupcontainer-title">Details</p>
-        </div> */}
-        {/* <div className="d-flex justify-content-between align-items-start mt-3">
-          <p className="vaultsetupcontainer-label">Slippage</p>
-          <strong className="vaultsetupcontainer-value">
-            <IoIosArrowRoundForward size="25" color="#A5B1B6" />
-            300.00%
-          </strong>
-        </div> */}
-        {/* <div className="d-flex justify-content-between mt-1">
-          <p className="vaultsetupcontainer-label">Collateral ratio</p>
-          <strong className="vaultsetupcontainer-value">
-            {collateralRatioError !== null ? '...' : (collateralRatio * 100).toFixed(2)}%
-          </strong>
-        </div> */}
-        {/* <div className="d-flex justify-content-between mt-3">
+        </div>
+        <div className="d-flex justify-content-between mt-3">
           <p className="vaultsetupcontainer-label">Outstanding debt</p>
-          <strong className="vaultsetupcontainer-value">
-            0.001 DAI
-            <IoIosArrowRoundForward size="25" color="#A5B1B6" />
-            15,304.82 DAI
-          </strong>
-        </div> */}
+          <strong className="vaultsetupcontainer-value">0.000</strong>
+        </div>
         <div>
           <WarningLimitBox />
         </div>
