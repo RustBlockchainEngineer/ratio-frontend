@@ -48,7 +48,7 @@ const VaultSetup = () => {
   const [usdrWalletBalance, setUsdrWalletBalance] = useState(0);
   const [depositValue, setDepositValue] = useState(0);
 
-  const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.title);
+  const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.platform?.symbol);
 
   useEffect(() => {
     if (statusPrice === FetchingStatus.Error && errorPrice) {
