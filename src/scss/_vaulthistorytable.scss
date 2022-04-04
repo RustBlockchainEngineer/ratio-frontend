@@ -15,7 +15,7 @@
     opacity: 1;
   }
   &__table {
-    border: 1px solid rgba(#4c646f, 0.2);
+    border: 1px solid var(--unnamed-color-f9fbfe);
     border-radius: 16px;
     .table td,
     .table th {
@@ -30,6 +30,7 @@
       color: var(--unnamed-color-4c646f);
       font-weight: 400;
       font-size: 12px;
+      border-bottom: 2px solid var(--unnamed-color-f9fbfe);
     }
     .activity {
       font-family: 'Poppins-SemiBold';

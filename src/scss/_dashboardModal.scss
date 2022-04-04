@@ -15,10 +15,21 @@
     background-color: white;
   }
   &__modal {
+    .modal-content {
+      border-color: var(--unnamed-color-f9fbfe);
+      background-color: var(--unnamed-color-1B1E29);
+    }
     .modal-body {
-      background-color: rgba(#dbe0e2, 0.2);
+      background-color: var(--unnamed-color-171A23);
       border-bottom-left-radius: 16px;
       border-bottom-right-radius: 16px;
+    }
+    .modal-header {
+      background-color: var(--unnamed-color-1B1E29);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-bottom: 1px solid var(--unnamed-color-f9fbfe);
+      border-color: var(--unnamed-color-f9fbfe);
     }
     &__header {
       width: 100%;
@@ -32,12 +43,12 @@
         font-family: 'Poppins-SemiBold';
         font-size: 24px;
         margin-top: 16px;
-        color: #3c4760;
+        color: var(--unnamed-color-3c4760);
       }
       h5 {
         font-family: 'Poppins-Regular';
         font-size: 16px;
-        color: #4c646f;
+        color:  var(--unnamed-color-4c646f);
       }
       &-red {
         font-family: 'Poppins-Medium';
@@ -48,7 +59,7 @@
         top: 20px;
         right: 20px;
         cursor: pointer;
-        color: #002332;
+        color: var(--unnamed-color-002332);
         &:hover {
           opacity: 0.8;
         }
@@ -64,13 +75,13 @@
       label {
         font-family: 'Poppins-Regular';
         font-size: 14px;
-        color: #4c646f;
+        color: var(--unnamed-color-4c646f);
         margin-bottom: 10px;
       }
       h6 {
         font-family: 'Poppins-Regular';
         font-size: 14px;
-        color: #4c646f;
+        color: var(--unnamed-color-4c646f);
         margin-bottom: 0px;
         margin-top: 1.2rem;
       }
