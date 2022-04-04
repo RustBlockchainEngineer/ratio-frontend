@@ -22,7 +22,7 @@ import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
 
 import Breadcrumb from '../../components/Breadcrumb';
-import { Banner, BannerIcon } from '../../components/Banner';
+// import { Banner, BannerIcon } from '../../components/Banner';
 import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
 import { DEFAULT_NETWORK } from '../../constants';
 import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
@@ -30,6 +30,7 @@ import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
 import { FetchingStatus } from '../../types/fetching-types';
 import { toast } from 'react-toastify';
 import MintableProgressBar from '../../components/Dashboard/MintableProgressBar';
+import WarningBanners from '../../components/WarningBanners';
 
 const priceCardData = {
   mainUnit: '',
@@ -219,17 +220,7 @@ const VaultDashboard = () => {
 
   return (
     <>
-      {
-        /* TODO: fix this */
-        false && (
-          <Banner
-            title="USDr Debt Limit Reached:"
-            message="You have reached your overall USDr Debt Limit"
-            bannerIcon={BannerIcon.riskLevel}
-            className="debt-limit-reached"
-          />
-        )
-      }
+      <WarningBanners mint={vaultData.mint} />
       <div className="vaultdashboard">
         <div className="vaultdashboard__header">
           <div className="vaultdashboard__header_titleBox row no-gutters">
