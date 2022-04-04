@@ -220,7 +220,7 @@ const VaultDashboard = () => {
 
   return (
     <>
-      <WarningBanners mint={vaultData.mint} />
+      <WarningBanners mint={vault_mint as string} />
       <div className="vaultdashboard">
         <div className="vaultdashboard__header">
           <div className="vaultdashboard__header_titleBox row no-gutters">
