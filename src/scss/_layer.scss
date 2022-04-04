@@ -108,6 +108,9 @@
       img {
         width: 30px;
       }
+      &:hover {
+        opacity: 0.8;
+      }
     }
   }
 }

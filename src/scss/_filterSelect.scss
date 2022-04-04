@@ -17,7 +17,7 @@
   &__option {
     cursor: pointer;
     img {
-      width: 35px;
+      width: 30px;
     }
     &:hover {
       background-color: var(--unnamed-color-5fb5ff);
@@ -30,6 +30,9 @@
       font-size: 15px;
       font-family: 'Poppins-SemiBold';
       color: var(--unnamed-color-4c646f);
+    }
+    &--icon {
+      border-radius: 100%;
     }
     &--network {
       padding-top: 3px;
