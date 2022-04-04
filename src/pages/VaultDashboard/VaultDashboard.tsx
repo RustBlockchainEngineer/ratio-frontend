@@ -30,7 +30,7 @@ import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
 import { FetchingStatus } from '../../types/fetching-types';
 import { toast } from 'react-toastify';
 import MintableProgressBar from '../../components/Dashboard/MintableProgressBar';
-import WarningBanners from '../../components/WarningBanners';
+import TokenCapBanner from '../../components/TokenCapBanner';
 
 const priceCardData = {
   mainUnit: '',
@@ -220,7 +220,7 @@ const VaultDashboard = () => {
 
   return (
     <>
-      <WarningBanners mint={vault_mint as string} />
+      <TokenCapBanner mint={vault_mint as string} />
       <div className="vaultdashboard">
         <div className="vaultdashboard__header">
           <div className="vaultdashboard__header_titleBox row no-gutters">
