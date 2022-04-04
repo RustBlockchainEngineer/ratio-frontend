@@ -119,7 +119,7 @@ const Layer = () => {
             'layer_container--empty': !enable || !connected,
           })}
         >
-          <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
+          <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} enable={enable} />
           {enable && connected ? (
             <>
               <Navbar
