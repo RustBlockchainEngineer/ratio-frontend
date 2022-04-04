@@ -96,13 +96,13 @@ const selectBanner = (vaultData: any, userVaultData: any, globalStateData: any) 
     .dividedBy(globalTvlLimit.toString())
     .toString();
 
-  if (parseFloat(totalTVLPercentage) >= 100) {
+  if (parseFloat(totalTVLPercentage) >= 80) {
     return getTokenCapBanner('totalTVL', parseFloat(totalTVLPercentage));
-  } else if (parseFloat(globalUSDrDebtPercentage) >= 100) {
+  } else if (parseFloat(globalUSDrDebtPercentage) >= 80) {
     return getTokenCapBanner('globalUSDrDebt', parseFloat(globalUSDrDebtPercentage));
-  } else if (userUSDrDebtPercentage >= 100) {
+  } else if (userUSDrDebtPercentage >= 80) {
     return getTokenCapBanner('userUSDrDebt', userUSDrDebtPercentage);
-  } else if (parseFloat(vaultUSDrDebtPercentage) >= 100) {
+  } else if (parseFloat(vaultUSDrDebtPercentage) >= 80) {
     return getTokenCapBanner('vaultUSDrDebt', parseFloat(vaultUSDrDebtPercentage));
   } else {
     return <></>;
