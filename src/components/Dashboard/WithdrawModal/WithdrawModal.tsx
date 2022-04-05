@@ -10,6 +10,7 @@ import { ThemeContext } from '../../../contexts/ThemeContext';
 import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
+import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
@@ -26,12 +27,13 @@ const WithdrawModal = ({ data }: any) => {
   const [userCollAccount, setUserCollAccount] = useState('');
   const collMint = useMint(data.mint);
 
-  const [withdrawAmount, setWithdrawAmount] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState<any>();
   const updateRFStates = useUpdateRFStates();
   const [withdrawStatus, setWithdrawStatus] = useState(false);
   const [invalidStr, setInvalidStr] = useState('');
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [amountValue, setAmountValue] = useState(0);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
@@ -52,6 +54,7 @@ const WithdrawModal = ({ data }: any) => {
   const [didMount, setDidMount] = useState(false);
   useEffect(() => {
     setDidMount(true);
+    setWithdrawAmount(0);
     return () => setDidMount(false);
   }, []);
 
@@ -147,17 +150,28 @@ const WithdrawModal = ({ data }: any) => {
             <label>How much would you like to withdraw?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'0'}
+              initValue={0}
               appendValueStr={`${data.value}`}
               tokenStr={`${data.title}`}
-              onTextChange={(value) => {
-                setWithdrawAmount(Number(value));
+              onTextChange={(value: any) => {
+                setAmountValue((value / data.value) * 100);
+                setWithdrawAmount(value);
                 setWithdrawStatus(false);
                 setButtonDisabled(false);
               }}
               maxValue={data.value}
               valid={withdrawStatus}
               invalidStr={invalidStr}
+              value={withdrawAmount}
+            />
+            <AmountSlider
+              onChangeValue={(value) => {
+                setWithdrawAmount(Number(data.value * (value / 100)).toFixed(2));
+                setAmountValue(value);
+                setWithdrawStatus(false);
+                setButtonDisabled(false);
+              }}
+              value={amountValue}
             />
             <Button
               className="button--blue bottomBtn"

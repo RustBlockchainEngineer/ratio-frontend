@@ -194,6 +194,7 @@ const GenerateModal = ({ data }: any) => {
             <p className="dashboardModal__modal__body-red">
               There will be a 2% stability fee associated with this transaction.
             </p> */}
+
             <Button
               disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount) || isMinting}
               className="button--blue bottomBtn"

@@ -1,0 +1,58 @@
+.amountSlider {
+    
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+   
+    label {
+        margin-bottom: 2rem;
+        font-family: 'Poppins-Regular';
+        font-size: 0.75rem;
+        color: var(--unnamed-color-4c646f);
+    }
+    .rc-slider {
+        width: 93%;
+        margin-left: 1rem;
+        &-rail {
+            height: 0.313rem;
+        }
+        &-dot {
+            width: 1.125rem;
+            height: 1.125rem;
+            bottom: -0.438rem;
+        }
+        &-track {
+            background-color: var(--unnamed-color-0f6eff);
+        }
+        &-handle {
+            border-color: var(--unnamed-color-0f6eff);
+            border: none;
+            background-color: var(--unnamed-color-0f6eff);
+            opacity: 1;
+            width: 1rem;
+            height: 1rem;
+            margin-top: -6px;
+            &-dragging {
+                border-color: var(--unnamed-color-0f6eff) !important;
+                box-shadow: 0 0 0 5px var(--unnamed-color-0f6eff) !important;
+                opacity: 0.3;
+            }
+        }
+        &-dot-active {
+            border-color: var(--unnamed-color-0f6eff);
+            background-color: var(--unnamed-color-0f6eff);
+        }
+        &-mark {
+            top: -1.5rem;
+            &-text {
+                font-family: 'Poppins-Regular';
+                color: var(--unnamed-color-4c646f);
+                opacity: 0.5;
+                &-active {
+                    font-family: 'Poppins-SemiBold';
+                    opacity: 1;
+                    color: var(--unnamed-color-002332);
+                }
+            }
+        }
+    }
+}
