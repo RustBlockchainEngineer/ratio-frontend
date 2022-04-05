@@ -57,51 +57,18 @@ const GenerateModal = ({ data }: any) => {
   }
 
   const borrow = async () => {
-    try {
-      console.log('Borrowing USDr', borrowAmount);
-      // FixMe: Let's ignore this at the moment.
-      // If this is really necessary, we should add some codes on contract also.
-      /*if (borrowAmount < 10) {
-        setMintStatus(true);
-        setInvalidStr('You must mint at least 10 USDr');
-        return;
-      }*/
-      if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
-        setMintStatus(true);
-        setInvalidStr('Amount is invalid to generate USDr!');
-        return;
-      }
-      if (!usdrMint) {
-        setMintStatus(true);
-        setInvalidStr('Invalid USDr Mint address to generate!');
-        return;
-      }
-
-      setIsMinting(true);
-
-      const txtSignature = await borrowUSDr(
-        connection,
-        wallet,
-        borrowAmount * Math.pow(10, usdrMint.decimals),
-        new PublicKey(data.mint)
-      );
-
-      const response = await postToRatioApi(
-        {
-          tx_type: 'borrow',
-          signature: txtSignature,
-        },
-        `/transaction/${wallet?.publicKey?.toBase58()}/new`
-      );
-
-      console.log('Response from backend', response);
-      await updateRFStates(UPDATE_USER_STATE, data.mint);
-      toast.success('Successfully minted USDr tokens!');
-    } catch (err) {
-      console.error(err);
-      if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-      else toast.error('Transaction Error!');
+    if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
+      setMintStatus(true);
+      setInvalidStr('Amount is invalid to generate USDr!');
+      return;
     }
+    if (!usdrMint) {
+      setMintStatus(true);
+      setInvalidStr('Invalid USDr Mint address to generate!');
+      return;
+    }
+
+    setIsMinting(true);
     borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
       .then((txSignature: string) => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
@@ -128,11 +95,9 @@ const GenerateModal = ({ data }: any) => {
         else toast.error('Transaction Error!');
       })
       .finally(() => {
-        setShow(!show);
+        setIsMinting(false);
+        setShow(false);
       });
-
-    setIsMinting(false);
-    setShow(false);
   };
 
   return (
