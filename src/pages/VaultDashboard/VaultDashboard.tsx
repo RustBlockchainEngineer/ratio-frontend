@@ -22,7 +22,6 @@ import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
 
 import Breadcrumb from '../../components/Breadcrumb';
-// import { Banner, BannerIcon } from '../../components/Banner';
 import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
 import { DEFAULT_NETWORK } from '../../constants';
 import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
