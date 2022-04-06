@@ -43,7 +43,7 @@ const DepositModal = ({ data }: any) => {
 
   useEffect(() => {
     setDidMount(true);
-    setDepositAmount(0);
+    setDepositAmount('');
     return () => setDidMount(false);
   }, []);
 
@@ -96,6 +96,12 @@ const DepositModal = ({ data }: any) => {
         onHide={() => {
           setButtonDisabled(true);
           setShow(false);
+        }}
+        onEntered={() => {
+          setAmountValue(0);
+          setDepositAmount('');
+          setDepositStatus(false);
+          setButtonDisabled(false);
         }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"

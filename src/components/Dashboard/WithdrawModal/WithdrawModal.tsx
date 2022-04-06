@@ -54,7 +54,7 @@ const WithdrawModal = ({ data }: any) => {
   const [didMount, setDidMount] = useState(false);
   useEffect(() => {
     setDidMount(true);
-    setWithdrawAmount(0);
+    setWithdrawAmount('');
     return () => setDidMount(false);
   }, []);
 
@@ -108,6 +108,12 @@ const WithdrawModal = ({ data }: any) => {
         onHide={() => {
           setButtonDisabled(true);
           setShow(false);
+        }}
+        onEntered={() => {
+          setAmountValue(0);
+          setWithdrawAmount('');
+          setWithdrawStatus(false);
+          setButtonDisabled(false);
         }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"

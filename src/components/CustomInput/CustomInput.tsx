@@ -35,7 +35,7 @@ const CustomInput = ({
 
   const defaultValue = initValue && +initValue ? initValue : maxValue ? maxValue : '0';
   // const [value, setValue] = React.useState(defaultValue);
-  const [hasValueChanged, setHasValueChanged] = React.useState(false);
+  // const [hasValueChanged, setHasValueChanged] = React.useState(false);
 
   const handleChange = (e: any) => {
     const amount = e.target.value;
@@ -44,14 +44,14 @@ const CustomInput = ({
       if (maxValue === 0 || (maxValue && maxValue < amount)) {
         return;
       }
-      setHasValueChanged(true);
+      // setHasValueChanged(true);
       onTextChange && onTextChange(amount);
     }
   };
 
   const setMaxValue = () => {
     // setValue(appendValueStr ? appendValueStr : '0');
-    setHasValueChanged(true);
+    // setHasValueChanged(true);
     onTextChange && onTextChange(appendValueStr ? appendValueStr : '0');
   };
 
@@ -59,14 +59,14 @@ const CustomInput = ({
     <>
       <InputGroup className={classNames('customInput mb-1', className)}>
         <FormControl
-          placeholder=""
+          placeholder={defaultValue.toString()}
           aria-label=""
           type="text"
           aria-describedby="customInput"
           value={value}
           spellCheck="false"
           onChange={handleChange}
-          className={classNames({ onlytext: appendStr === '' }, { withMax: +defaultValue > 0 && !hasValueChanged })}
+          className={classNames({ onlytext: appendStr === '' })}
           readOnly={readOnly}
         />
         <p className={classNames('tokenName', { 'tokenName--onlytext': appendStr === '' })}>{tokenStr}</p>
