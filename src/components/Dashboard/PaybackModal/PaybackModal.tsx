@@ -10,6 +10,7 @@ import { PublicKey } from '@solana/web3.js';
 import { repayUSDr } from '../../../utils/ratio-lending';
 import { useMint } from '../../../contexts/accounts';
 import { toast } from 'react-toastify';
+import AmountSlider from '../AmountSlider';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
@@ -22,7 +23,7 @@ const PaybackModal = ({ data }: any) => {
   const { wallet } = useWallet();
   const usdrMint = useMint(data.usdrMint);
 
-  const [paybackAmount, setPayBackAmount] = useState(Number(data.usdrValue));
+  const [paybackAmount, setPayBackAmount] = useState<any>();
   const updateRFStates = useUpdateRFStates();
 
   const [paybackStatus, setPaybackStatus] = useState(false);
@@ -32,13 +33,14 @@ const PaybackModal = ({ data }: any) => {
   const [didMount, setDidMount] = useState(false);
 
   const [isPayingBack, setIsPayingBack] = useState(false);
+  const [amountValue, setAmountValue] = useState(0);
 
   useEffect(() => {
     setDidMount(true);
     if (paybackAmount > 0) {
       setPaybackStatus(false);
     } else {
-      setPayBackAmount(0);
+      setPayBackAmount('');
     }
     return () => setDidMount(false);
   }, [paybackAmount]);
@@ -139,6 +141,12 @@ const PaybackModal = ({ data }: any) => {
         centered
         className="dashboardModal__modal"
         data-theme={darkMode ? 'dark' : 'light'}
+        onEntered={() => {
+          setAmountValue(0);
+          setPayBackAmount('');
+          setPaybackStatus(false);
+          setButtonDisabled(false);
+        }}
       >
         <Modal.Header>
           <div className="dashboardModal__modal__header">
@@ -169,17 +177,26 @@ const PaybackModal = ({ data }: any) => {
               // initValue={'0'}
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
-              onTextChange={(value) => {
-                setPayBackAmount(Number(value));
+              onTextChange={(value: any) => {
+                setAmountValue((value / data.usdrValue) * 100);
+                setPayBackAmount(value);
                 setPaybackStatus(false);
                 setButtonDisabled(false);
               }}
               maxValue={data.usdrValue}
               valid={paybackStatus}
               invalidStr={invalidStr}
+              value={paybackAmount}
             />
-            {/* <label className="dashboardModal__modal__label mt-3">Estimated token value</label>
-            <CustomDropDownInput /> */}
+            <AmountSlider
+              onChangeValue={(value: any) => {
+                setPayBackAmount(Number(data.usdrValue * (value / 100)).toFixed(2));
+                setAmountValue(value);
+                setPaybackStatus(false);
+                setButtonDisabled(false);
+              }}
+              value={amountValue}
+            />
             <Button
               disabled={paybackAmount <= 0 || buttonDisabled || isNaN(paybackAmount) || isPayingBack}
               className="button--blue bottomBtn"

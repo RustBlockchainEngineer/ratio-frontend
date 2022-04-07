@@ -124,7 +124,7 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
 
   return (
     <div className="filterpanel">
-      <h2>{label}</h2>
+      <h2 className="mb-4">{label}</h2>
       <div className="d-flex flex-wrap justify-content-between align-items-start filterpanel__gap">
         <div className="d-flex flex-wrap align-items-center filterpanel__gap">
           <FilterSelect

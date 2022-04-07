@@ -15,8 +15,8 @@ const ProgressBox = ({ currentTask, now }: props) => {
         <p className="progressbox__completedtext">You’ve completed all tasks, don’t forget to claim Your tokens!</p>
       )}
       <div className="mt-3 mb-1 d-flex justify-content-between">
-        <p className="progressbox__currenttask">{currentTask}/5 tasks complete</p>
-        <p className={classNames('progressbox__percent', { 'progressbox__percent--danger': now === 0 })}>40%</p>
+        <p className="progressbox__currenttask">{currentTask}/4 tasks complete</p>
+        <p className={classNames('progressbox__percent', { 'progressbox__percent--danger': now === 0 })}>{now}%</p>
       </div>
       <ProgressBar now={now} />
     </div>

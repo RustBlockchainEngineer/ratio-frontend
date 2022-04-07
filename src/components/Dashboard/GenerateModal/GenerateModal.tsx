@@ -8,6 +8,7 @@ import { ThemeContext } from '../../../contexts/ThemeContext';
 import { borrowUSDr } from '../../../utils/ratio-lending';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
+import AmountSlider from '../AmountSlider';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo } from '../../../contexts/state';
@@ -26,7 +27,7 @@ const GenerateModal = ({ data }: any) => {
   const userState = useUserInfo(data.mint);
   const usdrMint = useUSDrMintInfo();
 
-  const [borrowAmount, setBorrowAmount] = useState(0);
+  const [borrowAmount, setBorrowAmount] = useState<any>();
   const updateRFStates = useUpdateRFStates();
   const [mintStatus, setMintStatus] = useState(false);
   const [invalidStr, setInvalidStr] = useState('');
@@ -34,6 +35,7 @@ const GenerateModal = ({ data }: any) => {
 
   const [isMinting, setIsMinting] = useState(false);
   const [didMount, setDidMount] = useState(false);
+  const [amountValue, setAmountValue] = useState(0);
 
   useEffect(() => {
     if (userState) {
@@ -49,6 +51,7 @@ const GenerateModal = ({ data }: any) => {
 
   useEffect(() => {
     setDidMount(true);
+    setBorrowAmount('');
     return () => setDidMount(false);
   }, []);
 
@@ -57,6 +60,7 @@ const GenerateModal = ({ data }: any) => {
   }
 
   const borrow = async () => {
+    console.log('borrowAmount', borrowAmount);
     if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
       setMintStatus(true);
       setInvalidStr('Amount is invalid to generate USDr!');
@@ -111,6 +115,12 @@ const GenerateModal = ({ data }: any) => {
           setShow(false);
           setButtonDisabled(true);
         }}
+        onEntered={() => {
+          setBorrowAmount('');
+          setAmountValue(0);
+          setMintStatus(false);
+          setButtonDisabled(false);
+        }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -141,24 +151,29 @@ const GenerateModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to mint?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'0'}
+              initValue={0}
               appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
-              onTextChange={(value) => {
-                setBorrowAmount(Number(value));
+              onTextChange={(value: any) => {
+                setAmountValue((value / data.usdrValue) * 100);
+                setBorrowAmount(value);
                 setMintStatus(false);
                 setButtonDisabled(false);
               }}
               maxValue={data.usdrValue}
               valid={mintStatus}
               invalidStr={invalidStr}
+              value={borrowAmount}
             />
-            {/* <label className="lockvaultmodal__label2">
-              Available to mint after <strong>{mintTime}</strong>
-            </label>
-            <p className="dashboardModal__modal__body-red">
-              There will be a 2% stability fee associated with this transaction.
-            </p> */}
+            <AmountSlider
+              onChangeValue={(value) => {
+                setBorrowAmount(Number(data.usdrValue * (value / 100)).toFixed(2));
+                setAmountValue(value);
+                setMintStatus(false);
+                setButtonDisabled(false);
+              }}
+              value={amountValue}
+            />
             <Button
               disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount) || isMinting}
               className="button--blue bottomBtn"

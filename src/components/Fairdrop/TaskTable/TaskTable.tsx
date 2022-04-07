@@ -41,7 +41,7 @@ const TaskTable = () => {
           </tr>
           <tr>
             <td>4</td>
-            <td className="align-middle">Open a vault with an `A` rating or higher</td>
+            <td className="align-middle">Open a vault with an `AA` rating or higher</td>
             <td className="align-middle">250.00</td>
             <td className="align-middle">
               <Status />

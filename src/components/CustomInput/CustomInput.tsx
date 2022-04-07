@@ -5,13 +5,14 @@ import { InputGroup, FormControl } from 'react-bootstrap';
 type CustomInputProps = {
   appendStr?: string;
   tokenStr?: string;
-  initValue?: string;
+  initValue?: number;
   appendValueStr?: string;
   className?: string;
   readOnly?: boolean;
   maxValue?: number;
   valid?: boolean;
   invalidStr?: string;
+  value: any;
   onTextChange?: (value: string) => void;
 };
 
@@ -26,30 +27,31 @@ const CustomInput = ({
   maxValue,
   valid,
   invalidStr,
+  value,
 }: CustomInputProps) => {
   if (typeof maxValue === 'string') {
     maxValue = parseFloat(maxValue);
   }
 
   const defaultValue = initValue && +initValue ? initValue : maxValue ? maxValue : '0';
-  const [value, setValue] = React.useState(defaultValue);
-  const [hasValueChanged, setHasValueChanged] = React.useState(false);
+  // const [value, setValue] = React.useState(defaultValue);
+  // const [hasValueChanged, setHasValueChanged] = React.useState(false);
 
   const handleChange = (e: any) => {
-    const re = /^[+-]?\d*(?:[.,]\d*)?$/;
-    if (e.target.value === '' || re.test(e.target.value)) {
-      if (maxValue === 0 || (maxValue && maxValue < e.target.value)) {
+    const amount = e.target.value;
+
+    if (!amount || amount.match(/^[+-]?\d*(?:[.,]\d*)?$/)) {
+      if (maxValue === 0 || (maxValue && maxValue < amount)) {
         return;
       }
-      setValue(e.target.value);
-      setHasValueChanged(true);
-      onTextChange && onTextChange(e.target.value);
+      // setHasValueChanged(true);
+      onTextChange && onTextChange(amount);
     }
   };
 
   const setMaxValue = () => {
-    setValue(appendValueStr ? appendValueStr : '0');
-    setHasValueChanged(true);
+    // setValue(appendValueStr ? appendValueStr : '0');
+    // setHasValueChanged(true);
     onTextChange && onTextChange(appendValueStr ? appendValueStr : '0');
   };
 
@@ -57,12 +59,14 @@ const CustomInput = ({
     <>
       <InputGroup className={classNames('customInput mb-1', className)}>
         <FormControl
-          placeholder=""
+          placeholder={defaultValue.toString()}
           aria-label=""
+          type="text"
           aria-describedby="customInput"
           value={value}
+          spellCheck="false"
           onChange={handleChange}
-          className={classNames({ onlytext: appendStr === '' }, { withMax: +defaultValue > 0 && !hasValueChanged })}
+          className={classNames({ onlytext: appendStr === '' })}
           readOnly={readOnly}
         />
         <p className={classNames('tokenName', { 'tokenName--onlytext': appendStr === '' })}>{tokenStr}</p>

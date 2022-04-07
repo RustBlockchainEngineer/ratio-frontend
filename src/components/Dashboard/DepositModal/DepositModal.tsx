@@ -6,12 +6,12 @@ import { useAccountByMint, useMint } from '../../../contexts/accounts';
 import { ThemeContext } from '../../../contexts/ThemeContext';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-
+import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { isWalletApproveError } from '../../../utils/utils';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
+import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
-import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 
@@ -19,6 +19,7 @@ const DepositModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
   const { darkMode } = theme.state;
   const [show, setShow] = useState(false);
+
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const collMint = useMint(data?.mint);
@@ -28,7 +29,7 @@ const DepositModal = ({ data }: any) => {
   const PoolManagerFactory = useGetPoolManager(vault);
 
   const collAccount = useAccountByMint(data.mint);
-  const [depositAmount, setDepositAmount] = useState(0);
+  const [depositAmount, setDepositAmount] = useState<any>();
 
   const [didMount, setDidMount] = useState(false);
 
@@ -36,12 +37,13 @@ const DepositModal = ({ data }: any) => {
   const [invalidStr, setInvalidStr] = useState('');
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [isDepositing, setIsDepositing] = useState(false);
+  const [amountValue, setAmountValue] = useState(0);
 
   const updateRFStates = useUpdateRFStates();
 
   useEffect(() => {
     setDidMount(true);
-    setDepositAmount(0);
+    setDepositAmount('');
     return () => setDidMount(false);
   }, []);
 
@@ -83,6 +85,7 @@ const DepositModal = ({ data }: any) => {
     setIsDepositing(false);
     setShow(false);
   };
+
   return (
     <div className="dashboardModal">
       <Button className="button--blue fillBtn" onClick={() => setShow(!show)}>
@@ -93,6 +96,12 @@ const DepositModal = ({ data }: any) => {
         onHide={() => {
           setButtonDisabled(true);
           setShow(false);
+        }}
+        onEntered={() => {
+          setAmountValue(0);
+          setDepositAmount('');
+          setDepositStatus(false);
+          setButtonDisabled(false);
         }}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
@@ -125,17 +134,28 @@ const DepositModal = ({ data }: any) => {
             <label className="dashboardModal__modal__label">How much would you like to deposit?</label>
             <CustomInput
               appendStr="Max"
-              initValue={'0'}
+              initValue={0}
               appendValueStr={data.value}
               tokenStr={`${data.title}`}
-              onTextChange={(value) => {
-                setDepositAmount(Number(value));
+              onTextChange={(value: any) => {
+                setAmountValue((value / data.value) * 100);
+                setDepositAmount(value);
                 setDepositStatus(false);
                 setButtonDisabled(false);
               }}
               maxValue={data.value}
               valid={depositStatus}
               invalidStr={invalidStr}
+              value={depositAmount}
+            />
+            <AmountSlider
+              onChangeValue={(value) => {
+                setDepositAmount(Number(data.value * (value / 100)).toFixed(2));
+                setAmountValue(value);
+                setDepositStatus(false);
+                setButtonDisabled(false);
+              }}
+              value={amountValue}
             />
             <Button
               disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount) || isDepositing}
