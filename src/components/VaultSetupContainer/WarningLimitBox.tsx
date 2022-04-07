@@ -32,7 +32,6 @@ const WarningLimitBox = () => {
 
     if (maxValue === 0 || isNaN(maxValue)) {
       setPercentage(0);
-      //   setWarning(false);
     } else {
       const percentageFull = (currentValue / maxValue) * 100;
       if (percentageFull >= 0 && percentageFull <= 80) {
