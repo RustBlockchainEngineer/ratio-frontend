@@ -78,7 +78,7 @@ const Layer = () => {
     return () => {
       setEnable(false);
     };
-  }, [userAuthorized, authFetchError, authFetchLoading, publicKey]);
+  }, [userAuthorized, authFetchError, authFetchLoading, publicKey, location.pathname]);
 
   const dispatch = useDispatch();
 

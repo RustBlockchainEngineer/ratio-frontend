@@ -78,6 +78,8 @@
     "lodash-es": "^4.17.21",
     "node-sass": "6.0.1",
     "rc-slider": "^10.0.0-alpha.6",
+    "rc-tooltip": "^5.1.1",
+    "rc-util": "^5.19.3",
     "react": "^17.0.0",
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-table-next": "^4.0.3",

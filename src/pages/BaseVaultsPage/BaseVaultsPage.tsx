@@ -255,7 +255,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           className="debt-limit-reached"
         />
       )}
-      <div className="allvaults">
+      <div className="allvaults mt-4">
         <FilterPanel label={title} viewType={viewType} onViewType={onViewType} />
 
         {status === FetchingStatus.Error && toast.error(error)}

@@ -1,14 +1,14 @@
 import React from 'react';
 import TaskTable from '../../components/Fairdrop/TaskTable';
 import RoundBox from '../../components/Fairdrop/RoundBox';
-import ProgressBox from '../../components/Fairdrop/ProgressBox';
+// import ProgressBox from '../../components/Fairdrop/ProgressBox';
 import ClaimBox from '../../components/Fairdrop/ClaimBox';
 import TotalRewards from '../../components/Fairdrop/TotalRewards';
 
 const FairdropPage = () => {
   return (
     <div>
-      <TotalRewards />
+      <TotalRewards now={50} />
       <div className="fairdroppage row">
         <div className="col-xl-8">
           <h2>RATIO Fairdrop</h2>
@@ -20,7 +20,7 @@ const FairdropPage = () => {
         </div>
         <div className="col-xl-4">
           <RoundBox />
-          <ProgressBox currentTask="2" now={40} />
+          {/* <ProgressBox currentTask="2" now={50} /> */}
           <ClaimBox ratioValue="1,000.00" />
         </div>
       </div>
