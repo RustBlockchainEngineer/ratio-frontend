@@ -185,6 +185,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOverview = async () => {
+    console.log(userState, tokenState, Object.keys(userState).length);
     if (!userState || !tokenState || Object.keys(userState).length === 0) {
       return setOverview({});
     }

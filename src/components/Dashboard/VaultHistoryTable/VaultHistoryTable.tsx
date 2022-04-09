@@ -41,7 +41,6 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
             {status === FetchingStatus.Finish &&
               (txHistory.length > 0 ? (
                 txHistory.map((tx: FormattedTX) => {
-                  console.log('tx=>', tx);
                   return (
                     <tr>
                       <td className="w-50">{tx?.date}</td>
