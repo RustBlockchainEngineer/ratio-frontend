@@ -9,14 +9,14 @@
     padding-right: 5rem;
   }
   @include respond-to(lg) {
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 
   @include respond-to(sm) {
     padding-top: 2rem;
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-left: 0rem;
+    padding-right: 1px;
   }
 
   &__empty {

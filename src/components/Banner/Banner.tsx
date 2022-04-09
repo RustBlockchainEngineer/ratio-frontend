@@ -1,9 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
 import riskLevelIcon from '../../assets/images/risklevelwhite.svg';
+import warningIcon from '../../assets/images/highrisk-light-icon.svg';
 
 enum BannerIcon {
   riskLevel = 'riskLevel',
+  warningLevel = 'warningLevel',
 }
 
 type BannerProps = {
@@ -16,6 +18,7 @@ type BannerProps = {
 
 const iconMapped = {
   riskLevel: riskLevelIcon,
+  warningLevel: warningIcon,
 };
 
 const Banner = ({ title, message, className, bannerIcon, props }: BannerProps) => {

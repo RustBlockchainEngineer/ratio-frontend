@@ -78,7 +78,7 @@ const Layer = () => {
     return () => {
       setEnable(false);
     };
-  }, [userAuthorized, authFetchError, authFetchLoading, publicKey]);
+  }, [userAuthorized, authFetchError, authFetchLoading, publicKey, location.pathname]);
 
   const dispatch = useDispatch();
 
@@ -119,7 +119,7 @@ const Layer = () => {
             'layer_container--empty': !enable || !connected,
           })}
         >
-          <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} />
+          <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} enable={enable} />
           {enable && connected ? (
             <>
               <Navbar
@@ -153,7 +153,7 @@ const Layer = () => {
             <div className="layer__empty">
               <div className="text-center">
                 <img src={darkMode ? darkLogo : logoside} alt="logoside" />
-                <h4 className="mt-4">Unlocking Solana&apos;s Liquidity</h4>
+                <h4 className="mt-4">De-Risking Defi</h4>
                 <h6 className="mt-4">Join our community</h6>
                 <div className="layer__social mt-3">
                   <a target="_blank" href="https://t.me/ratiofinance" rel="noreferrer">

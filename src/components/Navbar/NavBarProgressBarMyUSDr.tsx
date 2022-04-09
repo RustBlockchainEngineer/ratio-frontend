@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
@@ -14,9 +14,11 @@ interface NavBarProgressBarMyUSDrProps {
 export const NavBarProgressBarMyUSDr = (data: NavBarProgressBarMyUSDrProps) => {
   const { className, shouldDisplayLabel = true } = data;
 
-  const [currentValue, setValue] = React.useState(0);
-  const [percentage, setPercentage] = React.useState(0);
-  const [warning, setWarning] = React.useState(false);
+  const [currentValue, setValue] = useState(0);
+  const [percentage, setPercentage] = useState(0);
+  const [success, setSuccess] = useState(false);
+  const [caution, setCaution] = useState(false);
+  const [warning, setWarning] = useState(false);
 
   const userOverview = useUserOverview();
   const globalState = useRFStateInfo();
@@ -24,7 +26,7 @@ export const NavBarProgressBarMyUSDr = (data: NavBarProgressBarMyUSDrProps) => {
   const connection = useConnection();
   const { wallet } = useWallet();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!wallet || !wallet.publicKey || !userOverview.activeVaults || !globalState) {
       return;
     }
@@ -44,11 +46,22 @@ export const NavBarProgressBarMyUSDr = (data: NavBarProgressBarMyUSDrProps) => {
 
     if (maxValue === 0 || isNaN(maxValue)) {
       setPercentage(0);
-      setWarning(false);
     } else {
-      const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
-      setPercentage(parseFloat(percentageFull));
-      setWarning(currentValue / maxValue === 1);
+      const percentageFull = (currentValue / maxValue) * 100;
+      if (percentageFull >= 0 && percentageFull <= 80) {
+        setSuccess(true);
+        setCaution(false);
+        setWarning(false);
+      } else if (percentageFull > 80 && percentageFull < 100) {
+        setSuccess(false);
+        setCaution(true);
+        setWarning(false);
+      } else if (percentageFull >= 100) {
+        setSuccess(false);
+        setCaution(false);
+        setWarning(true);
+      }
+      setPercentage(parseFloat(percentageFull.toFixed(2)));
     }
   }, [wallet, connection, userOverview, globalState]);
 
@@ -58,8 +71,9 @@ export const NavBarProgressBarMyUSDr = (data: NavBarProgressBarMyUSDrProps) => {
     <NavBarProgressBar
       className={classNames(
         className,
-        { 'navbarprogressbar--warning': warning },
-        { 'navbarprogressbar--usdr': !warning }
+        { 'navbarprogressbar--warning': warning && !caution && !success },
+        { 'navbarprogressbar--caution': caution && !warning && !success },
+        { 'navbarprogressbar--success': success && !caution && !warning }
       )}
       label={label}
       shouldDisplayCurrency={true}

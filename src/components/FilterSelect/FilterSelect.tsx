@@ -24,7 +24,7 @@ const FilterSelect = ({ options, onFilterChange, filterValue, isMulti, placehold
     return (
       <div className={classNames('filterselect__option', { 'filterselect__option--active': props.isSelected })}>
         <div {...innerProps} className="px-3 py-2">
-          <img src={data.icon[0]} alt={children} />
+          <img src={data.icon[0]} alt={children} className="filterselect__option--icon" />
           {data.icon[1] && <img src={data.icon[1]} alt={children} className="secondIcon" />}
           <span className="ml-3 filterselect__option--token">{children}</span>
           {data.network && <span className="ml-3 filterselect__option--network">{data.network}</span>}
