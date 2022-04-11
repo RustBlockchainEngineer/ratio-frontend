@@ -64,12 +64,14 @@ const WarningLimitBox = () => {
         currentValue={currentValue}
         percentage={percentage}
       />
-      <div className="warningLimitBox__warningBox">
-        <img src={highriskIcon} alt="highriskIcon" />
-        <p>
-          <strong>WARNING:</strong> This vault has reached its mintable USDr limit.
-        </p>
-      </div>
+      {(caution || warning) && (
+        <div className="warningLimitBox__warningBox">
+          <img src={highriskIcon} alt="highriskIcon" />
+          <p>
+            <strong>WARNING:</strong> This vault has reached its mintable USDr limit.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
