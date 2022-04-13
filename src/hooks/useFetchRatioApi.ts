@@ -79,7 +79,7 @@ export function useFetchVaultTxRatioApi(walletId = '', txSignature: string, auth
   return [result, error];
 }
 
-export function useFetchVaultTxHistoryRatioApi(walletId = '', mintAddress: string) {
+export function useFetchVaultTxHistoryRatioApi(walletId = '', mintAddress: string, lastTen: boolean) {
   const {
     data: rawTransactions,
     status,
@@ -92,8 +92,12 @@ export function useFetchVaultTxHistoryRatioApi(walletId = '', mintAddress: strin
       return;
     }
     const formattedTxData = formatTxHistory(rawTransactions, cluster);
-    setResult(formattedTxData);
-  }, [rawTransactions]);
+    if (lastTen) {
+      setResult(formattedTxData.slice(0, 10));
+    } else {
+      setResult(formattedTxData);
+    }
+  }, [rawTransactions, lastTen]);
 
   return {
     result,

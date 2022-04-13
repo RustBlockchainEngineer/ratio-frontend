@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import share from '../../../assets/images/share.svg';
@@ -11,12 +12,25 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toString();
 
-  const { result: txHistory, status, error } = useFetchVaultTxHistoryRatioApi(wallet, mintAddress);
+  const [lastTen, setLastTen] = useState(true);
+
+  const { result: txHistory, status, error } = useFetchVaultTxHistoryRatioApi(wallet, mintAddress, lastTen);
 
   return (
     <div className="vaulthistorytable">
-      <h4>Vault History</h4>
-
+      <div className="d-flex justify-content-between">
+        <h4>Vault History</h4>
+        {lastTen && (
+          <p
+            onClick={() => {
+              setLastTen(false);
+            }}
+            className="vaulthistorytable__readmore"
+          >
+            Read more
+          </p>
+        )}
+      </div>
       <div className="vaulthistorytable__table">
         <Table striped hover>
           <thead>
