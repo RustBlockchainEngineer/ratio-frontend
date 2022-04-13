@@ -13,7 +13,7 @@ import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { FetchingStatus } from '../../types/fetching-types';
 import { LPAssetCreationData, LPEditionData, RISK_RATING } from '../../types/VaultTypes';
 import { createTokenVault } from '../../utils/admin-contract-calls';
-import { getTokenVaultAddress, getTokenVaultByMint } from '../../utils/ratio-lending';
+import { getTokenPoolAddress, getTokenPoolByMint } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
 
 interface VaultEditionFormProps {
@@ -43,7 +43,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
   };
 
   const getOrCreateTokenVault = async (connection: Connection, data: LPEditionData): Promise<PublicKey | undefined> => {
-    if (await getTokenVaultByMint(connection, data?.address_id)) {
+    if (await getTokenPoolByMint(connection, data?.address_id)) {
       toast.info('Token vault program already exists');
     } else {
       try {
@@ -71,11 +71,11 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
       } catch (error) {
         console.error(error);
       }
-      if (await getTokenVaultByMint(connection, data?.address_id)) {
+      if (await getTokenPoolByMint(connection, data?.address_id)) {
         toast.info('Token vault program created successfully');
       }
     }
-    const vaultProgramAddress = await getTokenVaultAddress(data?.address_id);
+    const vaultProgramAddress = await getTokenPoolAddress(data?.address_id);
     if (!vaultProgramAddress) {
       toast.error("Couldn't get the vault's address");
       return;

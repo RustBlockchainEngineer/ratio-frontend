@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {
   calculateRewardByPlatform,
   getGlobalState,
-  getTokenVaultByMint,
+  getTokenPoolByMint,
   getUserState,
   USDR_MINT_KEY,
 } from '../utils/ratio-lending';
@@ -92,7 +92,7 @@ export function RFStateProvider({ children = undefined as any }) {
         const vault = vaults[i];
         const mint = vault.address_id;
 
-        const vaultInfo = await getTokenVaultByMint(connection, mint);
+        const vaultInfo = await getTokenPoolByMint(connection, mint);
         vaultInfos[mint] = vaultInfo;
       }
       setVaultState(vaultInfos);
@@ -106,7 +106,7 @@ export function RFStateProvider({ children = undefined as any }) {
       ...vaultState,
     };
 
-    const vaultInfo = await getTokenVaultByMint(connection, mint);
+    const vaultInfo = await getTokenPoolByMint(connection, mint);
     newState[mint] = vaultInfo;
 
     setVaultState(newState);
