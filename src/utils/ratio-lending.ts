@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import idl from './ratio-lending-idl.json';
+import idl from './stable-pool-idl.json';
 
 import { AccountLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from '@project-serum/anchor';
@@ -36,11 +36,11 @@ export const TYPE_ID_UNKNOWN: PlatformType = 4;
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
 export const GLOBAL_STATE_TAG = 'GLOBAL_STATE_TAG';
+export const POOL_SEED = 'POOL_SEED';
 export const VAULT_SEED = 'VAULT_SEED';
-export const TROVE_SEED = 'TROVE_SEED';
 export const MINT_USD_SEED = 'MINT_USD_SEED';
 export const USD_TOKEN_SEED = 'USD_TOKEN_SEED';
-export const TROVE_POOL_SEED = 'TROVE_POOL_SEED';
+export const VAULT_POOL_SEED = 'VAULT_POOL_SEED';
 export const PRICE_FEED_TAG = 'price-feed';
 
 export const STABLE_POOL_IDL = idl;
@@ -57,7 +57,7 @@ export const GLOBAL_TVL_LIMIT = 1_000_000_000_000;
 export const GLOBAL_DEBT_CEILING = 1500_000_000;
 export const USER_DEBT_CEILING = 1500_000_000;
 
-export const TOKEN_VAULT_OPTIONS = [
+export const TOKEN_POOL_OPTIONS = [
   {
     value: 'USDC-CASH',
     label: 'USDC-CASH LP',
@@ -175,11 +175,11 @@ export async function getUserState(connection: Connection, wallet: any, mintColl
     return null;
   }
   const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   try {
-    return await program.account.trove.fetch(userTroveKey);
+    return await program.account.vault.fetch(userTroveKey);
   } catch (e) {
     return null;
   }
@@ -201,11 +201,11 @@ export async function borrowUSDr(
   );
 
   const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
+    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(MINT_USD_SEED)], program.programId);
@@ -225,26 +225,26 @@ export async function borrowUSDr(
 
   // todo - get real tokenA, B, C
   // FIXME: hardcoded
-  const vaultA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
-  const vaultB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
-  const vaultC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
+  const poolA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
+  const poolB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
+  const poolC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
 
   console.log('priceFeedKey =', priceFeedKey.toBase58());
   const ix1 = program.instruction.updatePriceFeed({
     accounts: {
       priceFeed: priceFeedKey,
       mintColl: mintCollKey,
-      vaultA,
-      vaultB,
-      vaultC,
+      poolA,
+      poolB,
+      poolC,
       ...defaultPrograms,
     },
   });
   const borrowInstruction = program.instruction.borrowUsd(new anchor.BN(amount), userUsdKeyNonce, {
     accounts: {
       authority: wallet.publicKey,
-      vault: tokenVaultKey,
-      trove: userTroveKey,
+      pool: tokenVaultKey,
+      vault: userTroveKey,
       globalState: globalStateKey,
       priceFeed: priceFeedKey,
       mintUsd: mintUsdKey,
@@ -272,7 +272,7 @@ export async function getTokenVaultByMint(connection: Connection, mint: string |
   const program = getProgramInstance(connection, null);
   const tokenVaultKey = await getTokenVaultAddress(mint);
   try {
-    const tokenVault = await program.account.vault.fetch(tokenVaultKey);
+    const tokenVault = await program.account.pool.fetch(tokenVaultKey);
     return tokenVault;
   } catch (e) {
     return null;
@@ -281,7 +281,7 @@ export async function getTokenVaultByMint(connection: Connection, mint: string |
 
 export async function getTokenVaultAddress(mint: string | PublicKey): Promise<PublicKey | undefined> {
   const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), new PublicKey(mint).toBuffer()],
+    [Buffer.from(POOL_SEED), new PublicKey(mint).toBuffer()],
     STABLE_POOL_PROGRAM_ID
   );
   return tokenVaultKey;
@@ -293,23 +293,23 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
   const program = getProgramInstance(connection, wallet);
 
   const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
+    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
     program.programId
   );
 
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
 
   try {
-    const userTrove = await program.account.trove.fetch(userTroveKey);
+    const userTrove = await program.account.vault.fetch(userTroveKey);
     console.log('fetched userTrove', userTrove);
-    console.log('This user trove was already created!');
+    console.log('This user vault was already created!');
     return 'already created!';
   } catch (e) {
     console.error(e);
@@ -318,8 +318,8 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
   try {
     await program.rpc.createTrove(userTroveNonce, userTroveTokenVaultNonce, {
       accounts: {
-        vault: tokenVaultKey,
-        trove: userTroveKey,
+        pool: tokenVaultKey,
+        vault: userTroveKey,
         authority: wallet.publicKey,
         ataTrove: userTroveTokenVaultKey,
         mintColl: mintCollKey,
@@ -327,9 +327,9 @@ export async function createUserTrove(connection: Connection, wallet: any, mintC
       },
     });
   } catch (e) {
-    console.log("can't create user trove");
+    console.log("can't create user vault");
   }
-  return 'created user trove successfully!';
+  return 'created user vault successfully!';
 }
 
 export async function depositCollateral(
@@ -348,16 +348,16 @@ export async function depositCollateral(
     program.programId
   );
   const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
+    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
 
   const [userTroveTokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
 
@@ -379,13 +379,13 @@ export async function depositCollateral(
   );
 
   try {
-    await program.account.trove.fetch(userTroveKey);
+    await program.account.vault.fetch(userTroveKey);
   } catch {
     const tx = await program.instruction.createTrove(userTroveNonce, tokenVaultNonce, {
       accounts: {
         authority: wallet.publicKey,
-        trove: userTroveKey,
-        vault: tokenVaultKey,
+        vault: userTroveKey,
+        pool: tokenVaultKey,
         ataTrove: userTroveTokenVaultKey,
         mintColl: mintCollKey,
         ...defaultPrograms,
@@ -398,8 +398,8 @@ export async function depositCollateral(
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,
-      vault: tokenVaultKey,
-      trove: userTroveKey,
+      pool: tokenVaultKey,
+      vault: userTroveKey,
       ataTrove: userTroveTokenVaultKey,
       ataUserColl: userCollKey,
       mintColl: mintCollKey,
@@ -448,11 +448,11 @@ export async function repayUSDr(
     program.programId
   );
   const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
+    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(MINT_USD_SEED)], program.programId);
@@ -469,8 +469,8 @@ export async function repayUSDr(
   const repayInstruction = await program.instruction.repayUsd(new anchor.BN(amount), {
     accounts: {
       owner: wallet.publicKey,
-      vault: tokenVaultKey,
-      trove: userTroveKey,
+      pool: tokenVaultKey,
+      vault: userTroveKey,
       globalState: globalStateKey,
       mintUsd: mintUsdKey,
       ataUserUsd: userUsdKey,
@@ -514,15 +514,15 @@ export async function withdrawCollateral(
   console.log('fetched globalState', globalState);
 
   const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), mintCollKey.toBuffer()],
+    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
     program.programId
   );
   const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
+    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
     program.programId
   );
   const [userTroveTokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(TROVE_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
+    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
     program.programId
   );
   const transaction = new Transaction();
@@ -543,8 +543,8 @@ export async function withdrawCollateral(
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,
-      trove: userTroveKey,
-      vault: tokenVaultKey,
+      vaultt: userTroveKey,
+      pool: tokenVaultKey,
       ataTrove: userTroveTokenVaultKey,
       ataUserColl: userCollKey,
       mintColl: mintCollKey,

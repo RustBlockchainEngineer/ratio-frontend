@@ -14,7 +14,7 @@ import {
   faucetSamoRayLp,
   isFaucetStateCreated,
 } from '../../utils/ratio-faucet';
-import { TOKEN_VAULT_OPTIONS } from '../../utils/ratio-lending';
+import { TOKEN_POOL_OPTIONS } from '../../utils/ratio-lending';
 // import { toast } from 'react-toastify';
 
 const Faucet = () => {
@@ -27,7 +27,7 @@ const Faucet = () => {
   const history = useHistory();
   // eslint-disable-next-line
   const [amount, setAmount] = React.useState(0);
-  const [option, setOption] = React.useState(TOKEN_VAULT_OPTIONS[0]);
+  const [option, setOption] = React.useState(TOKEN_POOL_OPTIONS[0]);
 
   // eslint-disable-next-line
   const [submitState, setSubmitState] = React.useState(false);
@@ -61,13 +61,13 @@ const Faucet = () => {
     setFaucetStatus('minting ...');
     let tx;
     try {
-      if (option.value === TOKEN_VAULT_OPTIONS[0].value) {
+      if (option.value === TOKEN_POOL_OPTIONS[0].value) {
         tx = await faucetUsdcUsdrLp(connection, wallet);
-      } else if (option.value === TOKEN_VAULT_OPTIONS[1].value) {
+      } else if (option.value === TOKEN_POOL_OPTIONS[1].value) {
         tx = await faucetEthSolLp(connection, wallet);
-      } else if (option.value === TOKEN_VAULT_OPTIONS[2].value) {
+      } else if (option.value === TOKEN_POOL_OPTIONS[2].value) {
         tx = await faucetAtlasRayLp(connection, wallet);
-      } else if (option.value === TOKEN_VAULT_OPTIONS[3].value) {
+      } else if (option.value === TOKEN_POOL_OPTIONS[3].value) {
         tx = await faucetSamoRayLp(connection, wallet);
       } else {
         setFaucetStatus('Please select a faucet token.');
@@ -96,7 +96,7 @@ const Faucet = () => {
             release.
           </h6>
           <label>Choose which LP you wish to mint</label>
-          <CustomSelect options={TOKEN_VAULT_OPTIONS} onChange={onChangeLp} />
+          <CustomSelect options={TOKEN_POOL_OPTIONS} onChange={onChangeLp} />
           {faucetStatus !== '' && <div className="faucet__success">{faucetStatus}</div>}
           {/* <label className="mt-4">Choose the amount you would like to mint</label>
           <CustomInput appendStr="Max" appendValueStr="100" onTextChange={getInputValue} />
