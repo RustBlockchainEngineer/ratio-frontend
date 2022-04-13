@@ -29,7 +29,7 @@ export const HISTORY_TO_SHOW = 5;
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export const TYPE_ID_RAYDIUM: PlatformType = 0;
 export const TYPE_ID_ORCA: PlatformType = 1;
-export const TYPE_ID_SABER: PlatformType = 0;
+export const TYPE_ID_SABER: PlatformType = 2;
 export const TYPE_ID_MERCURIAL: PlatformType = 3;
 export const TYPE_ID_UNKNOWN: PlatformType = 4;
 
@@ -56,6 +56,18 @@ export const defaultPrograms = {
 export const GLOBAL_TVL_LIMIT = 1_000_000_000_000;
 export const GLOBAL_DEBT_CEILING = 1500_000_000;
 export const USER_DEBT_CEILING = 1500_000_000;
+export const POOL_DEBT_CEILING = 1500_000_000;
+
+// TODO THIS IS A TEMPORARY ADDRESS THAT LINKS TO NOTHING, DELETE ONCE ORACLE REPORTER IS IMPLEMENTED
+export const ORACLE_REPORTER = new PublicKey('CfmVBs4jbNQNtNMn5iHkA4upHBUVuTqAkpGqRV3k4hRh');
+
+export const mintA = new PublicKey('7KLQxufDu9H7BEAHvthC5p4Uk6WrH3aw8TwvPXoLgG11');
+export const mintB = new PublicKey('BicnAQ4jQgz3g7htuq1y6SKUNtrTr7UmpQjCqnTKkHR5');
+export const mintC = new PublicKey('FnjuEcDDTL3e511XE5a7McbDZvv2sVfNfEjyq4fJWXxg');
+export const NUM_MINT_DECIAMLS = 6;
+// const poolA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
+// const poolB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
+// const poolC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
 
 export const TOKEN_POOL_OPTIONS = [
   {

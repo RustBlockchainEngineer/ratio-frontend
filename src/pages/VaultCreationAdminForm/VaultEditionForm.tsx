@@ -12,9 +12,10 @@ import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
 import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { FetchingStatus } from '../../types/fetching-types';
 import { LPAssetCreationData, LPEditionData, RISK_RATING } from '../../types/VaultTypes';
-import { createTokenVault } from '../../utils/admin-contract-calls';
+import { createPool } from '../../utils/admin-contract-calls';
 import { getTokenPoolAddress, getTokenPoolByMint } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
+import { TYPE_ID_SABER, mintA, mintB, mintC, NUM_MINT_DECIAMLS } from '../../utils/ratio-lending';
 
 interface VaultEditionFormProps {
   values: LPEditionData;
@@ -57,12 +58,17 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
           toast.error('Platform needs to be selected to create a vault');
           return;
         }
-        const result = await createTokenVault(
+        const result = await createPool(
           connection,
           wallet,
-          new PublicKey(data?.address_id),
+          new PublicKey(data?.address_id), // mintCollKey
           riskRatingValue,
-          platformName
+          TYPE_ID_SABER,
+          mintA,
+          mintB,
+          mintC,
+          NUM_MINT_DECIAMLS,
+          NUM_MINT_DECIAMLS
         );
         if (!result) {
           toast.error('There was an error when creating the token vault program');

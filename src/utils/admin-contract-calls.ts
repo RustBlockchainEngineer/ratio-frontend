@@ -13,10 +13,14 @@ import {
   GLOBAL_TVL_LIMIT,
   GLOBAL_DEBT_CEILING,
   USER_DEBT_CEILING,
+  POOL_DEBT_CEILING,
+  POOL_SEED,
+  PlatformType,
+  ORACLE_REPORTER,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
-import { createSaberTokenVault } from './saber/saber-utils';
+// import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 import {
@@ -25,6 +29,8 @@ import {
   TVL_DECIMAL,
   USER_DEBT_CEILING_DECIMALS,
 } from '../constants';
+// import RiskLevel from '../components/Dashboard/RiskLevel';
+// import { PLATFORM_TYPE_SABER } from './constants';
 
 export const ADMIN_SETTINGS_DECIMALS = 6;
 
@@ -63,36 +69,36 @@ export async function toggleEmergencyState(connection: Connection, wallet: any, 
   }
 }
 
-export async function createTokenVault(
-  connection: Connection,
-  wallet: any,
-  mintCollKey: PublicKey = WSOL_MINT_KEY,
-  riskLevel = 0,
-  platform = 'SABER'
-) {
-  try {
-    switch (platform) {
-      case 'SABER':
-        return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
-      default:
-        console.error('Platform vault creation yet not implemented');
-        break;
-    }
-  } catch (e) {
-    console.log("can't create token vault");
-  }
-}
+// export async function createTokenVault(
+//   connection: Connection,
+//   wallet: any,
+//   mintCollKey: PublicKey = WSOL_MINT_KEY,
+//   riskLevel = 0,
+//   platform = 'SABER'
+// ) {
+//   try {
+//     switch (platform) {
+//       case 'SABER':
+//         return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
+//       default:
+//         console.error('Platform vault creation yet not implemented');
+//         break;
+//     }
+//   } catch (e) {
+//     console.log("can't create token vault");
+//   }
+// }
 
-// This command makes an Lottery
+// createGlobalState
 export async function createGlobalState(connection: Connection, wallet: any) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [globalStateKey, globalStateBump] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(GLOBAL_STATE_TAG)],
     program.programId
   );
   console.log('globalStateKey', globalStateKey.toBase58());
-  const [mintUsdKey, mintUsdNonce] = await anchor.web3.PublicKey.findProgramAddress(
+  const [mintUsdKey, mintUsdBump] = await anchor.web3.PublicKey.findProgramAddress(
     [Buffer.from(MINT_USD_SEED)],
     program.programId
   );
@@ -107,11 +113,12 @@ export async function createGlobalState(connection: Connection, wallet: any) {
   }
   try {
     await program.rpc.createGlobalState(
-      globalStateNonce,
-      mintUsdNonce,
+      globalStateBump,
+      mintUsdBump,
       new anchor.BN(GLOBAL_TVL_LIMIT),
       new anchor.BN(GLOBAL_DEBT_CEILING),
       new anchor.BN(USER_DEBT_CEILING),
+      ORACLE_REPORTER,
       {
         accounts: {
           authority: wallet.publicKey,
@@ -126,6 +133,69 @@ export async function createGlobalState(connection: Connection, wallet: any) {
     console.error(e);
   }
   return 'created global state';
+}
+
+// createPool
+export async function createPool(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: PublicKey = WSOL_MINT_KEY,
+  riskLevel: number,
+  platformType: PlatformType,
+  mintTokenA: PublicKey,
+  mintTokenB: PublicKey,
+  mintReward: PublicKey,
+  tokenADecimals: number,
+  tokenBDecimals: number
+) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+
+  const [poolKey, poolBump] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
+    program.programId
+  );
+
+  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_STATE_TAG)],
+    program.programId
+  );
+
+  try {
+    const pool = await program.account.pool.fetch(poolKey);
+    console.log('already created');
+    console.log('pool', pool);
+    return 'already created';
+  } catch (e) {
+    console.log("pool didn't exist");
+  }
+
+  try {
+    await program.rpc.createPool(
+      poolBump,
+      new BN(riskLevel),
+      new BN(POOL_DEBT_CEILING),
+      platformType,
+      mintTokenA,
+      mintTokenB,
+      mintReward,
+      tokenADecimals,
+      tokenBDecimals,
+      {
+        accounts: {
+          authority: wallet.publicKey,
+          pool: poolKey,
+          globalState: globalStateKey,
+          mintCollat: mintCollKey,
+          ...defaultPrograms,
+        },
+      }
+    );
+  } catch (e) {
+    console.log("can't create pool");
+    console.error(e);
+  }
+  return 'created pool';
 }
 
 export async function getCurrentEmergencyState(
