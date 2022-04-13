@@ -121,7 +121,7 @@ export function RFStateProvider({ children = undefined as any }) {
       const userInfos: any = {};
       for (const mint of Object.keys(vaultState)) {
         const vaultInfo = vaultState[mint];
-        const userInfo = await getUserState(connection, wallet, mint);
+        const userInfo = await getUserState(connection, wallet);
         if (userInfo) {
           userInfos[mint] = {
             ...userInfo,
@@ -137,7 +137,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateUserStateByMint = async (mint: string) => {
     const vaultInfo = vaultState[mint];
-    const userInfo = await getUserState(connection, wallet, mint);
+    const userInfo = await getUserState(connection, wallet);
 
     const newStates = {
       ...userState,

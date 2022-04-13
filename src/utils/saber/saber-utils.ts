@@ -239,7 +239,7 @@ export async function depositToSaber(
   );
   const transaction = new Transaction();
 
-  const user = await getUserState(connection, wallet, mintCollKey);
+  const user = await getUserState(connection, wallet);
   if (!user) {
     const tx = await createSaberUserTrove(connection, wallet, mintCollKey, true);
     transaction.add(tx);

@@ -42,6 +42,7 @@ export const MINT_USD_SEED = 'MINT_USD_SEED';
 export const USD_TOKEN_SEED = 'USD_TOKEN_SEED';
 export const VAULT_POOL_SEED = 'VAULT_POOL_SEED';
 export const PRICE_FEED_TAG = 'price-feed';
+export const USER_STATE_SEED = 'USER_STATE_SEED';
 
 export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
@@ -176,25 +177,56 @@ export async function isGlobalStateCreated(connection: Connection, wallet: any) 
   }
 }
 
-export async function getUserState(connection: Connection, wallet: any, mintCollKey: PublicKey | string) {
-  if (!wallet || !wallet.publicKey || !mintCollKey) {
+export async function getUserStateKey(wallet: any) {
+  const [userStateKey] = await anchor.web3.PublicKey.findProgramAddress(
+    [Buffer.from(USER_STATE_SEED), wallet.publicKey.toBuffer()],
+    STABLE_POOL_PROGRAM_ID
+  );
+  return userStateKey;
+}
+
+export async function getUserState(connection: Connection, wallet: any) {
+  if (!wallet || !wallet.publicKey) {
     return null;
   }
   const program = getProgramInstance(connection, wallet);
 
-  const tokenPoolKey = await getTokenPoolAddress(mintCollKey);
-  if (!tokenPoolKey) {
-    return null;
-  }
-  const [userVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenPoolKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
+  const userStateKey = getUserStateKey(wallet);
   try {
-    return await program.account.vault.fetch(userVaultKey);
+    return await program.account.userState.fetch(userStateKey);
   } catch (e) {
     return null;
   }
+}
+
+// createUserState
+export async function createUserState(connection: Connection, wallet: any) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+
+  const userStateKey = getUserStateKey(wallet);
+  const userState = getUserState(connection, wallet);
+
+  if (userState) {
+    console.log('user state already created');
+    console.log('user state', userState);
+    return 'already created';
+  }
+
+  try {
+    await program.rpc.createUserState(
+      {
+        accounts: {
+          authority: wallet.publicKey,
+          userState: userStateKey
+        }
+      }
+    );
+  } catch (e) {
+    console.log("can't create user state");
+    console.error(e);
+  }
+  return 'created user state';
 }
 
 export async function borrowUSDr(
