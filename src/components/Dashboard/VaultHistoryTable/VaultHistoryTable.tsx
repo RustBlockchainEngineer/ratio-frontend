@@ -51,7 +51,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
           <tbody>
             {status === FetchingStatus.Loading && (
               <tr>
-                <td colSpan={4} className="text-center">
+                <td colSpan={5} className="text-center">
                   <LoadingSpinner />
                 </td>
               </tr>
@@ -79,7 +79,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={4} className="text-center">
+                  <td colSpan={5} className="text-center">
                     <h6>There&apos;s no transaction history</h6>
                   </td>
                 </tr>
