@@ -87,11 +87,17 @@ export function useFetchVaultTxHistoryRatioApi(walletId = '', mintAddress: strin
   } = useFetchData<WalletTXDetail[]>(makeRatioApiEndpointTxHistory(walletId, mintAddress), false);
   const cluster = useConnectionConfig()?.env;
   const [result, setResult] = useState<FormattedTX[]>([]);
+
   useEffect(() => {
     if (!rawTransactions) {
       return;
     }
-    const formattedTxData = formatTxHistory(rawTransactions, cluster);
+    const d: any = rawTransactions.sort(function (a: any, b: any) {
+      const c: any = new Date(a.created_on);
+      const d: any = new Date(b.created_on);
+      return d - c;
+    });
+    const formattedTxData = formatTxHistory(d, cluster);
     if (lastTen) {
       setResult(formattedTxData.slice(0, 10));
     } else {
