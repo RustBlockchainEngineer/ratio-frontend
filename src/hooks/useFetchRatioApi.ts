@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { API_ENDPOINT } from '../constants/constants';
-import { useConnectionConfig } from '../contexts/connection';
+// import { useConnectionConfig } from '../contexts/connection';
 import { FormattedTX, WalletTXDetail } from '../types/transaction-types';
-import { useFetchData } from './useFetchData';
+// import { useFetchData } from './useFetchData';
 
 function makeRatioApiEndpointTxSignature(walletId: string, txSignature: string): string {
   return `${API_ENDPOINT}/transaction/${walletId}/${txSignature}`;
 }
 
-function makeRatioApiEndpointTxHistory(walletId: string, addressId: string): string {
-  return `/transaction/${walletId}/detail/${addressId}`;
+export function makeRatioApiEndpointTxHistory(walletId: string, addressId: string): string {
+  return `${API_ENDPOINT}/transaction/${walletId}/detail/${addressId}`;
 }
 
 function makeSolanaExplorerLink(txSignature: string, cluster = 'devnet'): string {
@@ -31,7 +31,7 @@ function formatDate(timestamp = ''): string {
   return formatDate + ' ' + timeDate;
 }
 
-function formatTxHistory(transactions: WalletTXDetail[], cluster: string): FormattedTX[] {
+export function formatTxHistory(transactions: WalletTXDetail[], cluster: string): FormattedTX[] {
   const formattedTxs = transactions.map((tx: WalletTXDetail) => {
     return {
       date: formatDate(tx?.created_on),
@@ -79,35 +79,36 @@ export function useFetchVaultTxRatioApi(walletId = '', txSignature: string, auth
   return [result, error];
 }
 
-export function useFetchVaultTxHistoryRatioApi(walletId = '', mintAddress: string, lastTen: boolean) {
-  const {
-    data: rawTransactions,
-    status,
-    error,
-  } = useFetchData<WalletTXDetail[]>(makeRatioApiEndpointTxHistory(walletId, mintAddress), false);
-  const cluster = useConnectionConfig()?.env;
-  const [result, setResult] = useState<FormattedTX[]>([]);
+// export function useFetchVaultTxHistoryRatioApi(walletId = '', mintAddress: string, lastTen: boolean) {
+//   const {
+//     data: rawTransactions,
+//     status,
+//     error,
+//   } = useFetchData<WalletTXDetail[]>(makeRatioApiEndpointTxHistory(walletId, mintAddress), false);
 
-  useEffect(() => {
-    if (!rawTransactions) {
-      return;
-    }
-    const d: any = rawTransactions.sort(function (a: any, b: any) {
-      const c: any = new Date(a.created_on);
-      const d: any = new Date(b.created_on);
-      return d - c;
-    });
-    const formattedTxData = formatTxHistory(d, cluster);
-    if (lastTen) {
-      setResult(formattedTxData.slice(0, 10));
-    } else {
-      setResult(formattedTxData);
-    }
-  }, [rawTransactions, lastTen]);
+//   const cluster = useConnectionConfig()?.env;
+//   const [result, setResult] = useState<FormattedTX[]>([]);
 
-  return {
-    result,
-    status,
-    error,
-  };
-}
+//   useEffect(() => {
+//     if (!rawTransactions) {
+//       return;
+//     }
+//     const d: any = rawTransactions.sort(function (a: any, b: any) {
+//       const c: any = new Date(a.created_on);
+//       const d: any = new Date(b.created_on);
+//       return d - c;
+//     });
+//     const formattedTxData = formatTxHistory(d, cluster);
+//     if (lastTen) {
+//       setResult(formattedTxData.slice(0, 10));
+//     } else {
+//       setResult(formattedTxData);
+//     }
+//   }, [lastTen]);
+
+//   return {
+//     result,
+//     status,
+//     error,
+//   };
+// }
