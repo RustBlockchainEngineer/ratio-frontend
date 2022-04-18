@@ -43,6 +43,12 @@ export async function toggleEmergencyState(connection: Connection, wallet: any, 
     const globalStateKey = await getGlobalStateKey();
     const transaction = new Transaction();
     const signers: Keypair[] = [];
+    // const ix = await program.instruction.toggleEmerState(paused, {
+    //   accounts: {
+    //     authority: wallet.publicKey,
+    //     globalState: globalStateKey,
+    //   },
+    // });
     const ix = await program.instruction.toggleEmerState(paused, {
       accounts: {
         authority: wallet.publicKey,
@@ -277,14 +283,14 @@ export async function setVaultDebtCeiling(
   const tokenVaultKey = await getTokenVaultAddress(mintCollKey);
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.setVaultDebtCeiling(
+  const ix = await program.instruction.setPoolDebtCeiling(
     new anchor.BN(vaultDebtCeiling * 10 ** ADMIN_SETTINGS_DECIMALS),
     {
       accounts: {
         authority: wallet.publicKey,
         globalState: globalStateKey,
-        mintColl: mintCollKey,
-        vault: tokenVaultKey,
+        //mintColl: mintCollKey,
+        pool: tokenVaultKey,
       },
     }
   );
@@ -405,7 +411,7 @@ export async function setHarvestFee(
   const feeNumNew = (feeNum / 100) * feeDeno;
   console.log(`Set Harvest fees ${feeNumNew} / ${feeDeno}`);
   try {
-    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(feeDeno), {
+    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), {
       accounts: {
         authority: wallet?.publicKey,
         globalState: globalStateKey,
