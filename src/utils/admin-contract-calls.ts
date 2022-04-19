@@ -6,15 +6,11 @@ import {
   getGlobalState,
   getProgramInstance,
   getTokenPoolAddress,
-  WSOL_MINT_KEY,
-  GLOBAL_STATE_TAG,
-  MINT_USD_SEED,
   defaultPrograms,
   GLOBAL_TVL_LIMIT,
   GLOBAL_DEBT_CEILING,
   USER_DEBT_CEILING,
   POOL_DEBT_CEILING,
-  POOL_SEED,
   PlatformType,
   ORACLE_REPORTER,
 } from './ratio-lending';
@@ -29,6 +25,14 @@ import {
   TVL_DECIMAL,
   USER_DEBT_CEILING_DECIMALS,
 } from '../constants';
+import {
+  getGlobalStatePDA,
+  getGlobalStatePDAWithBump,
+  getOraclePDA,
+  getPoolPDAWithBump,
+  getUSDrMintKeyWithBump,
+} from './ratio-pda';
+import { DECIMALS_PRICE } from './constants';
 // import RiskLevel from '../components/Dashboard/RiskLevel';
 // import { PLATFORM_TYPE_SABER } from './constants';
 
@@ -69,39 +73,13 @@ export async function toggleEmergencyState(connection: Connection, wallet: any, 
   }
 }
 
-// export async function createTokenVault(
-//   connection: Connection,
-//   wallet: any,
-//   mintCollKey: PublicKey = WSOL_MINT_KEY,
-//   riskLevel = 0,
-//   platform = 'SABER'
-// ) {
-//   try {
-//     switch (platform) {
-//       case 'SABER':
-//         return await createSaberTokenVault(connection, wallet, mintCollKey, riskLevel);
-//       default:
-//         console.error('Platform vault creation yet not implemented');
-//         break;
-//     }
-//   } catch (e) {
-//     console.log("can't create token vault");
-//   }
-// }
-
 // createGlobalState
 export async function createGlobalState(connection: Connection, wallet: any) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateBump] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
+  const [globalStateKey, globalStateBump] = getGlobalStatePDAWithBump();
   console.log('globalStateKey', globalStateKey.toBase58());
-  const [mintUsdKey, mintUsdBump] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(MINT_USD_SEED)],
-    program.programId
-  );
+  const [mintUsdKey, mintUsdBump] = getUSDrMintKeyWithBump();
   console.log('mintUsdKey', mintUsdKey.toBase58());
   try {
     const globalState = await program.account.globalState.fetch(globalStateKey);
@@ -135,11 +113,86 @@ export async function createGlobalState(connection: Connection, wallet: any) {
   return 'created global state';
 }
 
+export async function createPriceOracle(
+  connection,
+  wallet,
+
+  mint: PublicKey,
+  initPrice: number
+) {
+  const program = getProgramInstance(connection, wallet);
+
+  const globalStateKey = getGlobalStatePDA();
+  const oracleKey = getOraclePDA(mint);
+
+  const tx = program.transaction.createOracle(
+    // price of token
+    new BN(initPrice * 10 ** DECIMALS_PRICE),
+    {
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+        oracle: oracleKey,
+        mintCollat: mint, // the mint account that represents the token this oracle reports for
+        // system accts
+        ...defaultPrograms,
+      },
+    }
+  );
+
+  const txHash = await sendTransaction(connection, wallet, tx);
+  await connection.confirmTransaction(txHash);
+  if (txHash?.value?.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
+  console.log('Created Oracle account  tx = ', txHash);
+
+  return txHash;
+}
+
+export async function reportPriceOracle(
+  connection,
+  wallet,
+
+  mint: PublicKey,
+  newPrice: number
+) {
+  const program = getProgramInstance(connection, wallet);
+
+  const globalStateKey = getGlobalStatePDA();
+  const oracleKey = getOraclePDA(mint);
+
+  const tx = program.transaction.reportPriceToOracle(
+    // price of token
+    new BN(newPrice * DECIMALS_PRICE),
+    {
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+        oracle: oracleKey,
+        mint: mint,
+        ...defaultPrograms,
+      },
+    }
+  );
+
+  const txHash = await sendTransaction(connection, wallet, tx);
+  await connection.confirmTransaction(txHash);
+  if (txHash?.value?.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
+  console.log('Updated price of Oracle account  tx = ', txHash);
+
+  return txHash;
+}
+
 // createPool
 export async function createPool(
   connection: Connection,
   wallet: any,
-  mintCollKey: PublicKey = WSOL_MINT_KEY,
+  mintCollKey: PublicKey,
   riskLevel: number,
   platformType: PlatformType,
   mintTokenA: PublicKey,
@@ -151,15 +204,9 @@ export async function createPool(
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
 
-  const [poolKey, poolBump] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
+  const [poolKey, poolBump] = getPoolPDAWithBump(mintCollKey);
 
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
+  const globalStateKey = getGlobalStatePDA();
 
   try {
     const pool = await program.account.pool.fetch(poolKey);
@@ -339,7 +386,7 @@ export async function setVaultDebtCeiling(
   connection: Connection,
   wallet: any,
   vaultDebtCeiling: number,
-  mintCollKey: PublicKey = WSOL_MINT_KEY
+  mintCollKey: PublicKey
 ) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
