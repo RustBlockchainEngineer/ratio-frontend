@@ -50,6 +50,7 @@ export const USDR_MINT_KEY = 'HEKMCQDijwc1yjcJtQLTbwZT5R2q8rQZzrr3dMv9xfS5';
 export const defaultPrograms = {
   systemProgram: SystemProgram.programId,
   tokenProgram: TOKEN_PROGRAM_ID,
+  associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
   rent: SYSVAR_RENT_PUBKEY,
   clock: SYSVAR_CLOCK_PUBKEY,
 };
@@ -410,8 +411,7 @@ export async function depositCollateral(
       oracleB: oracleBKey,
       ataMarketA,
       ataMarketB,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      ...defaultPrograms
     },
   });
 

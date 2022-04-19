@@ -13,9 +13,17 @@ export const getGlobalStatePDA = () => {
   return pda;
 };
 
-export const getUSDrMint = () => {
+export const getGlobalStatePDAWithBump = () => {
+  return getPda([Buffer.from(GLOBAL_STATE_SEED)], STABLE_POOL_PROGRAM_ID);
+};
+
+export const getUSDrMintKey = () => {
   const [pda] = getPda([Buffer.from(MINT_USDR_SEED)], STABLE_POOL_PROGRAM_ID);
   return pda;
+};
+
+export const getUSDrMintKeyWithBump = () => {
+  return getPda([Buffer.from(MINT_USDR_SEED)], STABLE_POOL_PROGRAM_ID);
 };
 
 export const getOraclePDA = (mint: string | PublicKey) => {
