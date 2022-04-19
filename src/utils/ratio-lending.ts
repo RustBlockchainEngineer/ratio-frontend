@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import idl from './stable-pool-idl.json';
 
-import { AccountLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from '@project-serum/anchor';
 import {
   Connection,
@@ -14,11 +14,11 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { createTokenAccountIfNotExist, sendTransaction } from './web3';
-import { closeAccount } from '@project-serum/serum/lib/token-instructions';
+import { sendTransaction } from './web3';
 import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { calculateSaberReward } from './saber/saber-utils';
 import { PRICE_DECIMAL } from '../constants';
+import { getATAKey, getATAKeyWithBump, getGlobalStatePDA, getOraclePDA, getPoolPDA, getVaultPDA, getVaultPDAWithBump } from './ratio-pda';
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
@@ -331,142 +331,100 @@ export async function getTokenPoolAddress(mint: string | PublicKey): Promise<Pub
   return tokenPoolKey;
 }
 
-export async function createUserVault(connection: Connection, wallet: any, mintCollKey: PublicKey = WSOL_MINT_KEY) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
-
-  const program = getProgramInstance(connection, wallet);
-
-  const [tokenPoolKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-
-  const [userVaultKey, userVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenPoolKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-  const [userVaultTokenPoolKey, userVaultTokenPoolNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userVaultKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
-
-  try {
-    const userVault = await program.account.vault.fetch(userVaultKey);
-    console.log('fetched userVault', userVault);
-    console.log('This user vault was already created!');
-    return 'already created!';
-  } catch (e) {
-    console.error(e);
-  }
-
-  try {
-    await program.rpc.createVault(userVaultNonce, userVaultTokenPoolNonce, {
-      accounts: {
-        pool: tokenPoolKey,
-        vault: userVaultKey,
-        authority: wallet.publicKey,
-        ataVault: userVaultTokenPoolKey,
-        mintColl: mintCollKey,
-        ...defaultPrograms,
-      },
-    });
-  } catch (e) {
-    console.log("can't create user vault");
-  }
-  return 'created user vault successfully!';
-}
-
 export async function depositCollateral(
   connection: Connection,
   wallet: any,
   amount: number,
-  userCollAddress: string | null = null,
-  mintCollKey: PublicKey = WSOL_MINT_KEY
+  mintCollKey: PublicKey,
+  userTokenATA: PublicKey,
+
+  ataMarketA: PublicKey,
+  ataMarketB: PublicKey,
+  needTx = false
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
 
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const [tokenPoolKey, tokenPoolNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userVaultKey, userVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenPoolKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintCollKey);
 
-  const [userVaultTokenPoolKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userVaultKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
+  const poolData = await program.account.pool.fetch(poolKey);
+  const oracleMintA = poolData.mintTokenA;
+  const oracleMintB = poolData.mintTokenB;
+  const oracleAKey = getOraclePDA(oracleMintA);
+  const oracleBKey = getOraclePDA(oracleMintB);
+
+  const rewardMint = poolData.mintReward;
+
+  const [vaultKey, vaultBump] = getVaultPDAWithBump(wallet, mintCollKey);
+  const [vaultATAKey, vaultATABump] = getATAKeyWithBump(vaultKey, mintCollKey);
 
   const transaction = new Transaction();
-  const signers: Keypair[] = [];
-
-  let userCollKey = null;
-
-  const accountRentExempt = await connection.getMinimumBalanceForRentExemption(AccountLayout.span);
-
-  userCollKey = await createTokenAccountIfNotExist(
-    program.provider.connection,
-    userCollAddress,
-    wallet.publicKey,
-    mintCollKey.toBase58(),
-    accountRentExempt,
-    transaction,
-    signers
-  );
 
   try {
-    await program.account.vault.fetch(userVaultKey);
+    await program.account.trove.fetch(vaultKey);
   } catch {
-    const tx = await program.instruction.createVault(userVaultNonce, tokenPoolNonce, {
+    const tx = await program.instruction.createVault(vaultBump, vaultATABump, {
       accounts: {
+        // account that owns the vault
         authority: wallet.publicKey,
-        vault: userVaultKey,
-        pool: tokenPoolKey,
-        ataVault: userVaultTokenPoolKey,
-        mintColl: mintCollKey,
+        // state account where all the platform funds go thru or maybe are stored
+        pool: poolKey,
+        // the user's vault is the authority for the collateral tokens within it
+        vault: vaultKey,
+        // this is the vault's ATA for the collateral's mint, previously named tokenColl
+        ataVault: vaultATAKey,
+        // the mint address for the specific collateral provided to this vault
+        mint: mintCollKey,
         ...defaultPrograms,
       },
     });
     transaction.add(tx);
+    const rewardATA = getATAKey(wallet.publicKey, rewardMint);
+    const ix = await program.instruction.createRewardVault({
+      accounts: {
+        authority: wallet.publicKey,
+        pool: poolKey,
+        vault: vaultKey,
+
+        ataRewardVault: rewardATA,
+        mintReward: rewardMint,
+
+        ...defaultPrograms,
+      },
+    });
+    transaction.add(ix);
   }
 
-  const depositInstruction = await program.instruction.depositCollateral(new anchor.BN(amount), {
+  const ix = program.instruction.depositCollateral(new anchor.BN(amount), {
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,
-      pool: tokenPoolKey,
-      vault: userVaultKey,
-      ataVault: userVaultTokenPoolKey,
-      ataUserColl: userCollKey,
-      mintColl: mintCollKey,
-      ...defaultPrograms,
+      pool: poolKey,
+      vault: vaultKey,
+      ataVault: vaultATAKey,
+      ataUser: userTokenATA,
+      mintCollat: mintCollKey,
+      oracleA: oracleAKey,
+      oracleB: oracleBKey,
+      ataMarketA,
+      ataMarketB,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
     },
   });
 
-  transaction.add(depositInstruction);
+  transaction.add(ix);
 
-  if (mintCollKey.toBase58() === WSOL_MINT_KEY.toBase58()) {
-    transaction.add(
-      closeAccount({
-        source: userCollKey,
-        destination: wallet.publicKey,
-        owner: wallet.publicKey,
-      })
-    );
+  if (!needTx) {
+    const tx = await sendTransaction(connection, wallet, transaction);
+    console.log('tx id->', tx);
+
+    // return 'User deposited ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
+  } else {
+    return transaction;
   }
-
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
-  console.log('tx id->', tx);
-
-  return 'User deposited ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
 }
 
 export async function getUsdrMintKey() {
@@ -543,77 +501,43 @@ export async function withdrawCollateral(
   connection: Connection,
   wallet: any,
   amount: number,
-  userCollAddress: string | null = null,
-  mintCollKey: PublicKey = WSOL_MINT_KEY
+  mintColl: PublicKey,
+  needTx = false
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
 
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const globalState = await program.account.globalState.fetch(globalStateKey);
-  console.log('fetched globalState', globalState);
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintColl);
 
-  const [tokenPoolKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenPoolKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-  const [userVaultTokenPoolKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userVaultKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
+  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
+  const vaultATAKey = getATAKey(vaultKey, mintColl);
+
+  const ataColl = getATAKey(wallet.publicKey, mintColl);
+
   const transaction = new Transaction();
-  const instructions: TransactionInstruction[] = [];
-  const signers: Keypair[] = [];
 
-  const userCollKey = await createTokenAccountIfNotExist(
-    program.provider.connection,
-    userCollAddress,
-    wallet.publicKey,
-    mintCollKey.toBase58(),
-    null,
-    transaction,
-    signers
-  );
-
-  const withdrawInstruction = await program.instruction.withdrawCollateral(new anchor.BN(amount), {
+  const depositInstruction = await program.instruction.withdrawCollateral(new anchor.BN(amount), {
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,
-      vaultt: userVaultKey,
-      pool: tokenPoolKey,
-      ataVault: userVaultTokenPoolKey,
-      ataUserColl: userCollKey,
-      mintColl: mintCollKey,
+      pool: poolKey,
+      vault: vaultKey,
+      ataVault: vaultATAKey,
+      ataUser: ataColl,
+      mint: mintColl,
       ...defaultPrograms,
     },
   });
-  instructions.push(withdrawInstruction);
 
-  if (mintCollKey.toBase58() === WSOL_MINT_KEY.toBase58()) {
-    instructions.push(
-      closeAccount({
-        source: userCollKey,
-        destination: wallet.publicKey,
-        owner: wallet.publicKey,
-      })
-    );
+  transaction.add(depositInstruction);
+  if (!needTx) {
+    const tx = await sendTransaction(connection, wallet, transaction);
+    console.log('tx id->', tx);
+    // return 'User withdrawed ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
   }
-  instructions.forEach((instruction) => {
-    transaction.add(instruction);
-  });
-
-  const tx = await sendTransaction(connection, wallet, transaction, signers);
-  console.log('tx id->', tx);
-
-  return 'User withdrawed ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
+  return transaction;
 }
 
 export function pushUserHistory(action: string, userKey: string, mintKey: string, txHash: string, amount: number) {

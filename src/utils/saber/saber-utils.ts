@@ -1,19 +1,9 @@
 import * as anchor from '@project-serum/anchor';
-import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as serumCmn from '@project-serum/common';
 
-import {
-  getProgramInstance,
-  GLOBAL_STATE_TAG,
-  POOL_SEED,
-  TYPE_ID_SABER,
-  VAULT_POOL_SEED,
-  VAULT_SEED,
-  WSOL_MINT_KEY,
-  PRICE_FEED_TAG,
-  getUserState,
-} from '../ratio-lending';
-import { PublicKey, SystemProgram, Transaction, Connection } from '@solana/web3.js';
+import { depositCollateral, getGlobalState, getProgramInstance, withdrawCollateral } from '../ratio-lending';
+import { PublicKey, SystemProgram, Transaction, Connection, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
 import {
   findMinerAddress,
   findMinterAddress,
@@ -22,251 +12,48 @@ import {
   QUARRY_ADDRESSES,
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { getOneFilteredTokenAccountsByOwner, sendTransaction } from '../web3';
+import { sendTransaction } from '../web3';
 import { SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_MINT } from './constants';
-import { WalletAdapter } from '../../contexts/wallet';
 import { TokenAmount } from '../safe-math';
+import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../ratio-pda';
 
-const defaultAccounts = {
-  tokenProgram: TOKEN_PROGRAM_ID,
-  clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-  systemProgram: SystemProgram.programId,
-  rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-};
-
-export async function createSaberTokenVault(
-  connection: Connection,
-  wallet: WalletAdapter,
-  mintCollKey: PublicKey = WSOL_MINT_KEY,
-  riskLevel = 0
-) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
-
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-
-  const [tokenVaultKey, tokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  console.log('tokenVaultKey', tokenVaultKey.toBase58());
-
-  try {
-    const [priceFeedKey] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from(PRICE_FEED_TAG), mintCollKey.toBuffer()],
-      program.programId
-    );
-    // todo - get real tokenA, B, C
-    // FIXME: hardcoded
-    const mintA = new PublicKey('7KLQxufDu9H7BEAHvthC5p4Uk6WrH3aw8TwvPXoLgG11');
-    const mintB = new PublicKey('BicnAQ4jQgz3g7htuq1y6SKUNtrTr7UmpQjCqnTKkHR5');
-    const mintC = new PublicKey('FnjuEcDDTL3e511XE5a7McbDZvv2sVfNfEjyq4fJWXxg');
-    const vaultA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
-    const vaultB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
-    const vaultC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
-    const pairCount = 2;
-
-    const ix1 = program.instruction.createVault(
-      tokenVaultNonce,
-      riskLevel,
-      0,
-      new anchor.BN(100_000_000_000_000),
-      TYPE_ID_SABER,
-      {
-        accounts: {
-          authority: wallet.publicKey,
-          vault: tokenVaultKey,
-          globalState: globalStateKey,
-          mintColl: mintCollKey,
-          ...defaultAccounts,
-        },
-      }
-    );
-    const ix2 = program.instruction.createPriceFeed(pairCount, {
-      accounts: {
-        authority: wallet.publicKey,
-        globalState: globalStateKey,
-        vault: tokenVaultKey,
-        priceFeed: priceFeedKey,
-        mintColl: mintCollKey,
-        mintA,
-        mintB,
-        mintC,
-        vaultA,
-        vaultB,
-        vaultC,
-        ...defaultAccounts,
-      },
-    });
-    const transaction = new Transaction();
-    transaction.add(...[ix1, ix2]);
-
-    const txHash = await sendTransaction(connection, wallet, transaction, []);
-    console.log(`vault created. txHash = ${txHash}`);
-    return 'created token vault successfully';
-  } catch (e) {
-    console.log("can't create token vault");
-    console.log('program:', program);
-    console.error(e);
-  }
-}
-export async function createSaberUserTrove(
-  connection: Connection,
-  wallet: any,
-  mintCollKey: PublicKey,
-  needTx = false
-) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
-
-  console.log('Create Saber UserTrove');
-
-  const program = getProgramInstance(connection, wallet);
-
-  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveKey, userTroveNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveTokenVaultKey, userTroveTokenVaultNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveRewardKey, userTroveRewardNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), SABER_REWARD_MINT.toBuffer()],
-    program.programId
-  );
-
-  const ix1 = await program.instruction.createTrove(userTroveNonce, userTroveTokenVaultNonce, {
-    accounts: {
-      vault: tokenVaultKey,
-      trove: userTroveKey,
-      authority: wallet.publicKey,
-
-      ataTrove: userTroveTokenVaultKey,
-      mintColl: mintCollKey,
-
-      ...defaultAccounts,
-    },
-  });
-
-  const ix2 = await program.instruction.createUserRewardVault(userTroveRewardNonce, {
-    accounts: {
-      authority: wallet.publicKey,
-      trove: userTroveKey,
-      vault: tokenVaultKey,
-
-      rewardVault: userTroveRewardKey,
-      rewardMint: SABER_REWARD_MINT,
-
-      ...defaultAccounts,
-    },
-  });
-
-  const [quarryKey] = await findQuarryAddress(SABER_REWARDER, mintCollKey);
-
-  const [userMinerKey, userMinerBump] = await findMinerAddress(quarryKey, userTroveKey);
-
-  const [userMinerVaultKey, userMinerVaultBump] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
-
-  const ix3 = await program.instruction.createQuarryMiner(userMinerBump, userMinerVaultBump, {
-    accounts: {
-      vault: tokenVaultKey,
-      trove: userTroveKey,
-      payer: wallet.publicKey,
-      miner: userMinerKey,
-      quarry: quarryKey,
-      rewarder: SABER_REWARDER,
-      minerVault: userMinerVaultKey,
-      tokenMint: mintCollKey,
-      quarryProgram: QUARRY_ADDRESSES.Mine,
-      ...defaultAccounts,
-    },
-  });
-
-  const transaction = new Transaction();
-  transaction.add(...[ix1, ix2, ix3]);
-  if (needTx) {
-    return transaction;
-  } else {
-    const txHash = await sendTransaction(connection, wallet, transaction, []);
-
-    return txHash;
-  }
-}
 export async function depositToSaber(
   connection: Connection,
   wallet: any,
-  mintCollKey: PublicKey,
+
   amount: number,
-  userCollAddress: PublicKey
+
+  mintCollKey: PublicKey,
+  userTokenATA: PublicKey,
+
+  ataMarketA: PublicKey,
+  ataMarketB: PublicKey
 ): Promise<string> {
   console.log('Deposit to Saber', amount);
 
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveTokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [quarryKey] = await findQuarryAddress(SABER_REWARDER, mintCollKey);
-
-  const [userMinerKey] = await findMinerAddress(quarryKey, userTroveKey);
-
-  const [userMinerVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
   const transaction = new Transaction();
 
-  const user = await getUserState(connection, wallet);
-  if (!user) {
-    const tx = await createSaberUserTrove(connection, wallet, mintCollKey, true);
-    transaction.add(tx);
+  const tx1: any = await depositCollateral(
+    connection,
+    wallet,
+    amount,
+    mintCollKey,
+    userTokenATA,
+    ataMarketA,
+    ataMarketB,
+    true
+  );
+  transaction.add(tx1);
+
+  const tx2 = await createSaberQuarryMinerIfneeded(connection, wallet, mintCollKey, true);
+  if (tx2) {
+    transaction.add(tx2);
   }
 
-  const ix = await program.instruction.depositToSaber(new anchor.BN(amount), {
-    accounts: {
-      ratioStaker: {
-        globalState: globalStateKey,
-        vault: tokenVaultKey,
-        trove: userTroveKey,
-        authority: wallet.publicKey,
-        ataTrove: userTroveTokenVaultKey,
-        ataUserColl: userCollAddress,
-        mintColl: mintCollKey,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      },
-      saberFarm: {
-        quarry: quarryKey,
-        miner: userMinerKey,
-        minerVault: userMinerVaultKey,
-      },
-      saberFarmRewarder: SABER_REWARDER,
-      saberFarmProgram: QUARRY_ADDRESSES.Mine,
-    },
-  });
-  transaction.add(ix);
+  const tx3 = await stakeCollateralToSaber(amount, connection, wallet, mintCollKey, true);
+  if (tx3) {
+    transaction.add(tx3);
+  }
   const txHash = await sendTransaction(connection, wallet, transaction);
   await connection.confirmTransaction(txHash);
   if (txHash?.value?.err) {
@@ -277,73 +64,25 @@ export async function depositToSaber(
   return txHash.toString();
 }
 
-export async function withdrawFromSaber(
-  connection: Connection,
-  wallet: any,
-  mintCollKey: PublicKey,
-  amount: number,
-  userCollAddress: PublicKey
-) {
+export async function withdrawFromSaber(connection: Connection, wallet: any, mintCollKey: PublicKey, amount: number) {
   console.log('Withdraw from Saber', amount);
 
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveTokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
-
-  const sdk: QuarrySDK = QuarrySDK.load({
-    provider: program.provider,
-  });
-  const rewarder = await sdk.mine.loadRewarderWrapper(SABER_REWARDER);
-
-  const quarryKey = await rewarder.getQuarryKeyForMint(mintCollKey);
-
-  const [userMinerKey] = await findMinerAddress(quarryKey, userTroveKey);
-
-  const [userMinerVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
   const transaction = new Transaction();
 
-  const ix = await program.instruction.withdrawFromSaber(new anchor.BN(amount), {
-    accounts: {
-      ratioStaker: {
-        globalState: globalStateKey,
-        vault: tokenVaultKey,
-        trove: userTroveKey,
-        authority: wallet.publicKey,
-        ataTrove: userTroveTokenVaultKey,
-        ataUserColl: userCollAddress,
-        mintColl: mintCollKey,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      },
-      saberFarm: {
-        quarry: quarryKey,
-        miner: userMinerKey,
-        minerVault: userMinerVaultKey,
-      },
-      saberFarmRewarder: SABER_REWARDER,
-      saberFarmProgram: QUARRY_ADDRESSES.Mine,
-    },
-  });
-  transaction.add(ix);
+  const tx1 = await unstakeColalteralFromSaber(amount, connection, wallet, mintCollKey, true);
+  if (tx1) {
+    transaction.add(tx1);
+  }
 
-  const harvest_ix = await harvestFromSaber(connection, wallet, mintCollKey, true);
-  transaction.add(harvest_ix);
+  const tx2 = await withdrawCollateral(connection, wallet, amount, mintCollKey, true);
+  if (tx2) {
+    transaction.add(tx2);
+  }
+
+  const tx3 = await harvestRewardsFromSaber(connection, wallet, mintCollKey, true);
+  if (tx3) {
+    transaction.add(tx3);
+  }
 
   const txHash = await sendTransaction(connection, wallet, transaction);
   await connection.confirmTransaction(txHash);
@@ -356,155 +95,239 @@ export async function withdrawFromSaber(
   return txHash;
 }
 
-export async function harvestFromSaber(connection: Connection, wallet: any, mintCollKey: PublicKey, needTx = false) {
-  console.log('Harvesting from Saber');
-  const program = getProgramInstance(connection, wallet);
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const globalState = await program.account.globalState.fetch(globalStateKey);
-  const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-  const [userTroveTokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
+export const createSaberQuarryMinerIfneeded = async (
+  userConnection: Connection,
+  userWallet: typeof anchor.Wallet,
+  mintCollKey: PublicKey,
+  needTx = false
+) => {
+  const program = getProgramInstance(userConnection, userWallet);
+
+  const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
+  const transaction = new Transaction();
+
   const sdk: QuarrySDK = QuarrySDK.load({
     provider: program.provider,
   });
   const rewarder = await sdk.mine.loadRewarderWrapper(SABER_REWARDER);
 
-  const [quarryKey] = await findQuarryAddress(SABER_REWARDER, mintCollKey);
+  const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
 
-  const [userMinerKey] = await findMinerAddress(quarryKey, userTroveKey);
+  const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
+  const quarry = await rewarder.getQuarry(poolMintToken);
 
-  const [userMinerVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from('Miner-Vault'), userMinerKey.toBuffer(), mintCollKey.toBuffer()],
-    program.programId
-  );
+  try {
+    await quarry.getMiner(vaultKey);
+  } catch {
+    const rewarder = SABER_REWARDER;
+    const poolKey = getPoolPDA(mintCollKey);
 
-  const [userTroveRewardKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_POOL_SEED), userTroveKey.toBuffer(), SABER_REWARD_MINT.toBuffer()],
-    program.programId
-  );
-  const tx = new Transaction();
+    const [quarry] = await findQuarryAddress(rewarder, mintCollKey, QUARRY_ADDRESSES.Mine);
 
-  let userRewardKey = await getOneFilteredTokenAccountsByOwner(connection, wallet.publicKey, SABER_REWARD_MINT);
-
-  if (userRewardKey === '') {
-    const ata = await Token.getAssociatedTokenAddress(
-      ASSOCIATED_TOKEN_PROGRAM_ID,
-      TOKEN_PROGRAM_ID,
-      SABER_REWARD_MINT,
-      wallet.publicKey
-    );
-
-    userRewardKey = ata.toString();
-
-    tx.add(
-      Token.createAssociatedTokenAccountInstruction(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        SABER_REWARD_MINT,
-        new PublicKey(userRewardKey),
-        wallet.publicKey,
-        wallet.publicKey
-      )
-    );
-  }
-
-  let feeCollectorKey = await getOneFilteredTokenAccountsByOwner(connection, globalState.treasury, SABER_REWARD_MINT);
-  if (feeCollectorKey === '') {
-    const ata = await Token.getAssociatedTokenAddress(
-      ASSOCIATED_TOKEN_PROGRAM_ID,
-      TOKEN_PROGRAM_ID,
-      SABER_REWARD_MINT,
-      globalState.treasury,
-      true
-    );
-
-    feeCollectorKey = ata.toString();
-    console.log(globalState.treasury.toString(), feeCollectorKey);
-    tx.add(
-      Token.createAssociatedTokenAccountInstruction(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        SABER_REWARD_MINT,
-        new PublicKey(feeCollectorKey),
-        globalState.treasury,
-        wallet.publicKey
-      )
+    const [minerKey, minerBump] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+    const minerAtaPubKey = getATAKey(minerKey, mintCollKey);
+    transaction.add(
+      // programPeriphery.instruction.createSaberQuarryMiner(miner.bump, {
+      program.instruction.createSaberQuarryMiner(minerBump, {
+        accounts: {
+          authority: userWallet.publicKey,
+          pool: poolKey,
+          vault: vaultKey,
+          miner: minerKey,
+          minerVault: minerAtaPubKey,
+          // quarry
+          quarry: quarry,
+          rewarder: rewarder,
+          mint: mintCollKey,
+          quarryProgram: QUARRY_ADDRESSES.Mine,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+          rent: SYSVAR_RENT_PUBKEY,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        },
+      })
     );
   }
+  if (needTx) {
+    return transaction;
+  }
+  // send transaction
+  const receipt = await handleTxn(transaction, userConnection, userWallet);
+  console.log('receipt', receipt);
+  // return receipt;
+};
 
-  const [minter] = await findMinterAddress(SABER_MINT_WRAPPER, SABER_REWARDER, QUARRY_ADDRESSES.MintWrapper);
-  const ix = await program.instruction.harvestFromSaber({
-    accounts: {
-      ratioHarvester: {
+/* eslint-disable */
+const stakeCollateralToSaber = async (
+  amountToStake: number,
+  userConnection: Connection,
+  userWallet: typeof anchor.Wallet,
+  mintCollKey: PublicKey,
+  needTx = false
+) => {
+  const rewarder = SABER_REWARDER;
+  const program = getProgramInstance(userConnection, userWallet);
+
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintCollKey);
+  const userTokenATA = getATAKey(userWallet.publicKey, mintCollKey);
+  const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
+
+  const valutATA = getATAKey(vaultKey, mintCollKey);
+  const [quarry] = await findQuarryAddress(rewarder, mintCollKey, QUARRY_ADDRESSES.Mine);
+
+  const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+  const minerAtaPubKey = getATAKey(minerKey, mintCollKey);
+
+  const txn = new Transaction().add(
+    program.instruction.stakeCollateralToSaber(new anchor.BN(amountToStake), {
+      accounts: {
+        authority: userWallet.publicKey,
         globalState: globalStateKey,
-        vault: tokenVaultKey,
-        trove: userTroveKey,
-
-        authority: wallet.publicKey,
-
-        troveReward: userTroveRewardKey,
-        userRewardToken: userRewardKey,
-        rewardFeeToken: feeCollectorKey,
-        mintColl: mintCollKey,
-        ...defaultAccounts,
+        pool: poolKey,
+        vault: vaultKey,
+        ataVault: valutATA,
+        ataUser: userTokenATA,
+        mint: mintCollKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        quarry,
+        miner: minerKey,
+        minerVault: minerAtaPubKey,
+        rewarder,
+        quarryProgram: QUARRY_ADDRESSES.Mine,
       },
-      saberFarm: {
-        quarry: quarryKey,
-        miner: userMinerKey,
-        minerVault: userMinerVaultKey,
-      },
-      ataUserColl: userTroveTokenVaultKey,
-      saberFarmRewarder: SABER_REWARDER,
-      saberFarmProgram: QUARRY_ADDRESSES.Mine,
-
-      mintWrapper: SABER_MINT_WRAPPER,
-      mintWrapperProgram: QUARRY_ADDRESSES.MintWrapper,
-
-      minter: minter,
-      rewardsTokenMint: SABER_REWARD_MINT,
-      claimFeeTokenAccount: rewarder.rewarderData.claimFeeTokenAccount,
-    },
-  });
-  tx.add(ix);
-
-  if (needTx === false) {
-    const txHash = await sendTransaction(connection, wallet, tx);
-    await connection.confirmTransaction(txHash);
-    if (txHash?.value?.err) {
-      console.error('ERROR ON TX ', txHash.value.err);
-      throw txHash.value.err;
-    }
-    console.log('Harvest finished', txHash);
-    return txHash;
-  } else {
-    return tx;
+    })
+  );
+  if (needTx) {
+    return txn;
   }
-}
+  await handleTxn(txn, userConnection, userWallet);
+};
+
+/* eslint-disable */
+const unstakeColalteralFromSaber = async (
+  unstakeAmount: number,
+  userConnection: Connection,
+  userWallet: typeof anchor.Wallet,
+  mintCollKey: PublicKey,
+  needTx = false
+) => {
+  const rewarder = SABER_REWARDER;
+  const program = getProgramInstance(userConnection, userWallet);
+
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintCollKey);
+  const userTokenATA = getATAKey(userWallet.publicKey, mintCollKey);
+  const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
+
+  const valutATA = getATAKey(vaultKey, mintCollKey);
+  const [quarry] = await findQuarryAddress(rewarder, mintCollKey, QUARRY_ADDRESSES.Mine);
+
+  const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+  const minerAtaPubKey = getATAKey(minerKey, mintCollKey);
+
+  const txn = new Transaction().add(
+    program.instruction.unstakeCollateralFromSaber(new anchor.BN(unstakeAmount), {
+      accounts: {
+        authority: userWallet.publicKey,
+        globalState: globalStateKey,
+        pool: poolKey,
+        vault: vaultKey,
+        ataVault: valutATA,
+        ataUser: userTokenATA,
+        mint: mintCollKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        quarry,
+        miner: minerKey,
+        minerVault: minerAtaPubKey,
+        rewarder,
+        quarryProgram: QUARRY_ADDRESSES.Mine,
+      },
+    })
+  );
+  if (needTx) {
+    return txn;
+  }
+  await handleTxn(txn, userConnection, userWallet);
+};
+
+export const harvestRewardsFromSaber = async (
+  connection: Connection,
+  wallet: typeof anchor.Wallet,
+  mintCollKey: PublicKey,
+  needTx = false
+) => {
+  const program = getProgramInstance(connection, wallet);
+  const sdk = QuarrySDK.load({
+    provider: program.provider,
+  });
+  const rewarder = SABER_REWARDER;
+  const rewarderWrapper = await sdk.mine.loadRewarderWrapper(rewarder);
+  const claimFeeTokenAccount = rewarderWrapper.rewarderData.claimFeeTokenAccount;
+  const mintWrapper = SABER_MINT_WRAPPER;
+  const [minter] = await findMinterAddress(mintWrapper, rewarder, QUARRY_ADDRESSES.MintWrapper);
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintCollKey);
+  const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
+
+  const valutATA = getATAKey(vaultKey, mintCollKey);
+  const [quarry] = await findQuarryAddress(rewarder, mintCollKey, QUARRY_ADDRESSES.Mine);
+
+  const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+  const minerAtaPubKey = getATAKey(minerKey, mintCollKey);
+
+  const userRewardTokenATA = getATAKey(wallet.publicKey, mintCollKey);
+
+  const { globalState } = await getGlobalState(connection, wallet);
+  const treasury = globalState.treasury;
+  const ataTreasurySbr = getATAKey(treasury, SABER_REWARD_MINT);
+  const sbrATA = getATAKey(vaultKey, SABER_REWARD_MINT);
+
+  const txn = new Transaction().add(
+    program.instruction.harvestRewardsFromSaber({
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+        pool: poolKey,
+        vault: vaultKey,
+        ataRewardVault: sbrATA,
+        ataUserReward: userRewardTokenATA,
+        ataRatioTreasury: ataTreasurySbr, // this is SBR for this example
+        treasury,
+        mint: mintCollKey,
+        quarry,
+        miner: minerKey,
+        minerVault: minerAtaPubKey,
+        ataVault: valutATA,
+        // quarry-specific accounts
+        rewarder,
+        mintWrapper,
+        mintWrapperProgram: QUARRY_ADDRESSES.MintWrapper,
+        minter,
+        claimFeeTokenAccount, // is this a quarry-specific account
+        // system accounts
+        mintReward: SABER_REWARD_MINT, // SBR for this example
+        quarryProgram: QUARRY_ADDRESSES.Mine,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+        rent: SYSVAR_RENT_PUBKEY,
+      },
+    })
+  );
+  if (needTx) {
+    return txn;
+  }
+  await handleTxn(txn, connection, wallet);
+};
 
 export async function calculateSaberReward(connection: Connection, wallet: any, mintCollKey: PublicKey) {
   try {
     const program = getProgramInstance(connection, wallet);
 
-    const [tokenVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-      program.programId
-    );
-    const [userTroveKey] = await anchor.web3.PublicKey.findProgramAddress(
-      [Buffer.from(VAULT_SEED), tokenVaultKey.toBuffer(), wallet.publicKey.toBuffer()],
-      program.programId
-    );
+    const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
 
     const sdk: QuarrySDK = QuarrySDK.load({
       provider: program.provider,
@@ -517,7 +340,7 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
     const quarry = await rewarder.getQuarry(poolMintToken);
 
-    const miner = await quarry.getMiner(userTroveKey);
+    const miner = await quarry.getMiner(vaultKey);
     const payroll = quarry.payroll;
 
     const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
@@ -536,3 +359,32 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     return 0;
   }
 }
+
+/* eslint-enable */
+export const handleTxn = async (
+  txn: anchor.web3.Transaction,
+  userConnection: Connection,
+  userWallet: typeof anchor.Wallet
+) => {
+  // prep txn
+  txn.feePayer = userWallet.publicKey;
+  txn.recentBlockhash = (await userConnection.getLatestBlockhash()).blockhash;
+
+  // send txn
+  try {
+    const signedTxn: Transaction = await userWallet.signTransaction(txn);
+    const rawTxn: Buffer = signedTxn.serialize();
+    const options = {
+      skipPreflight: true,
+      commitment: 'singleGossip',
+    };
+
+    const receipt: string = await userConnection.sendRawTransaction(rawTxn, options);
+    const confirmation: anchor.web3.RpcResponseAndContext<anchor.web3.SignatureResult> =
+      await userConnection.confirmTransaction(receipt);
+    if (confirmation.value.err) throw new Error(JSON.stringify(confirmation.value.err));
+    else return receipt;
+  } catch (error) {
+    console.log(error);
+  }
+};
