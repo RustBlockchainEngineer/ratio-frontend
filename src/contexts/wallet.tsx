@@ -8,10 +8,10 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { notify } from './../utils/notifications';
 import { useConnectionConfig } from './connection';
 import { useLocalStorageState } from './../utils/utils';
-import { LedgerWalletAdapter } from '../wallet-adapters/ledger';
+//import { LedgerWalletAdapter } from '../wallet-adapters/ledger';
 import { PhantomWalletAdapter } from '../wallet-adapters/phantom';
 
-const ASSETS_URL = 'https://raw.githubusercontent.com/solana-labs/oyster/main/assets/wallets/';
+//const ASSETS_URL = 'https://raw.githubusercontent.com/solana-labs/oyster/main/assets/wallets/';
 export const WALLET_PROVIDERS = [
   {
     name: 'Phantom',
@@ -19,22 +19,22 @@ export const WALLET_PROVIDERS = [
     icon: `https://www.phantom.app/img/logo.png`,
     adapter: PhantomWalletAdapter,
   },
-  {
-    name: 'Solflare',
-    url: 'https://solflare.com/access-wallet',
-    icon: `${ASSETS_URL}solflare.svg`,
-  },
-  {
-    name: 'Ledger',
-    url: 'https://www.ledger.com',
-    icon: `${ASSETS_URL}ledger.svg`,
-    adapter: LedgerWalletAdapter,
-  },
-  {
-    name: 'MathWallet',
-    url: 'https://mathwallet.org',
-    icon: `${ASSETS_URL}mathwallet.svg`,
-  },
+  // {
+  //   name: 'Solflare',
+  //   url: 'https://solflare.com/access-wallet',
+  //   icon: `${ASSETS_URL}solflare.svg`,
+  // },
+  // {
+  //   name: 'Ledger',
+  //   url: 'https://www.ledger.com',
+  //   icon: `${ASSETS_URL}ledger.svg`,
+  //   adapter: LedgerWalletAdapter,
+  // },
+  // {
+  //   name: 'MathWallet',
+  //   url: 'https://mathwallet.org',
+  //   icon: `${ASSETS_URL}mathwallet.svg`,
+  // },
 ];
 
 export interface WalletAdapter extends EventEmitter {
