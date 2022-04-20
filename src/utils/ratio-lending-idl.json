@@ -202,7 +202,7 @@
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -214,10 +214,6 @@
       "args": [
         {
           "name": "feeNum",
-          "type": "u64"
-        },
-        {
-          "name": "feeDeno",
           "type": "u64"
         }
       ]
@@ -290,7 +286,7 @@
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -311,7 +307,7 @@
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -328,7 +324,7 @@
       ]
     },
     {
-      "name": "setVaultDebtCeiling",
+      "name": "setPoolDebtCeiling",
       "accounts": [
         {
           "name": "authority",
@@ -341,12 +337,7 @@
           "isSigner": false
         },
         {
-          "name": "mintColl",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
+          "name": "pool",
           "isMut": true,
           "isSigner": false
         }
@@ -363,7 +354,7 @@
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true
         },
         {
