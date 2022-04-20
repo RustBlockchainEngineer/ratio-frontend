@@ -563,29 +563,29 @@ export async function setDepositFee(connection: Connection, wallet: WalletAdapte
 }
 
 export async function changeTreasury(connection: Connection, wallet: any, newTreasury: PublicKey) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   try {
     const program = getProgramInstance(connection, wallet);
-    const globalStateKey = await getGlobalStateKey();
+    const globalStateKey = await getGlobalStatePDA();
     const transaction = new Transaction();
-    const ix = await program.instruction.changeTreasury({
+    const ix = await program.instruction.changeTreasuryWallet(newTreasury, {
       accounts: {
         authority: wallet.publicKey,
         globalState: globalStateKey,
-        newTreasury,
+        treasury: newTreasury,
       },
     });
     transaction.add(ix);
     const tx = await sendTransaction(connection, wallet, transaction);
     console.log('tx id->', tx);
     const txResult = await connection.confirmTransaction(tx);
-    if (txResult.value.err) {
+    if (txResult?.value?.err) {
       throw txResult.value.err;
     }
     return 'Set Treasury to' + newTreasury.toBase58() + ', transaction id = ' + tx;
   } catch (e) {
-    console.error('Error while setting the treasury wallet');
+    console.error('Error while setting the treasury wallet', e);
     throw e;
   }
 }

@@ -11,14 +11,23 @@ import {
   SYSVAR_CLOCK_PUBKEY,
   SYSVAR_RENT_PUBKEY,
   Transaction,
-  TransactionInstruction,
 } from '@solana/web3.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { calculateSaberReward } from './saber/saber-utils';
 import { PRICE_DECIMAL } from '../constants';
-import { getATAKey, getATAKeyWithBump, getGlobalStatePDA, getOraclePDA, getPoolPDA, getVaultPDA, getVaultPDAWithBump } from './ratio-pda';
+import {
+  getATAKey,
+  getATAKeyWithBump,
+  getGlobalStatePDA,
+  getOraclePDA,
+  getPoolPDA,
+  getUSDrMintKey,
+  getVaultPDA,
+  getVaultPDAWithBump,
+} from './ratio-pda';
+import { DECIMALS_USDT } from './constants';
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
@@ -215,14 +224,12 @@ export async function createUserState(connection: Connection, wallet: any) {
   }
 
   try {
-    await program.rpc.createUserState(
-      {
-        accounts: {
-          authority: wallet.publicKey,
-          userState: userStateKey
-        }
-      }
-    );
+    await program.rpc.createUserState({
+      accounts: {
+        authority: wallet.publicKey,
+        userState: userStateKey,
+      },
+    });
   } catch (e) {
     console.log("can't create user state");
     console.error(e);
@@ -234,72 +241,52 @@ export async function borrowUSDr(
   connection: Connection,
   wallet: any,
   amount: number,
-  mintCollKey: PublicKey = WSOL_MINT_KEY
+  mintColl: PublicKey,
+  ataMarketA: PublicKey,
+  ataMarketB: PublicKey
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
 
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
+  const globalStateKey = getGlobalStatePDA();
+  const usdrMint = getUSDrMintKey();
+  const poolKey = getPoolPDA(mintColl);
+  const poolData = await program.account.pool.fetch(poolKey);
+  const oracleMintA = poolData.mintTokenA;
+  const oracleMintB = poolData.mintTokenB;
+  const oracleAKey = getOraclePDA(oracleMintA);
+  const oracleBKey = getOraclePDA(oracleMintB);
 
-  const [tokenPoolKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenPoolKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-  const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(MINT_USD_SEED)], program.programId);
+  const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
+  const ataColl = getATAKey(wallet.publicKey, mintColl);
+
+  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
 
   const transaction = new Transaction();
   const signers: Keypair[] = [];
 
-  const [userUsdKey, userUsdKeyNonce] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USD_TOKEN_SEED), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
-    program.programId
-  );
-
-  const [priceFeedKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(PRICE_FEED_TAG), mintCollKey.toBuffer()],
-    program.programId
-  );
-
-  // todo - get real tokenA, B, C
-  // FIXME: hardcoded
-  const poolA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
-  const poolB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
-  const poolC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
-
-  console.log('priceFeedKey =', priceFeedKey.toBase58());
-  const ix1 = program.instruction.updatePriceFeed({
-    accounts: {
-      priceFeed: priceFeedKey,
-      mintColl: mintCollKey,
-      poolA,
-      poolB,
-      poolC,
-      ...defaultPrograms,
-    },
-  });
-  const borrowInstruction = program.instruction.borrowUsd(new anchor.BN(amount), userUsdKeyNonce, {
+  const borrowInstruction = await program.instruction.borrowUsdr(new anchor.BN(amount), {
     accounts: {
       authority: wallet.publicKey,
-      pool: tokenPoolKey,
-      vault: userVaultKey,
       globalState: globalStateKey,
-      priceFeed: priceFeedKey,
-      mintUsd: mintUsdKey,
-      ataUserUsd: userUsdKey,
-      mintColl: mintCollKey,
+
+      oracleA: oracleAKey,
+      oracleB: oracleBKey,
+      ataMarketA: ataMarketA,
+      ataMarketB: ataMarketB,
+
+      mintColl, // the collat token mint that the pool represents
+      pool: poolKey,
+      vault: vaultKey,
+
+      mintUsdr: usdrMint,
+      ataUsdr: ataUSDr,
+      ataColl: ataColl,
       ...defaultPrograms,
     },
   });
 
-  transaction.add(ix1);
   transaction.add(borrowInstruction);
 
   const txHash = await sendTransaction(connection, wallet, transaction, signers);
@@ -308,7 +295,7 @@ export async function borrowUSDr(
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
   }
-  console.log(`User borrowed ${amount / Math.pow(10, USD_DECIMALS)} USD , transaction id = ${txHash}`);
+  console.log(`User borrowed ${amount / Math.pow(10, DECIMALS_USDT)} USD , transaction id = ${txHash}`);
 
   return txHash;
 }
@@ -411,7 +398,7 @@ export async function depositCollateral(
       oracleB: oracleBKey,
       ataMarketA,
       ataMarketB,
-      ...defaultPrograms
+      ...defaultPrograms,
     },
   });
 
@@ -435,64 +422,40 @@ export async function getUsdrMintKey() {
   return mintUsdKey.toBase58();
 }
 
-export async function repayUSDr(
-  connection: Connection,
-  wallet: any,
-  amount: number,
-  mintCollKey: PublicKey = WSOL_MINT_KEY
-) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
+export async function repayUSDr(connection: Connection, wallet: any, amount: number, mintColl: PublicKey) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
 
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
-  const [tokenPoolKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), mintCollKey.toBuffer()],
-    program.programId
-  );
-  const [userVaultKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(VAULT_SEED), tokenPoolKey.toBuffer(), wallet.publicKey.toBuffer()],
-    program.programId
-  );
-  const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress([Buffer.from(MINT_USD_SEED)], program.programId);
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintColl);
+  const usdrMint = getUSDrMint();
+
+  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
+
+  const ataUserUSDr = getATAKey(wallet.publicKey, usdrMint);
 
   const transaction = new Transaction();
-  const instructions: TransactionInstruction[] = [];
-  const signers: Keypair[] = [];
-
-  const [userUsdKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USD_TOKEN_SEED), wallet.publicKey.toBuffer(), mintUsdKey.toBuffer()],
-    program.programId
-  );
-
-  const repayInstruction = await program.instruction.repayUsd(new anchor.BN(amount), {
+  const ix = await program.instruction.repayUsdr(new anchor.BN(amount), {
     accounts: {
-      owner: wallet.publicKey,
-      pool: tokenPoolKey,
-      vault: userVaultKey,
+      authority: wallet.publicKey,
       globalState: globalStateKey,
-      mintUsd: mintUsdKey,
-      ataUserUsd: userUsdKey,
-      mintColl: mintCollKey,
+      pool: poolKey,
+      vault: vaultKey, // TODO: vault -> vault
+      mintUsdr: usdrMint,
+      ataUsdr: ataUserUSDr,
       ...defaultPrograms,
     },
   });
-  instructions.push(repayInstruction);
+  transaction.add(ix);
 
-  instructions.forEach((instruction) => {
-    transaction.add(instruction);
-  });
-
-  const txHash = await sendTransaction(connection, wallet, transaction, signers);
+  const txHash = await sendTransaction(connection, wallet, transaction, []);
   await connection.confirmTransaction(txHash);
   if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
   }
-  console.log(`User repaid ${amount / Math.pow(10, USD_DECIMALS)} USD , transaction id = ${txHash}`);
+  console.log(`User repaid ${amount / Math.pow(10, DECIMALS_USDT)} USD , transaction id = ${txHash}`);
 
   return txHash;
 }
