@@ -62,6 +62,12 @@ const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
 
   const { tokens, status, error } = useFetchTokens();
 
+  useEffect(() => {
+    if (!isDefault) {
+      onViewType('grid');
+    }
+  }, [isDefault]);
+
   const filterOptions = useMemo(() => {
     if (tokens.length === 0 || status !== FetchingStatus.Finish) {
       return [];
