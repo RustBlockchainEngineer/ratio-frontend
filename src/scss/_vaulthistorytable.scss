@@ -1,5 +1,6 @@
 .vaulthistorytable {
   width: 100%;
+ 
   @include respond-to(sm) {
     padding-left: 0px;
     padding-right: 0px;
@@ -14,7 +15,18 @@
     color: var(--unnamed-color-3c4760);
     opacity: 1;
   }
+  &__readmore {
+    font-family: 'Poppins-Regular';
+    font-size: 0.875rem;
+    color: var(--unnamed-color-3c4760);
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
   &__table {
+     overflow: auto; 
+     max-height: 500px;     
     border: 1px solid var(--unnamed-color-f9fbfe);
     border-radius: 16px;
     .table td,
@@ -25,12 +37,18 @@
       font-size: 'Poppins-Medium';
       color: var(--unnamed-color-4c646f);
     }
+    .table thead th {
+      position: sticky; top: 0; z-index: 1; 
+    }
+    .table tbody th { position: sticky; left: 0; }
     .table th {
+      top: 0px;
       padding-bottom: 0.5rem;
       color: var(--unnamed-color-4c646f);
       font-weight: 400;
       font-size: 12px;
       border-bottom: 2px solid var(--unnamed-color-f9fbfe);
+      background-color: var(--background);
     }
     .activity {
       font-family: 'Poppins-Regular';
