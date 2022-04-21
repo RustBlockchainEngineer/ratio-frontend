@@ -94,6 +94,8 @@ const Layer = () => {
     setCollapseFlag(!collapseFlag);
   };
 
+  console.log(connected);
+
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
       <ToastContainer

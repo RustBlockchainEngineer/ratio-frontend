@@ -59,6 +59,8 @@ const WalletContext = React.createContext<{
 export function WalletProvider({ children = null as any }) {
   const { endpoint } = useConnectionConfig();
 
+  // const [autoConnect, setAutoConnect] = useState(true);
+
   const [autoConnect, setAutoConnect] = useLocalStorageState('autoConnect');
   const [providerUrl, setProviderUrl] = useLocalStorageState('walletProvider');
 
@@ -76,6 +78,7 @@ export function WalletProvider({ children = null as any }) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
+    console.log(wallet);
     if (wallet) {
       wallet.on('connect', () => {
         if (wallet.publicKey) {
@@ -111,16 +114,19 @@ export function WalletProvider({ children = null as any }) {
         wallet.disconnect();
       }
     };
-  }, [wallet]);
+  }, [wallet, autoConnect]);
 
   useEffect(() => {
     if (wallet && autoConnect) {
-      wallet.connect();
-      setAutoConnect(false);
+      setTimeout(() => {
+        wallet.connect();
+      }, 300);
+      // wallet.connect();
+      // setAutoConnect(false);
     }
 
     return () => {};
-  }, [wallet, autoConnect]);
+  }, [wallet]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
