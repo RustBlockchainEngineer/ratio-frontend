@@ -70,7 +70,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
       <div className="d-flex justify-content-between">
         <h4>Vault History</h4>
         <p onClick={onClickReadMore} className="vaulthistorytable__readmore">
-          {lastTen ? 'Read more' : 'React less'}
+          {lastTen ? 'Read more' : 'Read less'}
         </p>
       </div>
       <div className="vaulthistorytable__table">

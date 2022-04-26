@@ -4,6 +4,7 @@ import { IPoolManagerStrategy } from './IPoolManagerStrategy';
 import { API_ENDPOINT } from '../../constants';
 import { Connection } from '@solana/web3.js';
 import { postToRatioApi } from '../ratioApi';
+import { USDR_MINT_KEY } from '../ratio-lending';
 
 const ratioAPRCache: {
   [key: string]: any;
@@ -77,8 +78,9 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
       const response = await postToRatioApi(
         {
           tx_type: txType,
-          address_id: lp_token_address,
+          address_id: txType === 'harvest' ? USDR_MINT_KEY : lp_token_address,
           signature: txSignature,
+          vault_address: lp_token_address,
         },
         `/transaction/${walletPublicKey}/new`
       );
