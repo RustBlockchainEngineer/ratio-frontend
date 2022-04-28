@@ -45,8 +45,8 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
           });
         // console.log('APY', item.platform_ratio_apy);
         item.earned_rewards = 0;
-        if (totalState && totalState.userState && totalState.userState[item.address_id]) {
-          item.earned_rewards = totalState.userState[item.address_id]?.reward;
+        if (totalState && totalState.vaultState && totalState.vaultState[item.address_id]) {
+          item.earned_rewards = totalState.vaultState[item.address_id]?.reward;
         }
         return item;
       });

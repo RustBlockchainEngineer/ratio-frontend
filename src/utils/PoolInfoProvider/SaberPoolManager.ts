@@ -2,7 +2,7 @@ import { LPair } from '../../types/VaultTypes';
 import { GenericPoolManager } from './GenericPoolManager';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { calculateRewardByPlatform, TYPE_ID_SABER } from '../ratio-lending';
-import { depositToSaber, harvestFromSaber, withdrawFromSaber } from '../saber/saber-utils';
+import { deposit, harvest, withdraw } from '../saber/saber-utils';
 
 export class SaberPoolManager extends GenericPoolManager {
   getTVLbyVault(vault: LPair): number {
@@ -20,38 +20,26 @@ export class SaberPoolManager extends GenericPoolManager {
     amount: number,
     tokenAccount: string
   ): Promise<string> {
-    const txHash = await depositToSaber(
+    const txHash = await deposit(
       connection,
       wallet,
       new PublicKey(vault.address_id),
-      amount,
-      new PublicKey(tokenAccount)
+      new PublicKey(tokenAccount),
+      amount
     );
     this.postTransactionToApi(txHash, vault.address_id, 'deposit', wallet?.publicKey);
     return txHash;
   }
 
-  async withdrawLP(
-    connection: Connection,
-    wallet: any,
-    vault: LPair,
-    amount: number,
-    tokenAccount: string
-  ): Promise<string> {
-    const txHash = await withdrawFromSaber(
-      connection,
-      wallet,
-      new PublicKey(vault.address_id),
-      amount,
-      new PublicKey(tokenAccount)
-    );
+  async withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number): Promise<string> {
+    const txHash = await withdraw(connection, wallet, new PublicKey(vault.address_id), amount);
     this.postTransactionToApi(txHash, vault.address_id, 'withdraw', wallet?.publicKey);
     return txHash;
   }
 
   async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
-    const txHash = await harvestFromSaber(connection, wallet, new PublicKey(vault.address_id));
-    this.postTransactionToApi(txHash, vault.address_id, 'harvest', wallet?.publicKey);
+    const txHash = await harvest(connection, wallet, new PublicKey(vault.address_id));
+    this.postTransactionToApi(txHash as string, vault.address_id, 'harvest', wallet?.publicKey);
     return txHash;
   }
 

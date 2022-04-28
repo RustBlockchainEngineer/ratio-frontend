@@ -2,10 +2,8 @@ import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
 import * as anchor from '@project-serum/anchor';
 import {
-  getGlobalStateKey,
   getGlobalState,
   getProgramInstance,
-  getTokenPoolAddress,
   defaultPrograms,
   GLOBAL_TVL_LIMIT,
   GLOBAL_DEBT_CEILING,
@@ -25,13 +23,7 @@ import {
   TVL_DECIMAL,
   USER_DEBT_CEILING_DECIMALS,
 } from '../constants';
-import {
-  getGlobalStatePDA,
-  getGlobalStatePDAWithBump,
-  getOraclePDA,
-  getPoolPDAWithBump,
-  getUSDrMintKeyWithBump,
-} from './ratio-pda';
+import { getGlobalStatePDA, getOraclePDA, getPoolPDA, getPoolPDAWithBump, getUSDrMintKey } from './ratio-pda';
 import { DECIMALS_PRICE } from './constants';
 // import RiskLevel from '../components/Dashboard/RiskLevel';
 // import { PLATFORM_TYPE_SABER } from './constants';
@@ -50,7 +42,7 @@ export async function toggleEmergencyState(connection: Connection, wallet: any, 
   try {
     if (!wallet.publicKey) throw new WalletNotConnectedError();
     const program = getProgramInstance(connection, wallet);
-    const globalStateKey = await getGlobalStateKey();
+    const globalStateKey = await getGlobalStatePDA();
     const transaction = new Transaction();
     const signers: Keypair[] = [];
     const ix = await program.instruction.toggleEmerState(paused, {
@@ -77,9 +69,9 @@ export async function toggleEmergencyState(connection: Connection, wallet: any, 
 export async function createGlobalState(connection: Connection, wallet: any) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey, globalStateBump] = getGlobalStatePDAWithBump();
+  const globalStateKey = getGlobalStatePDA();
   console.log('globalStateKey', globalStateKey.toBase58());
-  const [mintUsdKey, mintUsdBump] = getUSDrMintKeyWithBump();
+  const mintUsdKey = getUSDrMintKey();
   console.log('mintUsdKey', mintUsdKey.toBase58());
   try {
     const globalState = await program.account.globalState.fetch(globalStateKey);
@@ -91,8 +83,6 @@ export async function createGlobalState(connection: Connection, wallet: any) {
   }
   try {
     await program.rpc.createGlobalState(
-      globalStateBump,
-      mintUsdBump,
       new anchor.BN(GLOBAL_TVL_LIMIT),
       new anchor.BN(GLOBAL_DEBT_CEILING),
       new anchor.BN(USER_DEBT_CEILING),
@@ -101,7 +91,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
         accounts: {
           authority: wallet.publicKey,
           globalState: globalStateKey,
-          mintUsd: mintUsdKey,
+          mintUsdr: mintUsdKey,
           ...defaultPrograms,
         },
       }
@@ -133,7 +123,7 @@ export async function createPriceOracle(
         authority: wallet.publicKey,
         globalState: globalStateKey,
         oracle: oracleKey,
-        mintCollat: mint, // the mint account that represents the token this oracle reports for
+        mint, // the mint account that represents the token this oracle reports for
         // system accts
         ...defaultPrograms,
       },
@@ -195,11 +185,12 @@ export async function createPool(
   mintCollKey: PublicKey,
   riskLevel: number,
   platformType: PlatformType,
-  mintTokenA: PublicKey,
-  mintTokenB: PublicKey,
-  mintReward: PublicKey,
-  tokenADecimals: number,
-  tokenBDecimals: number
+
+  mintReward: string | PublicKey,
+  oracleMintA: string | PublicKey,
+  oracleMintB: string | PublicKey,
+  swapTokenA: string | PublicKey,
+  swapTokenB: string | PublicKey
 ) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
@@ -217,32 +208,67 @@ export async function createPool(
     console.log("pool didn't exist");
   }
 
+  const transaction = new Transaction();
+  const oracleAKey = getOraclePDA(oracleMintA);
+  const oracleBKey = getOraclePDA(oracleMintB);
+
   try {
-    await program.rpc.createPool(
-      poolBump,
-      new BN(riskLevel),
-      new BN(POOL_DEBT_CEILING),
-      platformType,
-      mintTokenA,
-      mintTokenB,
-      mintReward,
-      tokenADecimals,
-      tokenBDecimals,
-      {
-        accounts: {
-          authority: wallet.publicKey,
-          pool: poolKey,
-          globalState: globalStateKey,
-          mintCollat: mintCollKey,
-          ...defaultPrograms,
-        },
-      }
+    await program.account.oracle.fetch(oracleAKey);
+  } catch {
+    transaction.add(
+      program.instruction.createOracle(
+        // price of token
+        new BN(10 ** DECIMALS_PRICE),
+        {
+          accounts: {
+            authority: wallet.publicKey,
+            globalState: globalStateKey,
+            oracle: oracleAKey,
+            mint: oracleMintA, // the mint account that represents the token this oracle reports for
+            // system accts
+            ...defaultPrograms,
+          },
+        }
+      )
     );
-  } catch (e) {
-    console.log("can't create pool");
-    console.error(e);
   }
-  return 'created pool';
+
+  try {
+    await program.account.oracle.fetch(oracleBKey);
+  } catch {
+    transaction.add(
+      program.instruction.createOracle(
+        // price of token
+        new BN(10 ** DECIMALS_PRICE),
+        {
+          accounts: {
+            authority: wallet.publicKey,
+            globalState: globalStateKey,
+            oracle: oracleBKey,
+            mint: oracleMintB, // the mint account that represents the token this oracle reports for
+            // system accts
+            ...defaultPrograms,
+          },
+        }
+      )
+    );
+  }
+  transaction.add(
+    program.instruction.createPool(poolBump, new BN(riskLevel), new BN(POOL_DEBT_CEILING), platformType, {
+      accounts: {
+        authority: wallet.publicKey,
+        pool: poolKey,
+        globalState: globalStateKey,
+        mintCollat: mintCollKey,
+        swapTokenA,
+        swapTokenB,
+        mintReward,
+        ...defaultPrograms,
+      },
+    })
+  );
+  const tx = await sendTransaction(connection, wallet, transaction);
+  return tx;
 }
 
 export async function getCurrentEmergencyState(
@@ -260,15 +286,14 @@ export async function getCurrentEmergencyState(
 export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, newOwner: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
+  const globalStateKey = await getGlobalStatePDA();
   try {
     const transaction = new Transaction();
     const signers: Keypair[] = [];
-    const ix = await program.instruction.changeAuthority({
+    const ix = await program.instruction.changeAuthority(newOwner, {
       accounts: {
         authority: wallet.publicKey,
         globalState: globalStateKey,
-        newOwner,
       },
     });
     transaction.add(ix);
@@ -292,7 +317,7 @@ export async function setGlobalTvlLimit(
 ) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
+  const globalStateKey = await getGlobalStatePDA();
   try {
     const transaction = new Transaction();
     const signers: Keypair[] = [];
@@ -319,7 +344,7 @@ export async function setGlobalTvlLimit(
 export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.tvlLimit as number) / 10 ** TVL_DECIMAL;
+    return globalState.tvlCollatCeilingUsd.toNumber() / 10 ** DECIMALS_PRICE;
   } catch (e) {
     console.error('Error while fetching the tvl limiy');
     throw e;
@@ -329,7 +354,7 @@ export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAd
 export async function getGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.debtCeiling as number) / 10 ** GLOBAL_DEBT_CEILING_DECIMALS;
+    return globalState.debtCeilingGlobal.toNumber() / 10 ** DECIMALS_PRICE;
   } catch (e) {
     console.error('Error while fetching the global debt ceiling');
     throw e;
@@ -339,7 +364,7 @@ export async function getGlobalDebtCeiling(connection: Connection, wallet: Walle
 export async function getUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.userDebtCeiling as number) / 10 ** USER_DEBT_CEILING_DECIMALS;
+    return globalState.debtCeilingUser.toNumber() / 10 ** DECIMALS_PRICE;
   } catch (e) {
     console.error('Error while fetching the global user debt ceiling');
     throw e;
@@ -353,7 +378,7 @@ export async function setGlobalDebtCeiling(
 ): Promise<boolean> {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
+  const globalStateKey = await getGlobalStatePDA();
 
   try {
     const transaction = new Transaction();
@@ -382,7 +407,7 @@ export async function setGlobalDebtCeiling(
   }
 }
 
-export async function setVaultDebtCeiling(
+export async function setPoolDebtCeiling(
   connection: Connection,
   wallet: any,
   vaultDebtCeiling: number,
@@ -390,21 +415,17 @@ export async function setVaultDebtCeiling(
 ) {
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
-  const tokenVaultKey = await getTokenPoolAddress(mintCollKey);
+  const globalStateKey = await getGlobalStatePDA();
+  const poolKey = await getPoolPDA(mintCollKey);
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.setVaultDebtCeiling(
-    new anchor.BN(vaultDebtCeiling * 10 ** ADMIN_SETTINGS_DECIMALS),
-    {
-      accounts: {
-        authority: wallet.publicKey,
-        globalState: globalStateKey,
-        mintColl: mintCollKey,
-        vault: tokenVaultKey,
-      },
-    }
-  );
+  const ix = await program.instruction.setPoolDebtCeiling(new anchor.BN(vaultDebtCeiling * 10 ** DECIMALS_PRICE), {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      pool: poolKey,
+    },
+  });
   transaction.add(ix);
   const tx = await sendTransaction(connection, wallet, transaction, signers);
   const txResult = await connection.confirmTransaction(tx);
@@ -419,7 +440,7 @@ export async function setUserDebtCeiling(connection: Connection, wallet: any, ne
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   try {
     const program = getProgramInstance(connection, wallet);
-    const globalStateKey = await getGlobalStateKey();
+    const globalStateKey = await getGlobalStatePDA();
     const transaction = new Transaction();
     const signers: Keypair[] = [];
     const ix = await program.instruction.setUserDebtCeiling(
@@ -450,7 +471,7 @@ export async function getCollateralRatio(
 ): Promise<CollateralizationRatios> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    const readValues = globalState.collPerRisklv as number[];
+    const readValues = globalState.collPerRisklv.map((risk) => risk.toNumber());
     const result: CollateralizationRatios = {
       cr_aaa_ratio: readValues[0] / 10 ** COLL_RATIOS_DECIMALS,
       cr_aa_ratio: readValues[1] / 10 ** COLL_RATIOS_DECIMALS,
@@ -471,33 +492,37 @@ export async function getCollateralRatio(
 }
 
 export async function setCollateralRatio(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   connection: Connection,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   wallet: WalletAdapter | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   values: CollateralizationRatios
 ): Promise<boolean> {
-  const program = await getProgramInstance(connection, wallet);
-  const globalStateKey = await getGlobalStateKey();
+  // const program = await getProgramInstance(connection, wallet);
+  // const globalStateKey = await getGlobalStatePDA();
 
-  const bigNumberValues = Object.values(values)?.map((value: string) => {
-    return new BN(parseFloat(value) * 10 ** COLL_RATIOS_DECIMALS);
-  });
-  console.log('BIG NUMBER VALUES');
-  console.log(bigNumberValues);
-  try {
-    const tx = await program.rpc.setCollaterialRatio(bigNumberValues, {
-      accounts: {
-        authority: wallet?.publicKey,
-        globalState: globalStateKey,
-      },
-    });
-    console.log('----- TX COLLATERAL RATIO ------');
-    console.log(tx);
-    return true;
-  } catch (error) {
-    console.log('ERROR');
-    console.log(error);
-    throw error;
-  }
+  // const bigNumberValues = Object.values(values)?.map((value: string) => {
+  //   return new BN(parseFloat(value) * 10 ** COLL_RATIOS_DECIMALS);
+  // });
+  // console.log('BIG NUMBER VALUES');
+  // console.log(bigNumberValues);
+  // try {
+  //   const tx = await program.rpc.setCollaterialRatio(bigNumberValues, {
+  //     accounts: {
+  //       authority: wallet?.publicKey,
+  //       globalState: globalStateKey,
+  //     },
+  //   });
+  //   console.log('----- TX COLLATERAL RATIO ------');
+  //   console.log(tx);
+  //   return true;
+  // } catch (error) {
+  //   console.log('ERROR');
+  //   console.log(error);
+  //   throw error;
+  // }
+  return true;
 }
 
 export async function getHarvestFee(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {

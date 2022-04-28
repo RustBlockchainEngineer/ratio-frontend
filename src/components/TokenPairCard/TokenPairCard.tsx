@@ -24,8 +24,8 @@ import {
   useUpdateRFStates,
   useUSDrMintInfo,
   useUserInfo,
-  useVaultInfo,
-  useVaultMintInfo,
+  usePoolInfo,
+  useTokenMintInfo,
 } from '../../contexts/state';
 
 const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
@@ -39,12 +39,12 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const tokenPrice = usePrice(data.mint);
 
   const usdrMint = useUSDrMintInfo();
-  const collMint = useVaultMintInfo(data.mint);
+  const collMint = useTokenMintInfo(data.mint);
 
   const [checked, setChecked] = React.useState(false);
 
   const userState = useUserInfo(data.mint);
-  const vaultState = useVaultInfo(data.mint);
+  const vaultState = usePoolInfo(data.mint);
   const updateRFStates = useUpdateRFStates();
 
   // eslint-disable-next-line

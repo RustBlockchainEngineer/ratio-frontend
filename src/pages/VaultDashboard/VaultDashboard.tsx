@@ -22,7 +22,7 @@ import { usePrice } from '../../contexts/price';
 import { selectors } from '../../features/dashboard';
 
 import Breadcrumb from '../../components/Breadcrumb';
-import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useVaultMintInfo } from '../../contexts/state';
+import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useTokenMintInfo } from '../../contexts/state';
 import { DEFAULT_NETWORK } from '../../constants';
 import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
 import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
@@ -43,7 +43,7 @@ const VaultDashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const usdrMint = useUSDrMintInfo();
-  const collMint = useVaultMintInfo(vault_mint as string);
+  const collMint = useTokenMintInfo(vault_mint as string);
 
   const tokenPrice = usePrice(vault_mint as string);
 

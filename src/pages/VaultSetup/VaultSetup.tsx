@@ -11,7 +11,7 @@ import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { useAccountByMint } from '../../contexts/accounts';
 import { usePrice } from '../../contexts/price';
-import { useRFStateInfo, useUSDrMintInfo, useVaultMintInfo } from '../../contexts/state';
+import { useRFStateInfo, useUSDrMintInfo, useTokenMintInfo } from '../../contexts/state';
 
 import linkIcon from '../../assets/images/link.svg';
 import { selectors } from '../../features/dashboard';
@@ -34,7 +34,7 @@ const VaultSetup = () => {
   const connection = useConnection();
   const { wallet } = useWallet();
   const tokenPrice = usePrice(vault_mint as string);
-  const collMint = useVaultMintInfo(vault_mint as string);
+  const collMint = useTokenMintInfo(vault_mint as string);
   const collAccount = useAccountByMint(vault_mint as string);
   const usdrMint = useUSDrMintInfo();
   const globalState = useRFStateInfo();

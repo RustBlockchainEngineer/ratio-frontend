@@ -21,8 +21,8 @@ import {
   useUpdateRFStates,
   useUSDrMintInfo,
   useUserInfo,
-  useVaultInfo,
-  useVaultMintInfo,
+  usePoolInfo,
+  useTokenMintInfo,
 } from '../../contexts/state';
 
 const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
@@ -34,12 +34,12 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const connection = useConnection();
 
   const usdrMint = useUSDrMintInfo();
-  const collMint = useVaultMintInfo(data.mint);
+  const collMint = useTokenMintInfo(data.mint);
 
   const updateRFStates = useUpdateRFStates();
 
   const userState = useUserInfo(data.mint);
-  const vaultState = useVaultInfo(data.mint);
+  const vaultState = usePoolInfo(data.mint);
 
   // eslint-disable-next-line
   const [positionValue, setPositionValue] = React.useState(0);

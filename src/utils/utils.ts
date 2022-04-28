@@ -9,7 +9,7 @@ import BN from 'bn.js';
 import { TokenInfo } from '@solana/spl-token-registry';
 import { WAD, ZERO, LP_PAIR_MINT_KEYS } from '../constants';
 import { TokenAccount } from './../models';
-import { getUserState, USDR_MINT_KEY } from '../utils/ratio-lending';
+import { getVaultState, USDR_MINT_KEY } from '../utils/ratio-lending';
 import { TokenAmount } from '../utils/safe-math';
 import { getUSDrAmount } from '../utils/risk';
 import * as serumCmn from '@project-serum/common';
@@ -307,11 +307,11 @@ export const getDebtLimitForVault = async ({
   riskRating,
   tokenPrice,
 }: GetDebtLimit) => {
-  const userState = await getUserState(connection, wallet, new PublicKey(vaultMint));
-  const debtLimit = calculateRemainingUserDebt(tokenPrice, riskRating, userState, collMint, usdrMint);
+  const vaultState = await getVaultState(connection, wallet, new PublicKey(vaultMint));
+  const debtLimit = calculateRemainingUserDebt(tokenPrice, riskRating, vaultState, collMint, usdrMint);
   return {
     debtLimit,
-    hasReachedDebtLimit: debtLimit <= 0 && +userState?.debt > 0,
+    hasReachedDebtLimit: debtLimit <= 0 && +vaultState?.debt > 0,
   };
 };
 

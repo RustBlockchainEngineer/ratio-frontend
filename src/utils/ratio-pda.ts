@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import { utils } from '@project-serum/anchor';
 import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { GLOBAL_STATE_SEED, MINT_USDR_SEED, ORACLE_SEED, POOL_SEED, VAULT_SEED } from './constants';
+import { GLOBAL_STATE_SEED, MINT_USDR_SEED, ORACLE_SEED, POOL_SEED, USER_STATE_SEED, VAULT_SEED } from './constants';
 
 export const getPda = (seeds: Buffer[], programId: PublicKey) => {
   return utils.publicKey.findProgramAddressSync(seeds, programId);
@@ -68,4 +68,9 @@ export const getVaultPDAWithBump = (owner: string | PublicKey, mint: string | Pu
     [Buffer.from(VAULT_SEED), new PublicKey(mint).toBuffer(), new PublicKey(owner).toBuffer()],
     STABLE_POOL_PROGRAM_ID
   );
+};
+
+export const getUserStatePDA = (owner: string | PublicKey) => {
+  const [pda] = getPda([Buffer.from(USER_STATE_SEED), new PublicKey(owner).toBuffer()], STABLE_POOL_PROGRAM_ID);
+  return pda;
 };

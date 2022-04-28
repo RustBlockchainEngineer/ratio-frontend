@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import BannerMessages from './bannerMessages.json';
 import { Banner, BannerIcon } from '../Banner';
-import { useUserOverview, useVaultInfo, useRFStateInfo } from '../../contexts/state';
+import { useUserOverview, usePoolInfo, useRFStateInfo } from '../../contexts/state';
 import { useIsVaultActive } from '../../hooks/useIsVaultActive';
 const getTokenCapBanner = (key: string, percentage: number) => {
   const bannerParams = BannerMessages[key];
@@ -66,7 +66,7 @@ const selectBanner = (vaultData: any, userVaultData: any, globalStateData: any) 
 
 const TokenCapBanner = ({ mint }: any) => {
   const isVaultActive = useIsVaultActive(mint || '');
-  const poolData = useVaultInfo(mint);
+  const poolData = usePoolInfo(mint);
   const activeVaults = useUserOverview()?.activeVaults;
   const userPoolData = isVaultActive ? activeVaults[mint] : { debt: 0, debtLimit: 0 };
   const globalStateData = useRFStateInfo();

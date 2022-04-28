@@ -20,8 +20,8 @@ import {
   useUpdateRFStates,
   useUSDrMintInfo,
   useUserInfo,
-  useVaultInfo,
-  useVaultMintInfo,
+  usePoolInfo,
+  useTokenMintInfo,
 } from '../../contexts/state';
 
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
@@ -33,12 +33,12 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const connection = useConnection();
 
   const usdrMint = useUSDrMintInfo();
-  const collMint = useVaultMintInfo(data.mint);
+  const collMint = useTokenMintInfo(data.mint);
 
   const [expand, setExpand] = useState(false);
 
   const userState = useUserInfo(data.mint);
-  const vaultState = useVaultInfo(data.mint);
+  const vaultState = usePoolInfo(data.mint);
   const updateRFStates = useUpdateRFStates();
 
   const [positionValue, setPositionValue] = useState(0);

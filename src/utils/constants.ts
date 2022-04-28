@@ -4,6 +4,7 @@ import { PlatformType } from './types';
 export const USDR_TOKEN_SEED = 'USDR_TOKEN_SEED';
 export const GLOBAL_STATE_SEED = 'GLOBAL_STATE_SEED';
 export const POOL_SEED = 'POOL_SEED';
+export const USER_STATE_SEED = 'USER_STATE_SEED';
 export const VAULT_SEED = 'VAULT_SEED';
 export const MINT_USDR_SEED = 'MINT_USDR_SEED';
 export const ORACLE_SEED = 'ORACLE_SEED';
@@ -23,8 +24,6 @@ export const DECIMALS_SBR = 6; // included on state acct
 export const DECIMALS_USDCUSDT = 6; // included on state acct
 export const DECIMALS_USDC = 6; // included on state acct
 export const DECIMALS_USDT = 6; // included on state acct
-
-export const USDR_MINT_KEY = 'HEKMCQDijwc1yjcJtQLTbwZT5R2q8rQZzrr3dMv9xfS5';
 
 export const STABLE_POOL_PROGRAM_ID =
   process.env.REACT_APP_STABLE_POOL_PROGRAM_ID || '7dpY8SSjf7j1CvNs5DhYur8TZSizmZnYn1WRxjNuGWzD';

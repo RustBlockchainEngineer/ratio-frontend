@@ -121,6 +121,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       } else {
         x = p;
       }
+
       x.sort(dynamicSort(sort_data.value, view_data.value));
       if (showOnlyActive) {
         dispatch({ type: actionTypes.SET_ACTIVE_VAULT, payload: p });

@@ -24,7 +24,7 @@ import {
   useUpdateRFStates,
   useUSDrMintInfo,
   useUserInfo,
-  useVaultMintInfo,
+  useTokenMintInfo,
   UPDATE_REWARD_STATE,
   useRFStateInfo,
 } from '../../contexts/state';
@@ -39,7 +39,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const tokenPrice = usePrice(data.mint);
 
   const usdrMint = useUSDrMintInfo();
-  const collMint = useVaultMintInfo(data.mint);
+  const collMint = useTokenMintInfo(data.mint);
 
   const globalState = useRFStateInfo();
   const userState = useUserInfo(data.mint);

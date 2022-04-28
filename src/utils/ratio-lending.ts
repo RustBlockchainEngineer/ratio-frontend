@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import idl from './stable-pool-idl.json';
+import {IDL} from './stable-pool';
 
-import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from '@project-serum/anchor';
 import {
   Connection,
@@ -24,10 +24,12 @@ import {
   getOraclePDA,
   getPoolPDA,
   getUSDrMintKey,
+  getUserStatePDA,
   getVaultPDA,
   getVaultPDAWithBump,
 } from './ratio-pda';
 import { DECIMALS_USDT } from './constants';
+import { Program } from '@project-serum/anchor';
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
@@ -44,18 +46,8 @@ export const TYPE_ID_UNKNOWN: PlatformType = 4;
 
 export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
 
-export const GLOBAL_STATE_TAG = 'GLOBAL_STATE_TAG';
-export const POOL_SEED = 'POOL_SEED';
-export const VAULT_SEED = 'VAULT_SEED';
-export const MINT_USD_SEED = 'MINT_USD_SEED';
-export const USD_TOKEN_SEED = 'USD_TOKEN_SEED';
-export const VAULT_POOL_SEED = 'VAULT_POOL_SEED';
-export const PRICE_FEED_TAG = 'price-feed';
-export const USER_STATE_SEED = 'USER_STATE_SEED';
-
-export const STABLE_POOL_IDL = idl;
 export const USD_DECIMALS = 6;
-export const USDR_MINT_KEY = 'HEKMCQDijwc1yjcJtQLTbwZT5R2q8rQZzrr3dMv9xfS5';
+export const USDR_MINT_KEY = getUSDrMintKey().toString();
 export const defaultPrograms = {
   systemProgram: SystemProgram.programId,
   tokenProgram: TOKEN_PROGRAM_ID,
@@ -70,12 +62,11 @@ export const USER_DEBT_CEILING = 1500_000_000;
 export const POOL_DEBT_CEILING = 1500_000_000;
 
 // TODO THIS IS A TEMPORARY ADDRESS THAT LINKS TO NOTHING, DELETE ONCE ORACLE REPORTER IS IMPLEMENTED
-export const ORACLE_REPORTER = new PublicKey('CfmVBs4jbNQNtNMn5iHkA4upHBUVuTqAkpGqRV3k4hRh');
+export const ORACLE_REPORTER = new PublicKey('7Lw3e19CJUvR5qWRj8J6NKrV2tywiJqS9oDu1m8v4rsi');
 
 export const mintA = new PublicKey('7KLQxufDu9H7BEAHvthC5p4Uk6WrH3aw8TwvPXoLgG11');
 export const mintB = new PublicKey('BicnAQ4jQgz3g7htuq1y6SKUNtrTr7UmpQjCqnTKkHR5');
 export const mintC = new PublicKey('FnjuEcDDTL3e511XE5a7McbDZvv2sVfNfEjyq4fJWXxg');
-export const NUM_MINT_DECIAMLS = 6;
 // const poolA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
 // const poolB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
 // const poolC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
@@ -121,33 +112,21 @@ export function getProgramInstance(connection: Connection, wallet: any) {
 
   const provider = new anchor.Provider(connection, wallet, anchor.Provider.defaultOptions());
   // Read the generated IDL.
-  const idl = STABLE_POOL_IDL as any;
 
   // Address of the deployed program.
   const programId = STABLE_POOL_PROGRAM_ID;
 
   // Generate the program client from IDL.
-  const program = new (anchor as any).Program(idl, programId, provider);
+  const program = new Program(IDL, programId, provider);
 
   return program;
 }
 
 async function retrieveGlobalState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    program.programId
-  );
+  const globalStateKey = getGlobalStatePDA()
   const globalState = await program.account.globalState.fetch(globalStateKey);
   return { globalState, globalStateKey };
-}
-
-export async function getGlobalStateKey() {
-  const [globalStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_STATE_TAG)],
-    STABLE_POOL_PROGRAM_ID
-  );
-  return globalStateKey;
 }
 
 export async function getGlobalState(connection: Connection, wallet: any) {
@@ -187,21 +166,13 @@ export async function isGlobalStateCreated(connection: Connection, wallet: any) 
   }
 }
 
-export async function getUserStateKey(wallet: any) {
-  const [userStateKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(USER_STATE_SEED), wallet.publicKey.toBuffer()],
-    STABLE_POOL_PROGRAM_ID
-  );
-  return userStateKey;
-}
-
 export async function getUserState(connection: Connection, wallet: any) {
   if (!wallet || !wallet.publicKey) {
     return null;
   }
   const program = getProgramInstance(connection, wallet);
 
-  const userStateKey = getUserStateKey(wallet);
+  const userStateKey = getUserStatePDA(wallet.publicKey);
   try {
     return await program.account.userState.fetch(userStateKey);
   } catch (e) {
@@ -209,41 +180,26 @@ export async function getUserState(connection: Connection, wallet: any) {
   }
 }
 
-// createUserState
-export async function createUserState(connection: Connection, wallet: any) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
+export async function getVaultState(connection: Connection, wallet: any, mintCollat: string | PublicKey) {
+  if (!wallet || !wallet.publicKey) {
+    return null;
+  }
   const program = getProgramInstance(connection, wallet);
 
-  const userStateKey = getUserStateKey(wallet);
-  const userState = getUserState(connection, wallet);
-
-  if (userState) {
-    console.log('user state already created');
-    console.log('user state', userState);
-    return 'already created';
-  }
-
+  const vaultKey = getVaultPDA(wallet.publicKey, new PublicKey(mintCollat));
   try {
-    await program.rpc.createUserState({
-      accounts: {
-        authority: wallet.publicKey,
-        userState: userStateKey,
-      },
-    });
+    return await program.account.vault.fetch(vaultKey);
   } catch (e) {
-    console.log("can't create user state");
-    console.error(e);
+    return null;
   }
-  return 'created user state';
 }
+
 
 export async function borrowUSDr(
   connection: Connection,
   wallet: any,
   amount: number,
-  mintColl: PublicKey,
-  ataMarketA: PublicKey,
-  ataMarketB: PublicKey
+  mintCollat: PublicKey,
 ) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
@@ -251,17 +207,21 @@ export async function borrowUSDr(
 
   const globalStateKey = getGlobalStatePDA();
   const usdrMint = getUSDrMintKey();
-  const poolKey = getPoolPDA(mintColl);
+  const poolKey = getPoolPDA(mintCollat);
   const poolData = await program.account.pool.fetch(poolKey);
-  const oracleMintA = poolData.mintTokenA;
-  const oracleMintB = poolData.mintTokenB;
+  
+  const oracleMintA = poolData.swapMintA;
+  const oracleMintB = poolData.swapMintB;
   const oracleAKey = getOraclePDA(oracleMintA);
   const oracleBKey = getOraclePDA(oracleMintB);
 
-  const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
-  const ataColl = getATAKey(wallet.publicKey, mintColl);
+  const swapTokenA = poolData.swapTokenA;
+  const swapTokenB = poolData.swapTokenB;
 
-  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
+  const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
+
+  const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
+  const userStateKey = getUserStatePDA(wallet.publicKey);
 
   const transaction = new Transaction();
   const signers: Keypair[] = [];
@@ -271,18 +231,18 @@ export async function borrowUSDr(
       authority: wallet.publicKey,
       globalState: globalStateKey,
 
-      oracleA: oracleAKey,
-      oracleB: oracleBKey,
-      ataMarketA: ataMarketA,
-      ataMarketB: ataMarketB,
-
-      mintColl, // the collat token mint that the pool represents
       pool: poolKey,
       vault: vaultKey,
+      userState: userStateKey,
+      oracleA: oracleAKey,
+      oracleB: oracleBKey,
+      swapTokenA,
+      swapTokenB,
+
+      mintCollat,
 
       mintUsdr: usdrMint,
       ataUsdr: ataUSDr,
-      ataColl: ataColl,
       ...defaultPrograms,
     },
   });
@@ -300,9 +260,9 @@ export async function borrowUSDr(
   return txHash;
 }
 
-export async function getTokenPoolByMint(connection: Connection, mint: string | PublicKey): Promise<any | undefined> {
+export async function getLendingPoolByMint(connection: Connection, mint: string | PublicKey): Promise<any | undefined> {
   const program = getProgramInstance(connection, null);
-  const tokenPoolKey = await getTokenPoolAddress(mint);
+  const tokenPoolKey = getPoolPDA(mint);
   try {
     const tokenPool = await program.account.pool.fetch(tokenPoolKey);
     return tokenPool;
@@ -311,23 +271,13 @@ export async function getTokenPoolByMint(connection: Connection, mint: string | 
   }
 }
 
-export async function getTokenPoolAddress(mint: string | PublicKey): Promise<PublicKey | undefined> {
-  const [tokenPoolKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(POOL_SEED), new PublicKey(mint).toBuffer()],
-    STABLE_POOL_PROGRAM_ID
-  );
-  return tokenPoolKey;
-}
-
 export async function depositCollateral(
   connection: Connection,
   wallet: any,
   amount: number,
-  mintCollKey: PublicKey,
+  mintCollat: PublicKey,
   userTokenATA: PublicKey,
 
-  ataMarketA: PublicKey,
-  ataMarketB: PublicKey,
   needTx = false
 ) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
@@ -335,23 +285,44 @@ export async function depositCollateral(
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
-  const poolKey = getPoolPDA(mintCollKey);
+  const poolKey = getPoolPDA(mintCollat);
 
   const poolData = await program.account.pool.fetch(poolKey);
-  const oracleMintA = poolData.mintTokenA;
-  const oracleMintB = poolData.mintTokenB;
+
+  const oracleMintA = poolData.swapMintA;
+  const oracleMintB = poolData.swapMintB;
+
+  const swapTokenA = poolData.swapTokenA;
+  const swapTokenB = poolData.swapTokenB;
+
   const oracleAKey = getOraclePDA(oracleMintA);
   const oracleBKey = getOraclePDA(oracleMintB);
 
   const rewardMint = poolData.mintReward;
 
-  const [vaultKey, vaultBump] = getVaultPDAWithBump(wallet, mintCollKey);
-  const [vaultATAKey, vaultATABump] = getATAKeyWithBump(vaultKey, mintCollKey);
+  const [vaultKey, vaultBump] = getVaultPDAWithBump(wallet.publicKey, mintCollat);
+  const userStateKey = getUserStatePDA(wallet.publicKey);
+
+  const [vaultATAKey, vaultATABump] = getATAKeyWithBump(vaultKey, mintCollat);
 
   const transaction = new Transaction();
 
   try {
-    await program.account.trove.fetch(vaultKey);
+    await program.account.userState.fetch(userStateKey);
+  } catch {
+    transaction.add(
+      program.instruction.createUserState({
+        accounts: {
+          authority: wallet.publicKey,
+          userState: userStateKey,
+          ...defaultPrograms
+        },
+      })
+    );
+    
+  }
+  try {
+    await program.account.vault.fetch(vaultKey);
   } catch {
     const tx = await program.instruction.createVault(vaultBump, vaultATABump, {
       accounts: {
@@ -362,9 +333,9 @@ export async function depositCollateral(
         // the user's vault is the authority for the collateral tokens within it
         vault: vaultKey,
         // this is the vault's ATA for the collateral's mint, previously named tokenColl
-        ataVault: vaultATAKey,
+        ataCollatVault: vaultATAKey,
         // the mint address for the specific collateral provided to this vault
-        mint: mintCollKey,
+        mintCollat: mintCollat,
         ...defaultPrograms,
       },
     });
@@ -391,13 +362,14 @@ export async function depositCollateral(
       globalState: globalStateKey,
       pool: poolKey,
       vault: vaultKey,
-      ataVault: vaultATAKey,
-      ataUser: userTokenATA,
-      mintCollat: mintCollKey,
+      userState: userStateKey,
+      ataCollatVault: vaultATAKey,
+      ataCollatUser: userTokenATA,
+      mintCollat: mintCollat,
       oracleA: oracleAKey,
       oracleB: oracleBKey,
-      ataMarketA,
-      ataMarketB,
+      swapTokenA,
+      swapTokenB,
       ...defaultPrograms,
     },
   });
@@ -414,14 +386,6 @@ export async function depositCollateral(
   }
 }
 
-export async function getUsdrMintKey() {
-  const [mintUsdKey] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from(MINT_USD_SEED)],
-    STABLE_POOL_PROGRAM_ID
-  );
-  return mintUsdKey.toBase58();
-}
-
 export async function repayUSDr(connection: Connection, wallet: any, amount: number, mintColl: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
@@ -429,9 +393,10 @@ export async function repayUSDr(connection: Connection, wallet: any, amount: num
 
   const globalStateKey = getGlobalStatePDA();
   const poolKey = getPoolPDA(mintColl);
-  const usdrMint = getUSDrMint();
+  const usdrMint = getUSDrMintKey();
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
+  const userStateKey = getUserStatePDA(wallet.publicKey);
 
   const ataUserUSDr = getATAKey(wallet.publicKey, usdrMint);
 
@@ -442,6 +407,7 @@ export async function repayUSDr(connection: Connection, wallet: any, amount: num
       globalState: globalStateKey,
       pool: poolKey,
       vault: vaultKey, // TODO: vault -> vault
+      userState: userStateKey,
       mintUsdr: usdrMint,
       ataUsdr: ataUserUSDr,
       ...defaultPrograms,
@@ -464,7 +430,7 @@ export async function withdrawCollateral(
   connection: Connection,
   wallet: any,
   amount: number,
-  mintColl: PublicKey,
+  mintCollat: PublicKey,
   needTx = false
 ) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
@@ -472,24 +438,58 @@ export async function withdrawCollateral(
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
-  const poolKey = getPoolPDA(mintColl);
+  const poolKey = getPoolPDA(mintCollat);
 
-  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
-  const vaultATAKey = getATAKey(vaultKey, mintColl);
+  const poolData = await program.account.pool.fetch(poolKey);
 
-  const ataColl = getATAKey(wallet.publicKey, mintColl);
+  const oracleMintA = poolData.swapMintA;
+  const oracleMintB = poolData.swapMintB;
+
+  const swapTokenA = poolData.swapTokenA;
+  const swapTokenB = poolData.swapTokenB;
+
+  const oracleAKey = getOraclePDA(oracleMintA);
+  const oracleBKey = getOraclePDA(oracleMintB);
+
+  const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
+  const vaultATAKey = getATAKey(vaultKey, mintCollat);
+  
+  const userStateKey = getUserStatePDA(wallet.publicKey);
+
+  const ataColl = getATAKey(wallet.publicKey, mintCollat);
 
   const transaction = new Transaction();
-
+  try
+  {
+    await connection.getAccountInfo(ataColl)
+  } catch {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(mintCollat),
+        ataColl,
+        wallet.publicKey,
+        wallet.publicKey,
+      )
+    )
+  }
   const depositInstruction = await program.instruction.withdrawCollateral(new anchor.BN(amount), {
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,
       pool: poolKey,
       vault: vaultKey,
-      ataVault: vaultATAKey,
-      ataUser: ataColl,
-      mint: mintColl,
+      userState: userStateKey,
+      ataCollatVault: vaultATAKey,
+      ataCollatUser: ataColl,
+      mintCollat,
+
+      oracleA: oracleAKey,
+      oracleB: oracleBKey,
+      swapTokenA,
+      swapTokenB,
+
       ...defaultPrograms,
     },
   });
@@ -502,6 +502,84 @@ export async function withdrawCollateral(
   }
   return transaction;
 }
+
+export async function distributeReward(
+  connection: Connection,
+  wallet: any,
+  mintColl: PublicKey,
+  needTx = false
+) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
+
+  const program = getProgramInstance(connection, wallet);
+
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintColl);
+
+  const stateInfo = await program.account.globalState.fetch(globalStateKey);
+  const poolInfo = await program.account.pool.fetch(poolKey);
+
+  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
+  const ataVaultReward = getATAKey(vaultKey, poolInfo.mintReward);
+
+  const ataUserReward = getATAKey(wallet.publicKey, poolInfo.mintReward);
+  const ataRatioReward = getATAKey(stateInfo.treasury, poolInfo.mintReward);
+
+  const transaction = new Transaction();
+  try
+  {
+    await connection.getAccountInfo(ataUserReward)
+  } catch {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(poolInfo.mintReward),
+        ataUserReward,
+        wallet.publicKey,
+        wallet.publicKey,
+      )
+    )
+  }
+  try
+  {
+    await connection.getAccountInfo(ataRatioReward)
+  } catch {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(poolInfo.mintReward),
+        ataRatioReward,
+        stateInfo.treasury,
+        wallet.publicKey,
+      )
+    )
+  }
+
+  const ix = await program.instruction.distributeReward({
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      pool: poolKey,
+      vault: vaultKey,
+      ataRewardVault: ataVaultReward,
+      ataRewardUser: ataUserReward,
+      ataRatioTreasury: ataRatioReward,
+      mintReward: poolInfo.mintReward,
+      ...defaultPrograms,
+    },
+  });
+
+  transaction.add(ix);
+  if (!needTx) {
+    const tx = await sendTransaction(connection, wallet, transaction);
+    console.log('tx id->', tx);
+    // return 'User withdrawed ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
+  }
+  return transaction;
+}
+
 
 export function pushUserHistory(action: string, userKey: string, mintKey: string, txHash: string, amount: number) {
   if (!window.localStorage[action]) {

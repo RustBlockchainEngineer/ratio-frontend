@@ -1,13 +1,13 @@
 import React from 'react';
 import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
-import { useUserInfo, useVaultMintInfo } from '../../contexts/state';
+import { useUserInfo, useTokenMintInfo } from '../../contexts/state';
 
 const ExpandContent = (data: any) => {
   const tokenPrice = usePrice(data.mint);
   const [positionValue, setPositionValue] = React.useState(0);
 
-  const collMint = useVaultMintInfo(data.mint);
+  const collMint = useTokenMintInfo(data.mint);
   const userState = useUserInfo(data.mint);
 
   React.useEffect(() => {

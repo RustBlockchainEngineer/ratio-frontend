@@ -13,9 +13,17 @@ import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { FetchingStatus } from '../../types/fetching-types';
 import { LPAssetCreationData, LPEditionData, RISK_RATING } from '../../types/VaultTypes';
 import { createPool } from '../../utils/admin-contract-calls';
-import { getTokenPoolAddress, getTokenPoolByMint } from '../../utils/ratio-lending';
+import { getLendingPoolByMint } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
-import { TYPE_ID_SABER, mintA, mintB, mintC, NUM_MINT_DECIAMLS } from '../../utils/ratio-lending';
+import { TYPE_ID_SABER } from '../../utils/ratio-lending';
+import { getPoolPDA } from '../../utils/ratio-pda';
+import {
+  ORACLE_USDC_MINT,
+  ORACLE_USDT_MINT,
+  SWAP_USDC_ACCOUNT,
+  SWAP_USDT_ACCOUNT,
+  SABER_REWARD_MINT,
+} from '../../utils/saber/constants';
 
 interface VaultEditionFormProps {
   values: LPEditionData;
@@ -44,7 +52,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
   };
 
   const getOrCreateTokenVault = async (connection: Connection, data: LPEditionData): Promise<PublicKey | undefined> => {
-    if (await getTokenPoolByMint(connection, data?.address_id)) {
+    if (await getLendingPoolByMint(connection, data?.address_id)) {
       toast.info('Token vault program already exists');
     } else {
       try {
@@ -64,11 +72,11 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
           new PublicKey(data?.address_id), // mintCollKey
           riskRatingValue,
           TYPE_ID_SABER,
-          mintA,
-          mintB,
-          mintC,
-          NUM_MINT_DECIAMLS,
-          NUM_MINT_DECIAMLS
+          SABER_REWARD_MINT,
+          ORACLE_USDC_MINT,
+          ORACLE_USDT_MINT,
+          SWAP_USDC_ACCOUNT,
+          SWAP_USDT_ACCOUNT
         );
         if (!result) {
           toast.error('There was an error when creating the token vault program');
@@ -77,11 +85,11 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
       } catch (error) {
         console.error(error);
       }
-      if (await getTokenPoolByMint(connection, data?.address_id)) {
+      if (await getLendingPoolByMint(connection, data?.address_id)) {
         toast.info('Token vault program created successfully');
       }
     }
-    const vaultProgramAddress = await getTokenPoolAddress(data?.address_id);
+    const vaultProgramAddress = await getPoolPDA(data?.address_id);
     if (!vaultProgramAddress) {
       toast.error("Couldn't get the vault's address");
       return;

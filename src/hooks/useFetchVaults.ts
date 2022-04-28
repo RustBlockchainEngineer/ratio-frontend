@@ -2,6 +2,7 @@ import { useEffect, useRef, useReducer, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { FetchingStatus } from '../types/fetching-types';
 import { LPair } from '../types/VaultTypes';
+import { getPoolPDA } from '../utils/ratio-pda';
 
 /* 
   This custom hook allows to get the Vaults information from the API. There's also a status value that is returned, and that can take the following values: 
@@ -55,7 +56,15 @@ export const useFetchVaults = () => {
 
           if (response.ok) {
             data = await response.json();
-            cache.current = data;
+            // cache.current = data; //zhao commented
+            cache.current = [
+              data.map((item) => {
+                return {
+                  ...item,
+                  vault_address_id: getPoolPDA(item.address_id).toString(),
+                };
+              })[0],
+            ];
           } else {
             if (cancelRequest) return;
             dispatch({ type: 'FETCH_ERROR', payload: await response.json() });

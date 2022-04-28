@@ -23,7 +23,7 @@ import {
   useUpdateRFStates,
   useUSDrMintInfo,
   useUserInfo,
-  useVaultMintInfo,
+  useTokenMintInfo,
 } from '../../contexts/state';
 
 const MintUSDrModal = ({ data }: any) => {
@@ -38,7 +38,7 @@ const MintUSDrModal = ({ data }: any) => {
 
   const userState = useUserInfo(data.mint);
   const usdrMint = useUSDrMintInfo();
-  const collMint = useVaultMintInfo(data.mint);
+  const collMint = useTokenMintInfo(data.mint);
 
   const collAccount = useAccountByMint(data.mint);
 

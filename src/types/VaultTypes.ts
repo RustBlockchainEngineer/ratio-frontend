@@ -98,4 +98,5 @@ export interface LPEditionData {
   liquidation_ratio: Maybe<number>;
   risk_rating: Maybe<string>;
   lpasset: LPAssetCreationData[];
+  reward_mint: string;
 }
