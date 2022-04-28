@@ -180,7 +180,7 @@ const stakeCollateralToSaber = async (
   amountToStake: number,
   userConnection: Connection,
   userWallet: typeof anchor.Wallet,
-  mintCollKey: PublicKey,
+  mintCollKey: PublicKey
 ) => {
   const rewarder = SABER_REWARDER;
   const program = getProgramInstance(userConnection, userWallet);
@@ -224,7 +224,7 @@ const unstakeColalteralFromSaber = async (
   unstakeAmount: number,
   userConnection: Connection,
   userWallet: typeof anchor.Wallet,
-  mintCollKey: PublicKey,
+  mintCollKey: PublicKey
 ) => {
   const rewarder = SABER_REWARDER;
   const program = getProgramInstance(userConnection, userWallet);
@@ -266,7 +266,7 @@ const unstakeColalteralFromSaber = async (
 export const harvestRewardsFromSaber = async (
   connection: Connection,
   wallet: typeof anchor.Wallet,
-  mintCollKey: PublicKey,
+  mintCollKey: PublicKey
 ) => {
   const program = getProgramInstance(connection, wallet);
   const sdk = QuarrySDK.load({

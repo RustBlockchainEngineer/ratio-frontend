@@ -188,52 +188,47 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOverview = async () => {
-    if (!vaultState || !tokenState || Object.keys(vaultState).length === 0) {
-      return setOverview({});
-    }
-    try {
-      const userState = await getUserState(connection, wallet);
+    const userState = await getUserState(connection, wallet);
+    const totalDebt = userState ? userState.totalDebt.toNumber() : 0;
+    const poolCount = userState ? userState.activeVaults.toNumber() : 0;
 
-      const activePools: any = {};
+    const activeVaults: any = {};
 
-      const usdrMint = await getMint(connection, USDR_MINT_KEY);
+    const usdrMint = await getMint(connection, USDR_MINT_KEY);
 
-      for (const mint of Object.keys(vaultState)) {
-        const state = vaultState[mint];
+    for (const mint of Object.keys(vaultState)) {
+      const state = vaultState[mint];
 
-        const pool = pools.find((item) => {
-          return item.address_id.toLowerCase() === mint.toLowerCase();
-        });
-
-        const riskRating = pool?.risk_rating.toString() || 'D';
-
-        const debtLimit = await calculateRemainingUserDebt(
-          Number(process.env.REACT_APP_LP_TOKEN_PRICE), // TODO: fix this
-          riskRating,
-          state,
-          tokenState[mint], // Is the same as vaultState[mint].mintColl.toBase58()
-          usdrMint
-        );
-
-        if (state && state.lockedCollBalance.toNumber() !== 0) {
-          activePools[mint] = {
-            mint,
-            lockedAmount: state.lockedCollBalance.toNumber(),
-            debt: state.debt.toNumber(),
-            // Warning here, this is another debtLimit, not the userDebtCeiling from the global state
-            debtLimit: new TokenAmount(debtLimit * 10 ** 6, 6).toWei().toNumber(),
-          };
-        }
-      }
-
-      setOverview({
-        activePools: activePools,
-        totalDebt: userState.totalDebt.toNumber(),
-        poolCount: userState.activeVaults.toNumber(),
+      const pool = pools.find((item) => {
+        return item.address_id.toLowerCase() === mint.toLowerCase();
       });
-    } catch (e) {
-      console.log(e);
+
+      const riskRating = pool?.risk_rating.toString() || 'D';
+
+      const debtLimit = await calculateRemainingUserDebt(
+        Number(process.env.REACT_APP_LP_TOKEN_PRICE), // TODO: fix this
+        riskRating,
+        state,
+        tokenState[mint], // Is the same as vaultState[mint].mintColl.toBase58()
+        usdrMint
+      );
+
+      if (state && state.lockedCollBalance.toNumber() !== 0) {
+        activeVaults[mint] = {
+          mint,
+          lockedAmount: state.lockedCollBalance.toNumber(),
+          debt: state.debt.toNumber(),
+          // Warning here, this is another debtLimit, not the userDebtCeiling from the global state
+          debtLimit: new TokenAmount(debtLimit * 10 ** 6, 6).toWei().toNumber(),
+        };
+      }
     }
+
+    setOverview({
+      activeVaults,
+      totalDebt,
+      poolCount,
+    });
   };
 
   useEffect(() => {
@@ -334,13 +329,13 @@ export function useUserOverview() {
 export function useTokenMintInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
-  return context.tokenState[mint];
+  return context.tokenState ? context.tokenState[mint] : null;
 }
 
 export function useUSDrMintInfo() {
   const context = React.useContext(RFStateContext);
 
-  return context.tokenState[USDR_MINT_KEY];
+  return context.tokenState ? context.tokenState[USDR_MINT_KEY] : null;
 }
 
 export function useUpdateRFStates() {

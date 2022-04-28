@@ -101,10 +101,11 @@ const VaultSetupContainer = ({ data }: any) => {
         <div className="mt-2">
           <CustomInput
             appendStr="Max"
-            initValue={'0'}
+            initValue={0}
             appendValueStr={data.value}
             tokenStr={`${data.title}`}
             onTextChange={(value) => {
+              console.log('Deposit', value);
               setDepositAmount(Number(value));
               setDepositStatus(false);
               setButtonDisabled(false);

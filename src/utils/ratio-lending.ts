@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import {IDL} from './stable-pool';
+import { IDL } from './stable-pool';
 
 import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from '@project-serum/anchor';
@@ -124,7 +124,7 @@ export function getProgramInstance(connection: Connection, wallet: any) {
 
 async function retrieveGlobalState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
-  const globalStateKey = getGlobalStatePDA()
+  const globalStateKey = getGlobalStatePDA();
   const globalState = await program.account.globalState.fetch(globalStateKey);
   return { globalState, globalStateKey };
 }
@@ -194,13 +194,7 @@ export async function getVaultState(connection: Connection, wallet: any, mintCol
   }
 }
 
-
-export async function borrowUSDr(
-  connection: Connection,
-  wallet: any,
-  amount: number,
-  mintCollat: PublicKey,
-) {
+export async function borrowUSDr(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -209,7 +203,7 @@ export async function borrowUSDr(
   const usdrMint = getUSDrMintKey();
   const poolKey = getPoolPDA(mintCollat);
   const poolData = await program.account.pool.fetch(poolKey);
-  
+
   const oracleMintA = poolData.swapMintA;
   const oracleMintB = poolData.swapMintB;
   const oracleAKey = getOraclePDA(oracleMintA);
@@ -315,11 +309,10 @@ export async function depositCollateral(
         accounts: {
           authority: wallet.publicKey,
           userState: userStateKey,
-          ...defaultPrograms
+          ...defaultPrograms,
         },
       })
     );
-    
   }
   try {
     await program.account.vault.fetch(vaultKey);
@@ -453,15 +446,14 @@ export async function withdrawCollateral(
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const vaultATAKey = getATAKey(vaultKey, mintCollat);
-  
+
   const userStateKey = getUserStatePDA(wallet.publicKey);
 
   const ataColl = getATAKey(wallet.publicKey, mintCollat);
 
   const transaction = new Transaction();
-  try
-  {
-    await connection.getAccountInfo(ataColl)
+  try {
+    await connection.getAccountInfo(ataColl);
   } catch {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
@@ -470,9 +462,9 @@ export async function withdrawCollateral(
         new PublicKey(mintCollat),
         ataColl,
         wallet.publicKey,
-        wallet.publicKey,
+        wallet.publicKey
       )
-    )
+    );
   }
   const depositInstruction = await program.instruction.withdrawCollateral(new anchor.BN(amount), {
     accounts: {
@@ -503,12 +495,7 @@ export async function withdrawCollateral(
   return transaction;
 }
 
-export async function distributeReward(
-  connection: Connection,
-  wallet: any,
-  mintColl: PublicKey,
-  needTx = false
-) {
+export async function distributeReward(connection: Connection, wallet: any, mintColl: PublicKey, needTx = false) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -526,9 +513,8 @@ export async function distributeReward(
   const ataRatioReward = getATAKey(stateInfo.treasury, poolInfo.mintReward);
 
   const transaction = new Transaction();
-  try
-  {
-    await connection.getAccountInfo(ataUserReward)
+  try {
+    await connection.getAccountInfo(ataUserReward);
   } catch {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
@@ -537,13 +523,12 @@ export async function distributeReward(
         new PublicKey(poolInfo.mintReward),
         ataUserReward,
         wallet.publicKey,
-        wallet.publicKey,
+        wallet.publicKey
       )
-    )
+    );
   }
-  try
-  {
-    await connection.getAccountInfo(ataRatioReward)
+  try {
+    await connection.getAccountInfo(ataRatioReward);
   } catch {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
@@ -552,9 +537,9 @@ export async function distributeReward(
         new PublicKey(poolInfo.mintReward),
         ataRatioReward,
         stateInfo.treasury,
-        wallet.publicKey,
+        wallet.publicKey
       )
-    )
+    );
   }
 
   const ix = await program.instruction.distributeReward({
@@ -579,7 +564,6 @@ export async function distributeReward(
   }
   return transaction;
 }
-
 
 export function pushUserHistory(action: string, userKey: string, mintKey: string, txHash: string, amount: number) {
   if (!window.localStorage[action]) {
