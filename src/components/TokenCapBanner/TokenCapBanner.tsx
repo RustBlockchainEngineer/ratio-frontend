@@ -26,15 +26,15 @@ const getTokenCapBanner = (key: string, percentage: number) => {
   }
 };
 
-const selectBanner = (vaultData: any, userVaultData: any, globalStateData: any) => {
-  const { totalDebt: totalPoolDebt, debtCeiling: poolDebtCeiling } = vaultData;
+const selectBanner = (poolData: any, userVaultData: any, globalStateData: any) => {
+  const { totalDebt: totalPoolDebt, debtCeiling: poolDebtCeiling } = poolData;
   const { debt: userDebt, debtLimit: userDebtLimit } = userVaultData;
   console.log(userDebt, userDebtLimit);
   const {
     totalDebt: globalDebt,
-    debtCeiling: globalDebtCeiling,
-    tvl: globalTvl,
-    tvlLimit: globalTvlLimit,
+    debtCeilingGlobal: globalDebtLimit,
+    tvlUsd: globalTvl,
+    tvlCollatCeilingUsd: globalTvlLimit,
   } = globalStateData;
 
   const poolUSDrDebtPercentage = new BigNumber(totalPoolDebt.toString())
@@ -44,7 +44,7 @@ const selectBanner = (vaultData: any, userVaultData: any, globalStateData: any) 
   const userUSDrDebtPercentage = (userDebt * 100) / userDebtLimit;
   const globalUSDrDebtPercentage = new BigNumber(globalDebt.toString())
     .multipliedBy(100)
-    .dividedBy(globalDebtCeiling.toString())
+    .dividedBy(globalDebtLimit.toString())
     .toString();
   const totalTVLPercentage = new BigNumber(globalTvl.toString())
     .multipliedBy(100)
@@ -68,10 +68,10 @@ const TokenCapBanner = ({ mint }: any) => {
   const isVaultActive = useIsVaultActive(mint || '');
   const poolData = usePoolInfo(mint);
   const activeVaults = useUserOverview()?.activeVaults;
-  const userPoolData = isVaultActive ? activeVaults[mint] : { debt: 0, debtLimit: 0 };
+  const vaultData = isVaultActive ? activeVaults[mint] : { debt: 0, debtLimit: 0 };
   const globalStateData = useRFStateInfo();
-
-  return selectBanner(poolData, userPoolData, globalStateData);
+  console.log(poolData, vaultData, globalStateData);
+  return selectBanner(poolData, vaultData, globalStateData);
 };
 
 export default TokenCapBanner;

@@ -24,7 +24,7 @@ import {
   USER_DEBT_CEILING_DECIMALS,
 } from '../constants';
 import { getGlobalStatePDA, getOraclePDA, getPoolPDA, getPoolPDAWithBump, getUSDrMintKey } from './ratio-pda';
-import { DECIMALS_PRICE } from './constants';
+import { DECIMALS_USDR } from './constants';
 // import RiskLevel from '../components/Dashboard/RiskLevel';
 // import { PLATFORM_TYPE_SABER } from './constants';
 
@@ -117,7 +117,7 @@ export async function createPriceOracle(
 
   const tx = program.transaction.createOracle(
     // price of token
-    new BN(initPrice * 10 ** DECIMALS_PRICE),
+    new BN(initPrice * 10 ** DECIMALS_USDR),
     {
       accounts: {
         authority: wallet.publicKey,
@@ -155,7 +155,7 @@ export async function reportPriceOracle(
 
   const tx = program.transaction.reportPriceToOracle(
     // price of token
-    new BN(newPrice * DECIMALS_PRICE),
+    new BN(newPrice * DECIMALS_USDR),
     {
       accounts: {
         authority: wallet.publicKey,
@@ -218,7 +218,7 @@ export async function createPool(
     transaction.add(
       program.instruction.createOracle(
         // price of token
-        new BN(10 ** DECIMALS_PRICE),
+        new BN(10 ** DECIMALS_USDR),
         {
           accounts: {
             authority: wallet.publicKey,
@@ -239,7 +239,7 @@ export async function createPool(
     transaction.add(
       program.instruction.createOracle(
         // price of token
-        new BN(10 ** DECIMALS_PRICE),
+        new BN(10 ** DECIMALS_USDR),
         {
           accounts: {
             authority: wallet.publicKey,
@@ -344,7 +344,7 @@ export async function setGlobalTvlLimit(
 export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.tvlCollatCeilingUsd.toNumber() / 10 ** DECIMALS_PRICE;
+    return globalState.tvlCollatCeilingUsd.toNumber() / 10 ** DECIMALS_USDR;
   } catch (e) {
     console.error('Error while fetching the tvl limiy');
     throw e;
@@ -354,7 +354,7 @@ export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAd
 export async function getGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.debtCeilingGlobal.toNumber() / 10 ** DECIMALS_PRICE;
+    return globalState.debtCeilingGlobal.toNumber() / 10 ** DECIMALS_USDR;
   } catch (e) {
     console.error('Error while fetching the global debt ceiling');
     throw e;
@@ -364,7 +364,7 @@ export async function getGlobalDebtCeiling(connection: Connection, wallet: Walle
 export async function getUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.debtCeilingUser.toNumber() / 10 ** DECIMALS_PRICE;
+    return globalState.debtCeilingUser.toNumber() / 10 ** DECIMALS_USDR;
   } catch (e) {
     console.error('Error while fetching the global user debt ceiling');
     throw e;
@@ -419,7 +419,7 @@ export async function setPoolDebtCeiling(
   const poolKey = await getPoolPDA(mintCollKey);
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.setPoolDebtCeiling(new anchor.BN(vaultDebtCeiling * 10 ** DECIMALS_PRICE), {
+  const ix = await program.instruction.setPoolDebtCeiling(new anchor.BN(vaultDebtCeiling * 10 ** DECIMALS_USDR), {
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,

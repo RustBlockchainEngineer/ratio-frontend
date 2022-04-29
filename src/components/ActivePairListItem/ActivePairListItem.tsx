@@ -23,7 +23,7 @@ import {
   usePoolInfo,
   useTokenMintInfo,
 } from '../../contexts/state';
-import { DECIMALS_PRICE } from '../../utils/constants';
+import { DECIMALS_USDR } from '../../utils/constants';
 
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
@@ -72,7 +72,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   useEffect(() => {
     if (connection && collMint && usdrMint && data.mint) {
       const tvlAmount = new TokenAmount((poolState as any)?.totalColl ?? 0, collMint?.decimals);
-      const tvlUSDAmount = new TokenAmount((poolState as any)?.tvlUsd ?? 0, DECIMALS_PRICE);
+      const tvlUSDAmount = new TokenAmount((poolState as any)?.tvlUsd ?? 0, DECIMALS_USDR);
       const debtAmount = new TokenAmount((poolState as any)?.totalDebt ?? 0, usdrMint?.decimals);
       const remainAmount = new TokenAmount(
         ((poolState as any)?.debtCeiling ?? 0) - ((poolState as any)?.totalDebt ?? 0),

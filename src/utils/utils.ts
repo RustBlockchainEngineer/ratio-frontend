@@ -282,20 +282,26 @@ export const calculateRemainingGlobalDebt = (globalState: any, usdrMint: any) =>
   return remainingGlobalDebt < 0 ? 0 : remainingGlobalDebt;
 };
 
+export const calculateCollateralPrice = (
+  lpSupply: number,
+  tokenAmountA: number,
+  priceA: number,
+  tokenAmountB: number,
+  priceB: number
+) => {
+  return ((Math.sqrt(tokenAmountA * priceA) * Math.sqrt(tokenAmountB * priceB)) / lpSupply) * 2;
+};
+
 export const calculateRemainingUserDebt = (
   lpTokenPrice: number,
+  lpLockedAmount: number,
   riskLevel: string,
-  vaultState: any,
-  collMint: any,
-  usdrMint: any
+  debt: number
 ) => {
-  const lpLockedAmount = new TokenAmount(vaultState?.lockedCollBalance, collMint?.decimals);
-  const userTotalDebtMintable = getUSDrAmount(100, lpTokenPrice * Number(lpLockedAmount.fixed()), riskLevel);
-  const userCurrentDebt = new TokenAmount(vaultState?.debt, usdrMint?.decimals);
-  const userRemainingMintableDebt = userTotalDebtMintable - Number(userCurrentDebt.fixed());
-  const userDebtLimit = Number(userRemainingMintableDebt.toFixed(usdrMint?.decimals));
+  const userTotalDebtMintable = getUSDrAmount(100, lpTokenPrice * lpLockedAmount, riskLevel);
+  const userRemainingMintableDebt = userTotalDebtMintable - debt;
 
-  return userDebtLimit < 0 ? 0 : userDebtLimit;
+  return userRemainingMintableDebt < 0 ? 0 : userRemainingMintableDebt;
 };
 
 export const getDebtLimitForVault = async ({

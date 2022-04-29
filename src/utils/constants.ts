@@ -16,8 +16,6 @@ export const DEBT_CEILING_GLOBAL_USDR = 500_000;
 export const DEBT_CEILING_POOL_USDR = 500_000;
 export const DEBT_CEILING_USER_USDR = 1_000;
 export const DECIMALS_USDR = 6;
-export const DECIMALS_USD = 6;
-export const DECIMALS_PRICE = 8;
 export const DEFAULT_FEE_NUMERATOR = 30;
 // test vars
 export const DECIMALS_SBR = 6; // included on state acct
