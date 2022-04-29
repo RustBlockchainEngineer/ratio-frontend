@@ -23,6 +23,7 @@ import {
   usePoolInfo,
   useTokenMintInfo,
 } from '../../contexts/state';
+import { DECIMALS_PRICE } from '../../utils/constants';
 
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
@@ -37,15 +38,17 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const [expand, setExpand] = useState(false);
 
-  const userState = useUserInfo(data.mint);
-  const vaultState = usePoolInfo(data.mint);
+  const vaultState = useUserInfo(data.mint);
+  const poolState = usePoolInfo(data.mint);
   const updateRFStates = useUpdateRFStates();
 
   const [positionValue, setPositionValue] = useState(0);
+  // eslint-disable-next-line
   const [tvl, setTVL] = useState(0);
   // eslint-disable-next-line
   const [tvlUSD, setTVLUSD] = useState(0);
   const [totalDebt, setTotalDebt] = useState(0);
+  const [reaminDebt, setRemainDebt] = useState(0);
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = useState('');
 
@@ -68,33 +71,34 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   useEffect(() => {
     if (connection && collMint && usdrMint && data.mint) {
-      const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
-      const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
-
+      const tvlAmount = new TokenAmount((poolState as any)?.totalColl ?? 0, collMint?.decimals);
+      const tvlUSDAmount = new TokenAmount((poolState as any)?.tvlUsd ?? 0, DECIMALS_PRICE);
+      const debtAmount = new TokenAmount((poolState as any)?.totalDebt ?? 0, usdrMint?.decimals);
+      const remainAmount = new TokenAmount(
+        ((poolState as any)?.debtCeiling ?? 0) - ((poolState as any)?.totalDebt ?? 0),
+        usdrMint?.decimals
+      );
       setTVL(Number(tvlAmount.fixed()));
+      setTVLUSD(Number(tvlUSDAmount.fixed()));
+
       setTotalDebt(Number(debtAmount.fixed()));
+      setRemainDebt(Number(remainAmount.fixed()));
     }
     return () => {
       setTVL(0);
       setTotalDebt(0);
     };
-  }, [connection, collMint, usdrMint, vaultState]);
+  }, [connection, collMint, usdrMint, poolState]);
 
   useEffect(() => {
-    if (tokenPrice && tvl) {
-      setTVLUSD(Number((tokenPrice * tvl).toFixed(2)));
-    }
-  }, [tvl, tokenPrice]);
-
-  useEffect(() => {
-    if (userState && tokenPrice && collMint) {
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
+    if (vaultState && tokenPrice && collMint) {
+      const lpLockedAmount = new TokenAmount((vaultState as any).lockedCollBalance, collMint?.decimals);
       setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
     }
     return () => {
       setPositionValue(0);
     };
-  }, [tokenPrice, userState, collMint]);
+  }, [tokenPrice, vaultState, collMint]);
 
   const showDashboard = () => {
     if (!connected) {
@@ -204,7 +208,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{Number(data?.remainingDebt).toFixed(2)}</h6>
+            <h6 className="semiBold">{Number(reaminDebt.toFixed(2))}</h6>
           </div>
         </td>
         <td>

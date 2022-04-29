@@ -105,7 +105,6 @@ const VaultSetupContainer = ({ data }: any) => {
             appendValueStr={data.value}
             tokenStr={`${data.title}`}
             onTextChange={(value) => {
-              console.log('Deposit', value);
               setDepositAmount(Number(value));
               setDepositStatus(false);
               setButtonDisabled(false);
