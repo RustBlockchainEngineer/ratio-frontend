@@ -42,15 +42,15 @@ export async function deposit(
   const tx1: any = await depositCollateral(connection, wallet, amount, mintCollKey, new PublicKey(userTokenATA), true);
   transaction.add(tx1);
 
-  const tx2 = await createSaberQuarryMinerIfneeded(connection, wallet, mintCollKey, true);
-  if (tx2) {
-    transaction.add(tx2);
-  }
+  // const tx2 = await createSaberQuarryMinerIfneeded(connection, wallet, mintCollKey, true);
+  // if (tx2) {
+  //   transaction.add(tx2);
+  // }
 
-  const tx3 = await stakeCollateralToSaber(amount, connection, wallet, mintCollKey);
-  if (tx3) {
-    transaction.add(tx3);
-  }
+  // const tx3 = await stakeCollateralToSaber(amount, connection, wallet, mintCollKey);
+  // if (tx3) {
+  //   transaction.add(tx3);
+  // }
   const txHash = await sendTransaction(connection, wallet, transaction);
   await connection.confirmTransaction(txHash);
   if (txHash?.value?.err) {

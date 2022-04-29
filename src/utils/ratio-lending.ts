@@ -303,6 +303,7 @@ export async function depositCollateral(
   try {
     await program.account.userState.fetch(userStateKey);
   } catch {
+    console.log('creating user state');
     transaction.add(
       program.instruction.createUserState({
         accounts: {
@@ -316,6 +317,7 @@ export async function depositCollateral(
   try {
     await program.account.vault.fetch(vaultKey);
   } catch {
+    console.log('creating vault');
     const tx = await program.instruction.createVault(vaultBump, {
       accounts: {
         // account that owns the vault
@@ -332,14 +334,16 @@ export async function depositCollateral(
       },
     });
     transaction.add(tx);
-    const rewardATA = getATAKey(wallet.publicKey, rewardMint);
+    console.log('creating reward vault');
+
+    const ataRewardVaultKey = getATAKey(vaultKey, rewardMint);
     const ix = await program.instruction.createRewardVault({
       accounts: {
         authority: wallet.publicKey,
         pool: poolKey,
         vault: vaultKey,
 
-        ataRewardVault: rewardATA,
+        ataRewardVault: ataRewardVaultKey,
         mintReward: rewardMint,
 
         ...defaultPrograms,
@@ -347,6 +351,7 @@ export async function depositCollateral(
     });
     transaction.add(ix);
   }
+  console.log('depositing collateral to ratio');
 
   const ix = program.instruction.depositCollateral(new anchor.BN(amount), {
     accounts: {
