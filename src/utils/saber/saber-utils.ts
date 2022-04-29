@@ -210,7 +210,7 @@ const stakeCollateralToSaber = async (
         miner: minerKey,
         rewarder: rewarderKey,
         quarryProgram: QUARRY_ADDRESSES.Mine,
-        ...defaultPrograms
+        ...defaultPrograms,
       },
     })
   );
@@ -224,7 +224,6 @@ const unstakeColalteralFromSaber = async (
   userWallet: typeof anchor.Wallet,
   mintCollKey: PublicKey
 ) => {
-
   const program = getProgramInstance(userConnection, userWallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -305,7 +304,7 @@ export const harvestRewardsFromSaber = async (
         // system accounts
         mintReward: SABER_REWARD_MINT, // SBR for this example
         quarryProgram: QUARRY_ADDRESSES.Mine,
-        ...defaultPrograms
+        ...defaultPrograms,
       },
     })
   );
