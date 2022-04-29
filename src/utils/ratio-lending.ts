@@ -222,6 +222,21 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const transaction = new Transaction();
   const signers: Keypair[] = [];
 
+  try {
+    await connection.getAccountInfo(ataUSDr);
+  } catch {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        usdrMint,
+        ataUSDr,
+        wallet.publicKey,
+        wallet.publicKey
+      )
+    );
+  }
+
   const borrowInstruction = await program.instruction.borrowUsdr(new anchor.BN(amount), {
     accounts: {
       authority: wallet.publicKey,

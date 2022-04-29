@@ -11,7 +11,7 @@ import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserInfo } from '../../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
@@ -24,7 +24,7 @@ const GenerateModal = ({ data }: any) => {
   // eslint-disable-next-line
   const [mintTime, setMintTime] = useState('');
 
-  const userState = useUserInfo(data.mint);
+  const userState = useUserVaultInfo(data.mint);
   const usdrMint = useUSDrMintInfo();
 
   const [borrowAmount, setBorrowAmount] = useState<any>();

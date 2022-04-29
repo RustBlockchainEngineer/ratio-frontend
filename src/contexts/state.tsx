@@ -11,7 +11,7 @@ import {
   USDR_MINT_KEY,
 } from '../utils/ratio-lending';
 import { TokenAmount } from '../utils/safe-math';
-import { calculateCollateralPrice, calculateRemainingUserDebt, getMint } from '../utils/utils';
+import { calculateCollateralPrice, calculateVaultDebtLimit, getMint } from '../utils/utils';
 import { useUpdateWallet } from './auth';
 import { useConnection } from './connection';
 import { useVaultsContextProvider } from './vaults';
@@ -91,6 +91,44 @@ export function RFStateProvider({ children = undefined as any }) {
     }
   };
 
+  const updateGlobalState = async () => {
+    try {
+      const res = await getGlobalState(connection, wallet);
+      if (res) {
+        const info = res.globalState;
+        setGlobalState({
+          ...info,
+          mintableDebt: Math.max(
+            0,
+            parseFloat(
+              new TokenAmount(
+                info.debtCeilingGlobal.toNumber() - info.totalDebt.toNumber(),
+                tokenState[USDR_MINT_KEY].decimals
+              ).fixed()
+            )
+          ),
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const updateOracleState = async () => {
+    try {
+      const oracles = await getAllOracleState(connection, wallet);
+      const oracleInfos: any = {};
+      oracles.forEach((item) => {
+        const oracle = item.account;
+        const oracleMint = oracle.mint.toString();
+        oracleInfos[oracleMint] = oracle;
+      });
+      setOracleState(oracleInfos);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const getPoolInfo = async (mint: string) => {
     const poolInfo = await getLendingPoolByMint(connection, mint);
 
@@ -152,7 +190,51 @@ export function RFStateProvider({ children = undefined as any }) {
     setPoolState(newState);
   };
 
-  const updateUserState = async () => {
+  const getVaultStateByMint = async (mint: string) => {
+    if (
+      tokenState &&
+      tokenState[mint] &&
+      overview.totalDebt &&
+      globalState.debtCeilingUser &&
+      globalState.debtCeilingGlobal &&
+      globalState.totalDebt
+    ) {
+      const vaultInfo = await getVaultState(connection, wallet, mint);
+      console.log(vaultInfo);
+      const pool = pools.find((item) => {
+        return item.address_id.toLowerCase() === mint.toLowerCase();
+      });
+      const poolInfo = poolState[mint];
+
+      const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
+
+      const riskRating = pool?.risk_rating.toString() || 'D';
+
+      const lockedColl = parseFloat(new TokenAmount(vaultInfo.totalColl.toString(), tokenState[mint].decimals).fixed());
+
+      const debtLimit = calculateVaultDebtLimit(poolInfo.oraclePrice, lockedColl, riskRating);
+      const vaultDebtLimit = debtLimit - vaultInfo.debt.toNumber();
+      const userDebtLimit = globalState.debtCeilingUser.toNumber() - overview.totalDebt.toNumber();
+      const poolDebtLimit = poolInfo.debtCeiling.toNumber() - poolInfo.totalDebt.toNumber();
+      const globalDebtLimit = globalState.debtCeilingGlobal.toNumber() - globalState.totalDebt.toNumber();
+      const mintableDebt = Math.max(0, Math.min(vaultDebtLimit, userDebtLimit, poolDebtLimit, globalDebtLimit));
+
+      return {
+        ...vaultInfo,
+        mint,
+        reward,
+        lockedAmount: vaultInfo.totalColl.toNumber(),
+        debt: vaultInfo.debt.toNumber(),
+        debtLimit: new TokenAmount(debtLimit, DECIMALS_USDR).toWei().toNumber(),
+        mintableDebt: new TokenAmount(mintableDebt, DECIMALS_USDR).toWei().toNumber(),
+        collPrice: poolInfo.oraclePrice,
+        isReachedDebt: mintableDebt <= 0 && vaultInfo.debt.toNumber() > 0,
+      };
+    }
+    return null;
+  };
+
+  const updateAllVaultState = async () => {
     if (!poolState) {
       return;
     }
@@ -160,12 +242,10 @@ export function RFStateProvider({ children = undefined as any }) {
     try {
       const vaultInfos: any = {};
       for (const mint of Object.keys(poolState)) {
-        const poolInfo = poolState[mint];
-        const vaultInfo = await getVaultState(connection, wallet, mint);
+        const vaultInfo = await getVaultStateByMint(mint);
         if (vaultInfo) {
           vaultInfos[mint] = {
             ...vaultInfo,
-            reward: await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType),
           };
         }
       }
@@ -176,20 +256,15 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateVaultStateByMint = async (mint: string) => {
-    const poolInfo = poolState[mint];
-    const vaultInfo = await getVaultState(connection, wallet, mint);
+    const vaultInfo = await getVaultStateByMint(mint);
 
     const newStates = {
       ...vaultState,
     };
 
-    if (vaultInfo) {
-      const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
-      newStates[mint] = {
-        ...vaultInfo,
-        reward,
-      };
-    }
+    newStates[mint] = {
+      ...vaultInfo,
+    };
 
     setVaultState(newStates);
   };
@@ -213,74 +288,9 @@ export function RFStateProvider({ children = undefined as any }) {
     setVaultState(newStates);
   };
 
-  const updateGlobalState = async () => {
-    try {
-      const res = await getGlobalState(connection, wallet);
-      if (res) {
-        setGlobalState(res.globalState);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const updateOracleState = async () => {
-    try {
-      const oracles = await getAllOracleState(connection, wallet);
-      const oracleInfos: any = {};
-      oracles.forEach((item) => {
-        const oracle = item.account;
-        const oracleMint = oracle.mint.toString();
-        oracleInfos[oracleMint] = oracle;
-      });
-      setOracleState(oracleInfos);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const updateOverview = async () => {
+  const updateUserState = async () => {
     const userState = await getUserState(connection, wallet);
-    const totalDebt = userState ? userState.totalDebt.toNumber() : 0;
-    const poolCount = userState ? userState.activeVaults.toNumber() : 0;
-
-    const activeVaults: any = {};
-
-    if (vaultState) {
-      for (const mint of Object.keys(vaultState)) {
-        const vaultInfo = vaultState[mint];
-
-        const pool = pools.find((item) => {
-          return item.address_id.toLowerCase() === mint.toLowerCase();
-        });
-
-        const poolInfo = poolState[mint];
-
-        const riskRating = pool?.risk_rating.toString() || 'D';
-
-        const lockedColl = parseFloat(new TokenAmount(vaultInfo.totalColl, tokenState[mint].decimals).fixed());
-        const debt = parseFloat(new TokenAmount(vaultInfo.debt, tokenState[USDR_MINT_KEY].decimals).fixed());
-
-        const debtLimit = calculateRemainingUserDebt(poolInfo.oraclePrice, lockedColl, riskRating, debt);
-        console.log(poolInfo.oraclePrice, lockedColl, debt, debtLimit);
-        if (vaultInfo && vaultInfo.totalColl.toNumber() !== 0) {
-          activeVaults[mint] = {
-            mint,
-            lockedAmount: vaultInfo.totalColl.toNumber(),
-            debt: vaultInfo.debt.toNumber(),
-            // Warning here, this is another debtLimit, not the userDebtCeiling from the global state
-            // debtLimit: new TokenAmount(debtLimit * 10 ** 6, 6).toWei().toNumber(), //zhao commented
-            debtLimit: new TokenAmount(debtLimit, DECIMALS_USDR).toWei().toNumber(),
-          };
-        }
-      }
-    }
-
-    setOverview({
-      activeVaults,
-      totalDebt,
-      poolCount,
-    });
+    setOverview(userState);
   };
 
   useEffect(() => {
@@ -293,7 +303,7 @@ export function RFStateProvider({ children = undefined as any }) {
   }, [connection, pools]);
 
   useEffect(() => {
-    if (connection) {
+    if (connection && tokenState && tokenState[USDR_MINT_KEY]) {
       updateGlobalState();
       updateOracleState();
     }
@@ -312,24 +322,24 @@ export function RFStateProvider({ children = undefined as any }) {
   }, [connection, oracleState, globalState]);
 
   useEffect(() => {
-    if (connection && wallet && wallet.publicKey) {
-      updateUserState();
+    if (connection && wallet && wallet.publicKey && poolState && globalState && overview) {
+      updateAllVaultState();
     }
 
     return () => {
       setVaultState({});
     };
-  }, [connection, wallet, wallet?.publicKey, poolState, oracleState]);
+  }, [connection, wallet, wallet?.publicKey, poolState, overview]);
 
   useEffect(() => {
     if (connection && wallet && wallet.publicKey) {
-      updateOverview();
+      updateUserState();
     }
 
     return () => {
       setOverview({});
     };
-  }, [connection, wallet, wallet?.publicKey, vaultState, oracleState]);
+  }, [connection, wallet, wallet?.publicKey, poolState, oracleState]);
 
   return (
     <RFStateContext.Provider
@@ -362,10 +372,22 @@ export function useRFStateInfo() {
   return context.globalState;
 }
 
-export function useUserInfo(mint: string) {
+export function useUserVaultInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
   return context.vaultState[mint];
+}
+
+export function useAllVaultInfo() {
+  const context = React.useContext(RFStateContext);
+
+  return context.vaultState;
+}
+
+export function useIsActiveUserVault(mint: string) {
+  const context = React.useContext(RFStateContext);
+
+  return context.vaultState[mint].totalColl.toNumber() !== 0;
 }
 
 export function usePoolInfo(mint: string) {

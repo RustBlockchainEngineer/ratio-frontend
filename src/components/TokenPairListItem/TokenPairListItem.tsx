@@ -20,7 +20,7 @@ import {
   UPDATE_REWARD_STATE,
   useUpdateRFStates,
   useUSDrMintInfo,
-  useUserInfo,
+  useUserVaultInfo,
   usePoolInfo,
   useTokenMintInfo,
 } from '../../contexts/state';
@@ -38,7 +38,7 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const updateRFStates = useUpdateRFStates();
 
-  const userState = useUserInfo(data.mint);
+  const userState = useUserVaultInfo(data.mint);
   const vaultState = usePoolInfo(data.mint);
 
   // eslint-disable-next-line

@@ -22,7 +22,7 @@ import {
   UPDATE_USER_STATE,
   useUpdateRFStates,
   useUSDrMintInfo,
-  useUserInfo,
+  useUserVaultInfo,
   useTokenMintInfo,
 } from '../../contexts/state';
 
@@ -36,7 +36,7 @@ const MintUSDrModal = ({ data }: any) => {
 
   const tokenPrice = usePrice(data.mint);
 
-  const userState = useUserInfo(data.mint);
+  const userState = useUserVaultInfo(data.mint);
   const usdrMint = useUSDrMintInfo();
   const collMint = useTokenMintInfo(data.mint);
 

@@ -17,12 +17,11 @@ import { useWallet } from '../../contexts/wallet';
 import { USDR_MINT_KEY } from '../../utils/ratio-lending';
 import { useAccountByMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
-import { getRiskLevelNumber, calculateRemainingGlobalDebt, calculateRemainingUserDebt } from '../../utils/utils';
-import { usePrice } from '../../contexts/price';
+import { getRiskLevelNumber } from '../../utils/utils';
 import { selectors } from '../../features/dashboard';
 
 import Breadcrumb from '../../components/Breadcrumb';
-import { useRFStateInfo, useUSDrMintInfo, useUserInfo, useTokenMintInfo } from '../../contexts/state';
+import { useRFStateInfo, useUSDrMintInfo, useUserVaultInfo, useTokenMintInfo, usePoolInfo } from '../../contexts/state';
 import { DEFAULT_NETWORK } from '../../constants';
 import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
 import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
@@ -30,6 +29,7 @@ import { FetchingStatus } from '../../types/fetching-types';
 import { toast } from 'react-toastify';
 import MintableProgressBar from '../../components/Dashboard/MintableProgressBar';
 import TokenCapBanner from '../../components/TokenCapBanner';
+import { DECIMALS_USDR } from '../../utils/constants';
 
 const priceCardData = {
   mainUnit: '',
@@ -45,12 +45,12 @@ const VaultDashboard = () => {
   const usdrMint = useUSDrMintInfo();
   const collMint = useTokenMintInfo(vault_mint as string);
 
-  const tokenPrice = usePrice(vault_mint as string);
+  const poolInfo = usePoolInfo(vault_mint as string);
 
   const collAccount = useAccountByMint(vault_mint as string);
   const usdrAccount = useAccountByMint(USDR_MINT_KEY);
 
-  const userState = useUserInfo(vault_mint as string);
+  const userVaultInfo = useUserVaultInfo(vault_mint as string);
   const globalState = useRFStateInfo();
   const [vaultData, setVaultData] = useState<any>({});
 
@@ -60,11 +60,9 @@ const VaultDashboard = () => {
 
   const [depositValue, setDepositValue] = useState(0);
   const [withdrawValue, setWithdrawValue] = useState(0);
-  const [generateValue, setGenerateValue] = useState(0);
+  const generateValue = +new TokenAmount((userVaultInfo as any)?.mintableDebt ?? 0, DECIMALS_USDR).fixed();
   const [debtValue, setDebtValue] = useState(0);
   const [activeVaults, setActiveVaults] = useState<any>();
-  // eslint-disable-next-line
-  const [hasReachedDebtLimit, setHasReachedDebtLimit] = useState(false);
 
   const allVaults = useSelector(selectors.getAllVaults);
   const overview = useSelector(selectors.getOverview);
@@ -89,7 +87,6 @@ const VaultDashboard = () => {
         }
       })
       .filter(Boolean);
-    console.log(p);
     setActiveVaults(p);
   }, [overview, allVaults]);
 
@@ -130,50 +127,36 @@ const VaultDashboard = () => {
   }, [wallet, usdrAccount, connection, usdrMint]);
 
   useEffect(() => {
-    if (tokenPrice && collMint && globalState) {
+    if (poolInfo && collMint && globalState) {
       //ternary operators are used here while the globalState paramters do not exist
 
-      const tvlLimit = globalState?.tvlLimit ? globalState?.tvlLimit.toNumber() : 0;
-      const tvl = globalState?.tvl ? globalState?.tvl.toNumber() : 0;
-      const availableTVL = tvlLimit - tvl;
+      const globalTvlLimit = globalState?.tvlCollatCeilingUsd.toNumber();
+      const tvl = globalState?.tvlUsd.toNumber();
+      const availableCollat = (globalTvlLimit - tvl) / poolInfo.oraclePrice;
       //set the max amount of depositable LP to be equal to either the amount of lp the user holds, or the global limit
-      const tmpMaxDeposit = Math.min(availableTVL, lpWalletBalance).toFixed(collMint?.decimals);
+      const tmpMaxDeposit = Math.min(availableCollat, lpWalletBalance).toFixed(collMint?.decimals);
       setDepositValue(Number(tmpMaxDeposit));
-      setLpWalletBalanceUSD(tokenPrice * lpWalletBalance);
+
+      setLpWalletBalanceUSD((poolInfo.oraclePrice / 10 ** DECIMALS_USDR) * lpWalletBalance);
     }
     return () => {
       setDepositValue(0);
     };
-  }, [lpWalletBalance, tokenPrice, collMint, globalState]);
+  }, [lpWalletBalance, poolInfo, collMint, globalState]);
 
   useEffect(() => {
-    if (userState && tokenPrice && collMint && usdrMint && globalState && vaultData) {
-      const remainingGlobalDebt = calculateRemainingGlobalDebt(globalState, usdrMint);
-      const remainingUserDebt = calculateRemainingUserDebt(tokenPrice, vaultData?.risk, userState, collMint, usdrMint);
-      const overalldebtLimit = Math.min(remainingGlobalDebt, remainingUserDebt);
-      setHasReachedDebtLimit(overalldebtLimit <= 0 && +userState?.debt > 0);
-      setGenerateValue(overalldebtLimit);
-    }
-    return () => {
-      setHasReachedDebtLimit(false);
-      setGenerateValue(0);
-    };
-  }, [tokenPrice, userState, globalState, usdrMint, collMint, vaultData]);
-
-  useEffect(() => {
-    if (userState && collMint) {
-      const tmpWithdrawValue = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals).fixed();
-      console.log('with value =', Number(tmpWithdrawValue));
+    if (userVaultInfo && collMint) {
+      const tmpWithdrawValue = new TokenAmount((userVaultInfo as any).totalColl, collMint?.decimals).fixed();
       setWithdrawValue(Number(tmpWithdrawValue));
     }
     return () => {
       setWithdrawValue(0);
     };
-  }, [userState, collMint]);
+  }, [userVaultInfo, collMint]);
 
   useEffect(() => {
-    if (userState && usdrMint) {
-      const tmpDebtValue = new TokenAmount((userState as any).debt, usdrMint?.decimals).fixed();
+    if (userVaultInfo && usdrMint) {
+      const tmpDebtValue = new TokenAmount((userVaultInfo as any).debt, usdrMint?.decimals).fixed();
       setDebtValue(Number(tmpDebtValue));
 
       if (vault_mint) {
@@ -192,7 +175,7 @@ const VaultDashboard = () => {
         usdrValue: 0,
       });
     };
-  }, [userState, vault_mint, usdrMint]);
+  }, [userVaultInfo, vault_mint, usdrMint]);
 
   useEffect(() => {
     setIsLoading(true);

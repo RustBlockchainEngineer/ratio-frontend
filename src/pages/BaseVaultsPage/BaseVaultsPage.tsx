@@ -25,6 +25,7 @@ import { FetchingStatus } from '../../types/fetching-types';
 import { useIsTotalUSDrLimitReached } from '../../hooks/useIsTotalUSDrLimitReached';
 import { useIsTVLLimitReached } from '../../hooks/useIsTVLLimitReached';
 import { useIsUserUSDrLimitReached } from '../../hooks/useIsUserUSDrLimitReached';
+import { useAllVaultInfo } from '../../contexts/state';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const view_data = useSelector(selectors.getViewData);
   const platform_data = useSelector(selectors.getPlatformData);
   const overview = useSelector(selectors.getOverview);
+  const userVaultInfos = useAllVaultInfo();
   const viewType = useSelector(selectors.getViewType);
   const [factorial, setFactorial] = useState<any>([]);
 
@@ -81,13 +83,12 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
     if (d !== undefined) {
       const p = filterData(d, filter_data, platform_data)
         ?.map((item: LPair, index: any) => {
-          if (
-            showOnlyActive === false ||
-            (showOnlyActive &&
-              overview &&
-              overview.activeVaults &&
-              Object.keys(overview.activeVaults).indexOf(item.address_id) > -1)
-          ) {
+          const isVaultActive =
+            userVaultInfos &&
+            userVaultInfos[item.address_id] &&
+            userVaultInfos[item.address_id].totalColl.toNumber() !== 0;
+
+          if (showOnlyActive === false || isVaultActive) {
             return {
               id: index,
               mint: item.address_id, //MINTADDRESS[key]
@@ -110,7 +111,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               risk: item.risk_rating,
               riskLevel: getRiskLevelNumber(item.risk_rating),
               item: item,
-              activeStatus: overview?.activeVaults && Object.keys(overview.activeVaults).indexOf(item.address_id) > -1,
+              activeStatus: isVaultActive,
             };
           }
         })

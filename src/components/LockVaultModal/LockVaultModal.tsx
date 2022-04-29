@@ -22,7 +22,7 @@ import {
   UPDATE_USER_STATE,
   useUpdateRFStates,
   useUSDrMintInfo,
-  useUserInfo,
+  useUserVaultInfo,
   usePoolInfo,
   useTokenMintInfo,
 } from '../../contexts/state';
@@ -40,7 +40,7 @@ const LockVaultModal = ({ data }: any) => {
   const usdrMint = useUSDrMintInfo();
   const collMint = useTokenMintInfo(data.mint);
 
-  const userState = useUserInfo(data.mint);
+  const userState = useUserVaultInfo(data.mint);
   const vault = usePoolInfo(data.mint);
 
   const collAccount = useAccountByMint(data.mint);

@@ -16,12 +16,12 @@ import { IoWalletOutline } from 'react-icons/io5';
 import { useConnection } from '../../contexts/connection';
 import { TokenAmount } from '../../utils/safe-math';
 import { getMint } from '../../utils/utils';
-import { usePrices } from '../../contexts/price';
 import { actionTypes, selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
-import { useUSDrMintInfo, useUserOverview } from '../../contexts/state';
+import { useAllVaultInfo, useUserOverview } from '../../contexts/state';
 import { NavBarProgressBarMyUSDr } from './NavBarProgressBarMyUSDr';
+import { DECIMALS_USDR } from '../../utils/constants';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -44,8 +44,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const [totalMinted, setTotalMinted] = useState(0);
   const [totalLocked, setTotalLocked] = useState(0);
   const [activeVaultsData, setActiveVaultsData] = useState([]);
-  const usdrMint = useUSDrMintInfo();
-  const prices = usePrices();
+  const userVaultInfos = useAllVaultInfo();
 
   const { vaults: all_vaults } = useVaultsContextProvider();
   const active_vaults = useSelector(selectors.getActiveVaults);
@@ -62,47 +61,48 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
     const avdArr: any = [];
     for (const vault of vaults) {
-      const { mint, lockedAmount, debt }: any = vault;
+      const { mint, lockedAmount, debt, collPrice: price }: any = vault;
       const mintInfo = await getMint(connection, mint);
-      const price = prices[mint] ? prices[mint] : Number(process.env.REACT_APP_LP_TOKEN_PRICE);
       const pv = price * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
       const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
       const vaultValue: any = {
         title,
         mint,
         pv,
-        debt: new TokenAmount(debt, usdrMint?.decimals).fixed(),
+        debt: new TokenAmount(debt, DECIMALS_USDR).fixed(),
       };
       avdArr.push(vaultValue);
       tmpTotalValueLocked += pv;
     }
     return {
-      tvl: tmpTotalValueLocked,
+      tvl: tmpTotalValueLocked / 10 ** DECIMALS_USDR,
       activeVaults: avdArr,
     };
   };
 
   React.useEffect(() => {
-    if (userOverview && usdrMint) {
+    if (userOverview) {
       dispatch({ type: actionTypes.SET_OVERVIEW, payload: userOverview });
 
-      const { totalDebt, activeVaults, vaultCount } = userOverview;
-      if (activeVaults) {
-        setTotalMinted(Number(new TokenAmount(totalDebt, usdrMint?.decimals).fixed()));
-        setActiveVaultCount(vaultCount);
-
-        getActiveVaultInfo(activeVaults).then((res) => {
-          setActiveVaultsData(res.activeVaults);
-          setTotalLocked(res.tvl);
-        });
-      }
+      const { totalDebt, vaultCount } = userOverview;
+      setTotalMinted(Number(new TokenAmount(totalDebt, DECIMALS_USDR).fixed()));
+      setActiveVaultCount(vaultCount);
     }
 
     return () => {
       setActiveVaultsData([]);
       setTotalLocked(0);
     };
-  }, [userOverview, usdrMint]);
+  }, [userOverview]);
+
+  React.useEffect(() => {
+    if (userVaultInfos) {
+      getActiveVaultInfo(userVaultInfos).then((res) => {
+        setActiveVaultsData(res.activeVaults);
+        setTotalLocked(res.tvl);
+      });
+    }
+  }, [userVaultInfos]);
 
   const onItemClick = (index: string) => {
     setNavIndex(index);

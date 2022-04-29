@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import { IoIosArrowForward } from 'react-icons/io';
 import Select from 'react-select';
-import { useIsVaultActive } from '../../hooks/useIsVaultActive';
+import { useIsActiveUserVault } from '../../contexts/state';
 
 enum BreadCrumbTitle {
   ActiveVaults = 'My Active Vaults',
@@ -17,7 +17,7 @@ const Breadcrumb = ({ vaultData, availableVaults }: any) => {
   const [options, setOptions] = useState();
   const [isOpen, setIsOpen] = useState(false);
 
-  const isVaultActive = useIsVaultActive(vaultData?.mint || '');
+  const isVaultActive = useIsActiveUserVault(vaultData?.mint || '');
 
   useEffect(() => {
     console.log(availableVaults);

@@ -1,8 +1,7 @@
 import BigNumber from 'bignumber.js';
 import BannerMessages from './bannerMessages.json';
 import { Banner, BannerIcon } from '../Banner';
-import { useUserOverview, usePoolInfo, useRFStateInfo } from '../../contexts/state';
-import { useIsVaultActive } from '../../hooks/useIsVaultActive';
+import { usePoolInfo, useRFStateInfo, useUserVaultInfo } from '../../contexts/state';
 const getTokenCapBanner = (key: string, percentage: number) => {
   const bannerParams = BannerMessages[key];
   if (percentage >= 100) {
@@ -29,7 +28,7 @@ const getTokenCapBanner = (key: string, percentage: number) => {
 const selectBanner = (poolData: any, userVaultData: any, globalStateData: any) => {
   const { totalDebt: totalPoolDebt, debtCeiling: poolDebtCeiling } = poolData;
   const { debt: userDebt, debtLimit: userDebtLimit } = userVaultData;
-  console.log(userDebt, userDebtLimit);
+
   const {
     totalDebt: globalDebt,
     debtCeilingGlobal: globalDebtLimit,
@@ -65,13 +64,11 @@ const selectBanner = (poolData: any, userVaultData: any, globalStateData: any) =
 };
 
 const TokenCapBanner = ({ mint }: any) => {
-  const isVaultActive = useIsVaultActive(mint || '');
-  const poolData = usePoolInfo(mint);
-  const activeVaults = useUserOverview()?.activeVaults;
-  const vaultData = isVaultActive ? activeVaults[mint] : { debt: 0, debtLimit: 0 };
+  const poolInfo = usePoolInfo(mint);
+  const vaultInfo = useUserVaultInfo(mint);
   const globalStateData = useRFStateInfo();
-  console.log(poolData, vaultData, globalStateData);
-  return selectBanner(poolData, vaultData, globalStateData);
+
+  return selectBanner(poolInfo, vaultInfo, globalStateData);
 };
 
 export default TokenCapBanner;

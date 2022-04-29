@@ -9,8 +9,7 @@ import BN from 'bn.js';
 import { TokenInfo } from '@solana/spl-token-registry';
 import { WAD, ZERO, LP_PAIR_MINT_KEYS } from '../constants';
 import { TokenAccount } from './../models';
-import { getVaultState, USDR_MINT_KEY } from '../utils/ratio-lending';
-import { TokenAmount } from '../utils/safe-math';
+
 import { getUSDrAmount } from '../utils/risk';
 import * as serumCmn from '@project-serum/common';
 import * as anchor from '@project-serum/anchor';
@@ -243,16 +242,6 @@ export function nFormatter(num: number, digits: number) {
   return item ? (num / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : '0';
 }
 
-interface GetDebtLimit {
-  connection: Connection;
-  wallet: any;
-  vaultMint: MintInfo;
-  collMint: MintInfo;
-  usdrMint: MintInfo;
-  riskRating: string;
-  tokenPrice: any | number;
-}
-
 export const getRiskLevelNumber = (vaultMint: any) => {
   switch (vaultMint) {
     case LP_PAIR_MINT_KEYS['USDC-USDR']:
@@ -274,14 +263,6 @@ export const getRiskLevelNumber = (vaultMint: any) => {
   return 10;
 };
 
-export const calculateRemainingGlobalDebt = (globalState: any, usdrMint: any) => {
-  const globalCurrentDebt = new TokenAmount(globalState?.totalDebt, usdrMint?.decimals);
-  const globalDebtLimit = new TokenAmount(globalState?.debtCeiling, usdrMint?.decimals);
-  const remainingGlobalDebt = Number(globalDebtLimit.fixed()) - Number(globalCurrentDebt.fixed());
-
-  return remainingGlobalDebt < 0 ? 0 : remainingGlobalDebt;
-};
-
 export const calculateCollateralPrice = (
   lpSupply: number,
   tokenAmountA: number,
@@ -292,33 +273,10 @@ export const calculateCollateralPrice = (
   return ((Math.sqrt(tokenAmountA * priceA) * Math.sqrt(tokenAmountB * priceB)) / lpSupply) * 2;
 };
 
-export const calculateRemainingUserDebt = (
-  lpTokenPrice: number,
-  lpLockedAmount: number,
-  riskLevel: string,
-  debt: number
-) => {
+export const calculateVaultDebtLimit = (lpTokenPrice: number, lpLockedAmount: number, riskLevel: string) => {
   const userTotalDebtMintable = getUSDrAmount(100, lpTokenPrice * lpLockedAmount, riskLevel);
-  const userRemainingMintableDebt = userTotalDebtMintable - debt;
 
-  return userRemainingMintableDebt < 0 ? 0 : userRemainingMintableDebt;
-};
-
-export const getDebtLimitForVault = async ({
-  connection,
-  wallet,
-  vaultMint,
-  collMint,
-  usdrMint,
-  riskRating,
-  tokenPrice,
-}: GetDebtLimit) => {
-  const vaultState = await getVaultState(connection, wallet, new PublicKey(vaultMint));
-  const debtLimit = calculateRemainingUserDebt(tokenPrice, riskRating, vaultState, collMint, usdrMint);
-  return {
-    debtLimit,
-    hasReachedDebtLimit: debtLimit <= 0 && +vaultState?.debt > 0,
-  };
+  return userTotalDebtMintable;
 };
 
 // export const getMint = async (connection: Connection, key: any) => {
@@ -332,34 +290,6 @@ export const getMint = async (connection: Connection, key: any) => {
   const provider = new anchor.Provider(connection, undefined as any, anchor.Provider.defaultOptions());
   const info = serumCmn.getMintInfo(provider, new PublicKey(id));
   return info;
-};
-
-export const getDebtLimitForAllVaults = async (connection: Connection, wallet: any, vaults: any) => {
-  const usdrMint = await getMint(connection, USDR_MINT_KEY);
-
-  const debtLimitForAllVaults = await Promise.all(
-    vaults.map(async (vault: any) => {
-      const collMint = await getMint(connection, vault.address_id);
-
-      const params: GetDebtLimit = {
-        connection,
-        wallet,
-        collMint,
-        usdrMint,
-        riskRating: vault.risk_rating,
-        vaultMint: vault.address_id,
-        tokenPrice: Number(process.env.REACT_APP_LP_TOKEN_PRICE), // TODO: fix this LP Token Price
-      };
-
-      const debtLimit = await getDebtLimitForVault(params);
-      return {
-        title: vault.symbol,
-        ...debtLimit,
-      };
-    })
-  );
-
-  return debtLimitForAllVaults;
 };
 
 /**

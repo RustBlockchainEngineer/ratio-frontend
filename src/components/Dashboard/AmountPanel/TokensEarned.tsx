@@ -8,7 +8,7 @@ import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { PRICE_DECIMAL } from '../../../constants/constants';
-import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserInfo } from '../../../contexts/state';
+import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
 import { FetchingStatus } from '../../../types/fetching-types';
@@ -23,7 +23,7 @@ const TokensEarned = ({ data }: any) => {
   const updateRFStates = useUpdateRFStates();
   const PoolManagerFactory = useGetPoolManager(vault);
 
-  const userState = useUserInfo(data.mintAddress);
+  const userState = useUserVaultInfo(data.mintAddress);
   const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
 
   const [isHarvesting, setIsHarvesting] = useState(false);

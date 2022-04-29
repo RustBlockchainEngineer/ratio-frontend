@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useConnection } from '../../contexts/connection';
-import { calculateRemainingGlobalDebt, calculateRemainingUserDebt, formatUSD } from '../../utils/utils';
+import { formatUSD } from '../../utils/utils';
 
-import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 
 import LoadingSpinner from '../../atoms/LoadingSpinner';
@@ -20,14 +19,8 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
 import { isWalletApproveError } from '../../utils/utils';
 
-import {
-  useUpdateRFStates,
-  useUSDrMintInfo,
-  useUserInfo,
-  useTokenMintInfo,
-  UPDATE_REWARD_STATE,
-  useRFStateInfo,
-} from '../../contexts/state';
+import { useUpdateRFStates, useUserVaultInfo, UPDATE_REWARD_STATE } from '../../contexts/state';
+import { DECIMALS_USDR } from '../../utils/constants';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
@@ -36,65 +29,15 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const { wallet, connected } = useWallet();
   const updateRFStates = useUpdateRFStates();
 
-  const tokenPrice = usePrice(data.mint);
+  const vaultState = useUserVaultInfo(data.mint);
 
-  const usdrMint = useUSDrMintInfo();
-  const collMint = useTokenMintInfo(data.mint);
-
-  const globalState = useRFStateInfo();
-  const userState = useUserInfo(data.mint);
-  const vaultState = useUserInfo(data.mint);
+  const totalDebt = +new TokenAmount((vaultState as any)?.debt ?? 0, DECIMALS_USDR).fixed();
+  const positionValue = +new TokenAmount((vaultState as any)?.tvlUsd ?? 0, DECIMALS_USDR).fixed();
+  const mintableDebt = +new TokenAmount((vaultState as any)?.mintableDebt ?? 0, DECIMALS_USDR).fixed();
 
   const [isHarvesting, setIsHarvesting] = useState(false);
 
-  // eslint-disable-next-line
-  const [tvl, setTVL] = useState(0);
-  const [totalDebt, setTotalDebt] = useState(0);
-  const [remainingDebt, setRemainingDebt] = useState(0);
-
-  const [positionValue, setPositionValue] = useState(0);
-  // eslint-disable-next-line
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = useState(false);
-
   const PoolManagerFactory = useGetPoolManager(data.item);
-
-  useEffect(() => {
-    if (userState && tokenPrice && collMint) {
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
-      setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
-    }
-    return () => {
-      setPositionValue(0);
-    };
-  }, [tokenPrice, userState, collMint]);
-
-  useEffect(() => {
-    if (userState && tokenPrice && collMint && usdrMint && globalState) {
-      const remainingGlobalDebt = calculateRemainingGlobalDebt(globalState, usdrMint);
-      const remainingUserDebt = calculateRemainingUserDebt(tokenPrice, data.risk, userState, collMint, usdrMint);
-      const overalldebtLimit = Math.min(remainingGlobalDebt, remainingUserDebt);
-      setHasUserReachedDebtLimit(overalldebtLimit <= 0 && +userState?.debt > 0);
-      setRemainingDebt(overalldebtLimit);
-    }
-    return () => {
-      setHasUserReachedDebtLimit(false);
-      setRemainingDebt(0);
-    };
-  }, [tokenPrice, userState, globalState, usdrMint, collMint]);
-
-  useEffect(() => {
-    if (connection && collMint && usdrMint && data.mint && vaultState) {
-      const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
-      const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
-
-      setTVL(Number(tvlAmount.fixed()));
-      setTotalDebt(Number(debtAmount.fixed()));
-    }
-    return () => {
-      setTVL(0);
-      setTotalDebt(0);
-    };
-  }, [connection, collMint, usdrMint, vaultState]);
 
   const printTvl = () => {
     if (isNaN(data.tvl)) {
@@ -213,7 +156,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Available to Mint:</h6>
-              <h6 className="semiBold">{Number(remainingDebt.toFixed(2)).toFixed(2)}</h6>
+              <h6 className="semiBold">{Number(mintableDebt.toFixed(2)).toFixed(2)}</h6>
             </div>
           </div>
           <div className="activepaircard__detailBox">

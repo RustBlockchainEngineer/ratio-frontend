@@ -19,7 +19,7 @@ import {
   UPDATE_REWARD_STATE,
   useUpdateRFStates,
   useUSDrMintInfo,
-  useUserInfo,
+  useUserVaultInfo,
   usePoolInfo,
   useTokenMintInfo,
 } from '../../contexts/state';
@@ -38,7 +38,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const [expand, setExpand] = useState(false);
 
-  const vaultState = useUserInfo(data.mint);
+  const vaultState = useUserVaultInfo(data.mint);
   const poolState = usePoolInfo(data.mint);
   const updateRFStates = useUpdateRFStates();
 
