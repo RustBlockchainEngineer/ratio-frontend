@@ -200,12 +200,12 @@ export function RFStateProvider({ children = undefined as any }) {
       globalState.totalDebt
     ) {
       const vaultInfo = await getVaultState(connection, wallet, mint);
-      console.log(vaultInfo);
+
       const pool = pools.find((item) => {
         return item.address_id.toLowerCase() === mint.toLowerCase();
       });
       const poolInfo = poolState[mint];
-
+      console.log(mint, poolInfo.platformType);
       const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
 
       const riskRating = pool?.risk_rating.toString() || 'D';

@@ -222,9 +222,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const transaction = new Transaction();
   const signers: Keypair[] = [];
 
-  try {
-    await connection.getAccountInfo(ataUSDr);
-  } catch {
+  if (!(await connection.getAccountInfo(ataUSDr))) {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -474,9 +472,7 @@ export async function withdrawCollateral(
   const ataColl = getATAKey(wallet.publicKey, mintCollat);
 
   const transaction = new Transaction();
-  try {
-    await connection.getAccountInfo(ataColl);
-  } catch {
+  if (!(await connection.getAccountInfo(ataColl))) {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -535,9 +531,7 @@ export async function distributeReward(connection: Connection, wallet: any, mint
   const ataRatioReward = getATAKey(stateInfo.treasury, poolInfo.mintReward);
 
   const transaction = new Transaction();
-  try {
-    await connection.getAccountInfo(ataUserReward);
-  } catch {
+  if (!(await connection.getAccountInfo(ataUserReward))) {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -549,10 +543,8 @@ export async function distributeReward(connection: Connection, wallet: any, mint
       )
     );
   }
-  try {
-    await connection.getAccountInfo(ataRatioReward);
-  } catch {
-    transaction.add(
+  if (!(await connection.getAccountInfo(ataRatioReward))) {
+  transaction.add(
       Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,
         TOKEN_PROGRAM_ID,
