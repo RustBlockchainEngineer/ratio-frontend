@@ -8,12 +8,12 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
 import { repayUSDr } from '../../../utils/ratio-lending';
-import { useMint } from '../../../contexts/accounts';
 import { toast } from 'react-toastify';
 import AmountSlider from '../AmountSlider';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
+import { DECIMALS_USDR } from '../../../utils/constants';
 
 const PaybackModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -21,11 +21,9 @@ const PaybackModal = ({ data }: any) => {
   const [show, setShow] = useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
-  const usdrMint = useMint(data.usdrMint);
 
   const [paybackAmount, setPayBackAmount] = useState<any>();
   const updateRFStates = useUpdateRFStates();
-
   const [paybackStatus, setPaybackStatus] = useState(false);
   const [invalidStr, setInvalidStr] = useState('');
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -50,59 +48,26 @@ const PaybackModal = ({ data }: any) => {
   }
 
   const repay = async () => {
-    try {
-      console.log('PayBack', paybackAmount);
-      if (!(paybackAmount && data.usdrValue >= paybackAmount)) {
-        setPaybackStatus(true);
-        setInvalidStr('Insufficient funds to payback!');
-        return;
-      }
-
-      if (!usdrMint) {
-        setPaybackStatus(true);
-        setInvalidStr('Invalid USDr Mint address to payback!');
-        return;
-      }
-
-      setIsPayingBack(true);
-
-      const txtSignature = await repayUSDr(
-        connection,
-        wallet,
-        paybackAmount * Math.pow(10, usdrMint.decimals),
-        new PublicKey(data.mint)
-      );
-
-      const response = await postToRatioApi(
-        {
-          tx_type: 'payback',
-          address_id: new PublicKey(data.mint).toString(),
-          signature: txtSignature,
-        },
-        `/transaction/${wallet?.publicKey?.toBase58()}/new`
-      );
-
-      console.log('Response from backend', response);
-      await updateRFStates(UPDATE_USER_STATE, data.mint);
-      setPayBackAmount(0);
-      toast.success('Successfully Paid back!');
-    } catch (err) {
-      console.error(err);
-      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
-      else toast.error('Transaction Error!');
+    console.log('PayBack', paybackAmount);
+    if (!(paybackAmount && data.usdrValue >= paybackAmount)) {
+      setPaybackStatus(true);
+      setInvalidStr('Insufficient funds to payback!');
+      return;
     }
-    repayUSDr(connection, wallet, paybackAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+
+    setIsPayingBack(true);
+
+    repayUSDr(connection, wallet, paybackAmount * Math.pow(10, DECIMALS_USDR), new PublicKey(data.mint))
       .then((txSignature: string) => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
-        setPayBackAmount(0);
         toast.success('Successfully Paid back!');
         postToRatioApi(
           {
             tx_type: 'payback',
-            address_id: data.mint,
+            address_id: new PublicKey(data.mint).toString(),
             signature: txSignature,
           },
-          `/transaction/${wallet?.publicKey.toBase58()}/new`
+          `/transaction/${wallet?.publicKey?.toBase58()}/new`
         )
           .then((res: string) => {
             console.log('RES FROM BACKEND', res);
@@ -118,11 +83,9 @@ const PaybackModal = ({ data }: any) => {
         else toast.error('Transaction Error!');
       })
       .finally(() => {
+        setIsPayingBack(false);
         setShow(false);
       });
-
-    setIsPayingBack(false);
-    setShow(false);
   };
 
   return (
@@ -142,8 +105,8 @@ const PaybackModal = ({ data }: any) => {
         className="dashboardModal__modal"
         data-theme={darkMode ? 'dark' : 'light'}
         onEntered={() => {
-          setAmountValue(0);
-          setPayBackAmount('');
+          setAmountValue(100);
+          setPayBackAmount(data.usdrValue);
           setPaybackStatus(false);
           setButtonDisabled(false);
         }}
@@ -186,7 +149,6 @@ const PaybackModal = ({ data }: any) => {
               maxValue={data.usdrValue}
               valid={paybackStatus}
               invalidStr={invalidStr}
-              value={paybackAmount}
             />
             <AmountSlider
               onChangeValue={(value: any) => {

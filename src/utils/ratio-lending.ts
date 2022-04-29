@@ -5,7 +5,6 @@ import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/sp
 import * as anchor from '@project-serum/anchor';
 import {
   Connection,
-  Keypair,
   PublicKey,
   SystemProgram,
   SYSVAR_CLOCK_PUBKEY,
@@ -220,7 +219,6 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const userStateKey = getUserStatePDA(wallet.publicKey);
 
   const transaction = new Transaction();
-  const signers: Keypair[] = [];
 
   if (!(await connection.getAccountInfo(ataUSDr))) {
     transaction.add(
@@ -258,7 +256,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
 
   transaction.add(borrowInstruction);
 
-  const txHash = await sendTransaction(connection, wallet, transaction, signers);
+  const txHash = await sendTransaction(connection, wallet, transaction);
   await connection.confirmTransaction(txHash);
   if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
@@ -266,7 +264,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   }
   console.log(`User borrowed ${amount / Math.pow(10, DECIMALS_USDT)} USD , transaction id = ${txHash}`);
 
-  return txHash;
+  return txHash.toString();
 }
 
 export async function getLendingPoolByMint(connection: Connection, mint: string | PublicKey): Promise<any | undefined> {
@@ -544,7 +542,7 @@ export async function distributeReward(connection: Connection, wallet: any, mint
     );
   }
   if (!(await connection.getAccountInfo(ataRatioReward))) {
-  transaction.add(
+    transaction.add(
       Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,
         TOKEN_PROGRAM_ID,
