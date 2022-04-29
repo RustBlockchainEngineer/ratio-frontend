@@ -25,7 +25,7 @@ import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../ratio-
 
 const rewarderKey = new PublicKey(SABER_REWARDER);
 const mintWrapperKey = new PublicKey(SABER_MINT_WRAPPER);
-const sbr_mint = new PublicKey(SABER_REWARD_MINT);
+const saberMintKey = new PublicKey(SABER_REWARD_MINT);
 export async function deposit(
   connection: Connection,
   wallet: any,
@@ -42,15 +42,15 @@ export async function deposit(
   const tx1: any = await depositCollateral(connection, wallet, amount, mintCollKey, new PublicKey(userTokenATA), true);
   transaction.add(tx1);
 
-  // const tx2 = await createSaberQuarryMinerIfneeded(connection, wallet, mintCollKey, true);
-  // if (tx2) {
-  //   transaction.add(tx2);
-  // }
+  const tx2 = await createSaberQuarryMinerIfneeded(connection, wallet, mintCollKey);
+  if (tx2) {
+    transaction.add(tx2);
+  }
 
-  // const tx3 = await stakeCollateralToSaber(amount, connection, wallet, mintCollKey);
-  // if (tx3) {
-  //   transaction.add(tx3);
-  // }
+  const tx3 = await stakeCollateralToSaber(amount, connection, wallet, mintCollKey);
+  if (tx3) {
+    transaction.add(tx3);
+  }
   const txHash = await sendTransaction(connection, wallet, transaction);
   await connection.confirmTransaction(txHash);
   if (txHash?.value?.err) {
@@ -117,14 +117,13 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
 }
 
 export const createSaberQuarryMinerIfneeded = async (
-  userConnection: Connection,
-  userWallet: typeof anchor.Wallet,
-  mintCollKey: PublicKey,
-  needTx = false
+  connection: Connection,
+  wallet: typeof anchor.Wallet,
+  mintCollKey: PublicKey
 ) => {
-  const program = getProgramInstance(userConnection, userWallet);
+  const program = getProgramInstance(connection, wallet);
 
-  const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
+  const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
   const transaction = new Transaction();
 
   const sdk: QuarrySDK = QuarrySDK.load({
@@ -137,24 +136,25 @@ export const createSaberQuarryMinerIfneeded = async (
   const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
   const quarry = await rewarder.getQuarry(poolMintToken);
 
-  try {
-    await quarry.getMiner(vaultKey);
-  } catch {
+  const miner = await quarry.getMiner(vaultKey);
+
+  if (!miner) {
+    console.log('creating quarry miner');
     const poolKey = getPoolPDA(mintCollKey);
 
     const [quarry] = await findQuarryAddress(rewarderKey, mintCollKey, QUARRY_ADDRESSES.Mine);
 
     const [minerKey, minerBump] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
-    const minerAtaPubKey = getATAKey(minerKey, mintCollKey);
+    const ataCollatMinerKey = getATAKey(minerKey, mintCollKey);
     transaction.add(
       // programPeriphery.instruction.createSaberQuarryMiner(miner.bump, {
       program.instruction.createSaberQuarryMiner(minerBump, {
         accounts: {
-          authority: userWallet.publicKey,
+          authority: wallet.publicKey,
           pool: poolKey,
           vault: vaultKey,
           miner: minerKey,
-          ataCollatMiner: minerAtaPubKey,
+          ataCollatMiner: ataCollatMinerKey,
           // quarry
           quarry: quarry,
           rewarder: rewarderKey,
@@ -168,16 +168,9 @@ export const createSaberQuarryMinerIfneeded = async (
       })
     );
   }
-  if (needTx) {
-    return transaction;
-  }
-  // send transaction
-  const receipt = await handleTxn(transaction, userConnection, userWallet);
-  console.log('receipt', receipt);
-  // return receipt;
+  return transaction;
 };
 
-/* eslint-disable */
 const stakeCollateralToSaber = async (
   amountToStake: number,
   userConnection: Connection,
@@ -188,14 +181,15 @@ const stakeCollateralToSaber = async (
 
   const globalStateKey = getGlobalStatePDA();
   const poolKey = getPoolPDA(mintCollKey);
-  const userTokenATA = getATAKey(userWallet.publicKey, mintCollKey);
   const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
 
-  const valutATA = getATAKey(vaultKey, mintCollKey);
+  const ataCollatVault = getATAKey(vaultKey, mintCollKey);
   const [quarry] = await findQuarryAddress(rewarderKey, mintCollKey, QUARRY_ADDRESSES.Mine);
 
   const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
-  const minerAtaPubKey = getATAKey(minerKey, mintCollKey);
+  const ataCollatMiner = getATAKey(minerKey, mintCollKey);
+
+  console.log('staking to saber');
 
   const txn = new Transaction().add(
     program.instruction.stakeCollateralToSaber(new anchor.BN(amountToStake), {
@@ -204,8 +198,8 @@ const stakeCollateralToSaber = async (
         globalState: globalStateKey,
         pool: poolKey,
         vault: vaultKey,
-        ataCollatVault: valutATA,
-        ataCollatMiner: userTokenATA,
+        ataCollatVault: ataCollatVault,
+        ataCollatMiner: ataCollatMiner,
         quarry,
         miner: minerKey,
         rewarder: rewarderKey,
@@ -217,7 +211,6 @@ const stakeCollateralToSaber = async (
   return txn;
 };
 
-/* eslint-disable */
 const unstakeColalteralFromSaber = async (
   unstakeAmount: number,
   userConnection: Connection,
@@ -235,7 +228,6 @@ const unstakeColalteralFromSaber = async (
   const [quarry] = await findQuarryAddress(rewarderKey, mintCollKey, QUARRY_ADDRESSES.Mine);
 
   const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
-  const minerAtaPubKey = getATAKey(minerKey, mintCollKey);
 
   const txn = new Transaction().add(
     program.instruction.unstakeCollateralFromSaber(new anchor.BN(unstakeAmount), {
@@ -323,25 +315,29 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     const rewarder = await sdk.mine.loadRewarderWrapper(rewarderKey);
 
     const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
-    const rewardMintInfo = await serumCmn.getMintInfo(program.provider, sbr_mint);
+    const rewardMintInfo = await serumCmn.getMintInfo(program.provider, saberMintKey);
 
     const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
     const quarry = await rewarder.getQuarry(poolMintToken);
 
     const miner = await quarry.getMiner(vaultKey);
-    const payroll = quarry.payroll;
+    if (miner) {
+      const payroll = quarry.payroll;
 
-    const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
+      const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
 
-    const expectedWagesEarned = (
-      await payroll.calculateRewardsEarned(
-        currentTimeStamp,
-        miner?.balance as anchor.BN,
-        miner?.rewardsPerTokenPaid as anchor.BN,
-        miner?.rewardsEarned as anchor.BN
-      )
-    ).toNumber();
-    return parseFloat(new TokenAmount(expectedWagesEarned, rewardMintInfo.decimals).fixed());
+      const expectedWagesEarned = (
+        await payroll.calculateRewardsEarned(
+          currentTimeStamp,
+          miner?.balance as anchor.BN,
+          miner?.rewardsPerTokenPaid as anchor.BN,
+          miner?.rewardsEarned as anchor.BN
+        )
+      ).toNumber();
+      return parseFloat(new TokenAmount(expectedWagesEarned, rewardMintInfo.decimals).fixed());
+    } else {
+      return 0;
+    }
   } catch (e) {
     console.log(e);
     return 0;
