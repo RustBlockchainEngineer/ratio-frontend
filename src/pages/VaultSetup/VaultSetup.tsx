@@ -90,8 +90,8 @@ const VaultSetup = () => {
     if (tokenPrice && collMint && globalState) {
       //ternary operators are used here while the globalState paramters do not exist
 
-      const tvlLimit = globalState?.tvlLimit ? globalState?.tvlLimit.toNumber() : 0;
-      const tvl = globalState?.tvl ? globalState?.tvl.toNumber() : 0;
+      const tvlLimit = globalState?.tvlCollatCeilingUsd ? globalState?.tvlCollatCeilingUsd.toNumber() : 0;
+      const tvl = globalState?.tvlUsd ? globalState?.tvlUsd.toNumber() : 0;
       const availableTVL = tvlLimit - tvl;
       //set the max amount of depositable LP to be equal to either the amount of lp the user holds, or the global limit
       const tmpMaxDeposit = Math.min(availableTVL, lpWalletBalance).toFixed(collMint?.decimals);

@@ -19,7 +19,6 @@ import { calculateSaberReward } from './saber/saber-utils';
 import { PRICE_DECIMAL } from '../constants';
 import {
   getATAKey,
-  getATAKeyWithBump,
   getGlobalStatePDA,
   getOraclePDA,
   getPoolPDA,
@@ -297,7 +296,7 @@ export async function depositCollateral(
   const [vaultKey, vaultBump] = getVaultPDAWithBump(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);
 
-  const [vaultATAKey, vaultATABump] = getATAKeyWithBump(vaultKey, mintCollat);
+  const vaultATAKey = getATAKey(vaultKey, mintCollat);
 
   const transaction = new Transaction();
 
@@ -317,7 +316,7 @@ export async function depositCollateral(
   try {
     await program.account.vault.fetch(vaultKey);
   } catch {
-    const tx = await program.instruction.createVault(vaultBump, vaultATABump, {
+    const tx = await program.instruction.createVault(vaultBump, {
       accounts: {
         // account that owns the vault
         authority: wallet.publicKey,

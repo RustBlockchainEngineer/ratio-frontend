@@ -1074,11 +1074,6 @@ export type StablePool = {
           isSigner: false;
         },
         {
-          name: 'minerVault';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'rewarder';
           isMut: true;
           isSigner: false;
@@ -1113,11 +1108,6 @@ export type StablePool = {
           name: 'authority';
           isMut: true;
           isSigner: true;
-        },
-        {
-          name: 'treasury';
-          isMut: true;
-          isSigner: false;
         },
         {
           name: 'globalState';
@@ -2753,11 +2743,6 @@ export const IDL: StablePool = {
           isSigner: false,
         },
         {
-          name: 'minerVault',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'rewarder',
           isMut: true,
           isSigner: false,
@@ -2792,11 +2777,6 @@ export const IDL: StablePool = {
           name: 'authority',
           isMut: true,
           isSigner: true,
-        },
-        {
-          name: 'treasury',
-          isMut: true,
-          isSigner: false,
         },
         {
           name: 'globalState',

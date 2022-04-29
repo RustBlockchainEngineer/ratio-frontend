@@ -12,7 +12,6 @@ type CustomInputProps = {
   maxValue?: number;
   valid?: boolean;
   invalidStr?: string;
-  value: any;
   onTextChange?: (value: string) => void;
 };
 
@@ -27,15 +26,13 @@ const CustomInput = ({
   maxValue,
   valid,
   invalidStr,
-  value,
 }: CustomInputProps) => {
   if (typeof maxValue === 'string') {
     maxValue = parseFloat(maxValue);
   }
 
   const defaultValue = initValue && +initValue ? initValue : maxValue ? maxValue : '0';
-  // const [value, setValue] = React.useState(defaultValue);
-  // const [hasValueChanged, setHasValueChanged] = React.useState(false);
+  const [value, setValue] = React.useState(defaultValue);
 
   const handleChange = (e: any) => {
     const amount = e.target.value;
@@ -44,13 +41,13 @@ const CustomInput = ({
       if (maxValue === 0 || (maxValue && maxValue < amount)) {
         return;
       }
-      // setHasValueChanged(true);
+      setValue(amount);
       onTextChange && onTextChange(amount);
     }
   };
 
   const setMaxValue = () => {
-    // setValue(appendValueStr ? appendValueStr : '0');
+    setValue(appendValueStr ? appendValueStr : '0');
     // setHasValueChanged(true);
     onTextChange && onTextChange(appendValueStr ? appendValueStr : '0');
   };
