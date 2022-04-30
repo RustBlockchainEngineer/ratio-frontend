@@ -1,6 +1,6 @@
-export type StablePool = {
+export type RatioLending = {
   version: '0.1.0';
-  name: 'stable_pool';
+  name: 'ratio_lending';
   instructions: [
     {
       name: 'createGlobalState';
@@ -1557,84 +1557,120 @@ export type StablePool = {
           }
         ];
       };
+    }
+  ];
+  errors: [
+    {
+      code: 6000;
+      name: 'Unauthorized';
+      msg: 'You are not authorized to perform this action.';
     },
     {
-      name: 'StablePoolError';
-      type: {
-        kind: 'enum';
-        variants: [
-          {
-            name: 'Unauthorized';
-          },
-          {
-            name: 'AlreadyInUse';
-          },
-          {
-            name: 'InvalidProgramAddress';
-          },
-          {
-            name: 'InvalidState';
-          },
-          {
-            name: 'InvalidOwner';
-          },
-          {
-            name: 'NotAllowed';
-          },
-          {
-            name: 'MathOverflow';
-          },
-          {
-            name: 'InvalidOracleConfig';
-          },
-          {
-            name: 'InvalidAccountInput';
-          },
-          {
-            name: 'InvalidCluster';
-          },
-          {
-            name: 'GlobalTVLExceeded';
-          },
-          {
-            name: 'LTVExceeded';
-          },
-          {
-            name: 'GlobalDebtCeilingExceeded';
-          },
-          {
-            name: 'PoolDebtCeilingExceeded';
-          },
-          {
-            name: 'UserDebtCeilingExceeded';
-          },
-          {
-            name: 'WithdrawNotAllowedWithDebt';
-          },
-          {
-            name: 'InvalidTransferAmount';
-          },
-          {
-            name: 'InvalidPlatformType';
-          },
-          {
-            name: 'InvalidPlatformNotSaber';
-          },
-          {
-            name: 'RepayingMoreThanBorrowed';
-          },
-          {
-            name: 'RewardMintMismatch';
-          }
-        ];
-      };
+      code: 6001;
+      name: 'AlreadyInUse';
+      msg: 'AlreadyInUse';
+    },
+    {
+      code: 6002;
+      name: 'InvalidProgramAddress';
+      msg: 'InvalidProgramAddress';
+    },
+    {
+      code: 6003;
+      name: 'InvalidState';
+      msg: 'InvalidState';
+    },
+    {
+      code: 6004;
+      name: 'InvalidOwner';
+      msg: 'InvalidOwner';
+    },
+    {
+      code: 6005;
+      name: 'NotAllowed';
+      msg: 'NotAllowed';
+    },
+    {
+      code: 6006;
+      name: 'MathOverflow';
+      msg: 'Math operation overflow';
+    },
+    {
+      code: 6007;
+      name: 'InvalidOracleConfig';
+      msg: 'InvalidOracleConfig';
+    },
+    {
+      code: 6008;
+      name: 'InvalidAccountInput';
+      msg: 'InvalidAccountInput';
+    },
+    {
+      code: 6009;
+      name: 'InvalidCluster';
+      msg: 'This function works on devnet only';
+    },
+    {
+      code: 6010;
+      name: 'GlobalTVLExceeded';
+      msg: 'Global TVL Exceeded';
+    },
+    {
+      code: 6011;
+      name: 'LTVExceeded';
+      msg: 'LTV Exceeded';
+    },
+    {
+      code: 6012;
+      name: 'GlobalDebtCeilingExceeded';
+      msg: 'Global Debt Ceiling Exceeded';
+    },
+    {
+      code: 6013;
+      name: 'PoolDebtCeilingExceeded';
+      msg: 'Pool Debt Ceiling Exceeded';
+    },
+    {
+      code: 6014;
+      name: 'UserDebtCeilingExceeded';
+      msg: 'User Debt Ceiling Exceeded';
+    },
+    {
+      code: 6015;
+      name: 'WithdrawNotAllowedWithDebt';
+      msg: "Can't withdraw due to debt";
+    },
+    {
+      code: 6016;
+      name: 'InvalidTransferAmount';
+      msg: 'Transfer amount is invalid';
+    },
+    {
+      code: 6017;
+      name: 'InvalidPlatformType';
+      msg: 'Invalid platform type';
+    },
+    {
+      code: 6018;
+      name: 'InvalidPlatformNotSaber';
+      msg: 'Invalid platform, needs to be Saber';
+    },
+    {
+      code: 6019;
+      name: 'RepayingMoreThanBorrowed';
+      msg: 'Attempting to repay more than the amount originally borrowed';
+    },
+    {
+      code: 6020;
+      name: 'RewardMintMismatch';
+      msg: 'Reward mint account mismatch';
     }
   ];
 };
 
-export const IDL: StablePool = {
+export const IDL: RatioLending = {
   version: '0.1.0',
-  name: 'stable_pool',
+  name: 'ratio_lending',
   instructions: [
     {
       name: 'createGlobalState',
@@ -3192,76 +3228,112 @@ export const IDL: StablePool = {
         ],
       },
     },
+  ],
+  errors: [
     {
-      name: 'StablePoolError',
-      type: {
-        kind: 'enum',
-        variants: [
-          {
-            name: 'Unauthorized',
-          },
-          {
-            name: 'AlreadyInUse',
-          },
-          {
-            name: 'InvalidProgramAddress',
-          },
-          {
-            name: 'InvalidState',
-          },
-          {
-            name: 'InvalidOwner',
-          },
-          {
-            name: 'NotAllowed',
-          },
-          {
-            name: 'MathOverflow',
-          },
-          {
-            name: 'InvalidOracleConfig',
-          },
-          {
-            name: 'InvalidAccountInput',
-          },
-          {
-            name: 'InvalidCluster',
-          },
-          {
-            name: 'GlobalTVLExceeded',
-          },
-          {
-            name: 'LTVExceeded',
-          },
-          {
-            name: 'GlobalDebtCeilingExceeded',
-          },
-          {
-            name: 'PoolDebtCeilingExceeded',
-          },
-          {
-            name: 'UserDebtCeilingExceeded',
-          },
-          {
-            name: 'WithdrawNotAllowedWithDebt',
-          },
-          {
-            name: 'InvalidTransferAmount',
-          },
-          {
-            name: 'InvalidPlatformType',
-          },
-          {
-            name: 'InvalidPlatformNotSaber',
-          },
-          {
-            name: 'RepayingMoreThanBorrowed',
-          },
-          {
-            name: 'RewardMintMismatch',
-          },
-        ],
-      },
+      code: 6000,
+      name: 'Unauthorized',
+      msg: 'You are not authorized to perform this action.',
+    },
+    {
+      code: 6001,
+      name: 'AlreadyInUse',
+      msg: 'AlreadyInUse',
+    },
+    {
+      code: 6002,
+      name: 'InvalidProgramAddress',
+      msg: 'InvalidProgramAddress',
+    },
+    {
+      code: 6003,
+      name: 'InvalidState',
+      msg: 'InvalidState',
+    },
+    {
+      code: 6004,
+      name: 'InvalidOwner',
+      msg: 'InvalidOwner',
+    },
+    {
+      code: 6005,
+      name: 'NotAllowed',
+      msg: 'NotAllowed',
+    },
+    {
+      code: 6006,
+      name: 'MathOverflow',
+      msg: 'Math operation overflow',
+    },
+    {
+      code: 6007,
+      name: 'InvalidOracleConfig',
+      msg: 'InvalidOracleConfig',
+    },
+    {
+      code: 6008,
+      name: 'InvalidAccountInput',
+      msg: 'InvalidAccountInput',
+    },
+    {
+      code: 6009,
+      name: 'InvalidCluster',
+      msg: 'This function works on devnet only',
+    },
+    {
+      code: 6010,
+      name: 'GlobalTVLExceeded',
+      msg: 'Global TVL Exceeded',
+    },
+    {
+      code: 6011,
+      name: 'LTVExceeded',
+      msg: 'LTV Exceeded',
+    },
+    {
+      code: 6012,
+      name: 'GlobalDebtCeilingExceeded',
+      msg: 'Global Debt Ceiling Exceeded',
+    },
+    {
+      code: 6013,
+      name: 'PoolDebtCeilingExceeded',
+      msg: 'Pool Debt Ceiling Exceeded',
+    },
+    {
+      code: 6014,
+      name: 'UserDebtCeilingExceeded',
+      msg: 'User Debt Ceiling Exceeded',
+    },
+    {
+      code: 6015,
+      name: 'WithdrawNotAllowedWithDebt',
+      msg: "Can't withdraw due to debt",
+    },
+    {
+      code: 6016,
+      name: 'InvalidTransferAmount',
+      msg: 'Transfer amount is invalid',
+    },
+    {
+      code: 6017,
+      name: 'InvalidPlatformType',
+      msg: 'Invalid platform type',
+    },
+    {
+      code: 6018,
+      name: 'InvalidPlatformNotSaber',
+      msg: 'Invalid platform, needs to be Saber',
+    },
+    {
+      code: 6019,
+      name: 'RepayingMoreThanBorrowed',
+      msg: 'Attempting to repay more than the amount originally borrowed',
+    },
+    {
+      code: 6020,
+      name: 'RewardMintMismatch',
+      msg: 'Reward mint account mismatch',
     },
   ],
 };

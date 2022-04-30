@@ -14,7 +14,7 @@ export const LENDING_PROGRAM_ID = new PublicKey('TokenLending1111111111111111111
 
 export const SWAP_PROGRAM_ID = new PublicKey('SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8');
 
-export const RATIO_LENDING_PROGRAM_ID = new PublicKey('BZnuRsu14RLcXuTQAHZ6yjmG1wdrhCDi7AnhTQE9mPdB');
+export const RATIO_LENDING_PROGRAM_ID = new PublicKey('RFzzpmpBqyocQWGufxLRMQ29oewWNsEriNPa1CxrzEx');
 
 export const FAUCET_PROGRAM_ID = new PublicKey('2Ycn2y9vh3A4u79qXzKb5CWP36BFqLGSCGP7LokzQjyQ');
 

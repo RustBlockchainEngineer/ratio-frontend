@@ -286,10 +286,14 @@ export const calculateVaultDebtLimit = (lpTokenPrice: number, lpLockedAmount: nu
 // };
 
 export const getMint = async (connection: Connection, key: any) => {
-  const id = typeof key === 'string' ? key : key?.toBase58();
-  const provider = new anchor.Provider(connection, undefined as any, anchor.Provider.defaultOptions());
-  const info = serumCmn.getMintInfo(provider, new PublicKey(id));
-  return info;
+  try {
+    const id = typeof key === 'string' ? key : key?.toBase58();
+    const provider = new anchor.Provider(connection, undefined as any, anchor.Provider.defaultOptions());
+    const info = serumCmn.getMintInfo(provider, new PublicKey(id));
+    return info;
+  } catch {
+    return null;
+  }
 };
 
 /**

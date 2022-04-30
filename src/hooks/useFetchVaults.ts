@@ -2,7 +2,6 @@ import { useEffect, useRef, useReducer, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { FetchingStatus } from '../types/fetching-types';
 import { LPair } from '../types/VaultTypes';
-import { getPoolPDA } from '../utils/ratio-pda';
 
 /* 
   This custom hook allows to get the Vaults information from the API. There's also a status value that is returned, and that can take the following values: 
@@ -57,14 +56,35 @@ export const useFetchVaults = () => {
           if (response.ok) {
             data = await response.json();
             // cache.current = data; //zhao commented
-            cache.current = [
-              data.map((item) => {
-                return {
-                  ...item,
-                  vault_address_id: getPoolPDA(item.address_id).toString(),
-                };
-              })[0],
-            ];
+            cache.current = [];
+            // cache.current = [
+            //   data.map((item) => {
+            //     return {
+            //       ...item,
+            //       vault_address_id: getPoolPDA(item.address_id).toString(),
+            //     };
+            //   })[0],
+            // ];
+
+            /*address_id: "7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh"
+              collateralization_ratio: "0.00"
+              created_on: "2022-03-24T21:38:38.000Z"
+              icon: "/images/vaults/Saber_UST-USDC.png"
+              liquidation_ratio: "0.00"
+              lpasset: (2) [{…}, {…}]
+              lprewardtokens: []
+              page_url: "https://app.saber.so/#/pools/usdc_pai"
+              platform_icon: "/images/saber.svg"
+              platform_id: "37102bc5-187e-47d6-9728-234de8553879"
+              platform_name: "SABER"
+              platform_site: "https://app.saber.so/#/pools/currencies/sol"
+              platform_symbol: "TEST-USDC"
+              pool_size: 0
+              risk_rating: "AA"
+              symbol: "UST-USDC"
+              updated_on: "2022-03-24T21:38:38.000Z"
+              usdr_ceiling: null
+              vault_address_id: "DXpeQkrcgPGyjAAkLFbJXWG87kxzAk24J1ZyCT7vsgw8"*/
           } else {
             if (cancelRequest) return;
             dispatch({ type: 'FETCH_ERROR', payload: await response.json() });

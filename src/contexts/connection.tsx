@@ -12,7 +12,7 @@ export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 export const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
-    endpoint: 'https://ratio.genesysgo.net/',
+    endpoint: 'https://solana-api.projectserum.com/',
     chainID: ChainID.MainnetBeta,
   },
   {
@@ -33,7 +33,7 @@ export const ENDPOINTS = [
   },
 ];
 
-const DEFAULT = ENDPOINTS[2];
+const DEFAULT = ENDPOINTS[0];
 const DEFAULT_SLIPPAGE = 0.25;
 
 interface ConnectionConfig {
@@ -57,7 +57,7 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
   // eslint-disable-next-line
   connection: new Connection(DEFAULT.endpoint, 'recent'),
   sendConnection: new Connection(DEFAULT.endpoint, 'recent'),
-  env: ENDPOINTS[2].name,
+  env: DEFAULT.name,
   tokens: [],
   tokenMap: new Map<string, TokenInfo>(),
 });

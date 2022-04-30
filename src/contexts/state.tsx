@@ -75,21 +75,17 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateTokenStates = async () => {
     const mintInfos: any = {};
-    try {
-      for (let i = 0; i < pools.length; i++) {
-        const pool = pools[i];
-        const mint = pool.address_id;
+    for (let i = 0; i < pools.length; i++) {
+      const pool = pools[i];
+      const mint = pool.address_id;
 
-        const mintInfo = await getMint(connection, mint);
-        mintInfos[mint] = mintInfo;
-      }
-      const mintInfo = await getMint(connection, USDR_MINT_KEY);
-      mintInfos[USDR_MINT_KEY] = mintInfo;
-
-      setTokenState(mintInfos);
-    } catch (e) {
-      console.log(e);
+      const mintInfo = await getMint(connection, mint);
+      mintInfos[mint] = mintInfo;
     }
+    const mintInfo = await getMint(connection, USDR_MINT_KEY);
+    mintInfos[USDR_MINT_KEY] = mintInfo;
+
+    setTokenState(mintInfos);
   };
 
   const updateGlobalState = async () => {
