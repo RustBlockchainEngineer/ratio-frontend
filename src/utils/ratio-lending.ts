@@ -13,7 +13,7 @@ import {
 } from '@solana/web3.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
-import { STABLE_POOL_PROGRAM_ID } from './ids';
+import { RATIO_LENDING_PROGRAM_ID } from './ids';
 import { calculateSaberReward } from './saber/saber-utils';
 import {
   getATAKey,
@@ -113,7 +113,7 @@ export function getProgramInstance(connection: Connection, wallet: any) {
   // Read the generated IDL.
 
   // Address of the deployed program.
-  const programId = STABLE_POOL_PROGRAM_ID;
+  const programId = RATIO_LENDING_PROGRAM_ID;
 
   // Generate the program client from IDL.
   const program = new Program(IDL, programId, provider);

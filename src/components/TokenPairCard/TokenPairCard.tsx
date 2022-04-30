@@ -30,7 +30,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const [checked, setChecked] = React.useState(false);
 
   const updateRFStates = useUpdateRFStates();
-
+  const hasUserReachedDebtLimit = false;
   const PoolManagerFactory = useGetPoolManager(data.item);
 
   // eslint-disable-next-line

@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { utils } from '@project-serum/anchor';
-import { STABLE_POOL_PROGRAM_ID } from './ids';
+import { RATIO_LENDING_PROGRAM_ID } from './ids';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 const GLOBAL_STATE_SEED = 'GLOBAL_STATE_SEED';
@@ -15,25 +15,25 @@ export const getPda = (seeds: Buffer[], programId: PublicKey) => {
 };
 
 export const getGlobalStatePDA = () => {
-  const [pda] = getPda([Buffer.from(GLOBAL_STATE_SEED)], STABLE_POOL_PROGRAM_ID);
+  const [pda] = getPda([Buffer.from(GLOBAL_STATE_SEED)], RATIO_LENDING_PROGRAM_ID);
   return pda;
 };
 
 export const getGlobalStatePDAWithBump = () => {
-  return getPda([Buffer.from(GLOBAL_STATE_SEED)], STABLE_POOL_PROGRAM_ID);
+  return getPda([Buffer.from(GLOBAL_STATE_SEED)], RATIO_LENDING_PROGRAM_ID);
 };
 
 export const getUSDrMintKey = () => {
-  const [pda] = getPda([Buffer.from(MINT_USDR_SEED)], STABLE_POOL_PROGRAM_ID);
+  const [pda] = getPda([Buffer.from(MINT_USDR_SEED)], RATIO_LENDING_PROGRAM_ID);
   return pda;
 };
 
 export const getUSDrMintKeyWithBump = () => {
-  return getPda([Buffer.from(MINT_USDR_SEED)], STABLE_POOL_PROGRAM_ID);
+  return getPda([Buffer.from(MINT_USDR_SEED)], RATIO_LENDING_PROGRAM_ID);
 };
 
 export const getOraclePDA = (mint: string | PublicKey) => {
-  const [pda] = getPda([Buffer.from(ORACLE_SEED), new PublicKey(mint).toBuffer()], STABLE_POOL_PROGRAM_ID);
+  const [pda] = getPda([Buffer.from(ORACLE_SEED), new PublicKey(mint).toBuffer()], RATIO_LENDING_PROGRAM_ID);
   return pda;
 };
 
@@ -54,17 +54,17 @@ export const getATAKeyWithBump = (owner: string | PublicKey, mint: string | Publ
 };
 
 export const getPoolPDA = (mint: string | PublicKey) => {
-  const [pda] = getPda([Buffer.from(POOL_SEED), new PublicKey(mint).toBuffer()], STABLE_POOL_PROGRAM_ID);
+  const [pda] = getPda([Buffer.from(POOL_SEED), new PublicKey(mint).toBuffer()], RATIO_LENDING_PROGRAM_ID);
   return pda;
 };
 export const getPoolPDAWithBump = (mint: string | PublicKey) => {
-  return getPda([Buffer.from(POOL_SEED), new PublicKey(mint).toBuffer()], STABLE_POOL_PROGRAM_ID);
+  return getPda([Buffer.from(POOL_SEED), new PublicKey(mint).toBuffer()], RATIO_LENDING_PROGRAM_ID);
 };
 
 export const getVaultPDA = (owner: string | PublicKey, mint: string | PublicKey) => {
   const [pda] = getPda(
     [Buffer.from(VAULT_SEED), new PublicKey(mint).toBuffer(), new PublicKey(owner).toBuffer()],
-    STABLE_POOL_PROGRAM_ID
+    RATIO_LENDING_PROGRAM_ID
   );
   return pda;
 };
@@ -72,11 +72,11 @@ export const getVaultPDA = (owner: string | PublicKey, mint: string | PublicKey)
 export const getVaultPDAWithBump = (owner: string | PublicKey, mint: string | PublicKey) => {
   return getPda(
     [Buffer.from(VAULT_SEED), new PublicKey(mint).toBuffer(), new PublicKey(owner).toBuffer()],
-    STABLE_POOL_PROGRAM_ID
+    RATIO_LENDING_PROGRAM_ID
   );
 };
 
 export const getUserStatePDA = (owner: string | PublicKey) => {
-  const [pda] = getPda([Buffer.from(USER_STATE_SEED), new PublicKey(owner).toBuffer()], STABLE_POOL_PROGRAM_ID);
+  const [pda] = getPda([Buffer.from(USER_STATE_SEED), new PublicKey(owner).toBuffer()], RATIO_LENDING_PROGRAM_ID);
   return pda;
 };
