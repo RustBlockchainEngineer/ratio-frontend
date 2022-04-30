@@ -27,6 +27,7 @@ const getTokenCapBanner = (key: string, percentage: number) => {
 };
 
 const selectBanner = (vaultData: any, userVaultData: any, globalStateData: any) => {
+  if (vaultData === undefined) return <></>;
   const { totalDebt: totalPoolDebt, debtCeiling: poolDebtCeiling } = vaultData;
   const { debt: userDebt, debtLimit: userDebtLimit } = userVaultData;
   console.log(userDebt, userDebtLimit);

@@ -48,6 +48,8 @@ const VaultSetup = () => {
   const [usdrWalletBalance, setUsdrWalletBalance] = useState(0);
   const [depositValue, setDepositValue] = useState(0);
 
+  const overview = useSelector(selectors.getOverview);
+
   const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.platform?.symbol);
 
   useEffect(() => {
@@ -102,6 +104,11 @@ const VaultSetup = () => {
       // setDepositValue(0);
     };
   }, [lpWalletBalance, tokenPrice, collMint, globalState]);
+  useEffect(() => {
+    const isEmpty = Object.keys(overview).length === 0;
+    if (isEmpty) setIsLoading(true);
+    else setIsLoading(false);
+  }, [overview]);
 
   useEffect(() => {
     setIsLoading(true);

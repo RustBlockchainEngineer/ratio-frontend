@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
@@ -41,7 +41,7 @@ const Layer = () => {
   const isTabletOrMobile = useMediaQuery({ maxWidth: 991 });
   const [menuOpen, setMenuOpen] = useState(false);
   const [collapseFlag, setCollapseFlag] = useState(false);
-  const history = useHistory();
+  // const history = useHistory();
   const { connected, publicKey } = useWallet();
   const [enable, setEnable] = useState(false);
   const {
@@ -73,7 +73,7 @@ const Layer = () => {
       }
       setEnable(shouldEnable);
     } else {
-      history.push('/dashboard');
+      // history.push('/dashboard');
     }
     return () => {
       setEnable(false);
