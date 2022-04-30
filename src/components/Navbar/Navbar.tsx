@@ -21,7 +21,7 @@ import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useAllVaultInfo, useUserOverview } from '../../contexts/state';
 import { NavBarProgressBarMyUSDr } from './NavBarProgressBarMyUSDr';
-import { DECIMALS_USDR } from '../../utils/constants';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 type NavbarProps = {
   onClickWalletBtn: () => void;
@@ -69,13 +69,13 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
         title,
         mint,
         pv,
-        debt: new TokenAmount(debt, DECIMALS_USDR).fixed(),
+        debt: new TokenAmount(debt, USDR_MINT_DECIMALS).fixed(),
       };
       avdArr.push(vaultValue);
       tmpTotalValueLocked += pv;
     }
     return {
-      tvl: tmpTotalValueLocked / 10 ** DECIMALS_USDR,
+      tvl: tmpTotalValueLocked / 10 ** USDR_MINT_DECIMALS,
       activeVaults: avdArr,
     };
   };
@@ -85,7 +85,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       dispatch({ type: actionTypes.SET_OVERVIEW, payload: userOverview });
 
       const { totalDebt, vaultCount } = userOverview;
-      setTotalMinted(Number(new TokenAmount(totalDebt, DECIMALS_USDR).fixed()));
+      setTotalMinted(Number(new TokenAmount(totalDebt ?? 0, USDR_MINT_DECIMALS).fixed()));
       setActiveVaultCount(vaultCount);
     }
 

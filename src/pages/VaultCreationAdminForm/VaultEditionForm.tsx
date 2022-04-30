@@ -13,9 +13,8 @@ import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { FetchingStatus } from '../../types/fetching-types';
 import { LPAssetCreationData, LPEditionData, RISK_RATING } from '../../types/VaultTypes';
 import { createPool } from '../../utils/admin-contract-calls';
-import { getLendingPoolByMint } from '../../utils/ratio-lending';
+import { getLendingPoolByMint, TYPE_ID_SABER } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
-import { TYPE_ID_SABER } from '../../utils/ratio-lending';
 import { getPoolPDA } from '../../utils/ratio-pda';
 import {
   ORACLE_USDC_MINT,

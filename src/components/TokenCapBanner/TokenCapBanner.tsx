@@ -26,42 +26,34 @@ const getTokenCapBanner = (key: string, percentage: number) => {
 };
 
 const selectBanner = (poolData: any, userVaultData: any, globalStateData: any) => {
-  console.log(poolData);
-  const { totalDebt: totalPoolDebt, debtCeiling: poolDebtCeiling } = poolData;
-  const { debt: userDebt, debtLimit: userDebtLimit } = userVaultData;
+  if (poolData && userVaultData && globalStateData) {
+    const poolUSDrDebtPercentage = new BigNumber(poolData.totalDebt.toString())
+      .multipliedBy(100)
+      .dividedBy(poolData.debtCeiling.toString())
+      .toString();
+    const userUSDrDebtPercentage = (userVaultData.debt * 100) / userVaultData.debtLimit;
+    const globalUSDrDebtPercentage = new BigNumber(globalStateData.totalDebt.toString())
+      .multipliedBy(100)
+      .dividedBy(globalStateData.debtCeilingGlobal.toString())
+      .toString();
+    const totalTVLPercentage = new BigNumber(globalStateData.tvlUsd.toString())
+      .multipliedBy(100)
+      .dividedBy(globalStateData.tvlCollatCeilingUsd.toString())
+      .toString();
 
-  const {
-    totalDebt: globalDebt,
-    debtCeilingGlobal: globalDebtLimit,
-    tvlUsd: globalTvl,
-    tvlCollatCeilingUsd: globalTvlLimit,
-  } = globalStateData;
-
-  const poolUSDrDebtPercentage = new BigNumber(totalPoolDebt.toString())
-    .multipliedBy(100)
-    .dividedBy(poolDebtCeiling.toString())
-    .toString();
-  const userUSDrDebtPercentage = (userDebt * 100) / userDebtLimit;
-  const globalUSDrDebtPercentage = new BigNumber(globalDebt.toString())
-    .multipliedBy(100)
-    .dividedBy(globalDebtLimit.toString())
-    .toString();
-  const totalTVLPercentage = new BigNumber(globalTvl.toString())
-    .multipliedBy(100)
-    .dividedBy(globalTvlLimit.toString())
-    .toString();
-
-  if (parseFloat(totalTVLPercentage) >= 80) {
-    return getTokenCapBanner('totalTVL', parseFloat(totalTVLPercentage));
-  } else if (parseFloat(globalUSDrDebtPercentage) >= 80) {
-    return getTokenCapBanner('globalUSDrDebt', parseFloat(globalUSDrDebtPercentage));
-  } else if (userUSDrDebtPercentage >= 80) {
-    return getTokenCapBanner('userUSDrDebt', userUSDrDebtPercentage);
-  } else if (parseFloat(poolUSDrDebtPercentage) >= 80) {
-    return getTokenCapBanner('vaultUSDrDebt', parseFloat(poolUSDrDebtPercentage));
-  } else {
-    return <></>;
+    if (parseFloat(totalTVLPercentage) >= 80) {
+      return getTokenCapBanner('totalTVL', parseFloat(totalTVLPercentage));
+    } else if (parseFloat(globalUSDrDebtPercentage) >= 80) {
+      return getTokenCapBanner('globalUSDrDebt', parseFloat(globalUSDrDebtPercentage));
+    } else if (userUSDrDebtPercentage >= 80) {
+      return getTokenCapBanner('userUSDrDebt', userUSDrDebtPercentage);
+    } else if (parseFloat(poolUSDrDebtPercentage) >= 80) {
+      return getTokenCapBanner('vaultUSDrDebt', parseFloat(poolUSDrDebtPercentage));
+    } else {
+      return <></>;
+    }
   }
+  return <></>;
 };
 
 const TokenCapBanner = ({ mint }: any) => {

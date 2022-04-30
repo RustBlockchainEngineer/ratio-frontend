@@ -7,13 +7,12 @@ import { ThemeContext } from '../../../contexts/ThemeContext';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
-import { repayUSDr } from '../../../utils/ratio-lending';
+import { repayUSDr, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 import { toast } from 'react-toastify';
 import AmountSlider from '../AmountSlider';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
-import { DECIMALS_USDR } from '../../../utils/constants';
 
 const PaybackModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -57,7 +56,7 @@ const PaybackModal = ({ data }: any) => {
 
     setIsPayingBack(true);
 
-    repayUSDr(connection, wallet, paybackAmount * Math.pow(10, DECIMALS_USDR), new PublicKey(data.mint))
+    repayUSDr(connection, wallet, paybackAmount * Math.pow(10, USDR_MINT_DECIMALS), new PublicKey(data.mint))
       .then((txSignature: string) => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         toast.success('Successfully Paid back!');

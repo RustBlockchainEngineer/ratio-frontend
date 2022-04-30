@@ -110,8 +110,8 @@ const WithdrawModal = ({ data }: any) => {
           setShow(false);
         }}
         onEntered={() => {
-          setAmountValue(0);
-          setWithdrawAmount('');
+          setAmountValue(100);
+          setWithdrawAmount(data.value);
           setWithdrawStatus(false);
           setButtonDisabled(false);
         }}

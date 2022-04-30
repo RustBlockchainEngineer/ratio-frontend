@@ -5,7 +5,7 @@ import { useWallet } from '../../contexts/wallet';
 import { NavBarProgressBar, ProgressBarLabelType } from './NavBarProgressBar';
 import { useRFStateInfo, useUserOverview } from '../../contexts/state';
 import { TokenAmount } from '../../utils/safe-math';
-import { DECIMALS_USDR } from '../../utils/constants';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 interface NavBarProgressBarMyUSDrProps {
   className: string;
@@ -28,14 +28,21 @@ export const NavBarProgressBarMyUSDr = (data: NavBarProgressBarMyUSDrProps) => {
   const { wallet } = useWallet();
 
   useEffect(() => {
-    if (!wallet || !wallet.publicKey || !userOverview || !globalState) {
+    if (
+      !wallet ||
+      !wallet.publicKey ||
+      !userOverview ||
+      !userOverview.totalDebt ||
+      !globalState ||
+      !globalState.debtCeilingUser
+    ) {
       return;
     }
 
-    const currentValue = Number(new TokenAmount(userOverview.totalDebt, DECIMALS_USDR).fixed());
+    const currentValue = Number(new TokenAmount(userOverview.totalDebt, USDR_MINT_DECIMALS).fixed());
 
     // We get the user debt limit from the contract
-    const maxValue = Number(new TokenAmount(globalState.debtCeilingUser.toString(), DECIMALS_USDR).fixed());
+    const maxValue = Number(new TokenAmount(globalState.debtCeilingUser.toString(), USDR_MINT_DECIMALS).fixed());
 
     // Current Value
     setValue(currentValue);

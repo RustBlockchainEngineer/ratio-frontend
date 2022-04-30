@@ -6,7 +6,6 @@ import { useHistory } from 'react-router-dom';
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { TokenPairCardProps } from '../../models/UInterface';
-import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD, isWalletApproveError } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
@@ -23,13 +22,12 @@ import {
   usePoolInfo,
   useTokenMintInfo,
 } from '../../contexts/state';
-import { DECIMALS_USDR } from '../../utils/constants';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
   const history = useHistory();
 
-  const tokenPrice = usePrice(data.mint);
   const { wallet, connected } = useWallet();
   const connection = useConnection();
 
@@ -42,7 +40,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const poolState = usePoolInfo(data.mint);
   const updateRFStates = useUpdateRFStates();
 
-  const [positionValue, setPositionValue] = useState(0);
+  const positionValue = +new TokenAmount((vaultState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
   // eslint-disable-next-line
   const [tvl, setTVL] = useState(0);
   // eslint-disable-next-line
@@ -72,7 +70,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   useEffect(() => {
     if (connection && collMint && usdrMint && data.mint) {
       const tvlAmount = new TokenAmount((poolState as any)?.totalColl ?? 0, collMint?.decimals);
-      const tvlUSDAmount = new TokenAmount((poolState as any)?.tvlUsd ?? 0, DECIMALS_USDR);
+      const tvlUSDAmount = new TokenAmount((poolState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS);
       const debtAmount = new TokenAmount((poolState as any)?.totalDebt ?? 0, usdrMint?.decimals);
       const remainAmount = new TokenAmount(
         ((poolState as any)?.debtCeiling ?? 0) - ((poolState as any)?.totalDebt ?? 0),
@@ -89,16 +87,6 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
       setTotalDebt(0);
     };
   }, [connection, collMint, usdrMint, poolState]);
-
-  useEffect(() => {
-    if (vaultState && tokenPrice && collMint) {
-      const lpLockedAmount = new TokenAmount((vaultState as any).lockedCollBalance, collMint?.decimals);
-      setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
-    }
-    return () => {
-      setPositionValue(0);
-    };
-  }, [tokenPrice, vaultState, collMint]);
 
   const showDashboard = () => {
     if (!connected) {

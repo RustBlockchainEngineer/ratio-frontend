@@ -4,10 +4,10 @@ import * as serumCmn from '@project-serum/common';
 
 import {
   defaultPrograms,
-  depositCollateral,
-  distributeReward,
+  depositCollateralTx,
+  distributeRewardTx,
   getProgramInstance,
-  withdrawCollateral,
+  withdrawCollateralTx,
 } from '../ratio-lending';
 import { PublicKey, SystemProgram, Transaction, Connection, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
 import {
@@ -39,15 +39,15 @@ export async function deposit(
 
   const transaction = new Transaction();
 
-  const tx1: any = await depositCollateral(connection, wallet, amount, mintCollKey, new PublicKey(userTokenATA), true);
+  const tx1: any = await depositCollateralTx(connection, wallet, amount, mintCollKey, new PublicKey(userTokenATA));
   transaction.add(tx1);
 
-  const tx2 = await createSaberQuarryMinerIfneeded(connection, wallet, mintCollKey);
+  const tx2 = await createSaberQuarryMinerIfneededTx(connection, wallet, mintCollKey);
   if (tx2) {
     transaction.add(tx2);
   }
 
-  const tx3 = await stakeCollateralToSaber(amount, connection, wallet, mintCollKey);
+  const tx3 = await stakeCollateralToSaberTx(amount, connection, wallet, mintCollKey);
   if (tx3) {
     transaction.add(tx3);
   }
@@ -66,21 +66,24 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
 
   const transaction = new Transaction();
 
-  const tx1 = await unstakeColalteralFromSaber(amount, connection, wallet, mintCollKey);
+  const tx1 = await unstakeColalteralFromSaberTx(connection, wallet, amount, mintCollKey);
   if (tx1) {
     transaction.add(tx1);
   }
 
-  const tx2 = await withdrawCollateral(connection, wallet, amount, mintCollKey, true);
+  const tx2 = await withdrawCollateralTx(connection, wallet, amount, mintCollKey);
   if (tx2) {
     transaction.add(tx2);
   }
 
-  const tx3 = await harvestRewardsFromSaber(connection, wallet, mintCollKey);
+  const tx3 = await harvestRewardsFromSaberTx(connection, wallet, mintCollKey);
   if (tx3) {
     transaction.add(tx3);
   }
-
+  const tx4 = await distributeRewardTx(connection, wallet, mintCollKey);
+  if (tx4) {
+    transaction.add(tx4);
+  }
   const txHash = await sendTransaction(connection, wallet, transaction);
   await connection.confirmTransaction(txHash);
   if (txHash?.value?.err) {
@@ -93,14 +96,16 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
 }
 
 export async function harvest(connection: Connection, wallet: any, mintCollKey: PublicKey) {
+  console.log('Harvest from Saber');
+
   const transaction = new Transaction();
 
-  const tx1 = await harvestRewardsFromSaber(connection, wallet, mintCollKey);
+  const tx1 = await harvestRewardsFromSaberTx(connection, wallet, mintCollKey);
   if (tx1) {
     transaction.add(tx1);
   }
 
-  const tx2 = await distributeReward(connection, wallet, mintCollKey, true);
+  const tx2 = await distributeRewardTx(connection, wallet, mintCollKey);
   if (tx2) {
     transaction.add(tx2);
   }
@@ -111,12 +116,12 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
   }
-  console.log('Saber withdraw tx', txHash);
+  console.log('Saber harvest tx', txHash);
 
   return txHash;
 }
 
-export const createSaberQuarryMinerIfneeded = async (
+export const createSaberQuarryMinerIfneededTx = async (
   connection: Connection,
   wallet: typeof anchor.Wallet,
   mintCollKey: PublicKey
@@ -171,7 +176,7 @@ export const createSaberQuarryMinerIfneeded = async (
   return transaction;
 };
 
-const stakeCollateralToSaber = async (
+const stakeCollateralToSaberTx = async (
   amountToStake: number,
   userConnection: Connection,
   userWallet: typeof anchor.Wallet,
@@ -179,7 +184,6 @@ const stakeCollateralToSaber = async (
 ) => {
   const program = getProgramInstance(userConnection, userWallet);
 
-  const globalStateKey = getGlobalStatePDA();
   const poolKey = getPoolPDA(mintCollKey);
   const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
 
@@ -195,7 +199,6 @@ const stakeCollateralToSaber = async (
     program.instruction.stakeCollateralToSaber(new anchor.BN(amountToStake), {
       accounts: {
         authority: userWallet.publicKey,
-        globalState: globalStateKey,
         pool: poolKey,
         vault: vaultKey,
         ataCollatVault: ataCollatVault,
@@ -211,33 +214,33 @@ const stakeCollateralToSaber = async (
   return txn;
 };
 
-const unstakeColalteralFromSaber = async (
+const unstakeColalteralFromSaberTx = async (
+  connection: Connection,
+  wallet: typeof anchor.Wallet,
   unstakeAmount: number,
-  userConnection: Connection,
-  userWallet: typeof anchor.Wallet,
   mintCollKey: PublicKey
 ) => {
-  const program = getProgramInstance(userConnection, userWallet);
+  const program = getProgramInstance(connection, wallet);
 
-  const globalStateKey = getGlobalStatePDA();
   const poolKey = getPoolPDA(mintCollKey);
-  const userTokenATA = getATAKey(userWallet.publicKey, mintCollKey);
-  const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
+  const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
 
-  const valutATA = getATAKey(vaultKey, mintCollKey);
+  const ataCollatVault = getATAKey(vaultKey, mintCollKey);
   const [quarry] = await findQuarryAddress(rewarderKey, mintCollKey, QUARRY_ADDRESSES.Mine);
 
   const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+  const ataCollatMiner = getATAKey(minerKey, mintCollKey);
 
-  const txn = new Transaction().add(
+  const transaction = new Transaction();
+
+  transaction.add(
     program.instruction.unstakeCollateralFromSaber(new anchor.BN(unstakeAmount), {
       accounts: {
-        authority: userWallet.publicKey,
-        globalState: globalStateKey,
+        authority: wallet.publicKey,
         pool: poolKey,
         vault: vaultKey,
-        ataCollatVault: valutATA,
-        ataCollatMiner: userTokenATA,
+        ataCollatVault: ataCollatVault,
+        ataCollatMiner: ataCollatMiner,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         quarry,
@@ -247,10 +250,10 @@ const unstakeColalteralFromSaber = async (
       },
     })
   );
-  return txn;
+  return transaction;
 };
 
-export const harvestRewardsFromSaber = async (
+export const harvestRewardsFromSaberTx = async (
   connection: Connection,
   wallet: typeof anchor.Wallet,
   mintCollKey: PublicKey
@@ -343,32 +346,3 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     return 0;
   }
 }
-
-/* eslint-enable */
-export const handleTxn = async (
-  txn: anchor.web3.Transaction,
-  userConnection: Connection,
-  userWallet: typeof anchor.Wallet
-) => {
-  // prep txn
-  txn.feePayer = userWallet.publicKey;
-  txn.recentBlockhash = (await userConnection.getLatestBlockhash()).blockhash;
-
-  // send txn
-  try {
-    const signedTxn: Transaction = await userWallet.signTransaction(txn);
-    const rawTxn: Buffer = signedTxn.serialize();
-    const options = {
-      skipPreflight: true,
-      commitment: 'singleGossip',
-    };
-
-    const receipt: string = await userConnection.sendRawTransaction(rawTxn, options);
-    const confirmation: anchor.web3.RpcResponseAndContext<anchor.web3.SignatureResult> =
-      await userConnection.confirmTransaction(receipt);
-    if (confirmation.value.err) throw new Error(JSON.stringify(confirmation.value.err));
-    else return receipt;
-  } catch (error) {
-    console.log(error);
-  }
-};

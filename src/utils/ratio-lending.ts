@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { IDL } from './stable-pool';
+import { IDL } from './ratio-lending-idl';
 
 import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as anchor from '@project-serum/anchor';
@@ -15,7 +15,6 @@ import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { calculateSaberReward } from './saber/saber-utils';
-import { PRICE_DECIMAL } from '../constants';
 import {
   getATAKey,
   getGlobalStatePDA,
@@ -26,8 +25,12 @@ import {
   getVaultPDA,
   getVaultPDAWithBump,
 } from './ratio-pda';
-import { DECIMALS_USDT } from './constants';
 import { Program } from '@project-serum/anchor';
+export const COLL_RATIOS_DECIMALS = 8;
+export const COLL_RATIOS_ARR_SIZE = 10;
+
+export const USDR_MINT_DECIMALS = 6;
+export const USDR_MINT_KEY = getUSDrMintKey().toString();
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
@@ -35,6 +38,8 @@ export const WIHTDRAW_ACTION = 'withdraw';
 export const BORROW_ACTION = 'borrow';
 export const PAYBACK_ACTION = 'payback';
 export const HISTORY_TO_SHOW = 5;
+
+// default platform values
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export const TYPE_ID_RAYDIUM: PlatformType = 0;
 export const TYPE_ID_ORCA: PlatformType = 1;
@@ -42,10 +47,6 @@ export const TYPE_ID_SABER: PlatformType = 2;
 export const TYPE_ID_MERCURIAL: PlatformType = 3;
 export const TYPE_ID_UNKNOWN: PlatformType = 4;
 
-export const WSOL_MINT_KEY = new PublicKey('So11111111111111111111111111111111111111112');
-
-export const USD_DECIMALS = 6;
-export const USDR_MINT_KEY = getUSDrMintKey().toString();
 export const defaultPrograms = {
   systemProgram: SystemProgram.programId,
   tokenProgram: TOKEN_PROGRAM_ID,
@@ -195,78 +196,6 @@ export async function getVaultState(connection: Connection, wallet: any, mintCol
   }
 }
 
-export async function borrowUSDr(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
-  const program = getProgramInstance(connection, wallet);
-
-  const globalStateKey = getGlobalStatePDA();
-  const usdrMint = getUSDrMintKey();
-  const poolKey = getPoolPDA(mintCollat);
-  const poolData = await program.account.pool.fetch(poolKey);
-
-  const oracleMintA = poolData.swapMintA;
-  const oracleMintB = poolData.swapMintB;
-  const oracleAKey = getOraclePDA(oracleMintA);
-  const oracleBKey = getOraclePDA(oracleMintB);
-
-  const swapTokenA = poolData.swapTokenA;
-  const swapTokenB = poolData.swapTokenB;
-
-  const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
-
-  const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
-  const userStateKey = getUserStatePDA(wallet.publicKey);
-
-  const transaction = new Transaction();
-
-  if (!(await connection.getAccountInfo(ataUSDr))) {
-    transaction.add(
-      Token.createAssociatedTokenAccountInstruction(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        usdrMint,
-        ataUSDr,
-        wallet.publicKey,
-        wallet.publicKey
-      )
-    );
-  }
-
-  const borrowInstruction = await program.instruction.borrowUsdr(new anchor.BN(amount), {
-    accounts: {
-      authority: wallet.publicKey,
-      globalState: globalStateKey,
-
-      pool: poolKey,
-      vault: vaultKey,
-      userState: userStateKey,
-      oracleA: oracleAKey,
-      oracleB: oracleBKey,
-      swapTokenA,
-      swapTokenB,
-
-      mintCollat,
-
-      mintUsdr: usdrMint,
-      ataUsdr: ataUSDr,
-      ...defaultPrograms,
-    },
-  });
-
-  transaction.add(borrowInstruction);
-
-  const txHash = await sendTransaction(connection, wallet, transaction);
-  await connection.confirmTransaction(txHash);
-  if (txHash?.value?.err) {
-    console.error('ERROR ON TX ', txHash.value.err);
-    throw txHash.value.err;
-  }
-  console.log(`User borrowed ${amount / Math.pow(10, DECIMALS_USDT)} USD , transaction id = ${txHash}`);
-
-  return txHash.toString();
-}
-
 export async function getLendingPoolByMint(connection: Connection, mint: string | PublicKey): Promise<any | undefined> {
   const program = getProgramInstance(connection, null);
   const tokenPoolKey = getPoolPDA(mint);
@@ -278,14 +207,12 @@ export async function getLendingPoolByMint(connection: Connection, mint: string 
   }
 }
 
-export async function depositCollateral(
+export async function depositCollateralTx(
   connection: Connection,
   wallet: any,
   amount: number,
   mintCollat: PublicKey,
-  userTokenATA: PublicKey,
-
-  needTx = false
+  userTokenATA: PublicKey
 ) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
@@ -387,63 +314,10 @@ export async function depositCollateral(
 
   transaction.add(ix);
 
-  if (!needTx) {
-    const tx = await sendTransaction(connection, wallet, transaction);
-    console.log('tx id->', tx);
-
-    // return 'User deposited ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
-  } else {
-    return transaction;
-  }
+  return transaction;
 }
 
-export async function repayUSDr(connection: Connection, wallet: any, amount: number, mintColl: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
-  const program = getProgramInstance(connection, wallet);
-
-  const globalStateKey = getGlobalStatePDA();
-  const poolKey = getPoolPDA(mintColl);
-  const usdrMint = getUSDrMintKey();
-
-  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
-  const userStateKey = getUserStatePDA(wallet.publicKey);
-
-  const ataUserUSDr = getATAKey(wallet.publicKey, usdrMint);
-
-  const transaction = new Transaction();
-  const ix = await program.instruction.repayUsdr(new anchor.BN(amount), {
-    accounts: {
-      authority: wallet.publicKey,
-      globalState: globalStateKey,
-      pool: poolKey,
-      vault: vaultKey, // TODO: vault -> vault
-      userState: userStateKey,
-      mintUsdr: usdrMint,
-      ataUsdr: ataUserUSDr,
-      ...defaultPrograms,
-    },
-  });
-  transaction.add(ix);
-
-  const txHash = await sendTransaction(connection, wallet, transaction, []);
-  await connection.confirmTransaction(txHash);
-  if (txHash?.value?.err) {
-    console.error('ERROR ON TX ', txHash.value.err);
-    throw txHash.value.err;
-  }
-  console.log(`User repaid ${amount / Math.pow(10, DECIMALS_USDT)} USD , transaction id = ${txHash}`);
-
-  return txHash;
-}
-
-export async function withdrawCollateral(
-  connection: Connection,
-  wallet: any,
-  amount: number,
-  mintCollat: PublicKey,
-  needTx = false
-) {
+export async function withdrawCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -503,15 +377,10 @@ export async function withdrawCollateral(
   });
 
   transaction.add(depositInstruction);
-  if (!needTx) {
-    const tx = await sendTransaction(connection, wallet, transaction);
-    console.log('tx id->', tx);
-    // return 'User withdrawed ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
-  }
   return transaction;
 }
 
-export async function distributeReward(connection: Connection, wallet: any, mintColl: PublicKey, needTx = false) {
+export async function distributeRewardTx(connection: Connection, wallet: any, mintColl: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -569,44 +438,119 @@ export async function distributeReward(connection: Connection, wallet: any, mint
   });
 
   transaction.add(ix);
-  if (!needTx) {
-    const tx = await sendTransaction(connection, wallet, transaction);
-    console.log('tx id->', tx);
-    // return 'User withdrawed ' + amount / Math.pow(10, 6) + ' SOL, transaction id = ' + tx;
-  }
   return transaction;
 }
 
-export function pushUserHistory(action: string, userKey: string, mintKey: string, txHash: string, amount: number) {
-  if (!window.localStorage[action]) {
-    window.localStorage[action] = JSON.stringify({});
-  }
-  const actions = JSON.parse(window.localStorage[action]);
+export async function borrowUSDr(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
-  if (!actions[userKey]) {
-    actions[userKey] = {};
+  const program = getProgramInstance(connection, wallet);
+
+  const globalStateKey = getGlobalStatePDA();
+  const usdrMint = getUSDrMintKey();
+  const poolKey = getPoolPDA(mintCollat);
+  const poolData = await program.account.pool.fetch(poolKey);
+
+  const oracleMintA = poolData.swapMintA;
+  const oracleMintB = poolData.swapMintB;
+  const oracleAKey = getOraclePDA(oracleMintA);
+  const oracleBKey = getOraclePDA(oracleMintB);
+
+  const swapTokenA = poolData.swapTokenA;
+  const swapTokenB = poolData.swapTokenB;
+
+  const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
+
+  const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
+  const userStateKey = getUserStatePDA(wallet.publicKey);
+
+  const transaction = new Transaction();
+
+  if (!(await connection.getAccountInfo(ataUSDr))) {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        usdrMint,
+        ataUSDr,
+        wallet.publicKey,
+        wallet.publicKey
+      )
+    );
   }
 
-  if (!actions[userKey][mintKey]) {
-    actions[userKey][mintKey] = [];
-  }
+  const borrowInstruction = await program.instruction.borrowUsdr(new anchor.BN(amount), {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
 
-  actions[userKey][mintKey].splice(0, 0, {
-    time: new Date().getTime(),
-    amount,
-    txHash,
+      pool: poolKey,
+      vault: vaultKey,
+      userState: userStateKey,
+      oracleA: oracleAKey,
+      oracleB: oracleBKey,
+      swapTokenA,
+      swapTokenB,
+
+      mintCollat,
+
+      mintUsdr: usdrMint,
+      ataUsdr: ataUSDr,
+      ...defaultPrograms,
+    },
   });
 
-  window.localStorage[action] = JSON.stringify(actions);
+  transaction.add(borrowInstruction);
+
+  const txHash = await sendTransaction(connection, wallet, transaction);
+  await connection.confirmTransaction(txHash);
+  if (txHash?.value?.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
+  console.log(`User borrowed ${amount / Math.pow(10, USDR_MINT_DECIMALS)} USD , transaction id = ${txHash}`);
+
+  return txHash.toString();
 }
 
-export function getUserHistory(action: string, userKey: string, mintKey: string) {
-  const actions = JSON.parse(window.localStorage[action]);
+export async function repayUSDr(connection: Connection, wallet: any, amount: number, mintColl: PublicKey) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
-  if (actions && actions[userKey] && actions[userKey][mintKey]) {
-    return actions[userKey][mintKey].slice(0, HISTORY_TO_SHOW);
+  const program = getProgramInstance(connection, wallet);
+
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintColl);
+  const usdrMint = getUSDrMintKey();
+
+  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
+  const userStateKey = getUserStatePDA(wallet.publicKey);
+
+  const ataUserUSDr = getATAKey(wallet.publicKey, usdrMint);
+
+  const transaction = new Transaction();
+  const ix = await program.instruction.repayUsdr(new anchor.BN(amount), {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      pool: poolKey,
+      vault: vaultKey, // TODO: vault -> vault
+      userState: userStateKey,
+      mintUsdr: usdrMint,
+      ataUsdr: ataUserUSDr,
+      ...defaultPrograms,
+    },
+  });
+  transaction.add(ix);
+
+  const txHash = await sendTransaction(connection, wallet, transaction, []);
+  await connection.confirmTransaction(txHash);
+  if (txHash?.value?.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
   }
-  return [];
+  console.log(`User repaid ${amount / Math.pow(10, USDR_MINT_DECIMALS)} USD , transaction id = ${txHash}`);
+
+  return txHash;
 }
 
 export async function calculateRewardByPlatform(
@@ -620,5 +564,5 @@ export async function calculateRewardByPlatform(
     reward = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
   }
 
-  return parseFloat(reward.toFixed(PRICE_DECIMAL));
+  return parseFloat(reward.toFixed(USDR_MINT_DECIMALS));
 }

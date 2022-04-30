@@ -1,24 +1,11 @@
 import React from 'react';
-import { usePrice } from '../../contexts/price';
 import { TokenAmount } from '../../utils/safe-math';
-import { useUserVaultInfo, useTokenMintInfo } from '../../contexts/state';
+import { useUserVaultInfo } from '../../contexts/state';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const ExpandContent = (data: any) => {
-  const tokenPrice = usePrice(data.mint);
-  const [positionValue, setPositionValue] = React.useState(0);
-
-  const collMint = useTokenMintInfo(data.mint);
-  const userState = useUserVaultInfo(data.mint);
-
-  React.useEffect(() => {
-    if (userState && tokenPrice && collMint) {
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
-      setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
-    }
-    return () => {
-      setPositionValue(0);
-    };
-  }, [tokenPrice, userState, collMint]);
+  const vaultState = useUserVaultInfo(data.mint);
+  const positionValue = +new TokenAmount((vaultState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
 
   return (
     <div className="tokenpaircard__detailBox__content">

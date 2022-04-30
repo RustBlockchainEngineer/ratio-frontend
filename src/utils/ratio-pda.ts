@@ -2,7 +2,13 @@ import { PublicKey } from '@solana/web3.js';
 import { utils } from '@project-serum/anchor';
 import { STABLE_POOL_PROGRAM_ID } from './ids';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { GLOBAL_STATE_SEED, MINT_USDR_SEED, ORACLE_SEED, POOL_SEED, USER_STATE_SEED, VAULT_SEED } from './constants';
+
+const GLOBAL_STATE_SEED = 'GLOBAL_STATE_SEED';
+const POOL_SEED = 'POOL_SEED';
+const USER_STATE_SEED = 'USER_STATE_SEED';
+const VAULT_SEED = 'VAULT_SEED';
+const MINT_USDR_SEED = 'MINT_USDR_SEED';
+const ORACLE_SEED = 'ORACLE_SEED';
 
 export const getPda = (seeds: Buffer[], programId: PublicKey) => {
   return utils.publicKey.findProgramAddressSync(seeds, programId);

@@ -5,13 +5,11 @@ import { toast } from 'react-toastify';
 
 import { formatUSD, getRiskLevelNumber } from '../../utils/utils';
 import { TokenAmount } from '../../utils/safe-math';
-import { USDR_MINT_KEY } from '../../utils/ratio-lending';
 
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { useAccountByMint } from '../../contexts/accounts';
-import { usePrice } from '../../contexts/price';
-import { useRFStateInfo, useUSDrMintInfo, useTokenMintInfo } from '../../contexts/state';
+import { useRFStateInfo, useTokenMintInfo, usePoolInfo } from '../../contexts/state';
 
 import linkIcon from '../../assets/images/link.svg';
 import { selectors } from '../../features/dashboard';
@@ -22,6 +20,7 @@ import RiskLevel from '../../components/Dashboard/RiskLevel';
 import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
 import { FetchingStatus } from '../../types/fetching-types';
 import { PriceCardInterface } from '../../components/Dashboard/PriceCard/PriceCard';
+import { USDR_MINT_KEY, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const priceCardData: PriceCardInterface = {
   mainUnit: '',
@@ -33,10 +32,9 @@ const VaultSetup = () => {
 
   const connection = useConnection();
   const { wallet } = useWallet();
-  const tokenPrice = usePrice(vault_mint as string);
+  const poolInfo = usePoolInfo(vault_mint as string);
   const collMint = useTokenMintInfo(vault_mint as string);
   const collAccount = useAccountByMint(vault_mint as string);
-  const usdrMint = useUSDrMintInfo();
   const globalState = useRFStateInfo();
   const usdrAccount = useAccountByMint(USDR_MINT_KEY);
 
@@ -77,17 +75,17 @@ const VaultSetup = () => {
   }, [wallet, collAccount, connection, collMint]);
 
   useEffect(() => {
-    if (wallet && wallet.publicKey && usdrMint && usdrAccount) {
-      const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', usdrMint?.decimals);
+    if (wallet && wallet.publicKey && usdrAccount) {
+      const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', USDR_MINT_DECIMALS);
       setUsdrWalletBalance(Number(tokenAmount.fixed()));
     }
     return () => {
       setUsdrWalletBalance(0);
     };
-  }, [wallet, usdrAccount, connection, usdrMint]);
+  }, [wallet, usdrAccount, connection]);
 
   useEffect(() => {
-    if (tokenPrice && collMint && globalState) {
+    if (poolInfo && collMint && globalState) {
       //ternary operators are used here while the globalState paramters do not exist
 
       const tvlLimit = globalState?.tvlCollatCeilingUsd ? globalState?.tvlCollatCeilingUsd.toNumber() : 0;
@@ -96,12 +94,12 @@ const VaultSetup = () => {
       //set the max amount of depositable LP to be equal to either the amount of lp the user holds, or the global limit
       const tmpMaxDeposit = Math.min(availableTVL, lpWalletBalance).toFixed(collMint?.decimals);
       setDepositValue(Number(tmpMaxDeposit));
-      setLpWalletBalanceUSD(tokenPrice * lpWalletBalance);
+      setLpWalletBalanceUSD((poolInfo.oraclePrice * lpWalletBalance) / 10 ** USDR_MINT_DECIMALS);
     }
     return () => {
       // setDepositValue(0);
     };
-  }, [lpWalletBalance, tokenPrice, collMint, globalState]);
+  }, [lpWalletBalance, poolInfo, collMint, globalState]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -185,7 +183,7 @@ const VaultSetup = () => {
                   usdrMint: USDR_MINT_KEY,
                   riskLevel: getRiskLevelNumber(vault_mint),
                   risk: vaultData?.risk,
-                  tokenPrice: tokenPrice,
+                  tokenPrice: poolInfo.oraclePrice,
                 }}
               />
             )}

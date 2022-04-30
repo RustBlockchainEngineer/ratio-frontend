@@ -11,24 +11,17 @@ import {
   POOL_DEBT_CEILING,
   PlatformType,
   ORACLE_REPORTER,
+  COLL_RATIOS_DECIMALS,
+  COLL_RATIOS_ARR_SIZE,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
 // import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
-import {
-  COLL_RATIOS_DECIMALS,
-  GLOBAL_DEBT_CEILING_DECIMALS,
-  TVL_DECIMAL,
-  USER_DEBT_CEILING_DECIMALS,
-} from '../constants';
-import { getGlobalStatePDA, getOraclePDA, getPoolPDA, getPoolPDAWithBump, getUSDrMintKey } from './ratio-pda';
-import { DECIMALS_USDR } from './constants';
-// import RiskLevel from '../components/Dashboard/RiskLevel';
-// import { PLATFORM_TYPE_SABER } from './constants';
 
-export const ADMIN_SETTINGS_DECIMALS = 6;
+import { getGlobalStatePDA, getOraclePDA, getPoolPDA, getPoolPDAWithBump, getUSDrMintKey } from './ratio-pda';
+import { USDR_MINT_DECIMALS } from './ratio-lending';
 
 export async function setEmergencyState(
   connection: Connection,
@@ -117,7 +110,7 @@ export async function createPriceOracle(
 
   const tx = program.transaction.createOracle(
     // price of token
-    new BN(initPrice * 10 ** DECIMALS_USDR),
+    new BN(initPrice * 10 ** USDR_MINT_DECIMALS),
     {
       accounts: {
         authority: wallet.publicKey,
@@ -155,7 +148,7 @@ export async function reportPriceOracle(
 
   const tx = program.transaction.reportPriceToOracle(
     // price of token
-    new BN(newPrice * DECIMALS_USDR),
+    new BN(newPrice * USDR_MINT_DECIMALS),
     {
       accounts: {
         authority: wallet.publicKey,
@@ -218,7 +211,7 @@ export async function createPool(
     transaction.add(
       program.instruction.createOracle(
         // price of token
-        new BN(10 ** DECIMALS_USDR),
+        new BN(10 ** USDR_MINT_DECIMALS),
         {
           accounts: {
             authority: wallet.publicKey,
@@ -239,7 +232,7 @@ export async function createPool(
     transaction.add(
       program.instruction.createOracle(
         // price of token
-        new BN(10 ** DECIMALS_USDR),
+        new BN(10 ** USDR_MINT_DECIMALS),
         {
           accounts: {
             authority: wallet.publicKey,
@@ -344,7 +337,7 @@ export async function setGlobalTvlLimit(
 export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.tvlCollatCeilingUsd.toNumber() / 10 ** DECIMALS_USDR;
+    return globalState.tvlCollatCeilingUsd.toNumber() / 10 ** USDR_MINT_DECIMALS;
   } catch (e) {
     console.error('Error while fetching the tvl limiy');
     throw e;
@@ -354,7 +347,7 @@ export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAd
 export async function getGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.debtCeilingGlobal.toNumber() / 10 ** DECIMALS_USDR;
+    return globalState.debtCeilingGlobal.toNumber() / 10 ** USDR_MINT_DECIMALS;
   } catch (e) {
     console.error('Error while fetching the global debt ceiling');
     throw e;
@@ -364,7 +357,7 @@ export async function getGlobalDebtCeiling(connection: Connection, wallet: Walle
 export async function getUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
   try {
     const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.debtCeilingUser.toNumber() / 10 ** DECIMALS_USDR;
+    return globalState.debtCeilingUser.toNumber() / 10 ** USDR_MINT_DECIMALS;
   } catch (e) {
     console.error('Error while fetching the global user debt ceiling');
     throw e;
@@ -384,7 +377,7 @@ export async function setGlobalDebtCeiling(
     const transaction = new Transaction();
     const signers: Keypair[] = [];
     const ix = await program.instruction.setGlobalDebtCeiling(
-      new anchor.BN(newDebtCeiling * 10 ** GLOBAL_DEBT_CEILING_DECIMALS),
+      new anchor.BN(newDebtCeiling * 10 ** USDR_MINT_DECIMALS),
       {
         accounts: {
           authority: wallet.publicKey,
@@ -419,7 +412,7 @@ export async function setPoolDebtCeiling(
   const poolKey = await getPoolPDA(mintCollKey);
   const transaction = new Transaction();
   const signers: Keypair[] = [];
-  const ix = await program.instruction.setPoolDebtCeiling(new anchor.BN(vaultDebtCeiling * 10 ** DECIMALS_USDR), {
+  const ix = await program.instruction.setPoolDebtCeiling(new anchor.BN(vaultDebtCeiling * 10 ** USDR_MINT_DECIMALS), {
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,
@@ -443,15 +436,12 @@ export async function setUserDebtCeiling(connection: Connection, wallet: any, ne
     const globalStateKey = await getGlobalStatePDA();
     const transaction = new Transaction();
     const signers: Keypair[] = [];
-    const ix = await program.instruction.setUserDebtCeiling(
-      new anchor.BN(newDebtCeiling * 10 ** USER_DEBT_CEILING_DECIMALS),
-      {
-        accounts: {
-          authority: wallet.publicKey,
-          globalState: globalStateKey,
-        },
-      }
-    );
+    const ix = await program.instruction.setUserDebtCeiling(new anchor.BN(newDebtCeiling * 10 ** USDR_MINT_DECIMALS), {
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+      },
+    });
     transaction.add(ix);
     const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log('tx id->', tx);
@@ -499,30 +489,27 @@ export async function setCollateralRatio(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   values: CollateralizationRatios
 ): Promise<boolean> {
-  // const program = await getProgramInstance(connection, wallet);
-  // const globalStateKey = await getGlobalStatePDA();
+  const program = await getProgramInstance(connection, wallet);
+  const globalStateKey = await getGlobalStatePDA();
 
-  // const bigNumberValues = Object.values(values)?.map((value: string) => {
-  //   return new BN(parseFloat(value) * 10 ** COLL_RATIOS_DECIMALS);
-  // });
-  // console.log('BIG NUMBER VALUES');
-  // console.log(bigNumberValues);
-  // try {
-  //   const tx = await program.rpc.setCollaterialRatio(bigNumberValues, {
-  //     accounts: {
-  //       authority: wallet?.publicKey,
-  //       globalState: globalStateKey,
-  //     },
-  //   });
-  //   console.log('----- TX COLLATERAL RATIO ------');
-  //   console.log(tx);
-  //   return true;
-  // } catch (error) {
-  //   console.log('ERROR');
-  //   console.log(error);
-  //   throw error;
-  // }
-  return true;
+  const bigNumberValues = Object.values(values)
+    ?.map((value: string) => {
+      return new BN(parseFloat(value) * 10 ** COLL_RATIOS_DECIMALS);
+    })
+    .slice(0, COLL_RATIOS_ARR_SIZE);
+  try {
+    await program.rpc.setCollateralRatios(bigNumberValues, {
+      accounts: {
+        authority: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    return true;
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
 }
 
 export async function getHarvestFee(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {

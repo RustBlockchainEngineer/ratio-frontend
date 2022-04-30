@@ -9,8 +9,6 @@ import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
-import { usePrice } from '../../contexts/price';
-import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';
 
@@ -19,14 +17,7 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
-import {
-  UPDATE_REWARD_STATE,
-  useUpdateRFStates,
-  useUSDrMintInfo,
-  useUserVaultInfo,
-  usePoolInfo,
-  useTokenMintInfo,
-} from '../../contexts/state';
+import { UPDATE_REWARD_STATE, useUpdateRFStates } from '../../contexts/state';
 
 const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const { data, onCompareVault } = tokenPairCardProps;
@@ -36,72 +27,11 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
 
-  const tokenPrice = usePrice(data.mint);
-
-  const usdrMint = useUSDrMintInfo();
-  const collMint = useTokenMintInfo(data.mint);
-
   const [checked, setChecked] = React.useState(false);
 
-  const userState = useUserVaultInfo(data.mint);
-  const vaultState = usePoolInfo(data.mint);
   const updateRFStates = useUpdateRFStates();
 
-  // eslint-disable-next-line
-  const [positionValue, setPositionValue] = React.useState(0);
-  const [tvl, setTVL] = React.useState(0);
-  // eslint-disable-next-line
-  const [tvlUSD, setTVLUSD] = React.useState(0);
-  // eslint-disable-next-line
-  const [totalDebt, setTotalDebt] = React.useState(0);
-
-  // eslint-disable-next-line
-  const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = React.useState('');
-
   const PoolManagerFactory = useGetPoolManager(data.item);
-
-  // React.useEffect(() => {
-  //   if (data.hasReachedUserDebtLimit) {
-  //     setHasUserReachedDebtLimit('You have reached your USDr debt limit.');
-  //   } else if (isGlobalDebtLimitReached) {
-  //     setHasUserReachedDebtLimit('The global USDr debt limit has been reached.');
-  //   } else {
-  //     setHasUserReachedDebtLimit('');
-  //   }
-  //   return () => {
-  //     setHasUserReachedDebtLimit('');
-  //   };
-  // }, [data]);
-
-  React.useEffect(() => {
-    if (connection && collMint && usdrMint && data.mint) {
-      const tvlAmount = new TokenAmount((vaultState as any)?.lockedCollBalance ?? 0, collMint?.decimals);
-      const debtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, usdrMint?.decimals);
-
-      setTVL(Number(tvlAmount.fixed()));
-      setTotalDebt(Number(debtAmount.fixed()));
-    }
-    return () => {
-      setTVL(0);
-      setTotalDebt(0);
-    };
-  }, [connection, collMint, usdrMint, vaultState]);
-
-  React.useEffect(() => {
-    if (tokenPrice && tvl) {
-      setTVLUSD(Number((tokenPrice * tvl).toFixed(2)));
-    }
-  }, [tvl, tokenPrice]);
-
-  React.useEffect(() => {
-    if (userState && tokenPrice && collMint) {
-      const lpLockedAmount = new TokenAmount((userState as any).lockedCollBalance, collMint?.decimals);
-      setPositionValue(tokenPrice * Number(lpLockedAmount.fixed()));
-    }
-    return () => {
-      setPositionValue(0);
-    };
-  }, [tokenPrice, userState, collMint]);
 
   // eslint-disable-next-line
   const harvest = () => {

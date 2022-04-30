@@ -24,11 +24,7 @@ export const TVL: any = {
   'ATLAS-RAY': 60000000,
   'SAMO-RAY': 9000000,
 };
-export const PRICE_DECIMAL = 8;
-export const GLOBAL_DEBT_CEILING_DECIMALS = 6;
-export const USER_DEBT_CEILING_DECIMALS = 6;
-export const COLL_RATIOS_DECIMALS = 6;
-export const TVL_DECIMAL = 9;
+
 export const PLATFORM: any = {
   'USDC-USDR': {
     icon: raydiumIcon,

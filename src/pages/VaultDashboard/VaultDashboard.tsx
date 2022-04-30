@@ -14,7 +14,7 @@ import share from '../../assets/images/share.svg';
 import usdrIcon from '../../assets/images/USDr.png';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import { USDR_MINT_KEY } from '../../utils/ratio-lending';
+import { USDR_MINT_KEY, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import { useAccountByMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
 import { getRiskLevelNumber } from '../../utils/utils';
@@ -29,7 +29,6 @@ import { FetchingStatus } from '../../types/fetching-types';
 import { toast } from 'react-toastify';
 import MintableProgressBar from '../../components/Dashboard/MintableProgressBar';
 import TokenCapBanner from '../../components/TokenCapBanner';
-import { DECIMALS_USDR } from '../../utils/constants';
 
 const priceCardData = {
   mainUnit: '',
@@ -60,7 +59,7 @@ const VaultDashboard = () => {
 
   const [depositValue, setDepositValue] = useState(0);
   const [withdrawValue, setWithdrawValue] = useState(0);
-  const generateValue = +new TokenAmount((userVaultInfo as any)?.mintableDebt ?? 0, DECIMALS_USDR).fixed();
+  const generateValue = +new TokenAmount((userVaultInfo as any)?.mintableDebt ?? 0, USDR_MINT_DECIMALS).fixed();
   const [debtValue, setDebtValue] = useState(0);
   const [activeVaults, setActiveVaults] = useState<any>();
 
@@ -127,7 +126,7 @@ const VaultDashboard = () => {
   }, [wallet, usdrAccount, connection, usdrMint]);
 
   useEffect(() => {
-    if (poolInfo && collMint && globalState) {
+    if (poolInfo && collMint && globalState && globalState?.tvlCollatCeilingUsd) {
       //ternary operators are used here while the globalState paramters do not exist
 
       const globalTvlLimit = globalState?.tvlCollatCeilingUsd.toNumber();
@@ -137,7 +136,7 @@ const VaultDashboard = () => {
       const tmpMaxDeposit = Math.min(availableCollat, lpWalletBalance).toFixed(collMint?.decimals);
       setDepositValue(Number(tmpMaxDeposit));
 
-      setLpWalletBalanceUSD((poolInfo.oraclePrice / 10 ** DECIMALS_USDR) * lpWalletBalance);
+      setLpWalletBalanceUSD((poolInfo.oraclePrice / 10 ** USDR_MINT_DECIMALS) * lpWalletBalance);
     }
     return () => {
       setDepositValue(0);

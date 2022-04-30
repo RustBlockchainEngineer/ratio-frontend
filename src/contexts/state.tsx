@@ -1,7 +1,7 @@
 import { sleep } from '@project-serum/common';
 import React, { useEffect, useState } from 'react';
-import { DECIMALS_USDR } from '../utils/constants';
 import {
+  USDR_MINT_DECIMALS,
   calculateRewardByPlatform,
   getAllOracleState,
   getGlobalState,
@@ -66,7 +66,8 @@ export function RFStateProvider({ children = undefined as any }) {
     } else if (action === UPDATE_POOL_STATE) {
       updatePoolStateByMint(mint);
     } else if (action === UPDATE_USER_STATE) {
-      updateVaultStateByMint(mint);
+      // updateVaultStateByMint(mint);
+      updateUserState();
     } else if (action === UPDATE_REWARD_STATE) {
       updateUserRewardByMint(mint);
     }
@@ -205,7 +206,6 @@ export function RFStateProvider({ children = undefined as any }) {
         return item.address_id.toLowerCase() === mint.toLowerCase();
       });
       const poolInfo = poolState[mint];
-      console.log(mint, poolInfo.platformType);
       const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
 
       const riskRating = pool?.risk_rating.toString() || 'D';
@@ -225,8 +225,8 @@ export function RFStateProvider({ children = undefined as any }) {
         reward,
         lockedAmount: vaultInfo.totalColl.toNumber(),
         debt: vaultInfo.debt.toNumber(),
-        debtLimit: new TokenAmount(debtLimit, DECIMALS_USDR).toWei().toNumber(),
-        mintableDebt: new TokenAmount(mintableDebt, DECIMALS_USDR).toWei().toNumber(),
+        debtLimit: new TokenAmount(debtLimit, USDR_MINT_DECIMALS).toWei().toNumber(),
+        mintableDebt: new TokenAmount(mintableDebt, USDR_MINT_DECIMALS).toWei().toNumber(),
         collPrice: poolInfo.oraclePrice,
         isReachedDebt: mintableDebt <= 0 && vaultInfo.debt.toNumber() > 0,
       };
@@ -255,19 +255,19 @@ export function RFStateProvider({ children = undefined as any }) {
     }
   };
 
-  const updateVaultStateByMint = async (mint: string) => {
-    const vaultInfo = await getVaultStateByMint(mint);
+  // const updateVaultStateByMint = async (mint: string) => {
+  //   const vaultInfo = await getVaultStateByMint(mint);
 
-    const newStates = {
-      ...vaultState,
-    };
+  //   const newStates = {
+  //     ...vaultState,
+  //   };
 
-    newStates[mint] = {
-      ...vaultInfo,
-    };
+  //   newStates[mint] = {
+  //     ...vaultInfo,
+  //   };
 
-    setVaultState(newStates);
-  };
+  //   setVaultState(newStates);
+  // };
 
   const updateUserRewardByMint = async (mint: string) => {
     const poolInfo = poolState[mint];
@@ -386,8 +386,9 @@ export function useAllVaultInfo() {
 
 export function useIsActiveUserVault(mint: string) {
   const context = React.useContext(RFStateContext);
-
-  return context.vaultState[mint].totalColl.toNumber() !== 0;
+  if (context.vaultState && context.vaultState[mint] && context.vaultState[mint]?.totalColl)
+    return context.vaultState[mint]?.totalColl.toNumber() !== 0;
+  else return false;
 }
 
 export function usePoolInfo(mint: string) {

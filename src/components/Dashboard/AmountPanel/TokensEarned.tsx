@@ -7,12 +7,12 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { PRICE_DECIMAL } from '../../../constants/constants';
 import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
 import { FetchingStatus } from '../../../types/fetching-types';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
+import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -91,7 +91,7 @@ const TokensEarned = ({ data }: any) => {
                 console.error(saberPriceError)}
               {saberPriceStatus === FetchingStatus.Finish &&
                 saberPrice &&
-                `$  ${(userState?.reward * saberPrice)?.toFixed(PRICE_DECIMAL)}`}
+                `$  ${(userState?.reward * saberPrice)?.toFixed(USDR_MINT_DECIMALS)}`}
             </td>
           </tr>
         </tbody>
