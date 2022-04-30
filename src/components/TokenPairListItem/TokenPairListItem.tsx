@@ -19,6 +19,8 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const { connected } = useWallet();
 
+  const hasUserReachedDebtLimit = false;
+
   const showDashboard = () => {
     if (!connected) {
       toast('Please connect your wallet!');
