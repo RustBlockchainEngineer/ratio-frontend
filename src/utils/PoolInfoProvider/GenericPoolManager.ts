@@ -21,9 +21,11 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
   }
 
   async getRatioAPYbyVault(vault: LPair): Promise<number> {
-
     //zhao hard code
-    const alterMint = vault.address_id === '2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf' ? '7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh' : vault.address_id;
+    const alterMint =
+      vault.address_id === '2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf'
+        ? '7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh'
+        : vault.address_id;
 
     let apr = 0;
     try {
