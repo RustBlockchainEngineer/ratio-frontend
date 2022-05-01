@@ -151,12 +151,13 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }, [vaultsWithPlatformInformation, vaults]);
 
   const showContent = (vtype: string) => {
-    if (overview && !overview.activeVaults)
+    if (!overview || !userVaultInfos) {
       return (
         <div className="d-flex justify-content-center mt-5">
           <LoadingSpinner className="spinner-border-lg text-primary" />
         </div>
       );
+    }
 
     const onCompareVault = (data: PairType, status: boolean) => {
       if (status) {

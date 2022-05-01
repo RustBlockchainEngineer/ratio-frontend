@@ -16,23 +16,34 @@ import { createPool } from '../../utils/admin-contract-calls';
 import { getLendingPoolByMint, TYPE_ID_SABER } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
 import { getPoolPDA } from '../../utils/ratio-pda';
-import {
-  ORACLE_USDC_MINT,
-  ORACLE_USDT_MINT,
-  SWAP_USDC_ACCOUNT,
-  SWAP_USDT_ACCOUNT,
-  SABER_REWARD_MINT,
-} from '../../utils/saber/constants';
 
 interface VaultEditionFormProps {
   values: LPEditionData;
   onSave?: () => void;
 }
 
+interface PoolData {
+  mintA: string;
+  mintB: string;
+  accountA: string;
+  accountB: string;
+  mintReward: string;
+}
+
 export default function VaultEditionForm({ values, onSave = () => {} }: VaultEditionFormProps) {
   const superOwner = useSuperOwner();
   const [validated, setValidated] = useState(false);
-  const [data, setData] = useState<LPEditionData>(values);
+  const [data, setData] = useState<LPEditionData>({
+    ...values,
+    address_id: '2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf',
+  });
+  const [poolData, setPoolData] = useState<PoolData>({
+    mintA: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mintB: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    accountA: 'CfWX7o2TswwbxusJ4hCaPobu2jLCb1hfXuXJQjVq3jQF',
+    accountB: 'EnTrdMMpdhugeH6Ban6gYZWXughWxKtVGfCwFn78ZmY3',
+    mintReward: 'iouQcQBAiEXe6cKLS85zmZxUqaCqBdeHFpqKoSz615u',
+  });
   const { accessToken } = useAuthContextProvider();
   const { data: platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
   const { forceUpdate } = useVaultsContextProvider();
@@ -45,6 +56,13 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
   };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setData((values) => ({
+      ...values,
+      [event.target.name]: event.target.value ?? 0,
+    }));
+  };
+
+  const handlePoolChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setPoolData((values) => ({
       ...values,
       [event.target.name]: event.target.value ?? 0,
     }));
@@ -71,11 +89,11 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
           new PublicKey(data?.address_id), // mintCollKey
           riskRatingValue,
           TYPE_ID_SABER,
-          SABER_REWARD_MINT,
-          ORACLE_USDC_MINT,
-          ORACLE_USDT_MINT,
-          SWAP_USDC_ACCOUNT,
-          SWAP_USDT_ACCOUNT
+          poolData.mintReward,
+          poolData.mintA,
+          poolData.mintB,
+          poolData.accountA,
+          poolData.accountB
         );
         if (!result) {
           toast.error('There was an error when creating the token vault program');
@@ -144,6 +162,36 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
       <Form validated={validated} onSubmit={handleSubmit}>
         <Row className="mb-3">
           <AdminFormInput handleChange={handleChange} label="LP Address" name="address_id" value={data?.address_id} />
+          <AdminFormInput
+            handleChange={handlePoolChange}
+            label="Token A Address"
+            name="mintA"
+            value={poolData?.mintA}
+          />
+          <AdminFormInput
+            handleChange={handlePoolChange}
+            label="Token B Address"
+            name="mintB"
+            value={poolData?.mintB}
+          />
+          <AdminFormInput
+            handleChange={handlePoolChange}
+            label="Token A Reserves"
+            name="accountA"
+            value={poolData?.accountA}
+          />
+          <AdminFormInput
+            handleChange={handlePoolChange}
+            label="Token B Reserves"
+            name="accountB"
+            value={poolData?.accountB}
+          />
+          <AdminFormInput
+            handleChange={handlePoolChange}
+            label="Reward Mint"
+            name="mintReward"
+            value={poolData?.mintReward}
+          />
           <AdminFormInput handleChange={handleChange} label="Symbol" name="symbol" value={data?.symbol} />
           <AdminFormInput
             handleChange={handleChange}

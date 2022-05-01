@@ -19,13 +19,13 @@ import {
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
 import { sendTransaction } from '../web3';
-import { SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_MINT } from './constants';
+import { SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_IOU_MINT } from './constants';
 import { TokenAmount } from '../safe-math';
 import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../ratio-pda';
 
 const rewarderKey = new PublicKey(SABER_REWARDER);
 const mintWrapperKey = new PublicKey(SABER_MINT_WRAPPER);
-const saberMintKey = new PublicKey(SABER_REWARD_MINT);
+const saberMintKey = new PublicKey(SABER_REWARD_IOU_MINT);
 export async function deposit(
   connection: Connection,
   wallet: any,
@@ -277,7 +277,7 @@ export const harvestRewardsFromSaberTx = async (
   const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
   const ataCollatMinerKey = getATAKey(minerKey, mintCollKey);
 
-  const ataRewardVaultKey = getATAKey(vaultKey, SABER_REWARD_MINT);
+  const ataRewardVaultKey = getATAKey(vaultKey, SABER_REWARD_IOU_MINT);
 
   const txn = new Transaction().add(
     program.instruction.harvestRewardsFromSaber({
@@ -297,7 +297,7 @@ export const harvestRewardsFromSaberTx = async (
         minter,
         claimFeeTokenAccount, // is this a quarry-specific account
         // system accounts
-        mintReward: SABER_REWARD_MINT, // SBR for this example
+        mintReward: SABER_REWARD_IOU_MINT, // SBR for this example
         quarryProgram: QUARRY_ADDRESSES.Mine,
         ...defaultPrograms,
       },

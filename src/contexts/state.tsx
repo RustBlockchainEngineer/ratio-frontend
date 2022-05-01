@@ -80,11 +80,14 @@ export function RFStateProvider({ children = undefined as any }) {
       const mint = pool.address_id;
 
       const mintInfo = await getMint(connection, mint);
-      mintInfos[mint] = mintInfo;
+      if (mintInfo) {
+        mintInfos[mint] = mintInfo;
+      }
     }
     const mintInfo = await getMint(connection, USDR_MINT_KEY);
-    mintInfos[USDR_MINT_KEY] = mintInfo;
-
+    if (mintInfo) {
+      mintInfos[USDR_MINT_KEY] = mintInfo;
+    }
     setTokenState(mintInfos);
   };
 
@@ -129,7 +132,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const getPoolInfo = async (mint: string) => {
     const poolInfo = await getLendingPoolByMint(connection, mint);
 
-    if (tokenState[mint]) {
+    if (poolInfo && tokenState && tokenState[mint] && oracleState) {
       const oracleInfoA = oracleState[poolInfo.swapMintA];
       const oracleInfoB = oracleState[poolInfo.swapMintB];
       const lpSupply = parseFloat(new TokenAmount(tokenState[mint].supply, tokenState[mint].decimals).fixed());
@@ -170,10 +173,11 @@ export function RFStateProvider({ children = undefined as any }) {
           poolInfos[mint] = poolInfo;
         }
       }
-      setPoolState(poolInfos);
     } catch (e) {
       console.log(e);
     }
+
+    setPoolState(poolInfos);
   };
 
   const updatePoolStateByMint = async (mint: string) => {
@@ -188,16 +192,17 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const getVaultStateByMint = async (mint: string) => {
+    const vaultInfo = await getVaultState(connection, wallet, mint);
+
     if (
       tokenState &&
       tokenState[mint] &&
       overview.totalDebt &&
       globalState.debtCeilingUser &&
       globalState.debtCeilingGlobal &&
-      globalState.totalDebt
+      globalState.totalDebt &&
+      vaultInfo
     ) {
-      const vaultInfo = await getVaultState(connection, wallet, mint);
-
       const pool = pools.find((item) => {
         return item.address_id.toLowerCase() === mint.toLowerCase();
       });
@@ -234,9 +239,9 @@ export function RFStateProvider({ children = undefined as any }) {
     if (!poolState) {
       return;
     }
+    const vaultInfos: any = {};
 
     try {
-      const vaultInfos: any = {};
       for (const mint of Object.keys(poolState)) {
         const vaultInfo = await getVaultStateByMint(mint);
         if (vaultInfo) {
@@ -245,10 +250,10 @@ export function RFStateProvider({ children = undefined as any }) {
           };
         }
       }
-      setVaultState(vaultInfos);
     } catch (e) {
       console.error(e);
     }
+    setVaultState(vaultInfos);
   };
 
   // const updateVaultStateByMint = async (mint: string) => {
@@ -286,7 +291,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateUserState = async () => {
     const userState = await getUserState(connection, wallet);
-    setOverview(userState);
+    setOverview(userState ? userState : {});
   };
 
   useEffect(() => {
@@ -294,7 +299,7 @@ export function RFStateProvider({ children = undefined as any }) {
       updateTokenStates();
     }
     return () => {
-      setTokenState({});
+      setTokenState(null);
     };
   }, [connection, pools]);
 
@@ -304,7 +309,7 @@ export function RFStateProvider({ children = undefined as any }) {
       updateOracleState();
     }
     return () => {
-      setGlobalState({});
+      setGlobalState(null);
     };
   }, [connection, tokenState]);
 
@@ -313,7 +318,7 @@ export function RFStateProvider({ children = undefined as any }) {
       updatePoolStates();
     }
     return () => {
-      setPoolState({});
+      setPoolState(null);
     };
   }, [connection, oracleState, globalState]);
 
@@ -323,7 +328,7 @@ export function RFStateProvider({ children = undefined as any }) {
     }
 
     return () => {
-      setVaultState({});
+      setVaultState(null);
     };
   }, [connection, wallet, wallet?.publicKey, poolState, overview]);
 
@@ -333,7 +338,7 @@ export function RFStateProvider({ children = undefined as any }) {
     }
 
     return () => {
-      setOverview({});
+      setOverview(null);
     };
   }, [connection, wallet, wallet?.publicKey, poolState, oracleState]);
 
@@ -371,7 +376,7 @@ export function useRFStateInfo() {
 export function useUserVaultInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
-  return context.vaultState[mint];
+  return context.vaultState ? context.vaultState[mint] : null;
 }
 
 export function useAllVaultInfo() {
@@ -390,7 +395,7 @@ export function useIsActiveUserVault(mint: string) {
 export function usePoolInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
-  return context.poolState[mint];
+  return context.poolState ? context.poolState[mint] : null;
 }
 export function useOracleInfo(mint: string) {
   const context = React.useContext(RFStateContext);

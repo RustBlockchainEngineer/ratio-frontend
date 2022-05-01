@@ -15,6 +15,8 @@ import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
 import WarningLimitBox from './WarningLimitBox';
+import { TokenAmount } from '../../utils/safe-math';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const VaultSetupContainer = ({ data }: any) => {
   const history = useHistory();
@@ -29,6 +31,8 @@ const VaultSetupContainer = ({ data }: any) => {
 
   const collAccount = useAccountByMint(data.mint);
   const [depositAmount, setDepositAmount] = React.useState(0);
+
+  const depositAmountUSD = new TokenAmount(depositAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
   const [didMount, setDidMount] = React.useState(false);
 
@@ -114,7 +118,7 @@ const VaultSetupContainer = ({ data }: any) => {
             invalidStr={invalidStr}
           />
           <p className="vaultsetupcontainer-label mt-2">
-            USD: <strong className="vaultsetupcontainer-value">${data.tokenPrice * depositAmount}</strong>
+            USD: <strong className="vaultsetupcontainer-value">${depositAmountUSD}</strong>
           </p>
         </div>
       </div>
