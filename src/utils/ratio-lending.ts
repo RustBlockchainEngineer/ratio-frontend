@@ -23,7 +23,6 @@ import {
   getUSDrMintKey,
   getUserStatePDA,
   getVaultPDA,
-  getVaultPDAWithBump,
 } from './ratio-pda';
 import { Program } from '@project-serum/anchor';
 export const COLL_RATIOS_DECIMALS = 8;
@@ -189,7 +188,7 @@ export async function depositCollateralTx(
 
   const rewardMint = poolData.mintReward;
 
-  const [vaultKey, vaultBump] = getVaultPDAWithBump(wallet.publicKey, mintCollat);
+  const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);
 
   const vaultATAKey = getATAKey(vaultKey, mintCollat);
@@ -214,7 +213,7 @@ export async function depositCollateralTx(
     await program.account.vault.fetch(vaultKey);
   } catch {
     console.log('creating vault');
-    const tx = await program.instruction.createVault(vaultBump, {
+    const tx = await program.instruction.createVault({
       accounts: {
         // account that owns the vault
         authority: wallet.publicKey,

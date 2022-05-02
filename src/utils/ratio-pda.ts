@@ -80,3 +80,7 @@ export const getUserStatePDA = (owner: string | PublicKey) => {
   const [pda] = getPda([Buffer.from(USER_STATE_SEED), new PublicKey(owner).toBuffer()], RATIO_LENDING_PROGRAM_ID);
   return pda;
 };
+
+export const getUserStatePDAWithBump = (owner: string | PublicKey) => {
+  return getPda([Buffer.from(USER_STATE_SEED), new PublicKey(owner).toBuffer()], RATIO_LENDING_PROGRAM_ID);
+};

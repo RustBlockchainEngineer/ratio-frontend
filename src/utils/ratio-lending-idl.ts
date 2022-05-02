@@ -111,10 +111,6 @@ export type RatioLending = {
       ];
       args: [
         {
-          name: 'poolBump';
-          type: 'u8';
-        },
-        {
           name: 'riskLevel';
           type: 'u8';
         },
@@ -203,12 +199,7 @@ export type RatioLending = {
           isSigner: false;
         }
       ];
-      args: [
-        {
-          name: 'vaultBump';
-          type: 'u8';
-        }
-      ];
+      args: [];
     },
     {
       name: 'depositCollateral';
@@ -1468,9 +1459,41 @@ export type RatioLending = {
             type: 'u64';
           },
           {
+            name: 'bump';
+            type: 'u8';
+          },
+          {
+            name: 'reservedU81';
+            type: 'u8';
+          },
+          {
+            name: 'reservedU82';
+            type: 'u8';
+          },
+          {
+            name: 'reservedU83';
+            type: 'u8';
+          },
+          {
+            name: 'reservedU84';
+            type: 'u8';
+          },
+          {
+            name: 'reservedU85';
+            type: 'u8';
+          },
+          {
+            name: 'reservedU86';
+            type: 'u8';
+          },
+          {
+            name: 'reservedU87';
+            type: 'u8';
+          },
+          {
             name: 'reserved';
             type: {
-              array: ['u64', 30];
+              array: ['u64', 29];
             };
           }
         ];
@@ -1781,10 +1804,6 @@ export const IDL: RatioLending = {
       ],
       args: [
         {
-          name: 'poolBump',
-          type: 'u8',
-        },
-        {
           name: 'riskLevel',
           type: 'u8',
         },
@@ -1873,12 +1892,7 @@ export const IDL: RatioLending = {
           isSigner: false,
         },
       ],
-      args: [
-        {
-          name: 'vaultBump',
-          type: 'u8',
-        },
-      ],
+      args: [],
     },
     {
       name: 'depositCollateral',
@@ -3138,9 +3152,41 @@ export const IDL: RatioLending = {
             type: 'u64',
           },
           {
+            name: 'bump',
+            type: 'u8',
+          },
+          {
+            name: 'reservedU81',
+            type: 'u8',
+          },
+          {
+            name: 'reservedU82',
+            type: 'u8',
+          },
+          {
+            name: 'reservedU83',
+            type: 'u8',
+          },
+          {
+            name: 'reservedU84',
+            type: 'u8',
+          },
+          {
+            name: 'reservedU85',
+            type: 'u8',
+          },
+          {
+            name: 'reservedU86',
+            type: 'u8',
+          },
+          {
+            name: 'reservedU87',
+            type: 'u8',
+          },
+          {
             name: 'reserved',
             type: {
-              array: ['u64', 30],
+              array: ['u64', 29],
             },
           },
         ],

@@ -19,7 +19,7 @@ import BN from 'bn.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 
-import { getGlobalStatePDA, getOraclePDA, getPoolPDA, getPoolPDAWithBump, getUSDrMintKey } from './ratio-pda';
+import { getGlobalStatePDA, getOraclePDA, getPoolPDA, getUSDrMintKey } from './ratio-pda';
 import { USDR_MINT_DECIMALS } from './ratio-lending';
 
 export async function setEmergencyState(
@@ -187,7 +187,7 @@ export async function createPool(
   if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
 
-  const [poolKey, poolBump] = getPoolPDAWithBump(mintCollKey);
+  const poolKey = getPoolPDA(mintCollKey);
 
   const globalStateKey = getGlobalStatePDA();
 
@@ -246,7 +246,7 @@ export async function createPool(
     );
   }
   transaction.add(
-    program.instruction.createPool(poolBump, new BN(riskLevel), new BN(POOL_DEBT_CEILING), platformType, {
+    program.instruction.createPool(new BN(riskLevel), new BN(POOL_DEBT_CEILING), platformType, {
       accounts: {
         authority: wallet.publicKey,
         pool: poolKey,
@@ -313,7 +313,7 @@ export async function setGlobalTvlLimit(
   try {
     const transaction = new Transaction();
     const signers: Keypair[] = [];
-    const ix = await program.instruction.setGlobalTvlLimit(new anchor.BN(newTvlLimit * 10 ** TVL_DECIMAL), {
+    const ix = await program.instruction.setGlobalTvlLimit(new anchor.BN(newTvlLimit * 10 ** USDR_MINT_DECIMALS), {
       accounts: {
         authority: wallet.publicKey,
         globalState: globalStateKey,
