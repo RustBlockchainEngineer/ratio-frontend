@@ -14,7 +14,42 @@ import {
   faucetSamoRayLp,
   isFaucetStateCreated,
 } from '../../utils/ratio-faucet';
-import { TOKEN_POOL_OPTIONS } from '../../utils/ratio-lending';
+
+export const TOKEN_POOL_OPTIONS = [
+  {
+    value: 'USDC-CASH',
+    label: 'USDC-CASH LP',
+    icon: [
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T/logo.png`,
+    ],
+    mintAddress: 'FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T',
+  },
+  {
+    value: 'USDC-PAI',
+    label: 'USDC-PAI LP',
+    icon: [
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh/logo.png`,
+    ],
+    mintAddress: '7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh',
+  },
+  {
+    value: 'USDC-USDT',
+    label: 'USDC-USDT LP',
+    icon: [
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg/logo.png`,
+    ],
+    mintAddress: 'HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg',
+  },
+  {
+    value: 'USDT-CASH',
+    label: 'USDT-CASH LP',
+    icon: [
+      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd/logo.png`,
+    ],
+    mintAddress: '9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd',
+  },
+];
+
 // import { toast } from 'react-toastify';
 
 const Faucet = () => {

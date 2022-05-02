@@ -60,50 +60,6 @@ export const GLOBAL_DEBT_CEILING = 1500_000_000;
 export const USER_DEBT_CEILING = 1500_000_000;
 export const POOL_DEBT_CEILING = 1500_000_000;
 
-// TODO THIS IS A TEMPORARY ADDRESS THAT LINKS TO NOTHING, DELETE ONCE ORACLE REPORTER IS IMPLEMENTED
-export const ORACLE_REPORTER = new PublicKey('7Lw3e19CJUvR5qWRj8J6NKrV2tywiJqS9oDu1m8v4rsi');
-
-export const mintA = new PublicKey('7KLQxufDu9H7BEAHvthC5p4Uk6WrH3aw8TwvPXoLgG11');
-export const mintB = new PublicKey('BicnAQ4jQgz3g7htuq1y6SKUNtrTr7UmpQjCqnTKkHR5');
-export const mintC = new PublicKey('FnjuEcDDTL3e511XE5a7McbDZvv2sVfNfEjyq4fJWXxg');
-// const poolA = new PublicKey('F8kPn8khukSVp4xwvHGiWUc6RnCScFbACdXJmyEaWWxX');
-// const poolB = new PublicKey('3ZFPekrEr18xfPMUFZDnyD6ZPrKGB539BzM8uRFmwmBa');
-// const poolC = new PublicKey('435X8hbABi3xGzBTqAZ2ehphwibk4dQrjRFSXE7uqvrc');
-
-export const TOKEN_POOL_OPTIONS = [
-  {
-    value: 'USDC-CASH',
-    label: 'USDC-CASH LP',
-    icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T/logo.png`,
-    ],
-    mintAddress: 'FZE52MWasDcwNeQfBL6PUHjvYgQMthvHNX5e7xUDN56T',
-  },
-  {
-    value: 'USDC-PAI',
-    label: 'USDC-PAI LP',
-    icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh/logo.png`,
-    ],
-    mintAddress: '7gJWEW3vGDgUNbg3agG9DSSkb271tpk82K4ixAGXeuoh',
-  },
-  {
-    value: 'USDC-USDT',
-    label: 'USDC-USDT LP',
-    icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg/logo.png`,
-    ],
-    mintAddress: 'HXb1AM83cRUbGegTivuSanvLP1W8A4pyTGMveNWR1pyg',
-  },
-  {
-    value: 'USDT-CASH',
-    label: 'USDT-CASH LP',
-    icon: [
-      `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd/logo.png`,
-    ],
-    mintAddress: '9RBrjJLKK7xm5275iNHPDdtMEN3nZFhPDiUkZGmkTUrd',
-  },
-];
 
 // This command makes an Lottery
 export function getProgramInstance(connection: Connection, wallet: any) {

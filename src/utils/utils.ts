@@ -10,7 +10,6 @@ import { TokenInfo } from '@solana/spl-token-registry';
 import { WAD, ZERO, LP_PAIR_MINT_KEYS } from '../constants';
 import { TokenAccount } from './../models';
 
-import { getUSDrAmount } from '../utils/risk';
 import * as serumCmn from '@project-serum/common';
 import * as anchor from '@project-serum/anchor';
 
@@ -271,12 +270,6 @@ export const calculateCollateralPrice = (
   priceB: number
 ) => {
   return ((Math.sqrt(tokenAmountA * priceA) * Math.sqrt(tokenAmountB * priceB)) / lpSupply) * 2;
-};
-
-export const calculateVaultDebtLimit = (lpTokenPrice: number, lpLockedAmount: number, riskLevel: string) => {
-  const userTotalDebtMintable = getUSDrAmount(100, lpTokenPrice * lpLockedAmount, riskLevel);
-
-  return userTotalDebtMintable;
 };
 
 // export const getMint = async (connection: Connection, key: any) => {

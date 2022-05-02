@@ -9,9 +9,10 @@ import {
   getUserState,
   getVaultState,
   USDR_MINT_KEY,
+  COLL_RATIOS_DECIMALS,
 } from '../utils/ratio-lending';
 import { TokenAmount } from '../utils/safe-math';
-import { calculateCollateralPrice, calculateVaultDebtLimit, getMint } from '../utils/utils';
+import { calculateCollateralPrice, getMint } from '../utils/utils';
 import { useUpdateWallet } from './auth';
 import { useConnection } from './connection';
 import { useVaultsContextProvider } from './vaults';
@@ -148,6 +149,7 @@ export function RFStateProvider({ children = undefined as any }) {
           oracleInfoB.decimals
         ).fixed()
       );
+      const ratio = globalState.collPerRisklv[poolInfo?.riskLevel].toNumber() / 10 ** COLL_RATIOS_DECIMALS;
 
       const collPrice = calculateCollateralPrice(
         lpSupply,
@@ -157,6 +159,7 @@ export function RFStateProvider({ children = undefined as any }) {
         oracleInfoB.price.toNumber()
       );
       poolInfo['oraclePrice'] = collPrice;
+      poolInfo['ratio'] = ratio;
     }
     return poolInfo;
   };
@@ -203,17 +206,12 @@ export function RFStateProvider({ children = undefined as any }) {
       globalState.totalDebt &&
       vaultInfo
     ) {
-      const pool = pools.find((item) => {
-        return item.address_id.toLowerCase() === mint.toLowerCase();
-      });
       const poolInfo = poolState[mint];
       const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
 
-      const riskRating = pool?.risk_rating.toString() || 'D';
-
       const lockedColl = parseFloat(new TokenAmount(vaultInfo.totalColl.toString(), tokenState[mint].decimals).fixed());
 
-      const debtLimit = calculateVaultDebtLimit(poolInfo.oraclePrice, lockedColl, riskRating);
+      const debtLimit = poolInfo.oraclePrice * lockedColl * poolInfo.ratio;
       const vaultDebtLimit = debtLimit - vaultInfo.debt.toNumber();
       const userDebtLimit = globalState.debtCeilingUser.toNumber() - overview.totalDebt.toNumber();
       const poolDebtLimit = poolInfo.debtCeiling.toNumber() - poolInfo.totalDebt.toNumber();

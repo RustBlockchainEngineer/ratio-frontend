@@ -10,7 +10,6 @@ import {
   USER_DEBT_CEILING,
   POOL_DEBT_CEILING,
   PlatformType,
-  ORACLE_REPORTER,
   COLL_RATIOS_DECIMALS,
   COLL_RATIOS_ARR_SIZE,
 } from './ratio-lending';
@@ -79,7 +78,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
       new anchor.BN(GLOBAL_TVL_LIMIT),
       new anchor.BN(GLOBAL_DEBT_CEILING),
       new anchor.BN(USER_DEBT_CEILING),
-      ORACLE_REPORTER,
+      wallet.publicKey,
       {
         accounts: {
           authority: wallet.publicKey,
