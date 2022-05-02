@@ -20,7 +20,7 @@ import GuideModal from '../GuideModal';
 type HeaderProps = {
   onClickWalletBtn: () => void;
   darkMode: boolean;
-  enable: boolean;
+  enable?: boolean;
 };
 
 // const isMobile = useMediaQuery({ maxWidth: 1024 });

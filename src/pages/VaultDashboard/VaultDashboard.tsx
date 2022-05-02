@@ -94,6 +94,12 @@ const VaultDashboard = () => {
   }, [overview, allVaults]);
 
   useEffect(() => {
+    const isEmpty = Object.keys(overview).length === 0;
+    if (isEmpty) setIsLoading(true);
+    else setIsLoading(false);
+  }, [overview]);
+
+  useEffect(() => {
     if (statusPrice === FetchingStatus.Error && errorPrice) {
       toast.error(`There was an error when fetching the price: ${errorPrice?.message}`);
     }
@@ -195,12 +201,10 @@ const VaultDashboard = () => {
   }, [userState, vault_mint, usdrMint]);
 
   useEffect(() => {
-    setIsLoading(true);
     const result: any = allVaults.find((item: any) => item.mint === vault_mint);
     if (result) {
       setVaultData(result);
     }
-    setIsLoading(false);
   }, [allVaults, vault_mint]);
 
   const isMobile = useMediaQuery({ maxWidth: 1024 });
