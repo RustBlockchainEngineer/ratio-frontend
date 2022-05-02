@@ -133,7 +133,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const getPoolInfo = async (mint: string) => {
     const poolInfo = await getLendingPoolByMint(connection, mint);
 
-    if (poolInfo && tokenState && tokenState[mint] && oracleState) {
+    if (poolInfo && tokenState && tokenState[mint] && oracleState && globalState) {
       const oracleInfoA = oracleState[poolInfo.swapMintA];
       const oracleInfoB = oracleState[poolInfo.swapMintB];
       const lpSupply = parseFloat(new TokenAmount(tokenState[mint].supply, tokenState[mint].decimals).fixed());
@@ -164,7 +164,7 @@ export function RFStateProvider({ children = undefined as any }) {
     return poolInfo;
   };
 
-  const updatePoolStates = async () => {
+  const updateAllPoolStates = async () => {
     const poolInfos: any = {};
     try {
       for (let i = 0; i < pools.length; i++) {
@@ -313,7 +313,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   useEffect(() => {
     if (connection && pools) {
-      updatePoolStates();
+      updateAllPoolStates();
     }
     return () => {
       setPoolState(null);
