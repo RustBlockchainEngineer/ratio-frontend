@@ -60,7 +60,6 @@ export const GLOBAL_DEBT_CEILING = 1500_000_000;
 export const USER_DEBT_CEILING = 1500_000_000;
 export const POOL_DEBT_CEILING = 1500_000_000;
 
-
 // This command makes an Lottery
 export function getProgramInstance(connection: Connection, wallet: any) {
   // if (!wallet.publicKey) throw new WalletNotConnectedError();
