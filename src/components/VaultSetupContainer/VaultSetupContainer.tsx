@@ -10,7 +10,6 @@ import { isWalletApproveError } from '../../utils/utils';
 import Button from '../Button';
 import CustomInput from '../CustomInput';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
-// import { useFetchCollateralRatio } from '../../hooks/useFetchCollateralRatio';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
@@ -24,7 +23,6 @@ const VaultSetupContainer = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const collMint = useMint(data?.mint);
-  // const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(data?.risk);
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
   const PoolManagerFactory = useGetPoolManager(vault);

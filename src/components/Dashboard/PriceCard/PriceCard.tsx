@@ -1,4 +1,3 @@
-import { useFetchCollateralRatio } from '../../../hooks/useFetchCollateralRatio';
 import { formatUSD } from '../../../utils/utils';
 
 export interface PriceCardInterface {
@@ -14,11 +13,10 @@ export interface PriceCardInterface {
 type PriceCardProps = {
   price: PriceCardInterface;
   tokenName: string;
-  risk: string;
+  risk: number;
 };
 
 const PriceCard = ({ price, tokenName, risk }: PriceCardProps) => {
-  const { collateralRatio, error: collateralRatioError } = useFetchCollateralRatio(risk);
   return (
     <div>
       <div className="pricecard">
@@ -27,7 +25,7 @@ const PriceCard = ({ price, tokenName, risk }: PriceCardProps) => {
             <p>Collateralization Ratio</p>
           </div>
           <div className="pricecard__value">
-            <h3>{collateralRatioError !== null ? '...' : (collateralRatio * 100).toFixed(2)}%</h3>
+            <h3>{risk === 0 ? '...' : (100 / risk).toFixed(2)}%</h3>
           </div>
         </div>
         <div className="pricecard__body">

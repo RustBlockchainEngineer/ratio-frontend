@@ -129,9 +129,9 @@ const VaultSetup = () => {
             <div className="row">
               <div className="col-xxl-6 col-lg-12 col-md-12">
                 <PriceCard
-                  price={{ currentPrice: poolInfo.currentPrice }}
+                  price={{ currentPrice: poolInfo ? poolInfo.currentPrice : '0' }}
                   tokenName={vaultData?.title}
-                  risk={vaultData?.risk}
+                  risk={poolInfo ? poolInfo.ratio : 0}
                 />
               </div>
 

@@ -215,9 +215,9 @@ const VaultDashboard = () => {
             <div className="vaultdashboard__bodyleft row">
               <div className="col-lg-6">
                 <PriceCard
-                  price={{ mainUnit: 'USDC', currentPrice: poolInfo ? poolInfo.currentPrice : '0' }}
+                  price={{ currentPrice: poolInfo ? poolInfo.currentPrice : '0' }}
                   tokenName={vaultData?.title}
-                  risk={vaultData?.risk}
+                  risk={poolInfo ? poolInfo.ratio : 0}
                 />
               </div>
               <div className="col-lg-6">
