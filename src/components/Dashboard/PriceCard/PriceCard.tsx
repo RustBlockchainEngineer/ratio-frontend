@@ -25,7 +25,7 @@ const PriceCard = ({ price, tokenName, risk }: PriceCardProps) => {
             <p>Collateralization Ratio</p>
           </div>
           <div className="pricecard__value">
-            <h3>{risk === 0 ? '...' : (100 / risk).toFixed(2)}%</h3>
+            <h3>{!risk ? '...' : (100 / risk).toFixed(2)}%</h3>
           </div>
         </div>
         <div className="pricecard__body">
