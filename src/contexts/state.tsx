@@ -173,6 +173,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
         const poolInfo = await getPoolInfo(mint);
         if (poolInfo) {
+          console.log(poolInfo);
           poolInfos[mint] = poolInfo;
         }
       }
