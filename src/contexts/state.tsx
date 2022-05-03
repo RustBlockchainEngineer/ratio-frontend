@@ -384,19 +384,6 @@ export function useAllPoolInfo() {
   return context.poolState;
 }
 
-export function useAllVaultInfo() {
-  const context = React.useContext(RFStateContext);
-
-  return context.vaultState;
-}
-
-export function useIsActiveUserVault(mint: string) {
-  const context = React.useContext(RFStateContext);
-  if (context.vaultState && context.vaultState[mint] && context.vaultState[mint]?.totalColl)
-    return context.vaultState[mint]?.totalColl.toNumber() !== 0;
-  else return false;
-}
-
 export function usePoolInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
@@ -412,6 +399,19 @@ export function useUserOverview() {
   const context = React.useContext(RFStateContext);
 
   return context.overview;
+}
+
+export function useAllVaultInfo() {
+  const context = React.useContext(RFStateContext);
+
+  return context.vaultState;
+}
+
+export function useIsActiveUserVault(mint: string) {
+  const context = React.useContext(RFStateContext);
+  if (context.vaultState && context.vaultState[mint] && context.vaultState[mint]?.totalColl)
+    return context.vaultState[mint]?.totalColl.toNumber() !== 0;
+  else return false;
 }
 
 export function useTokenMintInfo(mint: string) {

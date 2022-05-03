@@ -31,11 +31,11 @@ export const NavBarProgressBarTVL = (data: NavBarProgressBarTVLProps) => {
     }
 
     // globalState.tvl ? globalState.tvl.toNumber() : 1;
-    const currentValue = Number(new TokenAmount(globalState.tvl as string, USDR_MINT_DECIMALS).fixed());
+    const currentValue = Number(new TokenAmount(globalState.tvlUsd as string, USDR_MINT_DECIMALS).fixed());
     setValue(currentValue);
 
     // globalState.tvlLimit ? globalState.tvlLimit.toNumber() : 20;
-    const maxValue = Number(new TokenAmount(globalState.tvlLimit as string, USDR_MINT_DECIMALS).fixed());
+    const maxValue = Number(new TokenAmount(globalState.tvlCollatCeilingUsd as string, USDR_MINT_DECIMALS).fixed());
 
     if (maxValue === 0 || isNaN(maxValue)) {
       setPercentage(0);
