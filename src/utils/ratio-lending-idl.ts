@@ -344,11 +344,6 @@ export type RatioLending = {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-        },
-        {
-          name: 'associatedTokenProgram';
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [
@@ -486,11 +481,6 @@ export type RatioLending = {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-        },
-        {
-          name: 'associatedTokenProgram';
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [
@@ -540,11 +530,6 @@ export type RatioLending = {
         },
         {
           name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'associatedTokenProgram';
           isMut: false;
           isSigner: false;
         }
@@ -1039,11 +1024,6 @@ export type RatioLending = {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-        },
-        {
-          name: 'associatedTokenProgram';
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [
@@ -1105,11 +1085,6 @@ export type RatioLending = {
         },
         {
           name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'associatedTokenProgram';
           isMut: false;
           isSigner: false;
         }
@@ -1206,11 +1181,6 @@ export type RatioLending = {
         },
         {
           name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'associatedTokenProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1450,34 +1420,6 @@ export type RatioLending = {
           },
           {
             name: 'bump';
-            type: 'u8';
-          },
-          {
-            name: 'reservedU81';
-            type: 'u8';
-          },
-          {
-            name: 'reservedU82';
-            type: 'u8';
-          },
-          {
-            name: 'reservedU83';
-            type: 'u8';
-          },
-          {
-            name: 'reservedU84';
-            type: 'u8';
-          },
-          {
-            name: 'reservedU85';
-            type: 'u8';
-          },
-          {
-            name: 'reservedU86';
-            type: 'u8';
-          },
-          {
-            name: 'reservedU87';
             type: 'u8';
           },
           {
@@ -2028,11 +1970,6 @@ export const IDL: RatioLending = {
           isMut: false,
           isSigner: false,
         },
-        {
-          name: 'associatedTokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
       ],
       args: [
         {
@@ -2170,11 +2107,6 @@ export const IDL: RatioLending = {
           isMut: false,
           isSigner: false,
         },
-        {
-          name: 'associatedTokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
       ],
       args: [
         {
@@ -2223,11 +2155,6 @@ export const IDL: RatioLending = {
         },
         {
           name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'associatedTokenProgram',
           isMut: false,
           isSigner: false,
         },
@@ -2723,11 +2650,6 @@ export const IDL: RatioLending = {
           isMut: false,
           isSigner: false,
         },
-        {
-          name: 'associatedTokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
       ],
       args: [
         {
@@ -2788,11 +2710,6 @@ export const IDL: RatioLending = {
         },
         {
           name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'associatedTokenProgram',
           isMut: false,
           isSigner: false,
         },
@@ -2889,11 +2806,6 @@ export const IDL: RatioLending = {
         },
         {
           name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'associatedTokenProgram',
           isMut: false,
           isSigner: false,
         },
@@ -3133,34 +3045,6 @@ export const IDL: RatioLending = {
           },
           {
             name: 'bump',
-            type: 'u8',
-          },
-          {
-            name: 'reservedU81',
-            type: 'u8',
-          },
-          {
-            name: 'reservedU82',
-            type: 'u8',
-          },
-          {
-            name: 'reservedU83',
-            type: 'u8',
-          },
-          {
-            name: 'reservedU84',
-            type: 'u8',
-          },
-          {
-            name: 'reservedU85',
-            type: 'u8',
-          },
-          {
-            name: 'reservedU86',
-            type: 'u8',
-          },
-          {
-            name: 'reservedU87',
             type: 'u8',
           },
           {
