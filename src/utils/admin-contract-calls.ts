@@ -580,7 +580,7 @@ export async function changeTreasury(connection: Connection, wallet: any, newTre
     const program = getProgramInstance(connection, wallet);
     const globalStateKey = await getGlobalStatePDA();
     const transaction = new Transaction();
-    const ix = await program.instruction.changeTreasuryWallet(newTreasury, {
+    const ix = await program.instruction.changeTreasuryWallet({
       accounts: {
         authority: wallet.publicKey,
         globalState: globalStateKey,

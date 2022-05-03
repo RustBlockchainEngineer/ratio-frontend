@@ -590,11 +590,6 @@ export type RatioLending = {
           isSigner: false;
         },
         {
-          name: 'rent';
-          isMut: false;
-          isSigner: false;
-        },
-        {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
@@ -842,12 +837,7 @@ export type RatioLending = {
           isSigner: false;
         }
       ];
-      args: [
-        {
-          name: 'newTreasury';
-          type: 'publicKey';
-        }
-      ];
+      args: [];
     },
     {
       name: 'changeAuthority';
@@ -2283,11 +2273,6 @@ export const IDL: RatioLending = {
           isSigner: false,
         },
         {
-          name: 'rent',
-          isMut: false,
-          isSigner: false,
-        },
-        {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
@@ -2535,12 +2520,7 @@ export const IDL: RatioLending = {
           isSigner: false,
         },
       ],
-      args: [
-        {
-          name: 'newTreasury',
-          type: 'publicKey',
-        },
-      ],
+      args: [],
     },
     {
       name: 'changeAuthority',
