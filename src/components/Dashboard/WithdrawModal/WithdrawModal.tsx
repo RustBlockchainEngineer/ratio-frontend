@@ -146,7 +146,7 @@ const WithdrawModal = ({ data }: any) => {
               </strong>{' '}
               tokens from your vault.
             </h5>
-            {Number(data.usdrValue) !== 0 && (
+            {Number(data.debtValue) !== 0 && (
               <div className="customInput--valid">LP cannot be withdrawn until USDr debt is paid back</div>
             )}
           </div>
