@@ -1,5 +1,4 @@
 import * as anchor from '@project-serum/anchor';
-import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as serumCmn from '@project-serum/common';
 
 import {
@@ -9,7 +8,7 @@ import {
   getProgramInstance,
   withdrawCollateralTx,
 } from '../ratio-lending';
-import { PublicKey, SystemProgram, Transaction, Connection, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
+import { PublicKey, Transaction, Connection } from '@solana/web3.js';
 import {
   findMinerAddress,
   findMinterAddress,
@@ -165,10 +164,7 @@ export const createSaberQuarryMinerIfneededTx = async (
           rewarder: rewarderKey,
           mintCollat: mintCollKey,
           quarryProgram: QUARRY_ADDRESSES.Mine,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-          rent: SYSVAR_RENT_PUBKEY,
-          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          ...defaultPrograms,
         },
       })
     );
@@ -241,12 +237,11 @@ const unstakeColalteralFromSaberTx = async (
         vault: vaultKey,
         ataCollatVault: ataCollatVault,
         ataCollatMiner: ataCollatMiner,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         quarry,
         miner: minerKey,
         rewarder: rewarderKey,
         quarryProgram: QUARRY_ADDRESSES.Mine,
+        ...defaultPrograms,
       },
     })
   );

@@ -151,14 +151,15 @@ export function RFStateProvider({ children = undefined as any }) {
       );
       const ratio = globalState.collPerRisklv[poolInfo?.riskLevel].toNumber() / 10 ** COLL_RATIOS_DECIMALS;
 
-      const collPrice = calculateCollateralPrice(
+      const price = calculateCollateralPrice(
         lpSupply,
         tokenAmountA,
         oracleInfoA.price.toNumber(),
         tokenAmountB,
         oracleInfoB.price.toNumber()
       );
-      poolInfo['oraclePrice'] = collPrice;
+      poolInfo['oraclePrice'] = price;
+      poolInfo['currentPrice'] = new TokenAmount(price, USDR_MINT_DECIMALS).fixed();
       poolInfo['ratio'] = ratio;
     }
     return poolInfo;
@@ -375,6 +376,12 @@ export function useUserVaultInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
   return context.vaultState ? context.vaultState[mint] : null;
+}
+
+export function useAllPoolInfo() {
+  const context = React.useContext(RFStateContext);
+
+  return context.poolState;
 }
 
 export function useAllVaultInfo() {

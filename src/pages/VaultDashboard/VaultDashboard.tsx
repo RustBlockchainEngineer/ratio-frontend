@@ -24,16 +24,8 @@ import Breadcrumb from '../../components/Breadcrumb';
 import { useRFStateInfo, useUSDrMintInfo, useUserVaultInfo, useTokenMintInfo, usePoolInfo } from '../../contexts/state';
 import { DEFAULT_NETWORK } from '../../constants';
 import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
-import { useFetchSaberLpPrice } from '../../hooks/useFetchSaberLpPrices';
-import { FetchingStatus } from '../../types/fetching-types';
-import { toast } from 'react-toastify';
 import MintableProgressBar from '../../components/Dashboard/MintableProgressBar';
 import TokenCapBanner from '../../components/TokenCapBanner';
-
-const priceCardData = {
-  mainUnit: '',
-  currentPrice: '0',
-};
 
 const VaultDashboard = () => {
   const { mint: vault_mint } = useParams<{ mint: string }>();
@@ -61,6 +53,7 @@ const VaultDashboard = () => {
   const [withdrawValue, setWithdrawValue] = useState(0);
   const generateValue = +new TokenAmount((userVaultInfo as any)?.mintableDebt ?? 0, USDR_MINT_DECIMALS).fixed();
   const [debtValue, setDebtValue] = useState(0);
+
   const [activeVaults, setActiveVaults] = useState<any>();
 
   const allVaults = useSelector(selectors.getAllVaults);
@@ -76,34 +69,11 @@ const VaultDashboard = () => {
     () => `https://solanabeach.io/address/${vault_mint}?cluster=${DEFAULT_NETWORK}`,
     [vault_mint]
   );
-  const { error: errorPrice, status: statusPrice, lpPrice } = useFetchSaberLpPrice(vaultData?.platform?.symbol);
 
   useEffect(() => {
-    const p = allVaults
-      .map((item: any) => {
-        if (overview && overview.activeVaults && Object.keys(overview.activeVaults).indexOf(item.mint) > -1) {
-          return item;
-        }
-      })
-      .filter(Boolean);
+    const p = allVaults.filter((item: any) => item.activeStatus);
     setActiveVaults(p);
   }, [overview, allVaults]);
-
-  useEffect(() => {
-    if (statusPrice === FetchingStatus.Error && errorPrice) {
-      toast.error(`There was an error when fetching the price: ${errorPrice?.message}`);
-    }
-  }, [statusPrice, errorPrice]);
-
-  useEffect(() => {
-    if (lpPrice) {
-      priceCardData.mainUnit = lpPrice.poolName;
-      priceCardData.currentPrice = lpPrice.lpPrice;
-    } else {
-      priceCardData.mainUnit = '';
-      priceCardData.currentPrice = '0';
-    }
-  }, [lpPrice]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && collMint && collAccount) {
@@ -136,7 +106,7 @@ const VaultDashboard = () => {
       const tmpMaxDeposit = Math.min(availableCollat, lpWalletBalance).toFixed(collMint?.decimals);
       setDepositValue(Number(tmpMaxDeposit));
 
-      setLpWalletBalanceUSD((poolInfo.oraclePrice / 10 ** USDR_MINT_DECIMALS) * lpWalletBalance);
+      setLpWalletBalanceUSD(poolInfo.currentPrice * lpWalletBalance);
     }
     return () => {
       setDepositValue(0);
@@ -256,7 +226,11 @@ const VaultDashboard = () => {
           <div className="col-xxl-8">
             <div className="vaultdashboard__bodyleft row">
               <div className="col-lg-6">
-                <PriceCard price={priceCardData} tokenName={vaultData?.title} risk={vaultData?.risk} />
+                <PriceCard
+                  price={{ mainUnit: 'USDC', currentPrice: poolInfo.currentPrice }}
+                  tokenName={vaultData?.title}
+                  risk={vaultData?.risk}
+                />
               </div>
               <div className="col-lg-6">
                 <WalletBalances
