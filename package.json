@@ -54,6 +54,7 @@
     "@solana/spl-token-registry": "^0.2.212",
     "@solana/wallet-adapter-base": "^0.7.0",
     "@solana/web3.js": "^1.22.0",
+    "@strata-foundation/web3-token-auth": "^3.5.4",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.0",
     "apollo-link-logger": "^2.0.0",
     "axios": "^0.21.1",
@@ -100,6 +101,7 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-mock-store": "^1.5.4",
+    "redux-persist": "^6.0.0",
     "set-interval-async": "^2.0.3",
     "typescript": "~4.2.0"
   },

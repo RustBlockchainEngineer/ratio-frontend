@@ -10,6 +10,7 @@ import SwitchButton from '../SwitchButton';
 // import NetworkSelector from '../NetworkSelector';
 
 import { shortenAddress } from '../../utils/utils';
+import { useLocalStorageState } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
 import { NavBarProgressBarTVL } from '../Navbar/NavBarProgressBarTVL';
 import { NavBarProgressBarTotalUSDr } from '../Navbar/NavBarProgressBarTotalUSDr';
@@ -19,7 +20,7 @@ import GuideModal from '../GuideModal';
 type HeaderProps = {
   onClickWalletBtn: () => void;
   darkMode: boolean;
-  enable: boolean;
+  enable?: boolean;
 };
 
 // const isMobile = useMediaQuery({ maxWidth: 1024 });
@@ -35,12 +36,23 @@ const Header = (headerProps: HeaderProps) => {
   const isTabletOrMobile = useMediaQuery({ minWidth: 768, maxWidth: 1349 });
   const isDesktop = useMediaQuery({ minWidth: 1350 });
   const isMobile = useMediaQuery({ maxWidth: 767 });
+  const [autoConnect, setAutoConnect] = useLocalStorageState('autoConnect');
+  const [providerUrl, setProviderUrl] = useLocalStorageState('walletProvider');
 
   useEffect(() => {
     if (connected) {
       setHover(false);
     }
   }, [connected]);
+
+  const onClickDisconnect = () => {
+    wallet?.disconnect();
+    console.log(autoConnect);
+    console.log(providerUrl);
+    setAutoConnect(null);
+    setProviderUrl(null);
+    window.location.reload();
+  };
 
   const renderWalletConnection = () => {
     if (connected) {
@@ -49,7 +61,7 @@ const Header = (headerProps: HeaderProps) => {
           className="header__connected"
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
-          onClick={() => wallet?.disconnect()}
+          onClick={onClickDisconnect}
         >
           <div className={classNames({ header__checked: !hover, header__closed: hover })}>
             {hover ? <IoMdCloseCircle /> : <FaCheck />}

@@ -1,4 +1,6 @@
 import { combineReducers, createStore } from 'redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import { devToolsEnhancer } from 'redux-devtools-extension';
 import { CounterReducer } from './features/counter';
 import { WalletReducer } from './features/wallet';
@@ -11,6 +13,17 @@ const rootReducer = combineReducers({
   dashboard: DashboardReducer,
 });
 
-const store = createStore(rootReducer, /* preloadedState, */ devToolsEnhancer({}));
+const persistConfig = {
+  key: 'root',
+  storage,
+};
 
-export default store;
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// const store = createStore(persistedReducer, /* preloadedState, */ devToolsEnhancer({}));
+
+export default () => {
+  const store = createStore(persistedReducer, /* preloadedState, */ devToolsEnhancer({}));
+  const persistor = persistStore(store);
+  return { store, persistor };
+};

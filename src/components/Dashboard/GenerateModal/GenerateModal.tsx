@@ -5,7 +5,7 @@ import { IoMdClose } from 'react-icons/io';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { ThemeContext } from '../../../contexts/ThemeContext';
-import { borrowUSDr } from '../../../utils/ratio-lending';
+import { borrowUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
@@ -80,8 +80,9 @@ const GenerateModal = ({ data }: any) => {
         postToRatioApi(
           {
             tx_type: 'borrow',
-            address_id: data.mint,
+            address_id: USDR_MINT_KEY,
             signature: txSignature,
+            vault_address: new PublicKey(data.mint),
           },
           `/transaction/${wallet?.publicKey.toBase58()}/new`
         )

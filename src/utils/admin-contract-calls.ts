@@ -37,6 +37,12 @@ export async function toggleEmergencyState(connection: Connection, wallet: any, 
     const globalStateKey = await getGlobalStatePDA();
     const transaction = new Transaction();
     const signers: Keypair[] = [];
+    // const ix = await program.instruction.toggleEmerState(paused, {
+    //   accounts: {
+    //     authority: wallet.publicKey,
+    //     globalState: globalStateKey,
+    //   },
+    // });
     const ix = await program.instruction.toggleEmerState(paused, {
       accounts: {
         authority: wallet.publicKey,
@@ -533,7 +539,7 @@ export async function setHarvestFee(
   const feeNumNew = (feeNum / 100) * feeDeno;
   console.log(`Set Harvest fees ${feeNumNew} / ${feeDeno}`);
   try {
-    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), new BN(feeDeno), {
+    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), {
       accounts: {
         authority: wallet?.publicKey,
         globalState: globalStateKey,

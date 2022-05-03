@@ -7,7 +7,6 @@ export async function postToRatioApi(data = {}, route = '', authToken?: any) {
     return await postWithAuthToRatioApi(data, route, authToken);
   } else {
     console.log(`${API_ENDPOINT}${route}`);
-    console.log(authToken);
     const response = await fetch(`${API_ENDPOINT}${route}`, {
       body: JSON.stringify(data),
       headers: {

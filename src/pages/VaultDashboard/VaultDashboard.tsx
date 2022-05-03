@@ -31,7 +31,6 @@ const VaultDashboard = () => {
   const { mint: vault_mint } = useParams<{ mint: string }>();
   const connection = useConnection();
   const { wallet } = useWallet();
-  const [isLoading, setIsLoading] = useState(false);
 
   const usdrMint = useUSDrMintInfo();
   const collMint = useTokenMintInfo(vault_mint as string);
@@ -147,27 +146,16 @@ const VaultDashboard = () => {
   }, [userVaultInfo, vault_mint, usdrMint]);
 
   useEffect(() => {
-    setIsLoading(true);
     const result: any = allVaults.find((item: any) => item.mint === vault_mint);
     if (result) {
       setVaultData(result);
     }
-    setIsLoading(false);
   }, [allVaults, vault_mint]);
 
   const isMobile = useMediaQuery({ maxWidth: 1024 });
   // const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
   // const isDefault = useMediaQuery({ minWidth: 1024 });
   const isDesktop = useMediaQuery({ minWidth: 1025 });
-
-  if (isLoading)
-    return (
-      <div className="col allvaults__loading">
-        <div className="spinner-border text-info" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
 
   return (
     <>
@@ -227,7 +215,7 @@ const VaultDashboard = () => {
             <div className="vaultdashboard__bodyleft row">
               <div className="col-lg-6">
                 <PriceCard
-                  price={{ mainUnit: 'USDC', currentPrice: poolInfo.currentPrice }}
+                  price={{ mainUnit: 'USDC', currentPrice: poolInfo ? poolInfo.currentPrice : '0' }}
                   tokenName={vaultData?.title}
                   risk={vaultData?.risk}
                 />

@@ -7,7 +7,7 @@ import { ThemeContext } from '../../../contexts/ThemeContext';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
-import { repayUSDr, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
+import { repayUSDr, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { toast } from 'react-toastify';
 import AmountSlider from '../AmountSlider';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
@@ -63,8 +63,9 @@ const PaybackModal = ({ data }: any) => {
         postToRatioApi(
           {
             tx_type: 'payback',
-            address_id: new PublicKey(data.mint).toString(),
+            address_id: USDR_MINT_KEY,
             signature: txSignature,
+            vault_address: new PublicKey(data.mint),
           },
           `/transaction/${wallet?.publicKey?.toBase58()}/new`
         )

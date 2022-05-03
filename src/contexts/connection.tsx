@@ -1,11 +1,23 @@
-import { Account, clusterApiUrl, Connection, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
+import Axios from 'axios';
+import {
+  Account,
+  clusterApiUrl,
+  Connection,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+  ConnectionConfig as Web3ConnectionConfig,
+} from '@solana/web3.js';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { tokenAuthFetchMiddleware } from '@strata-foundation/web3-token-auth';
 import { TokenListProvider, ENV as ChainID, TokenInfo } from '@solana/spl-token-registry';
+
 import { useLocalStorageState } from '../utils/utils';
 import { notify } from '../utils/notifications';
 import { setProgramIds } from '../utils/ids';
 import { WalletAdapter } from './wallet';
 import { cache, getMultipleAccounts, MintParser } from './accounts';
+import { API_ENDPOINT } from '../constants';
 
 export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 
@@ -64,13 +76,26 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
   tokenMap: new Map<string, TokenInfo>(),
 });
 
+const getRpcAuthToken = async () => {
+  const url = new URL('rpcauth/get-token', API_ENDPOINT);
+  const resp = await Axios.post(url.toString());
+  const { access_token }: { access_token: string } = resp.data;
+  return access_token;
+};
+
 export function ConnectionProvider({ children = undefined as any }) {
   const [endpoint, setEndpoint] = useLocalStorageState('connectionEndpts', DEFAULT.endpoint);
 
   const [slippage, setSlippage] = useLocalStorageState('slippage', DEFAULT_SLIPPAGE.toString());
 
-  const connection = useMemo(() => new Connection(endpoint, 'recent'), [endpoint]);
-  const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [endpoint]);
+  const web3ConnectionConfig: Web3ConnectionConfig = {
+    commitment: 'recent', // TODO: Set to "confirmed"?
+    fetchMiddleware: tokenAuthFetchMiddleware({
+      getToken: getRpcAuthToken,
+    }),
+  };
+  const connection = useMemo(() => new Connection(endpoint, web3ConnectionConfig), [endpoint]);
+  const sendConnection = useMemo(() => new Connection(endpoint, web3ConnectionConfig), [endpoint]);
 
   const chain = ENDPOINTS.find((end) => end.endpoint === endpoint) || DEFAULT;
   const env = chain.name;
