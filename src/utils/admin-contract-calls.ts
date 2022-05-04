@@ -283,6 +283,27 @@ export async function createPool(
   return tx;
 }
 
+// getPool
+export async function getPool(connection: Connection, wallet: any, poolKey: PublicKey) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+
+  const pool = await program.account.pool.fetchNullable(poolKey);
+  return pool;
+}
+
+export async function getCurrentEmergencyState(
+  connection: Connection,
+  wallet: WalletAdapter | undefined
+): Promise<EmergencyState> {
+  try {
+    const { globalState } = await getGlobalState(connection, wallet);
+    return globalState.paused as EmergencyState;
+  } catch (e) {
+    console.error('Error while fetching the emergency state');
+    throw e;
+  }
+}
 export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, newOwner: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
