@@ -283,6 +283,15 @@ export async function createPool(
   return tx;
 }
 
+// getPool
+export async function getPool(connection: Connection, wallet: any, poolKey: PublicKey) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+
+  const pool = await program.account.pool.fetchNullable(poolKey);
+  return pool;
+}
+
 export async function getCurrentEmergencyState(
   connection: Connection,
   wallet: WalletAdapter | undefined
