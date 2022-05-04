@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
-import { useAccountByMint, useMint } from '../../../contexts/accounts';
+import { useAccountByMint } from '../../../contexts/accounts';
 import { ThemeContext } from '../../../contexts/ThemeContext';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
@@ -13,7 +13,7 @@ import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { LPair } from '../../../types/VaultTypes';
-import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
+import { UPDATE_USER_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
 
 const DepositModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -22,7 +22,7 @@ const DepositModal = ({ data }: any) => {
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const collMint = useMint(data?.mint);
+  const poolInfo = usePoolInfo(data?.mint);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
@@ -59,7 +59,7 @@ const DepositModal = ({ data }: any) => {
         setInvalidStr('Insufficient funds to deposit!');
         return;
       }
-      if (!(collAccount && collMint && connected)) {
+      if (!(collAccount && connected)) {
         setDepositStatus(true);
         setInvalidStr('Invalid  User Collateral account to deposit!');
         return;
@@ -70,7 +70,7 @@ const DepositModal = ({ data }: any) => {
         connection,
         wallet,
         vault as LPair,
-        depositAmount * Math.pow(10, collMint?.decimals ?? 0),
+        depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         collAccount?.pubkey.toString() as string
       );
 
