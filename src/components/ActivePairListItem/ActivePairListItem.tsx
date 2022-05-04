@@ -14,14 +14,7 @@ import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
-import {
-  UPDATE_REWARD_STATE,
-  useUpdateRFStates,
-  useUSDrMintInfo,
-  useUserVaultInfo,
-  usePoolInfo,
-  useTokenMintInfo,
-} from '../../contexts/state';
+import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserVaultInfo, usePoolInfo } from '../../contexts/state';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
@@ -30,9 +23,6 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const { wallet, connected } = useWallet();
   const connection = useConnection();
-
-  const usdrMint = useUSDrMintInfo();
-  const collMint = useTokenMintInfo(data.mint);
 
   const [expand, setExpand] = useState(false);
 
@@ -68,13 +58,13 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   }, [wallet, connection]);
 
   useEffect(() => {
-    if (connection && collMint && usdrMint && data.mint) {
-      const tvlAmount = new TokenAmount((poolState as any)?.totalColl ?? 0, collMint?.decimals);
+    if (connection && poolState) {
+      const tvlAmount = new TokenAmount((poolState as any)?.totalColl ?? 0, poolState?.mintDecimals);
       const tvlUSDAmount = new TokenAmount((poolState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS);
-      const debtAmount = new TokenAmount((poolState as any)?.totalDebt ?? 0, usdrMint?.decimals);
+      const debtAmount = new TokenAmount((poolState as any)?.totalDebt ?? 0, USDR_MINT_DECIMALS);
       const remainAmount = new TokenAmount(
         ((poolState as any)?.debtCeiling ?? 0) - ((poolState as any)?.totalDebt ?? 0),
-        usdrMint?.decimals
+        USDR_MINT_DECIMALS
       );
       setTVL(Number(tvlAmount.fixed()));
       setTVLUSD(Number(tvlUSDAmount.fixed()));
@@ -86,7 +76,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
       setTVL(0);
       setTotalDebt(0);
     };
-  }, [connection, collMint, usdrMint, poolState]);
+  }, [connection, poolState]);
 
   const showDashboard = () => {
     if (!connected) {

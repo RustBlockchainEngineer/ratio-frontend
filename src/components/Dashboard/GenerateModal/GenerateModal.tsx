@@ -5,13 +5,13 @@ import { IoMdClose } from 'react-icons/io';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { ThemeContext } from '../../../contexts/ThemeContext';
-import { borrowUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { borrowUSDr, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { UPDATE_USER_STATE, useUpdateRFStates, useUSDrMintInfo, useUserVaultInfo } from '../../../contexts/state';
+import { UPDATE_USER_STATE, useUpdateRFStates, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
@@ -25,7 +25,6 @@ const GenerateModal = ({ data }: any) => {
   const [mintTime, setMintTime] = useState('');
 
   const userState = useUserVaultInfo(data.mint);
-  const usdrMint = useUSDrMintInfo();
 
   const [borrowAmount, setBorrowAmount] = useState<any>();
   const updateRFStates = useUpdateRFStates();
@@ -66,14 +65,9 @@ const GenerateModal = ({ data }: any) => {
       setInvalidStr('Amount is invalid to generate USDr!');
       return;
     }
-    if (!usdrMint) {
-      setMintStatus(true);
-      setInvalidStr('Invalid USDr Mint address to generate!');
-      return;
-    }
 
     setIsMinting(true);
-    borrowUSDr(connection, wallet, borrowAmount * Math.pow(10, usdrMint.decimals), new PublicKey(data.mint))
+    borrowUSDr(connection, wallet, borrowAmount * 10 ** USDR_MINT_DECIMALS, new PublicKey(data.mint))
       .then((txSignature: string) => {
         updateRFStates(UPDATE_USER_STATE, data.mint);
         toast.success('Successfully minted USDr tokens!');
