@@ -1,13 +1,17 @@
+import { PublicKey } from '@solana/web3.js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Dropdown, Form, Row, Table } from 'react-bootstrap';
+import { Button, Dropdown, Form, Row, Col, Table } from 'react-bootstrap';
 import { IoMenuOutline, IoTrashOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
+import { useConnection } from '../../contexts/connection';
+import { useWallet } from '../../contexts/wallet';
 import { useFetchData } from '../../hooks/useFetchData';
 import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
 import { FetchingStatus } from '../../types/fetching-types';
+import { createPriceOracle, getPriceOracle } from '../../utils/admin-contract-calls';
 import AdminFormLayout from '../AdminFormLayout';
 import PlatformAdditionModal from './PlatformAdditionModal';
 import PriceSourceAdditionModal from './PriceSourceAdditionModal';
@@ -34,6 +38,8 @@ export default function TokensAdminForm() {
   const [showPlatformAdditionModal, setShowPlatformAdditionModal] = useState(false);
   const [showPriceSourceAdditionModal, setShowPriceSourceAdditionModal] = useState(false);
   const { data: platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
+  const connection = useConnection();
+  const { wallet } = useWallet();
   const {
     data: sources,
     status: sourcesFetchStatus,
@@ -165,6 +171,22 @@ export default function TokensAdminForm() {
       token_ids: prev,
     }));
   };
+  const createNewPriceOracle = async () => {
+    try {
+      if (values && values.address_id) {
+        if (await getPriceOracle(connection, wallet, new PublicKey(values.address_id))) {
+          toast.error('This oracle exists already!');
+        } else {
+          await createPriceOracle(connection, wallet, new PublicKey(values.address_id));
+          toast.success('New oracle has been created successfully!');
+        }
+      } else {
+        toast.error('Input token address!');
+      }
+    } catch (e) {
+      toast.error('Creating new oracle is failed!');
+    }
+  };
   return (
     <AdminFormLayout>
       {platformFetchStatus === FetchingStatus.Error &&
@@ -179,14 +201,20 @@ export default function TokensAdminForm() {
           <AdminFormInput handleChange={handleChange} label="Icon url" name="icon" value={values?.icon} />
         </Row>
         <Row>
-          <Button
-            variant="info"
-            className="float-end"
-            type="button"
-            onClick={() => setShowPriceSourceAdditionModal(true)}
-          >
-            Add a price source for this token
-          </Button>
+          <Col>
+            <Button
+              variant="info"
+              className="float-end"
+              type="button"
+              onClick={() => setShowPriceSourceAdditionModal(true)}
+            >
+              Add a price source for this token
+            </Button>
+            &nbsp;
+            <Button variant="info" className="float-end" type="button" onClick={() => createNewPriceOracle()}>
+              Create Price Oracle
+            </Button>
+          </Col>
           <Table className="mt-3" striped bordered hover size="sm">
             <thead>
               <tr>

@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
-import { Form, Row, Button, Table } from 'react-bootstrap';
+import { Form, Row, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants';
@@ -9,13 +9,14 @@ import { useConnection } from '../../contexts/connection';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useWallet } from '../../contexts/wallet';
 import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
-import { useSuperOwner } from '../../hooks/useSuperOwner';
+
 import { FetchingStatus } from '../../types/fetching-types';
 import { LPAssetCreationData, LPEditionData, RISK_RATING } from '../../types/VaultTypes';
 import { createPool } from '../../utils/admin-contract-calls';
 import { getLendingPoolByMint, TYPE_ID_SABER } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
 import { getPoolPDA } from '../../utils/ratio-pda';
+import { useRFStateInfo } from '../../contexts/state';
 
 interface VaultEditionFormProps {
   values: LPEditionData;
@@ -31,7 +32,9 @@ interface PoolData {
 }
 
 export default function VaultEditionForm({ values, onSave = () => {} }: VaultEditionFormProps) {
-  const superOwner = useSuperOwner();
+  const globalState = useRFStateInfo();
+  const superOwner = globalState ? globalState.authority.toString() : '';
+
   const [validated, setValidated] = useState(false);
   const [data, setData] = useState<LPEditionData>({
     ...values,
@@ -249,7 +252,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
               ))}
           </AdminFormInput>
         </Row>
-        <Row>
+        {/* <Row>
           <Button variant="info" className="float-end" type="button" onClick={() => setShowModal(true)}>
             Add token to vault
           </Button>
@@ -277,7 +280,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
                 ))}
             </tbody>
           </Table>
-        </Row>
+        </Row> */}
         <Button variant="primary" type="submit">
           Save
         </Button>

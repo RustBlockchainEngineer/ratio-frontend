@@ -124,14 +124,14 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     if (userVaultInfo && usdrMint) {
-      const tmpDebtValue = new TokenAmount((userVaultInfo as any).debt, usdrMint?.decimals).fixed();
-      setDebtValue(Number(tmpDebtValue));
+      const debtValue = +new TokenAmount((userVaultInfo as any).debt, usdrMint?.decimals).fixed();
+      setDebtValue(debtValue);
 
       if (vault_mint) {
         setVaultDebtData({
           mint: vault_mint,
           usdrMint: USDR_MINT_KEY,
-          usdrValue: Number(tmpDebtValue),
+          usdrValue: debtValue,
         });
       }
     }
@@ -253,6 +253,7 @@ const VaultDashboard = () => {
                   tokenName={vaultData.title}
                   debtValue={debtValue}
                   generateValue={generateValue}
+                  usdrWalletValue={usdrWalletBalance}
                   type="borrow_payback"
                   riskLevel={getRiskLevelNumber(vault_mint)}
                 />

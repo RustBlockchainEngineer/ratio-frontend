@@ -31,7 +31,7 @@ const WithdrawModal = ({ data }: any) => {
   const updateRFStates = useUpdateRFStates();
   const [withdrawStatus, setWithdrawStatus] = useState(false);
   const [invalidStr, setInvalidStr] = useState('');
-  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [buttonDisabled, setButtonDisabled] = useState(+data.debtValue !== 0);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
 
@@ -146,7 +146,7 @@ const WithdrawModal = ({ data }: any) => {
               </strong>{' '}
               tokens from your vault.
             </h5>
-            {Number(data.usdrValue) !== 0 && (
+            {Number(data.debtValue) !== 0 && (
               <div className="customInput--valid">LP cannot be withdrawn until USDr debt is paid back</div>
             )}
           </div>
@@ -181,7 +181,7 @@ const WithdrawModal = ({ data }: any) => {
             />
             <Button
               className="button--blue bottomBtn"
-              disabled={withdrawAmount <= 0 || buttonDisabled || Number(data.usdrValue) !== 0 || isWithdrawing}
+              disabled={withdrawAmount <= 0 || buttonDisabled || +data.debtValue !== 0 || isWithdrawing}
               onClick={withdraw}
             >
               Withdraw Assets

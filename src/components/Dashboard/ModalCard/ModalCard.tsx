@@ -17,6 +17,7 @@ const ModalCard = ({
   withdrawValue,
   generateValue,
   debtValue,
+  usdrWalletValue,
   riskLevel,
 }: any) => {
   const depositData = {
@@ -35,7 +36,7 @@ const ModalCard = ({
     icons: icons,
     title: tokenName,
     value: withdrawValue,
-    usdrValue: debtValue,
+    debtValue: debtValue,
     usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
   };
@@ -43,7 +44,8 @@ const ModalCard = ({
     mint: mintAddress,
     icons: [usdrIcon],
     title: tokenName,
-    usdrValue: debtValue,
+    usdrValue: usdrWalletValue,
+    debtValue: debtValue,
     usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
   };
@@ -99,7 +101,7 @@ const ModalCard = ({
             {type === 'borrow_payback' && (
               <div className="d-flex align-items-center">
                 {icons && <img src={icons[0]} alt={icons[0].toString()} />}
-                <p className="ml-2">{Math.ceil(paybackData.usdrValue * 100) / 100} USDr</p>
+                <p className="ml-2">{Math.ceil(paybackData.debtValue * 100) / 100} USDr</p>
               </div>
             )}
             {type === 'deposit_withdraw' && (

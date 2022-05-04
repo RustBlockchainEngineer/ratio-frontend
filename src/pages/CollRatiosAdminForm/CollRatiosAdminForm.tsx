@@ -5,10 +5,11 @@ import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
+import { useRFStateInfo } from '../../contexts/state';
 import { useWallet } from '../../contexts/wallet';
-import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { CollateralizationRatios } from '../../types/admin-types';
-import { getCollateralRatio, setCollateralRatio } from '../../utils/admin-contract-calls';
+import { setCollateralRatio } from '../../utils/admin-contract-calls';
+import { COLL_RATIOS_DECIMALS } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 
 export default function CollRatiosAdminForm() {
@@ -29,7 +30,9 @@ export default function CollRatiosAdminForm() {
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
-  const superOwner = useSuperOwner();
+
+  const globalState = useRFStateInfo();
+  const superOwner = globalState ? globalState.authority.toString() : '';
 
   const handleChange = (event: any) => {
     setData((values) => ({
@@ -56,20 +59,23 @@ export default function CollRatiosAdminForm() {
   };
 
   useEffect(() => {
-    let active = true;
-    load();
-    return () => {
-      active = false;
-    };
-
-    async function load() {
-      const res = await getCollateralRatio(connection, wallet);
-      if (!active) {
-        return;
-      }
-      setData(res);
+    if (globalState) {
+      const readValues = globalState.collPerRisklv.map((risk) => risk.toNumber());
+      const result: CollateralizationRatios = {
+        cr_aaa_ratio: readValues[0] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_aa_ratio: readValues[1] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_a_ratio: readValues[2] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_bbb_ratio: readValues[3] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_bb_ratio: readValues[4] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_b_ratio: readValues[5] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_ccc_ratio: readValues[6] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_cc_ratio: readValues[7] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_c_ratio: readValues[8] / 10 ** COLL_RATIOS_DECIMALS,
+        cr_d_ratio: readValues[9] / 10 ** COLL_RATIOS_DECIMALS,
+      };
+      setData(result);
     }
-  }, [getCollateralRatio]);
+  }, [globalState]);
 
   const updateDatabaseValues = async () => {
     const response = await fetch(`${API_ENDPOINT}/ratioconfig/collateralratio`, {

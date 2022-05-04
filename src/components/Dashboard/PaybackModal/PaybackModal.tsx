@@ -15,6 +15,8 @@ import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
 const PaybackModal = ({ data }: any) => {
+  const maxPaybackAmount = Math.min(data.usdrValue, data.debtValue);
+
   const theme = useContext(ThemeContext);
   const { darkMode } = theme.state;
   const [show, setShow] = useState(false);
@@ -48,7 +50,7 @@ const PaybackModal = ({ data }: any) => {
 
   const repay = async () => {
     console.log('PayBack', paybackAmount);
-    if (!(paybackAmount && data.usdrValue >= paybackAmount)) {
+    if (!(paybackAmount && maxPaybackAmount >= paybackAmount)) {
       setPaybackStatus(true);
       setInvalidStr('Insufficient funds to payback!');
       return;
@@ -106,7 +108,7 @@ const PaybackModal = ({ data }: any) => {
         data-theme={darkMode ? 'dark' : 'light'}
         onEntered={() => {
           setAmountValue(100);
-          setPayBackAmount(data.usdrValue);
+          setPayBackAmount(maxPaybackAmount);
           setPaybackStatus(false);
           setButtonDisabled(false);
         }}
@@ -127,7 +129,7 @@ const PaybackModal = ({ data }: any) => {
             <h4>Pay back USDr debt</h4>
             <h5>
               You owe &nbsp;
-              <span className="dashboardModal__modal__header-red">{data.usdrValue} USDr </span>. Pay back some or all of
+              <span className="dashboardModal__modal__header-red">{data.debtValue} USDr </span>. Pay back some or all of
               your debt below.
             </h5>
           </div>
@@ -138,21 +140,21 @@ const PaybackModal = ({ data }: any) => {
             <CustomInput
               appendStr="Max"
               // initValue={'0'}
-              appendValueStr={'' + data.usdrValue}
+              appendValueStr={'' + maxPaybackAmount}
               tokenStr={`USDr`}
               onTextChange={(value: any) => {
-                setAmountValue((value / data.usdrValue) * 100);
+                setAmountValue((value / maxPaybackAmount) * 100);
                 setPayBackAmount(value);
                 setPaybackStatus(false);
                 setButtonDisabled(false);
               }}
-              maxValue={data.usdrValue}
+              maxValue={maxPaybackAmount}
               valid={paybackStatus}
               invalidStr={invalidStr}
             />
             <AmountSlider
               onChangeValue={(value: any) => {
-                setPayBackAmount(Number(data.usdrValue * (value / 100)).toFixed(2));
+                setPayBackAmount(Number(maxPaybackAmount * (value / 100)).toFixed(2));
                 setAmountValue(value);
                 setPaybackStatus(false);
                 setButtonDisabled(false);

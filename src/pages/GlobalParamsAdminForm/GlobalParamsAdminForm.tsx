@@ -6,17 +6,11 @@ import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
+import { useRFStateInfo } from '../../contexts/state';
 import { useWallet, WalletAdapter } from '../../contexts/wallet';
-import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { IIndexable } from '../../types/admin-types';
-import {
-  getGlobalDebtCeiling,
-  getGlobalTVLLimit,
-  getUserDebtCeiling,
-  setGlobalDebtCeiling,
-  setGlobalTvlLimit,
-  setUserDebtCeiling,
-} from '../../utils/admin-contract-calls';
+import { setGlobalDebtCeiling, setGlobalTvlLimit, setUserDebtCeiling } from '../../utils/admin-contract-calls';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 
 interface GlobalParams {
@@ -60,7 +54,9 @@ export default function GlobalParamsAdminForm() {
     price_interval: false,
   };
   const [data, setData] = useState<GlobalParams>(defaultValues);
-  const superOwner = useSuperOwner();
+  const globalState = useRFStateInfo();
+  const superOwner = globalState ? globalState.authority.toString() : '';
+
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
@@ -95,58 +91,18 @@ export default function GlobalParamsAdminForm() {
   };
 
   useEffect(() => {
-    let active = true;
-    getGlobalTVLLimit(connection, wallet).then((res) => {
-      if (!active) {
-        return;
-      }
+    if (globalState) {
       setData((prev) => {
         return {
           ...prev,
-          global_max_deposit: res,
+          global_max_deposit: globalState.tvlCollatCeilingUsd / 10 ** USDR_MINT_DECIMALS,
+          global_max_usdr: globalState.debtCeilingGlobal / 10 ** USDR_MINT_DECIMALS,
+          user_max_usdr: globalState.debtCeilingUser / 10 ** USDR_MINT_DECIMALS,
         };
       });
-    });
-    return () => {
-      active = false;
-    };
-  }, [getGlobalTVLLimit]);
-
-  useEffect(() => {
-    let active = true;
-    getGlobalDebtCeiling(connection, wallet).then((res) => {
-      if (!active) {
-        return;
-      }
-      setData((prev) => {
-        return {
-          ...prev,
-          global_max_usdr: res,
-        };
-      });
-    });
-    return () => {
-      active = false;
-    };
-  }, [getGlobalDebtCeiling]);
-
-  useEffect(() => {
-    let active = true;
-    getUserDebtCeiling(connection, wallet).then((res) => {
-      if (!active) {
-        return;
-      }
-      setData((prev) => {
-        return {
-          ...prev,
-          user_max_usdr: res,
-        };
-      });
-    });
-    return () => {
-      active = false;
-    };
-  }, [getUserDebtCeiling]);
+    }
+    return () => {};
+  }, [globalState]);
 
   const fetchData = useCallback(async () => {
     const response = await fetch(`${API_ENDPOINT}/ratioconfig/general/last`, {
