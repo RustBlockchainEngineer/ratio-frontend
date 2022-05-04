@@ -1,16 +1,15 @@
 import { Connection } from '@solana/web3.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Form, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants/constants';
 import { useAuthContextProvider } from '../../contexts/authAPI';
 import { useConnection } from '../../contexts/connection';
+import { useRFStateInfo } from '../../contexts/state';
 import { useWallet, WalletAdapter } from '../../contexts/wallet';
-import { useSuperOwner } from '../../hooks/useSuperOwner';
 import { IIndexable } from '../../types/admin-types';
 import {
-  getHarvestFee,
   setBorrowFee,
   setDepositFee,
   setHarvestFee,
@@ -80,10 +79,13 @@ export default function FeesAdminForm() {
   };
   const [data, setData] = useState<Fees>(defaultValues);
   const [changedTracker, setChangedTracker] = useState<FeesChanged>(defaultValuesTrackers);
-  const superOwner = useSuperOwner();
+
   const connection = useConnection();
   const gWallet = useWallet();
   const wallet = gWallet.wallet;
+
+  const globalState = useRFStateInfo();
+  const superOwner = globalState ? globalState.authority.toString() : '';
 
   const handleChange = (event: any) => {
     setData((values) => ({
@@ -113,40 +115,16 @@ export default function FeesAdminForm() {
     return result;
   };
 
-  const fetchData = useCallback(async () => {
-    const response = await fetch(`${API_ENDPOINT}/ratioconfig/transfees/last`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': JSON.stringify(accessToken),
-      },
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw await response.json();
-    }
-    return parseJsonResponse(await response.json());
-  }, []);
-
   useEffect(() => {
-    let active = true;
-    load();
-    return () => {
-      active = false;
-    };
-
-    async function load() {
-      const res = await getHarvestFee(connection, wallet);
-      if (!active) {
-        return;
-      }
+    if (globalState) {
       setData((prev) => {
         return {
           ...prev,
-          harvest_fee: res,
+          harvest_fee: (globalState.feeNum.toNumber() / globalState.feeDeno.toNumber()) * 100,
         };
       });
     }
-  }, [fetchData]);
+  }, [globalState]);
 
   const updateContractValues = async () => {
     if (wallet?.publicKey?.toBase58() !== superOwner) {

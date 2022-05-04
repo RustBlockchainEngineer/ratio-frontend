@@ -99,15 +99,6 @@ export async function getAllOracleState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
   return await program.account.oracle.all();
 }
-export async function getCurrentSuperOwner(connection: Connection, wallet: any): Promise<PublicKey> {
-  try {
-    const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.authority;
-  } catch (e) {
-    console.error('Error while fetching the super owner');
-    throw e;
-  }
-}
 
 export async function isGlobalStateCreated(connection: Connection, wallet: any) {
   try {

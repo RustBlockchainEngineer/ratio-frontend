@@ -1,29 +1,30 @@
 import { PublicKey } from '@solana/web3.js';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useConnection } from '../../contexts/connection';
+import { useRFStateInfo } from '../../contexts/state';
 import { useWallet } from '../../contexts/wallet';
 import { EmergencyState } from '../../types/admin-types';
 import {
   changeSuperOwner,
-  getCurrentEmergencyState,
   changeTreasury,
   setEmergencyState as setEmergencyStateOnContract,
-  getCurrentTreasuryWallet,
 } from '../../utils/admin-contract-calls';
-import { getCurrentSuperOwner } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 
 export default function AdminTasksForm() {
-  const [superOwner, setSuperOwner] = useState<string>('');
-  const [originalSuperOwner, setOriginalSuperOwner] = useState<string>('');
-  const [treasuryWallet, setTreasuryWallet] = useState<string>('');
-  const [originalTreasuryWallet, setOriginalTreasuryWallet] = useState<string>('');
+  const globalState = useRFStateInfo();
+  const originalSuperOwner = globalState ? globalState.authority.toString() : '';
+  const [superOwner, setSuperOwner] = useState<string>(originalSuperOwner);
+
+  const originalTreasuryWallet = globalState ? globalState.treasury.toString() : '';
+  const [treasuryWallet, setTreasuryWallet] = useState<string>(originalTreasuryWallet);
+
   const [validated, setValidated] = useState(false);
   const [treasuryWalletFormValidated, setTreasuryWalletFormValidated] = useState(false);
-  const [currEmerState, setCurrEmerState] = useState(EmergencyState.UNKNOWN);
+  const currEmerState = globalState ? globalState.paused : 0;
   const [emerStateChanging, setEmerStateChanging] = useState(false);
   const [emerStateVersion, setEmerStateVersion] = useState(1);
   const connection = useConnection();
@@ -35,46 +36,6 @@ export default function AdminTasksForm() {
     () => originalTreasuryWallet !== treasuryWallet,
     [originalTreasuryWallet, treasuryWallet]
   );
-
-  useEffect(() => {
-    let active = true;
-    getCurrentSuperOwner(connection, wallet).then((result: PublicKey) => {
-      if (active && result) {
-        const resultAddr = result.toBase58();
-        setSuperOwner(resultAddr);
-        setOriginalSuperOwner(resultAddr);
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [connection, wallet]);
-
-  useEffect(() => {
-    let active = true;
-    getCurrentTreasuryWallet(connection, wallet).then((result: PublicKey) => {
-      if (active && result) {
-        const resultAddr = result.toBase58();
-        setTreasuryWallet(resultAddr);
-        setOriginalTreasuryWallet(resultAddr);
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [connection, wallet]);
-
-  useEffect(() => {
-    let active = true;
-    getCurrentEmergencyState(connection, wallet).then((result: EmergencyState) => {
-      if (active && result !== undefined) {
-        setCurrEmerState(result);
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [connection, wallet, emerStateVersion]);
 
   const handleSuperOwnerInputChange = (event: any) => {
     setSuperOwner(event.target.value);
@@ -123,7 +84,6 @@ export default function AdminTasksForm() {
     setValidated(true);
     try {
       await changeSuperOwner(connection, wallet, new PublicKey(superOwner));
-      setOriginalSuperOwner(superOwner);
       toast.info('Super owner changed successfully');
     } catch (error: unknown) {
       toast.error('There was an error when changing the super owner');
