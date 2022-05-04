@@ -1,10 +1,9 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { repayUSDr } from '../../../utils/ratio-lending';
+import { repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 
 import usdrIcon from '../../../assets/images/USDr.png';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
@@ -12,7 +11,6 @@ import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 const VaultDebt = ({ data }: any) => {
   const connection = useConnection();
   const { wallet } = useWallet();
-  const usdrMint = useMint(data.usdrMint);
 
   const [didMount, setDidMount] = React.useState(false);
   const updateRFStates = useUpdateRFStates();
@@ -23,7 +21,7 @@ const VaultDebt = ({ data }: any) => {
     icons: [usdrIcon],
     title: '',
     usdrValue: data.usdrValue,
-    usdrMint: data.usdrMint,
+    usdrMint: USDR_MINT_KEY,
   };
 
   useEffect(() => {

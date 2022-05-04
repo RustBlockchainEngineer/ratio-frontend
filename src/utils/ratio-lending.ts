@@ -157,7 +157,6 @@ export async function getAllLendingPool(connection: Connection): Promise<any[]> 
   return await program.account.pool.all();
 }
 
-
 export async function depositCollateralTx(
   connection: Connection,
   wallet: any,

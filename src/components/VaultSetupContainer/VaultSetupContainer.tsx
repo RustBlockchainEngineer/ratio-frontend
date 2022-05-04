@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 // import { IoIosArrowRoundForward } from 'react-icons/io';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { useAccountByMint, useMint } from '../../contexts/accounts';
+import { useAccountByMint } from '../../contexts/accounts';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 
@@ -12,7 +12,7 @@ import CustomInput from '../CustomInput';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
-import { UPDATE_USER_STATE, useUpdateRFStates } from '../../contexts/state';
+import { UPDATE_USER_STATE, usePoolInfo, useUpdateRFStates } from '../../contexts/state';
 import WarningLimitBox from './WarningLimitBox';
 import { TokenAmount } from '../../utils/safe-math';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
@@ -22,8 +22,8 @@ const VaultSetupContainer = ({ data }: any) => {
   const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const collMint = useMint(data?.mint);
   const { vaults } = useVaultsContextProvider();
+  const poolInfo = usePoolInfo(data?.mint);
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
   const PoolManagerFactory = useGetPoolManager(vault);
 
@@ -58,7 +58,7 @@ const VaultSetupContainer = ({ data }: any) => {
       setInvalidStr('Insufficient funds to deposit!');
       return;
     }
-    if (!(collAccount && collMint && connected)) {
+    if (!(collAccount && poolInfo && connected)) {
       setDepositStatus(true);
       setInvalidStr('Invalid  User Collateral account to deposit!');
       return;
@@ -67,7 +67,7 @@ const VaultSetupContainer = ({ data }: any) => {
       connection,
       wallet,
       vault as LPair,
-      depositAmount * Math.pow(10, collMint?.decimals ?? 0),
+      depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
       collAccount?.pubkey.toString() as string
     )
       .then(() => {
