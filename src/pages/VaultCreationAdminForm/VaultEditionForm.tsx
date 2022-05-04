@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
-import { Form, Row, Button, Table } from 'react-bootstrap';
+import { Form, Row, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AdminFormInput from '../../components/AdminFormInput';
 import { API_ENDPOINT } from '../../constants';
@@ -249,7 +249,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
               ))}
           </AdminFormInput>
         </Row>
-        <Row>
+        {/* <Row>
           <Button variant="info" className="float-end" type="button" onClick={() => setShowModal(true)}>
             Add token to vault
           </Button>
@@ -277,7 +277,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
                 ))}
             </tbody>
           </Table>
-        </Row>
+        </Row> */}
         <Button variant="primary" type="submit">
           Save
         </Button>

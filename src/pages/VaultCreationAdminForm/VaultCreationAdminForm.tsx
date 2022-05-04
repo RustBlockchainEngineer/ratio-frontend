@@ -27,6 +27,7 @@ export default function VaultCreationAdminForm() {
     liquidation_ratio: 0,
     risk_rating: '',
     lpasset: [],
+    reward_mint: '',
   };
   const onCreateProgramState = async () => {
     await createGlobalState(connection, wallet);

@@ -106,7 +106,7 @@ export async function createPriceOracle(
   wallet,
 
   mint: PublicKey,
-  initPrice: number
+  initPrice = 1
 ) {
   const program = getProgramInstance(connection, wallet);
 
@@ -139,6 +139,20 @@ export async function createPriceOracle(
   return txHash;
 }
 
+export async function getPriceOracle(
+  connection,
+  wallet,
+
+  mint: PublicKey
+) {
+  const program = getProgramInstance(connection, wallet);
+
+  const oracleKey = getOraclePDA(mint);
+
+  const oracle = await program.account.oracle.fetchNullable(oracleKey);
+
+  return oracle;
+}
 export async function reportPriceOracle(
   connection,
   wallet,
