@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import { WalletProvider } from './contexts/wallet';
 import { ConnectionProvider } from './contexts/connection';
 import { AccountsProvider } from './contexts/accounts';
-import { MarketProvider } from './contexts/market';
+// import { MarketProvider } from './contexts/market';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Layer from './pages/Layer';
 import Faucet from './pages/Faucet';
@@ -23,25 +23,25 @@ const App: React.FC = () => {
         <WalletProvider>
           <AccountsProvider>
             <PoolProvider>
-              <MarketProvider>
-                <ThemeProvider>
-                  <VaultsContextProvider>
-                    <RFStateProvider>
-                      <Router>
-                        <Switch>
-                          <Route path="/dashboard" component={Layer} />
-                          <Route path="/faucet" exact component={Faucet} />
-                          <Route path="/adminpanel" component={AdminPanel} />
-                          <Route exact path="/">
-                            <Redirect to="/dashboard" />
-                          </Route>
-                          <Route component={NotFound} />
-                        </Switch>
-                      </Router>
-                    </RFStateProvider>
-                  </VaultsContextProvider>
-                </ThemeProvider>
-              </MarketProvider>
+              {/* <MarketProvider> */}
+              <ThemeProvider>
+                <VaultsContextProvider>
+                  <RFStateProvider>
+                    <Router>
+                      <Switch>
+                        <Route path="/dashboard" component={Layer} />
+                        <Route path="/faucet" exact component={Faucet} />
+                        <Route path="/adminpanel" component={AdminPanel} />
+                        <Route exact path="/">
+                          <Redirect to="/dashboard" />
+                        </Route>
+                        <Route component={NotFound} />
+                      </Switch>
+                    </Router>
+                  </RFStateProvider>
+                </VaultsContextProvider>
+              </ThemeProvider>
+              {/* </MarketProvider> */}
             </PoolProvider>
           </AccountsProvider>
         </WalletProvider>
