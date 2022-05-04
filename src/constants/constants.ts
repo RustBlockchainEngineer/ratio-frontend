@@ -57,7 +57,7 @@ export enum Roles {
 
 export const REFRESH_TIMER = 30_000;
 
-export const DEFAULT_NETWORK = process.env.REACT_APP_DEFAULT_NETWORK || 'devnet';
+export const DEFAULT_NETWORK = process.env.REACT_APP_DEFAULT_NETWORK || 'mainnet';
 
 export const Networks = [
   { value: 'mainnet', label: 'Mainnet' },
