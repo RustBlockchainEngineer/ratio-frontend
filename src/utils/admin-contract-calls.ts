@@ -362,36 +362,6 @@ export async function setGlobalTvlLimit(
   }
 }
 
-export async function getGlobalTVLLimit(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
-  try {
-    const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.tvlCollatCeilingUsd.toNumber() / 10 ** USDR_MINT_DECIMALS;
-  } catch (e) {
-    console.error('Error while fetching the tvl limiy');
-    throw e;
-  }
-}
-
-export async function getGlobalDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
-  try {
-    const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.debtCeilingGlobal.toNumber() / 10 ** USDR_MINT_DECIMALS;
-  } catch (e) {
-    console.error('Error while fetching the global debt ceiling');
-    throw e;
-  }
-}
-
-export async function getUserDebtCeiling(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
-  try {
-    const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.debtCeilingUser.toNumber() / 10 ** USDR_MINT_DECIMALS;
-  } catch (e) {
-    console.error('Error while fetching the global user debt ceiling');
-    throw e;
-  }
-}
-
 export async function setGlobalDebtCeiling(
   connection: Connection,
   wallet: WalletAdapter | undefined,
@@ -483,32 +453,6 @@ export async function setUserDebtCeiling(connection: Connection, wallet: any, ne
   }
 }
 
-export async function getCollateralRatio(
-  connection: Connection,
-  wallet: WalletAdapter | undefined
-): Promise<CollateralizationRatios> {
-  try {
-    const { globalState } = await getGlobalState(connection, wallet);
-    const readValues = globalState.collPerRisklv.map((risk) => risk.toNumber());
-    const result: CollateralizationRatios = {
-      cr_aaa_ratio: readValues[0] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_aa_ratio: readValues[1] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_a_ratio: readValues[2] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_bbb_ratio: readValues[3] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_bb_ratio: readValues[4] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_b_ratio: readValues[5] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_ccc_ratio: readValues[6] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_cc_ratio: readValues[7] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_c_ratio: readValues[8] / 10 ** COLL_RATIOS_DECIMALS,
-      cr_d_ratio: readValues[9] / 10 ** COLL_RATIOS_DECIMALS,
-    };
-    return result;
-  } catch (e) {
-    console.error('Error while fetching the collateral ratios');
-    throw e;
-  }
-}
-
 export async function setCollateralRatio(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   connection: Connection,
@@ -537,16 +481,6 @@ export async function setCollateralRatio(
     console.log('ERROR');
     console.log(error);
     throw error;
-  }
-}
-
-export async function getHarvestFee(connection: Connection, wallet: WalletAdapter | undefined): Promise<number> {
-  try {
-    const { globalState } = await getGlobalState(connection, wallet);
-    return (globalState.feeNum.toNumber() / globalState.feeDeno.toNumber()) * 100;
-  } catch (e) {
-    console.error('Error while fetching the harvest fee');
-    throw e;
   }
 }
 
@@ -626,16 +560,6 @@ export async function changeTreasury(connection: Connection, wallet: any, newTre
     return 'Set Treasury to' + newTreasury.toBase58() + ', transaction id = ' + tx;
   } catch (e) {
     console.error('Error while setting the treasury wallet', e);
-    throw e;
-  }
-}
-
-export async function getCurrentTreasuryWallet(connection: Connection, wallet: any): Promise<PublicKey> {
-  try {
-    const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.treasury;
-  } catch (e) {
-    console.error('Error while fetching the treasury wallet');
     throw e;
   }
 }
