@@ -13,7 +13,7 @@ import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { LPair } from '../../../types/VaultTypes';
-import { UPDATE_USER_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
+import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
 
 const DepositModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -74,7 +74,7 @@ const DepositModal = ({ data }: any) => {
         collAccount?.pubkey.toString() as string
       );
 
-      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      await updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
       setDepositAmount(0);
       toast.success('Successfully Deposited!');
     } catch (err) {

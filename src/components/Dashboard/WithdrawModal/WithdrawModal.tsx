@@ -13,7 +13,7 @@ import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
-import { UPDATE_USER_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
+import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 
 const WithdrawModal = ({ data }: any) => {
@@ -85,7 +85,7 @@ const WithdrawModal = ({ data }: any) => {
         withdrawAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         userCollAccount
       );
-      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      await updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');
     } catch (err) {

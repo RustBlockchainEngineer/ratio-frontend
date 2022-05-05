@@ -53,6 +53,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const [overview, setOverview] = useState<any>(null);
   const { updateWalletFlag, setUpdateWalletFlag } = useUpdateWallet();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const updateRFState = async (action: UpdateStateType, mint = '') => {
     await sleep(3000);
     setUpdateWalletFlag(!updateWalletFlag);

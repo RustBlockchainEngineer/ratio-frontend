@@ -3,10 +3,10 @@ import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { repayUSDr, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { repayUSDr, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 
 import usdrIcon from '../../../assets/images/USDr.png';
-import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
+import { UPDATE_GLOBAL_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 const VaultDebt = ({ data }: any) => {
   const connection = useConnection();
@@ -39,12 +39,10 @@ const VaultDebt = ({ data }: any) => {
     if (!data.usdrValue) {
       return toast('Insufficient funds to payback!');
     }
-    if (!usdrMint) {
-      return toast('Invalid USDr Mint address to payback!');
-    }
-    repayUSDr(connection, wallet, Number(data.usdrValue) * Math.pow(10, usdrMint?.decimals), new PublicKey(data.mint))
+
+    repayUSDr(connection, wallet, Number(data.usdrValue) * Math.pow(10, USDR_MINT_DECIMALS), new PublicKey(data.mint))
       .then(() => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
+        updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
       })
       .catch((e) => {
         console.log(e);

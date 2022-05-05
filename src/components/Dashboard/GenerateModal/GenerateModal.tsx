@@ -11,7 +11,7 @@ import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { UPDATE_USER_STATE, useUpdateRFStates, useUserVaultInfo } from '../../../contexts/state';
+import { UPDATE_GLOBAL_STATE, useUpdateRFStates, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
@@ -69,7 +69,7 @@ const GenerateModal = ({ data }: any) => {
     setIsMinting(true);
     borrowUSDr(connection, wallet, borrowAmount * 10 ** USDR_MINT_DECIMALS, new PublicKey(data.mint))
       .then((txSignature: string) => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
+        updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
         toast.success('Successfully minted USDr tokens!');
         postToRatioApi(
           {

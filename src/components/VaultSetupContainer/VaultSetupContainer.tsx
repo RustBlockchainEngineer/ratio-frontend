@@ -12,7 +12,7 @@ import CustomInput from '../CustomInput';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
-import { UPDATE_USER_STATE, usePoolInfo, useUpdateRFStates } from '../../contexts/state';
+import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../contexts/state';
 import WarningLimitBox from './WarningLimitBox';
 import { TokenAmount } from '../../utils/safe-math';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
@@ -71,7 +71,7 @@ const VaultSetupContainer = ({ data }: any) => {
       collAccount?.pubkey.toString() as string
     )
       .then(() => {
-        updateRFStates(UPDATE_USER_STATE, data.mint);
+        updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
         setDepositAmount(0);
         toast.success('Successfully Deposited!');
         history.push(`/dashboard/vaultdashboard/${data.mint}`);
