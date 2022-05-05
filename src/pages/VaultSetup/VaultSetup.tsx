@@ -160,7 +160,7 @@ const VaultSetup = () => {
                   usdrMint: USDR_MINT_KEY,
                   riskLevel: getRiskLevelNumber(vault_mint),
                   risk: vaultData?.risk,
-                  tokenPrice: poolInfo.oraclePrice,
+                  tokenPrice: poolInfo?.oraclePrice,
                 }}
               />
             )}

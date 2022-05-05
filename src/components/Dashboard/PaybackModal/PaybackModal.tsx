@@ -107,8 +107,8 @@ const PaybackModal = ({ data }: any) => {
         className="dashboardModal__modal"
         data-theme={darkMode ? 'dark' : 'light'}
         onEntered={() => {
-          setAmountValue(100);
-          setPayBackAmount(maxPaybackAmount);
+          setAmountValue(0);
+          setPayBackAmount('');
           setPaybackStatus(false);
           setButtonDisabled(false);
         }}
@@ -140,17 +140,18 @@ const PaybackModal = ({ data }: any) => {
             <CustomInput
               appendStr="Max"
               // initValue={'0'}
-              appendValueStr={'' + maxPaybackAmount}
+              appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
               onTextChange={(value: any) => {
-                setAmountValue((value / maxPaybackAmount) * 100);
+                setAmountValue((value / data.usdrValue) * 100);
                 setPayBackAmount(value);
                 setPaybackStatus(false);
                 setButtonDisabled(false);
               }}
-              maxValue={maxPaybackAmount}
+              maxValue={data.usdrValue}
               valid={paybackStatus}
               invalidStr={invalidStr}
+              value={paybackAmount}
             />
             <AmountSlider
               onChangeValue={(value: any) => {
