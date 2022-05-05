@@ -14,6 +14,8 @@ import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
+import { TokenAmount } from '../../../utils/safe-math';
+import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 
 const DepositModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -40,6 +42,8 @@ const DepositModal = ({ data }: any) => {
   const [amountValue, setAmountValue] = useState(0);
 
   const updateRFStates = useUpdateRFStates();
+
+  const depositAmountUSD = new TokenAmount(depositAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
   useEffect(() => {
     setDidMount(true);
@@ -148,6 +152,9 @@ const DepositModal = ({ data }: any) => {
               invalidStr={invalidStr}
               value={depositAmount}
             />
+            <p className="vaultsetupcontainer-label mt-2">
+              USD: <strong className="vaultsetupcontainer-value">${depositAmountUSD}</strong>
+            </p>
             <AmountSlider
               onChangeValue={(value) => {
                 setDepositAmount(Number(data.value * (value / 100)).toFixed(2));

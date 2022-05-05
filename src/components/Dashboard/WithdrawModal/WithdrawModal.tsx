@@ -16,6 +16,8 @@ import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
+import { TokenAmount } from '../../../utils/safe-math';
+import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 
 const WithdrawModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -39,6 +41,7 @@ const WithdrawModal = ({ data }: any) => {
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
 
   const PoolManagerFactory = useGetPoolManager(vault);
+  const withdrawAmountUSD = new TokenAmount(withdrawAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -110,8 +113,8 @@ const WithdrawModal = ({ data }: any) => {
           setShow(false);
         }}
         onEntered={() => {
-          setAmountValue(100);
-          setWithdrawAmount(data.value);
+          setAmountValue(0);
+          setWithdrawAmount('');
           setWithdrawStatus(false);
           setButtonDisabled(false);
         }}
@@ -170,6 +173,9 @@ const WithdrawModal = ({ data }: any) => {
               invalidStr={invalidStr}
               value={withdrawAmount}
             />
+            <p className="vaultsetupcontainer-label mt-2">
+              USD: <strong className="vaultsetupcontainer-value">${withdrawAmountUSD}</strong>
+            </p>
             <AmountSlider
               onChangeValue={(value) => {
                 setWithdrawAmount(Number(data.value * (value / 100)).toFixed(2));
