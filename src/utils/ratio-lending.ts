@@ -152,6 +152,11 @@ export async function getLendingPoolByMint(connection: Connection, mint: string 
   }
 }
 
+export async function getAllLendingPool(connection: Connection): Promise<any[]> {
+  const program = getProgramInstance(connection, null);
+  return await program.account.pool.all();
+}
+
 export async function depositCollateralTx(
   connection: Connection,
   wallet: any,

@@ -21,7 +21,7 @@ import { getRiskLevelNumber } from '../../utils/utils';
 import { selectors } from '../../features/dashboard';
 
 import Breadcrumb from '../../components/Breadcrumb';
-import { useRFStateInfo, useUSDrMintInfo, useUserVaultInfo, useTokenMintInfo, usePoolInfo } from '../../contexts/state';
+import { useRFStateInfo, useUserVaultInfo, usePoolInfo } from '../../contexts/state';
 import { DEFAULT_NETWORK } from '../../constants';
 import VaultHistoryTable from '../../components/Dashboard/VaultHistoryTable';
 import MintableProgressBar from '../../components/Dashboard/MintableProgressBar';
@@ -31,9 +31,6 @@ const VaultDashboard = () => {
   const { mint: vault_mint } = useParams<{ mint: string }>();
   const connection = useConnection();
   const { wallet } = useWallet();
-
-  const usdrMint = useUSDrMintInfo();
-  const collMint = useTokenMintInfo(vault_mint as string);
 
   const poolInfo = usePoolInfo(vault_mint as string);
 
@@ -75,34 +72,34 @@ const VaultDashboard = () => {
   }, [overview, allVaults]);
 
   useEffect(() => {
-    if (wallet && wallet.publicKey && collMint && collAccount) {
-      const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
+    if (wallet && wallet.publicKey && poolInfo && collAccount) {
+      const tokenAmount = new TokenAmount(collAccount.info.amount + '', poolInfo?.mintDecimals);
       setLpWalletBalance(Number(tokenAmount.fixed()));
     }
     return () => {
       setLpWalletBalance(0);
     };
-  }, [wallet, collAccount, connection, collMint]);
+  }, [wallet, collAccount, connection, poolInfo]);
 
   useEffect(() => {
-    if (wallet && wallet.publicKey && usdrMint && usdrAccount) {
-      const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', usdrMint?.decimals);
+    if (wallet && wallet.publicKey && usdrAccount) {
+      const tokenAmount = new TokenAmount(usdrAccount.info.amount + '', USDR_MINT_DECIMALS);
       setUsdrWalletBalance(Number(tokenAmount.fixed()));
     }
     return () => {
       setUsdrWalletBalance(0);
     };
-  }, [wallet, usdrAccount, connection, usdrMint]);
+  }, [wallet, usdrAccount, connection]);
 
   useEffect(() => {
-    if (poolInfo && collMint && globalState && globalState?.tvlCollatCeilingUsd) {
+    if (poolInfo && globalState && globalState?.tvlCollatCeilingUsd) {
       //ternary operators are used here while the globalState paramters do not exist
 
       const globalTvlLimit = globalState?.tvlCollatCeilingUsd.toNumber();
       const tvl = globalState?.tvlUsd.toNumber();
       const availableCollat = (globalTvlLimit - tvl) / poolInfo.oraclePrice;
       //set the max amount of depositable LP to be equal to either the amount of lp the user holds, or the global limit
-      const tmpMaxDeposit = Math.min(availableCollat, lpWalletBalance).toFixed(collMint?.decimals);
+      const tmpMaxDeposit = Math.min(availableCollat, lpWalletBalance).toFixed(poolInfo?.mintDecimals);
       setDepositValue(Number(tmpMaxDeposit));
 
       setLpWalletBalanceUSD(poolInfo.currentPrice * lpWalletBalance);
@@ -110,21 +107,21 @@ const VaultDashboard = () => {
     return () => {
       setDepositValue(0);
     };
-  }, [lpWalletBalance, poolInfo, collMint, globalState]);
+  }, [lpWalletBalance, poolInfo, globalState]);
 
   useEffect(() => {
-    if (userVaultInfo && collMint) {
-      const tmpWithdrawValue = new TokenAmount((userVaultInfo as any).totalColl, collMint?.decimals).fixed();
+    if (userVaultInfo && poolInfo) {
+      const tmpWithdrawValue = new TokenAmount((userVaultInfo as any).totalColl, poolInfo?.mintDecimals).fixed();
       setWithdrawValue(Number(tmpWithdrawValue));
     }
     return () => {
       setWithdrawValue(0);
     };
-  }, [userVaultInfo, collMint]);
+  }, [userVaultInfo, poolInfo]);
 
   useEffect(() => {
-    if (userVaultInfo && usdrMint) {
-      const debtValue = +new TokenAmount((userVaultInfo as any).debt, usdrMint?.decimals).fixed();
+    if (userVaultInfo) {
+      const debtValue = +new TokenAmount((userVaultInfo as any).debt, USDR_MINT_DECIMALS).fixed();
       setDebtValue(debtValue);
 
       if (vault_mint) {
@@ -143,7 +140,7 @@ const VaultDashboard = () => {
         usdrValue: 0,
       });
     };
-  }, [userVaultInfo, vault_mint, usdrMint]);
+  }, [userVaultInfo, vault_mint]);
 
   useEffect(() => {
     const result: any = allVaults.find((item: any) => item.mint === vault_mint);

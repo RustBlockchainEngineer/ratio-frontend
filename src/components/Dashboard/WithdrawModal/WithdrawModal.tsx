@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
-import { useMint } from '../../../contexts/accounts';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { ThemeContext } from '../../../contexts/ThemeContext';
@@ -14,7 +13,7 @@ import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
-import { UPDATE_USER_STATE, useUpdateRFStates } from '../../../contexts/state';
+import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { TokenAmount } from '../../../utils/safe-math';
 import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
@@ -27,7 +26,7 @@ const WithdrawModal = ({ data }: any) => {
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const [userCollAccount, setUserCollAccount] = useState('');
-  const collMint = useMint(data.mint);
+  const poolInfo = usePoolInfo(data?.mint);
 
   const [withdrawAmount, setWithdrawAmount] = useState<any>();
   const updateRFStates = useUpdateRFStates();
@@ -74,7 +73,7 @@ const WithdrawModal = ({ data }: any) => {
         return;
       }
 
-      if (!(userCollAccount !== '' && collMint)) {
+      if (!(userCollAccount !== '')) {
         setWithdrawStatus(true);
         setInvalidStr('Invalid  User Collateral account to withdraw!');
         return;
@@ -86,10 +85,10 @@ const WithdrawModal = ({ data }: any) => {
         connection,
         wallet,
         vault as LPair,
-        withdrawAmount * Math.pow(10, collMint?.decimals ?? 0),
+        withdrawAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         userCollAccount
       );
-      await updateRFStates(UPDATE_USER_STATE, data.mint);
+      await updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');
     } catch (err) {

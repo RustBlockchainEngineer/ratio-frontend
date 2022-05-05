@@ -8,7 +8,7 @@ import { TokenAmount } from '../../utils/safe-math';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { useAccountByMint } from '../../contexts/accounts';
-import { useRFStateInfo, useTokenMintInfo, usePoolInfo } from '../../contexts/state';
+import { useRFStateInfo, usePoolInfo } from '../../contexts/state';
 
 import linkIcon from '../../assets/images/link.svg';
 import { selectors } from '../../features/dashboard';
@@ -24,7 +24,7 @@ const VaultSetup = () => {
   const connection = useConnection();
   const { wallet } = useWallet();
   const poolInfo = usePoolInfo(vault_mint as string);
-  const collMint = useTokenMintInfo(vault_mint as string);
+
   const collAccount = useAccountByMint(vault_mint as string);
   const globalState = useRFStateInfo();
   const usdrAccount = useAccountByMint(USDR_MINT_KEY);
@@ -38,14 +38,14 @@ const VaultSetup = () => {
   const [depositValue, setDepositValue] = useState(0);
 
   useEffect(() => {
-    if (wallet && wallet.publicKey && collMint && collAccount) {
-      const tokenAmount = new TokenAmount(collAccount.info.amount + '', collMint?.decimals);
+    if (wallet && wallet.publicKey && poolInfo && collAccount) {
+      const tokenAmount = new TokenAmount(collAccount.info.amount + '', poolInfo?.mintDecimals);
       setLpWalletBalance(Number(tokenAmount.fixed()));
     }
     return () => {
       setLpWalletBalance(0);
     };
-  }, [wallet, collAccount, connection, collMint]);
+  }, [wallet, collAccount, connection, poolInfo]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && usdrAccount) {
@@ -58,21 +58,21 @@ const VaultSetup = () => {
   }, [wallet, usdrAccount, connection]);
 
   useEffect(() => {
-    if (poolInfo && collMint && globalState) {
+    if (poolInfo && globalState) {
       //ternary operators are used here while the globalState paramters do not exist
 
       const tvlLimit = globalState?.tvlCollatCeilingUsd ? globalState?.tvlCollatCeilingUsd.toNumber() : 0;
       const tvl = globalState?.tvlUsd ? globalState?.tvlUsd.toNumber() : 0;
       const availableTVL = tvlLimit - tvl;
       //set the max amount of depositable LP to be equal to either the amount of lp the user holds, or the global limit
-      const tmpMaxDeposit = Math.min(availableTVL, lpWalletBalance).toFixed(collMint?.decimals);
+      const tmpMaxDeposit = Math.min(availableTVL, lpWalletBalance).toFixed(poolInfo?.mintDecimals);
       setDepositValue(Number(tmpMaxDeposit));
       setLpWalletBalanceUSD(poolInfo.currentPrice * lpWalletBalance);
     }
     return () => {
       // setDepositValue(0);
     };
-  }, [lpWalletBalance, poolInfo, collMint, globalState]);
+  }, [lpWalletBalance, poolInfo, globalState]);
 
   useEffect(() => {
     setIsLoading(true);
