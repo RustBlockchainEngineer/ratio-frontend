@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getPoolManager } from '../utils/PoolInfoProvider/PoolManagerFactory';
 import { LPair } from '../types/VaultTypes';
 import { useMercurialPools, useOrcaPools, useRaydiumPools, useSaberPools } from '../contexts/pools';
-import { useRFState } from '../contexts/state';
+import { useAllVaultInfo } from '../contexts/state';
 
 /* 
   This custom hook allows to fill the platforms tvl information for each of the vaults received, depending on the platform related to the vault. 
@@ -18,7 +18,7 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
   const orcaPools = useOrcaPools();
   const mercurialPools = useMercurialPools();
 
-  const totalState = useRFState();
+  const onChainVaultInfos = useAllVaultInfo();
   //Initialize the provider factory with the pools information of all the supported platforms.
   const PoolManagerFactory = useMemo(
     () => getPoolManager(raydiumPools, orcaPools, saberPools, mercurialPools),
@@ -29,6 +29,7 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
     if (!vaults || vaults.length === 0) {
       return;
     }
+    console.log(vaults);
     const getPlatformInformation = async () => {
       const promises = vaults.map(async (item: LPair) => {
         // Each information fetching should be safe, if any error is thrown from this method none information will be shown.
@@ -45,9 +46,10 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
           });
         // console.log('APY', item.platform_ratio_apy);
         item.earned_rewards = 0;
-        if (totalState && totalState.vaultState && totalState.vaultState[item.address_id]) {
-          item.earned_rewards = totalState.vaultState[item.address_id]?.reward;
+        if (onChainVaultInfos[item.address_id]) {
+          item.earned_rewards = onChainVaultInfos[item.address_id]?.reward;
         }
+        console.log(item);
         return item;
       });
 
@@ -56,7 +58,7 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
     };
 
     getPlatformInformation();
-  }, [totalState, vaults, PoolManagerFactory]);
+  }, [onChainVaultInfos, vaults, PoolManagerFactory]);
 
   return vaultsWithInformation;
 };
