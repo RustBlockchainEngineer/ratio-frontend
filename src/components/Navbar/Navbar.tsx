@@ -40,7 +40,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const { connected, connect } = useWallet();
   const connection = useConnection();
 
-  const [activeVaultCount, setActiveVaultCount] = useState(0);
+  const [activeVaultCount, setActiveVaultCount] = useState<string>('');
   const [totalMinted, setTotalMinted] = useState(0);
   const [totalLocked, setTotalLocked] = useState(0);
   const [activeVaultsData, setActiveVaultsData] = useState([]);
@@ -82,11 +82,12 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
   React.useEffect(() => {
     if (userOverview) {
+      console.log(userOverview);
       dispatch({ type: actionTypes.SET_OVERVIEW, payload: userOverview });
 
-      const { totalDebt, vaultCount } = userOverview;
+      const { totalDebt, activeVaults } = userOverview;
       setTotalMinted(Number(new TokenAmount(totalDebt ?? 0, USDR_MINT_DECIMALS).fixed()));
-      setActiveVaultCount(vaultCount);
+      setActiveVaultCount(activeVaults);
     }
 
     return () => {
@@ -167,7 +168,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
               <hr />
               <div className="navbar-vertical__item">
                 <h6>Active Vaults</h6>
-                <h6 className="navbar-vertical__item--yellow">{activeVaultCount}</h6>
+                <h6 className="navbar-vertical__item--yellow">{activeVaultCount && parseInt(activeVaultCount)}</h6>
               </div>
               <div className="navbar-vertical__item">
                 <h6>Total Vault Value</h6>
