@@ -39,7 +39,7 @@ const InstaBuyLpCard = () => {
         <label className="mt-4">
           How much <strong>SOL</strong> would you like to swap?
         </label>
-        <CustomInput appendStr="Max" tokenStr="SOL" />
+        <CustomInput appendStr="Max" tokenStr="SOL" value={undefined} />
         <div className="balance">
           Balance: <p> 5.9 SOL</p>
         </div>
@@ -50,7 +50,7 @@ const InstaBuyLpCard = () => {
         <label className="mt-4">
           Estimated <strong>RAY-SOL-LP</strong> tokens
         </label>
-        <CustomInput appendStr="" tokenStr="RAY-SOL-LP" />
+        <CustomInput appendStr="" tokenStr="RAY-SOL-LP" value={undefined} />
       </div>
       <div className="instabuylpcard__footer">
         <Button className="button--fill swaptokensBtn">Create LP</Button>

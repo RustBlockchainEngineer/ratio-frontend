@@ -420,7 +420,7 @@ export async function swap(
   if (fromCoinMint === NATIVE_SOL.mintAddress) {
     wrappedSolAccount = await createTokenAccountIfNotExist(
       connection,
-      wrappedSolAccount,
+      null,
       owner,
       TOKENS.WSOL.mintAddress,
       getBigNumber(amountIn.wei) + 1e7,
@@ -434,7 +434,7 @@ export async function swap(
   if (toCoinMint === NATIVE_SOL.mintAddress) {
     wrappedSolAccount2 = await createTokenAccountIfNotExist(
       connection,
-      wrappedSolAccount2,
+      null,
       owner,
       TOKENS.WSOL.mintAddress,
       1e7,
@@ -672,7 +672,7 @@ export async function swapRouteOld(
   if (fromCoinMint === NATIVE_SOL.mintAddress) {
     wrappedSolAccount = await createTokenAccountIfNotExist(
       connection,
-      wrappedSolAccount,
+      null,
       owner,
       TOKENS.WSOL.mintAddress,
       getBigNumber(amountIn.wei) + 1e7,
@@ -683,7 +683,7 @@ export async function swapRouteOld(
   if (middleMint === NATIVE_SOL.mintAddress) {
     wrappedSolAccount2 = await createTokenAccountIfNotExist(
       connection,
-      wrappedSolAccount2,
+      null,
       owner,
       TOKENS.WSOL.mintAddress,
       1e7,
@@ -695,7 +695,7 @@ export async function swapRouteOld(
   if (toCoinMint === NATIVE_SOL.mintAddress) {
     wrappedSolAccount3 = await createTokenAccountIfNotExist(
       connection,
-      wrappedSolAccount3,
+      null,
       owner,
       TOKENS.WSOL.mintAddress,
       1e7,
@@ -852,7 +852,7 @@ export async function place(
 
     wrappedSolAccount = await createTokenAccountIfNotExist(
       connection,
-      wrappedSolAccount,
+      null,
       owner,
       TOKENS.WSOL.mintAddress,
       lamports,
@@ -865,7 +865,7 @@ export async function place(
     market.makePlaceOrderInstruction(connection, {
       owner,
       payer: wrappedSolAccount ?? new PublicKey(fromTokenAccount),
-      side: forecastConfig.side,
+      side: forecastConfig.side as any,
       price: forecastConfig.worstPrice,
       size:
         forecastConfig.side === 'buy'
