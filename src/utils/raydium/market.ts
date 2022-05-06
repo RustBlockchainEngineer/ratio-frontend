@@ -519,7 +519,8 @@ export function preInitialize(
   poolTempLpTokenAccount: PublicKey,
   market: PublicKey,
   owner: PublicKey,
-  nonce: u8
+  //zhao commented
+  nonce: any
 ): TransactionInstruction {
   const dataLayout = struct([u8('instruction'), u8('nonce')]);
 
@@ -576,19 +577,20 @@ export class Market extends MarketSerum {
     layoutOverride?: any
   ) {
     super(decoded, baseMintDecimals, quoteMintDecimals, options, programId, layoutOverride);
-    const { skipPreflight = false, commitment = 'recent' } = options;
+    // const { skipPreflight = false, commitment = 'recent' } = options;
     if (!decoded.accountFlags.initialized || !decoded.accountFlags.market) {
       throw new Error('Invalid market state');
     }
-    this._decoded = decoded;
-    this._baseSplTokenDecimals = baseMintDecimals;
-    this._quoteSplTokenDecimals = quoteMintDecimals;
-    this._skipPreflight = skipPreflight;
-    this._commitment = commitment;
-    this._programId = programId;
-    this._openOrdersAccountsCache = {};
-    this._feeDiscountKeysCache = {};
-    this._layoutOverride = layoutOverride;
+    //zhao commented
+    // this._decoded = decoded;
+    // this._baseSplTokenDecimals = baseMintDecimals;
+    // this._quoteSplTokenDecimals = quoteMintDecimals;
+    // this._skipPreflight = skipPreflight;
+    // this._commitment = commitment;
+    // this._programId = programId;
+    // this._openOrdersAccountsCache = {};
+    // this._feeDiscountKeysCache = {};
+    // this._layoutOverride = layoutOverride;
   }
 
   static async load(connection: Connection, address: PublicKey, options: any = {}, programId: PublicKey) {
@@ -606,7 +608,8 @@ export class Market extends MarketSerum {
     ]);
 
     const market = new Market(decoded, baseMintDecimals, quoteMintDecimals, options, programId);
-    market._decoded = decoded;
+    //zhao commented
+    // market._decoded = decoded;
     market.baseLotSize = decoded.baseLotSize;
     market.quoteLotSize = decoded.quoteLotSize;
     market.baseVault = decoded.baseVault;

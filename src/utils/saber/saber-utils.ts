@@ -146,7 +146,7 @@ export const createSaberQuarryMinerIfneededTx = async (
   const transaction = new Transaction();
 
   const sdk: QuarrySDK = QuarrySDK.load({
-    provider: program.provider,
+    provider: program.provider as any,
   });
   const rewarder = await sdk.mine.loadRewarderWrapper(rewarderKey);
 
@@ -270,7 +270,7 @@ export const harvestRewardsFromSaberTx = async (
 ) => {
   const program = getProgramInstance(connection, wallet);
   const sdk = QuarrySDK.load({
-    provider: program.provider,
+    provider: program.provider as any,
   });
 
   const rewarderWrapper = await sdk.mine.loadRewarderWrapper(rewarderKey);
@@ -347,7 +347,7 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
 
     const sdk: QuarrySDK = QuarrySDK.load({
-      provider: program.provider,
+      provider: program.provider as any,
     });
     const rewarder = await sdk.mine.loadRewarderWrapper(rewarderKey);
 

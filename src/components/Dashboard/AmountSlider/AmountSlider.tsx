@@ -101,6 +101,7 @@ const AmountSlider = ({ onChangeValue, value }: AmountSliderProps) => {
         defaultValue={0}
         value={value}
         included={true}
+        tipProps={undefined}
       />
     </div>
   );
