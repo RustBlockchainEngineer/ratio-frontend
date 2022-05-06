@@ -28,6 +28,23 @@ export async function signTransaction(
   return await wallet.signTransaction(transaction);
 }
 
+// transaction
+export async function signAllTransaction(
+  connection: Connection,
+  wallet: any,
+  transactions: Transaction[],
+  signers: Array<Keypair> = []
+): Promise<Transaction[]> {
+  for (const transaction of transactions) {
+    transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+    transaction.setSigners(wallet.publicKey, ...signers.map((s) => s.publicKey));
+    if (signers.length > 0) {
+      transaction.partialSign(...signers);
+    }
+  }
+  return await wallet.signAllTransactions(transactions);
+}
+
 async function covertToProgramWalletTransaction(
   connection: Connection,
   wallet: any,
@@ -56,6 +73,20 @@ export async function sendTransaction(
     const signedTransaction = await signTransaction(connection, wallet, transaction, signers);
     return await sendSignedTransaction(connection, signedTransaction);
   }
+}
+
+export async function sendAllTransaction(
+  connection: Connection,
+  wallet: any,
+  transactions: Transaction[],
+  signers: Array<Keypair> = []
+) {
+  const signedTransactions = await signAllTransaction(connection, wallet, transactions, signers);
+  const txIds = [];
+  for (const signedTransaction of signedTransactions) {
+    txIds.push(await sendSignedTransaction(connection, signedTransaction));
+  }
+  return txIds;
 }
 
 export async function sendSignedTransaction(connection: Connection, signedTransaction: Transaction): Promise<string> {

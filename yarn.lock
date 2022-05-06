@@ -2301,6 +2301,15 @@
     lodash.mapvalues "^4.6.0"
     tslib "^2.3.1"
 
+"@saberhq/saber-periphery@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@saberhq/saber-periphery/-/saber-periphery-1.1.2.tgz#577e87be026b39fa88a35c3ac0d6ed1f095084b8"
+  integrity sha512-dtEx18rEpFrW9CjrSIQEbIuVI63W4d+l2lFt70NRV/suclQZeXTcxirpky0foYOumHa/1dr7ZkCmpx3zOgQODg==
+  dependencies:
+    superstruct "^0.15.4"
+    tiny-invariant "^1.2.0"
+    tslib "^2.3.1"
+
 "@saberhq/solana-contrib@^1.12.37", "@saberhq/solana-contrib@^1.12.48":
   version "1.12.48"
   resolved "https://registry.yarnpkg.com/@saberhq/solana-contrib/-/solana-contrib-1.12.48.tgz#313df4afbd6903997b15a551b99b5186a5f8ba9d"
@@ -16152,6 +16161,11 @@ superstruct@^0.14.2:
   version "0.14.2"
   resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.14.2.tgz#0dbcdf3d83676588828f1cf5ed35cda02f59025b"
   integrity sha512-nPewA6m9mR3d6k7WkZ8N8zpTWfenFH3q9pA2PkuiZxINr9DKB2+40wEQf0ixn8VaGuJ78AB6iWOtStI+/4FKZQ==
+
+superstruct@^0.15.4:
+  version "0.15.4"
+  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.15.4.tgz#e3381dd84ca07e704e19f69eda74eee1a5efb1f9"
+  integrity sha512-eOoMeSbP9ZJChNOm/9RYjE+F36rYR966AAqeG3xhQB02j2sfAUXDp4EQ/7bAOqnlJnuFDB8yvOu50SocvKpUEw==
 
 superstruct@^0.8.3:
   version "0.8.4"
