@@ -173,9 +173,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       return (
         <div className="row">
           {factorial.map((item: any) => {
-            if (showOnlyActive === false)
-              return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
-            else return <ActivePairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+            if (!(poolInfos[item.mint] && poolInfos[item.mint].isPaused > 0)) {
+              if (showOnlyActive === false)
+                return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+              else return <ActivePairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+            }
           })}
         </div>
       );
@@ -213,9 +215,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           </thead>
           <tbody>
             {factorial.map((item: any) => {
-              if (showOnlyActive === false)
-                return <TokenPairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
-              else return <ActivePairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+              if (!(poolInfos[item.mint] && poolInfos[item.mint].isPaused > 0)) {
+                if (showOnlyActive === false)
+                  return <TokenPairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+                else return <ActivePairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+              }
             })}
           </tbody>
         </table>

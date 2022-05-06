@@ -1,22 +1,31 @@
-import { useState } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import { useEffect, useState } from 'react';
 import { Button, Dropdown, Table } from 'react-bootstrap';
 import { IoHammerOutline, IoMenuOutline, IoTrashOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { API_ENDPOINT } from '../../../constants';
 import { useAuthContextProvider } from '../../../contexts/authAPI';
+import { useConnection } from '../../../contexts/connection';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
+import { useWallet } from '../../../contexts/wallet';
 import { FetchingStatus } from '../../../types/fetching-types';
 import { LPair } from '../../../types/VaultTypes';
+import { getAllPools, setPoolPaused } from '../../../utils/admin-contract-calls';
 import VaultEditionModal from '../VaultEditionModal';
 
 export default function VaultsTable() {
   const { status, error, vaults, forceUpdate } = useVaultsContextProvider();
   const [disabledRemoves] = useState(() => new Map<string, boolean>());
+  const [pausedStatuses, setPausedStatuses] = useState(() => new Map<string, boolean>());
+  const [refreshPools, setRefreshPools] = useState(true);
   const { accessToken } = useAuthContextProvider();
   const [disableEdit, setDisableEdit] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentEdit, setCurrentEdit] = useState<Maybe<LPair>>(null);
+
+  const connection = useConnection();
+  const wallet = useWallet();
   const handleRemoveVault = async (address_id: string) => {
     disabledRemoves.set(address_id, true);
     if (await confirm('Are you sure?')) {
@@ -30,6 +39,7 @@ export default function VaultsTable() {
         });
         if (response.ok) {
           toast.info('Vault deleted successfully');
+          setRefreshPools(true);
           forceUpdate();
         } else {
           toast.error("Vault wasn't removed. An error has occured");
@@ -45,6 +55,28 @@ export default function VaultsTable() {
     setShowEditModal(true);
     setCurrentEdit(item);
   };
+  const setPoolPause = async (poolKey: string, value: number) => {
+    try {
+      await setPoolPaused(connection, wallet.wallet, new PublicKey(poolKey), value);
+      toast.success('Successfully ' + (value === 0 ? 'Resumed' : 'Paused'));
+      setRefreshPools(true);
+    } catch (e) {
+      console.log(e);
+      toast.error('Pausing/Resuming pool is failed! ');
+    }
+  };
+  useEffect(() => {
+    if (refreshPools) {
+      const statuses = new Map<string, boolean>();
+      getAllPools(connection, wallet).then((allPools) => {
+        allPools.forEach((pool) => {
+          statuses.set(pool.publicKey.toBase58(), pool.account.isPaused > 0);
+        });
+        setPausedStatuses(statuses);
+      });
+      setRefreshPools(false);
+    }
+  }, [refreshPools]);
   return (
     <div>
       <h5 className="mt-3">Current vaults:</h5>
@@ -86,6 +118,17 @@ export default function VaultsTable() {
                       <Dropdown.Item href={`#${item.address_id}/edit`}>
                         <Button variant="primary" disabled={disableEdit} onClick={() => handleEditVault(item)}>
                           <IoHammerOutline size={20} /> Edit
+                        </Button>
+                      </Dropdown.Item>
+                      <Dropdown.Item href={`#${item.address_id}/edit`}>
+                        <Button
+                          variant="primary"
+                          onClick={() =>
+                            setPoolPause(item.vault_address_id, pausedStatuses.get(item.vault_address_id) ? 0 : 1)
+                          }
+                        >
+                          <IoHammerOutline size={20} />
+                          {pausedStatuses.get(item.vault_address_id) ? 'Resume' : 'Pause'}
                         </Button>
                       </Dropdown.Item>
                       <Dropdown.Item href={`#${item.address_id}/remove`}>
