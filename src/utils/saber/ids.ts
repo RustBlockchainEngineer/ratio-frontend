@@ -36,10 +36,12 @@ export async function getMainnetPools() {
     const name = poolsData[i]?.name;
     const swapAddress = poolsData[i]?.swap?.config?.swapAccount;
     const quarryAddress = poolsData[i]?.quarry;
+    const lpAddress = poolsData[i]?.lpToken?.address;
     swapPools.push({
       name,
       swapAddress,
       quarryAddress,
+      lpAddress,
     });
   }
   return swapPools;

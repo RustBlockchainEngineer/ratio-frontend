@@ -134,6 +134,8 @@ export function RFStateProvider({ children = undefined as any }) {
         tokenAmountB,
         oracleInfoB.price.toNumber()
       );
+      poolInfo['tokenAmountA'] = tokenAmountA;
+      poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['oraclePrice'] = price;
       poolInfo['currentPrice'] = new TokenAmount(price, USDR_MINT_DECIMALS).fixed();
       poolInfo['ratio'] = ratio;
@@ -358,6 +360,11 @@ export function useOracleInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
   return context.oracleState[mint];
+}
+
+export function useAllOracleInfo() {
+  const context = React.useContext(RFStateContext);
+  return context.oracleState;
 }
 
 export function useUserOverview() {

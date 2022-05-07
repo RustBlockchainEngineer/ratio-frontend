@@ -13,6 +13,7 @@ import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
 import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../contexts/state';
+import { useUpdateTvl } from '../../contexts/platformTvl';
 import WarningLimitBox from './WarningLimitBox';
 import { TokenAmount } from '../../utils/safe-math';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
@@ -39,6 +40,7 @@ const VaultSetupContainer = ({ data }: any) => {
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   const updateRFStates = useUpdateRFStates();
+  const updatePlatformTVL = useUpdateTvl();
 
   React.useEffect(() => {
     setDidMount(true);
@@ -72,6 +74,7 @@ const VaultSetupContainer = ({ data }: any) => {
     )
       .then(() => {
         updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
+        updatePlatformTVL(vault.platform_name, vault.address_id);
         setDepositAmount(0);
         toast.success('Successfully Deposited!');
         history.push(`/dashboard/vaultdashboard/${data.mint}`);

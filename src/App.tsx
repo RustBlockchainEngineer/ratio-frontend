@@ -14,6 +14,7 @@ import { PoolProvider } from './contexts/pools';
 import NotFound from './pages/NotFound';
 import { VaultsContextProvider } from './contexts/vaults';
 import { RFStateProvider } from './contexts/state';
+import { PlatformTvlProvider } from './contexts/platformTvl';
 
 dotenv.config();
 const App: React.FC = () => {
@@ -27,17 +28,19 @@ const App: React.FC = () => {
               <ThemeProvider>
                 <VaultsContextProvider>
                   <RFStateProvider>
-                    <Router>
-                      <Switch>
-                        <Route path="/dashboard" component={Layer} />
-                        <Route path="/faucet" exact component={Faucet} />
-                        <Route path="/adminpanel" component={AdminPanel} />
-                        <Route exact path="/">
-                          <Redirect to="/dashboard" />
-                        </Route>
-                        <Route component={NotFound} />
-                      </Switch>
-                    </Router>
+                    <PlatformTvlProvider>
+                      <Router>
+                        <Switch>
+                          <Route path="/dashboard" component={Layer} />
+                          <Route path="/faucet" exact component={Faucet} />
+                          <Route path="/adminpanel" component={AdminPanel} />
+                          <Route exact path="/">
+                            <Redirect to="/dashboard" />
+                          </Route>
+                          <Route component={NotFound} />
+                        </Switch>
+                      </Router>
+                    </PlatformTvlProvider>
                   </RFStateProvider>
                 </VaultsContextProvider>
               </ThemeProvider>

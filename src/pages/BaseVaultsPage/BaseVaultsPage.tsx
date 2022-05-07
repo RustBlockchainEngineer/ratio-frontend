@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useWallet } from '../../contexts/wallet';
+import { useSaberTvlData } from '../../contexts/platformTvl';
 import { PairType } from '../../models/UInterface';
 import { selectors, actionTypes } from '../../features/dashboard';
 
@@ -52,7 +53,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const { status, error, vaults } = useVaultsContextProvider();
 
   const vaultsWithPlatformInformation = useFillPlatformInformation(vaults);
-
+  const saberTvlData = useSaberTvlData();
   const [vaultsWithAllData, setVaultsWithAllData] = useState<any>(vaults);
 
   // eslint-disable-next-line
@@ -88,6 +89,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             userVaultInfos[item.address_id] &&
             userVaultInfos[item.address_id].totalColl.toNumber() !== 0;
 
+          let tvl = 0;
+          let apr = 0;
+
+          if (item.platform_name === 'SABER') {
+            tvl = saberTvlData[item.address_id]?.tvl ?? 0;
+            apr = saberTvlData[item.address_id]?.apy ?? 0;
+          }
+
           if (showOnlyActive === false || isVaultActive) {
             return {
               id: index,
@@ -99,8 +108,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               ),
               icon: item.icon,
               title: item.symbol,
-              tvl: item.platform_tvl,
-              apr: item.platform_ratio_apy ?? 0,
+              tvl,
+              apr,
               earned_rewards: item.earned_rewards,
               platform: {
                 link: item.platform_site,
@@ -136,13 +145,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   useEffect(() => {
     setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
-  }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData]);
+  }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData, saberTvlData]);
 
   useEffect(() => {
     let vaultsWithData: any = vaults;
     if (vaultsWithPlatformInformation.length) {
       vaultsWithData = vaultsWithPlatformInformation;
     }
+    console.log('BaseVaultsPage vaultsWithData =', vaultsWithData);
     setVaultsWithAllData(vaultsWithData);
     return () => {
       setVaultsWithAllData([]);

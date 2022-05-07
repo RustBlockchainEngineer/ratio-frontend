@@ -31,19 +31,6 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
     }
     const getPlatformInformation = async () => {
       const promises = vaults.map(async (item: LPair) => {
-        // Each information fetching should be safe, if any error is thrown from this method none information will be shown.
-        try {
-          item.platform_tvl = PoolManagerFactory.getProviderForVault(item).getTVLbyVault(item);
-        } catch (error) {
-          console.error("There was a problem fetching the platform's TVL.", error);
-        }
-        item.platform_ratio_apy = await PoolManagerFactory.getProviderForVault(item)
-          .getRatioAPYbyVault(item)
-          .catch((error) => {
-            console.error("There was a problem fetching the platform's APR.", error);
-            return 0;
-          });
-        // console.log('APY', item.platform_ratio_apy);
         item.earned_rewards = 0;
         if (totalState && totalState.vaultState && totalState.vaultState[item.address_id]) {
           item.earned_rewards = totalState.vaultState[item.address_id]?.reward;

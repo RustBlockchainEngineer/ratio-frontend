@@ -14,6 +14,7 @@ import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
+import { useUpdateTvl } from '../../../contexts/platformTvl';
 import { isWalletApproveError } from '../../../utils/utils';
 
 const WithdrawModal = ({ data }: any) => {
@@ -38,6 +39,7 @@ const WithdrawModal = ({ data }: any) => {
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
 
   const PoolManagerFactory = useGetPoolManager(vault);
+  const updatePlatformTVL = useUpdateTvl();
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -86,6 +88,7 @@ const WithdrawModal = ({ data }: any) => {
         userCollAccount
       );
       await updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
+      updatePlatformTVL(vault.platform_name, vault.address_id);
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');
     } catch (err) {

@@ -50,6 +50,7 @@
     "@saberhq/anchor-contrib": "1.12.37",
     "@saberhq/stableswap-sdk": "^1.10.3",
     "@solana/buffer-layout": "^4.0.0",
+    "@solana/buffer-layout-utils": "^0.2.0",
     "@solana/spl-token": "^0.1.6",
     "@solana/spl-token-registry": "^0.2.212",
     "@solana/wallet-adapter-base": "^0.7.0",
