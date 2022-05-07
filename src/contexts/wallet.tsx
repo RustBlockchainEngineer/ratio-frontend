@@ -82,7 +82,7 @@ export function WalletProvider({ children = null as any }) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    console.log(wallet);
+    // console.log(wallet);
     if (wallet) {
       wallet.on('connect', () => {
         if (wallet.publicKey) {

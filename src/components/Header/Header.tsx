@@ -98,7 +98,7 @@ const Header = (headerProps: HeaderProps) => {
     ) : null;
   };
 
-  console.log(network);
+  // console.log(network);
 
   return (
     <div className="header row ">

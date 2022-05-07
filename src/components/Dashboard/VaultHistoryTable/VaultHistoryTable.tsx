@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Table } from 'react-bootstrap';
 import { useConnectionConfig } from '../../../contexts/connection';
 import share from '../../../assets/images/share.svg';
@@ -7,7 +6,7 @@ import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { useWallet } from '../../../contexts/wallet';
 import { formatTxHistory, makeRatioApiEndpointTxHistory } from '../../../hooks/useFetchRatioApi';
 import { FormattedTX } from '../../../types/transaction-types';
-import { selectors } from '../../../features/dashboard';
+import { useUserOverview } from '../../../contexts/state';
 
 const VaultHistoryTable = ({ mintAddress }: any) => {
   const { publicKey } = useWallet();
@@ -17,7 +16,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
   const [loading, setLoading] = useState(false);
   const [historyData, setHistoryData] = useState<any>();
   const cluster = useConnectionConfig()?.env;
-  const overview = useSelector(selectors.getOverview);
+  const overview = useUserOverview();
 
   useEffect(() => {
     let cancelRequest = false;
