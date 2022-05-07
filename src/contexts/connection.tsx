@@ -24,7 +24,8 @@ export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 export const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
-    endpoint: 'https://ratio.genesysgo.net/',
+    // endpoint: 'https://ratio.genesysgo.net/',
+    endpoint: 'https://solitary-crimson-bird.solana-mainnet.quiknode.pro/39cd0952fe1e01cead4b69f4637ceb3b8e7d96e0/',
     chainID: ChainID.MainnetBeta,
   },
   {
@@ -80,14 +81,21 @@ const getRpcAuthToken = async () => {
   const { access_token }: { access_token: string } = resp.data;
   return access_token;
 };
-
+/*    | 'processed'
+    | 'confirmed'
+    | 'finalized'
+    | 'recent'
+    | 'single'
+    | 'singleGossip'
+    | 'root'
+    | 'max';*/
 export function ConnectionProvider({ children = undefined as any }) {
   const [endpoint, setEndpoint] = useLocalStorageState('connectionEndpts', DEFAULT.endpoint);
 
   const [slippage, setSlippage] = useLocalStorageState('slippage', DEFAULT_SLIPPAGE.toString());
 
   const web3ConnectionConfig: Web3ConnectionConfig = {
-    commitment: 'recent', // TODO: Set to "confirmed"?
+    commitment: 'confirmed', // TODO: Set to "confirmed"?
     fetchMiddleware: tokenAuthFetchMiddleware({
       getToken: getRpcAuthToken,
     }),
