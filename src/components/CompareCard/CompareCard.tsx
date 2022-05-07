@@ -11,6 +11,7 @@ type CompareCardProps = {
 };
 
 const CompareCard = ({ label, list, type }: CompareCardProps) => {
+  console.log(list);
   return (
     <div className="col col-4">
       <div className="compareCard ">
@@ -27,7 +28,9 @@ const CompareCard = ({ label, list, type }: CompareCardProps) => {
                 </div>
                 {type === 'TVL' && <h5>{vault?.tvl}</h5>}
                 {type === 'APY' && <h5>{vault?.apr}%</h5>}
-                {type === 'RISK' && <h5 className={getRiskLevel(vault.risk)}>{getRiskLevel(vault.risk)}</h5>}
+                {type === 'RISK' && (
+                  <h5 className={getRiskLevel(Number(vault.risk))}>{getRiskLevel(Number(vault.risk))}</h5>
+                )}
               </div>
               <div className="compareCard__list__platform">
                 <p>Platform</p>

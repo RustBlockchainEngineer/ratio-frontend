@@ -1,5 +1,9 @@
 import type { PublicKey } from '@solana/web3.js';
 
+import { useDispatch } from 'react-redux';
+import { actionTypes } from '../features/wallet';
+import { Networks } from '../constants';
+
 import Wallet from '@project-serum/sol-wallet-adapter';
 import { Transaction } from '@solana/web3.js';
 import { Button, Modal } from 'react-bootstrap';
@@ -58,7 +62,7 @@ const WalletContext = React.createContext<{
 
 export function WalletProvider({ children = null as any }) {
   const { endpoint } = useConnectionConfig();
-
+  const dispatch = useDispatch();
   // const [autoConnect, setAutoConnect] = useState(true);
 
   const [autoConnect, setAutoConnect] = useLocalStorageState('autoConnect');
@@ -78,7 +82,7 @@ export function WalletProvider({ children = null as any }) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    console.log(wallet);
+    // console.log(wallet);
     if (wallet) {
       wallet.on('connect', () => {
         if (wallet.publicKey) {
@@ -96,6 +100,8 @@ export function WalletProvider({ children = null as any }) {
             message: 'Wallet update',
             description: `Connected to wallet ${keyToDisplay}`,
           });
+          dispatch({ type: actionTypes.SET_NETWORK, payload: Networks[0] });
+          dispatch({ type: actionTypes.CONNECTED_WALLET });
         }
       });
 

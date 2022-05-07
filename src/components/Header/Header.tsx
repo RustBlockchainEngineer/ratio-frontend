@@ -98,6 +98,8 @@ const Header = (headerProps: HeaderProps) => {
     ) : null;
   };
 
+  // console.log(network);
+
   return (
     <div className="header row ">
       {/* {isTable && <img src={darkMode ? darkLogo : logo} alt="logo" />} */}

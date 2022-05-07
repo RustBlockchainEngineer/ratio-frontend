@@ -117,6 +117,7 @@ const VaultSetupContainer = ({ data }: any) => {
             maxValue={data.value}
             valid={depositStatus}
             invalidStr={invalidStr}
+            value={depositAmount}
           />
           <p className="vaultsetupcontainer-label mt-2">
             USD: <strong className="vaultsetupcontainer-value">${depositAmountUSD}</strong>

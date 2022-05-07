@@ -17,10 +17,11 @@ import {
   QUARRY_ADDRESSES,
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
-import { sendTransaction } from '../web3';
-import { SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_IOU_MINT } from './constants';
+import { sendAllTransaction, sendTransaction } from '../web3';
+import { SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_IOU_MINT, SABER_REWARD_MINT_REDEEM } from './constants';
 import { TokenAmount } from '../safe-math';
 import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../ratio-pda';
+import { Saber } from '@saberhq/saber-periphery';
 
 const rewarderKey = new PublicKey(SABER_REWARDER);
 const mintWrapperKey = new PublicKey(SABER_MINT_WRAPPER);
@@ -63,35 +64,45 @@ export async function deposit(
 export async function withdraw(connection: Connection, wallet: any, mintCollKey: PublicKey, amount: number) {
   console.log('Withdraw from Saber', amount);
 
-  const transaction = new Transaction();
+  const tx1 = new Transaction();
 
-  const tx1 = await unstakeColalteralFromSaberTx(connection, wallet, amount, mintCollKey);
-  if (tx1) {
-    transaction.add(tx1);
-  }
-
-  const tx2 = await withdrawCollateralTx(connection, wallet, amount, mintCollKey);
-  if (tx2) {
-    transaction.add(tx2);
+  const ix1 = await unstakeColalteralFromSaberTx(connection, wallet, amount, mintCollKey);
+  if (ix1) {
+    tx1.add(ix1);
   }
 
-  const tx3 = await harvestRewardsFromSaberTx(connection, wallet, mintCollKey);
-  if (tx3) {
-    transaction.add(tx3);
+  const ix2 = await withdrawCollateralTx(connection, wallet, amount, mintCollKey);
+  if (ix2) {
+    tx1.add(ix2);
   }
-  const tx4 = await distributeRewardTx(connection, wallet, mintCollKey);
-  if (tx4) {
-    transaction.add(tx4);
+  const tx2 = new Transaction();
+  const ix3 = await harvestRewardsFromSaberTx(connection, wallet, mintCollKey);
+  if (ix3) {
+    tx2.add(ix3);
   }
-  const txHash = await sendTransaction(connection, wallet, transaction);
-  await connection.confirmTransaction(txHash);
-  if (txHash?.value?.err) {
-    console.error('ERROR ON TX ', txHash.value.err);
-    throw txHash.value.err;
-  }
-  console.log('Saber withdraw tx', txHash);
 
-  return txHash;
+  const ix4 = await distributeRewardTx(connection, wallet, mintCollKey);
+  if (ix4) {
+    tx2.add(ix4);
+  }
+
+  const ix5 = await redeemAllTokensTx(connection, wallet);
+  if (ix5) {
+    tx2.add(ix5);
+  }
+
+  const txHashs = await sendAllTransaction(connection, wallet, [tx1, tx2]);
+
+  await connection.confirmTransaction(txHashs[0]);
+  if (txHashs[0]?.value?.err) {
+    console.error('ERROR ON TX ', txHashs[0].value.err);
+    throw txHashs[0].value.err;
+  }
+
+  console.log('Saber withdraw tx', txHashs[0]);
+  console.log('Saber harvest tx', txHashs[1]);
+
+  return txHashs[0];
 }
 
 export async function harvest(connection: Connection, wallet: any, mintCollKey: PublicKey) {
@@ -107,6 +118,10 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
   const tx2 = await distributeRewardTx(connection, wallet, mintCollKey);
   if (tx2) {
     transaction.add(tx2);
+  }
+  const tx3 = await redeemAllTokensTx(connection, wallet);
+  if (tx3) {
+    transaction.add(tx3);
   }
 
   const txHash = await sendTransaction(connection, wallet, transaction);
@@ -131,7 +146,7 @@ export const createSaberQuarryMinerIfneededTx = async (
   const transaction = new Transaction();
 
   const sdk: QuarrySDK = QuarrySDK.load({
-    provider: program.provider,
+    provider: program.provider as any,
   });
   const rewarder = await sdk.mine.loadRewarderWrapper(rewarderKey);
 
@@ -255,7 +270,7 @@ export const harvestRewardsFromSaberTx = async (
 ) => {
   const program = getProgramInstance(connection, wallet);
   const sdk = QuarrySDK.load({
-    provider: program.provider,
+    provider: program.provider as any,
   });
 
   const rewarderWrapper = await sdk.mine.loadRewarderWrapper(rewarderKey);
@@ -301,6 +316,30 @@ export const harvestRewardsFromSaberTx = async (
   return txn;
 };
 
+export const redeemAllTokensTx = async (connection: Connection, wallet: typeof anchor.Wallet) => {
+  const program = getProgramInstance(connection, wallet);
+  const sdk = Saber.load({
+    provider: program.provider as any,
+  });
+
+  const redeemer = await sdk.loadRedeemer({
+    iouMint: new PublicKey(SABER_REWARD_IOU_MINT),
+    redemptionMint: new PublicKey(SABER_REWARD_MINT_REDEEM),
+  });
+
+  const ataSaberIouVaultKey = getATAKey(wallet.publicKey, SABER_REWARD_IOU_MINT);
+  const ataSaberProtocolVaultKey = getATAKey(wallet.publicKey, SABER_REWARD_MINT_REDEEM);
+
+  const txn = new Transaction().add(
+    await redeemer.redeemAllTokensFromMintProxyIx({
+      sourceAuthority: wallet.publicKey,
+      iouSource: ataSaberIouVaultKey,
+      redemptionDestination: ataSaberProtocolVaultKey,
+    })
+  );
+  return txn;
+};
+
 export async function calculateSaberReward(connection: Connection, wallet: any, mintCollKey: PublicKey) {
   try {
     const program = getProgramInstance(connection, wallet);
@@ -308,7 +347,7 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
 
     const sdk: QuarrySDK = QuarrySDK.load({
-      provider: program.provider,
+      provider: program.provider as any,
     });
     const rewarder = await sdk.mine.loadRewarderWrapper(rewarderKey);
 

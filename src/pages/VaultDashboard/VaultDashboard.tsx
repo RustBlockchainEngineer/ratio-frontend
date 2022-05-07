@@ -240,6 +240,7 @@ const VaultDashboard = () => {
                   debtValue={debtValue}
                   type="deposit_withdraw"
                   riskLevel={getRiskLevelNumber(vault_mint)}
+                  price={poolInfo?.oraclePrice}
                 />
               </div>
               <div className="col col-lg-6 col-sm-12">

@@ -2301,6 +2301,15 @@
     lodash.mapvalues "^4.6.0"
     tslib "^2.3.1"
 
+"@saberhq/saber-periphery@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@saberhq/saber-periphery/-/saber-periphery-1.1.2.tgz#577e87be026b39fa88a35c3ac0d6ed1f095084b8"
+  integrity sha512-dtEx18rEpFrW9CjrSIQEbIuVI63W4d+l2lFt70NRV/suclQZeXTcxirpky0foYOumHa/1dr7ZkCmpx3zOgQODg==
+  dependencies:
+    superstruct "^0.15.4"
+    tiny-invariant "^1.2.0"
+    tslib "^2.3.1"
+
 "@saberhq/solana-contrib@^1.12.37", "@saberhq/solana-contrib@^1.12.48":
   version "1.12.48"
   resolved "https://registry.yarnpkg.com/@saberhq/solana-contrib/-/solana-contrib-1.12.48.tgz#313df4afbd6903997b15a551b99b5186a5f8ba9d"
@@ -16170,6 +16179,11 @@ superstruct@^0.14.2:
   resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.14.2.tgz#0dbcdf3d83676588828f1cf5ed35cda02f59025b"
   integrity sha512-nPewA6m9mR3d6k7WkZ8N8zpTWfenFH3q9pA2PkuiZxINr9DKB2+40wEQf0ixn8VaGuJ78AB6iWOtStI+/4FKZQ==
 
+superstruct@^0.15.4:
+  version "0.15.4"
+  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.15.4.tgz#e3381dd84ca07e704e19f69eda74eee1a5efb1f9"
+  integrity sha512-eOoMeSbP9ZJChNOm/9RYjE+F36rYR966AAqeG3xhQB02j2sfAUXDp4EQ/7bAOqnlJnuFDB8yvOu50SocvKpUEw==
+
 superstruct@^0.8.3:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.8.4.tgz#478a19649f6b02c6319c02044db6a1f5863c391f"
@@ -16817,15 +16831,15 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typescript@4.6.4:
+  version "4.6.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.4.tgz#caa78bbc3a59e6a5c510d35703f6a09877ce45e9"
+  integrity sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==
+
 typescript@^4.3.2, typescript@^4.4.3:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.2.tgz#fe12d2727b708f4eef40f51598b3398baa9611d4"
   integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==
-
-typescript@~4.2.0:
-  version "4.2.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.4.tgz#8610b59747de028fda898a8aef0e103f156d0961"
-  integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
 
 uglify-js@^3.1.4:
   version "3.15.2"

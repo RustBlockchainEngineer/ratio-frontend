@@ -16,7 +16,7 @@ import { getCoinPicSymbol } from '../../utils/helper';
 import { LPair } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { Banner, BannerIcon } from '../../components/Banner';
-import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
+// import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
@@ -26,7 +26,7 @@ import { FetchingStatus } from '../../types/fetching-types';
 import { useIsTotalUSDrLimitReached } from '../../hooks/useIsTotalUSDrLimitReached';
 import { useIsTVLLimitReached } from '../../hooks/useIsTVLLimitReached';
 import { useIsUserUSDrLimitReached } from '../../hooks/useIsUserUSDrLimitReached';
-import { useAllVaultInfo } from '../../contexts/state';
+import { useAllPoolInfo, useAllVaultInfo, useUserOverview } from '../../contexts/state';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -35,8 +35,9 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const sort_data = useSelector(selectors.getSortData);
   const view_data = useSelector(selectors.getViewData);
   const platform_data = useSelector(selectors.getPlatformData);
-  const overview = useSelector(selectors.getOverview);
+  const overview = useUserOverview();
   const userVaultInfos = useAllVaultInfo();
+  const poolInfos = useAllPoolInfo();
   const viewType = useSelector(selectors.getViewType);
   const [factorial, setFactorial] = useState<any>([]);
 
@@ -51,17 +52,16 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   };
 
   const { status, error, vaults } = useVaultsContextProvider();
-
-  const vaultsWithPlatformInformation = useFillPlatformInformation(vaults);
   const saberTvlData = useSaberTvlData();
-  const [vaultsWithAllData, setVaultsWithAllData] = useState<any>(vaults);
+  // const vaultsWithPlatformInformation = useFillPlatformInformation(vaults);
+
+  // const [vaultsWithAllData, setVaultsWithAllData] = useState<any>(vaults);
 
   // eslint-disable-next-line
   const filterData = (array1: any, array2: any, platform_data: any) => {
     if (array2.length === 0) {
       return array1;
     }
-
     return array1.filter((item1: any) => {
       const item1Str = JSON.stringify(item1);
       return array2.find((item2: any) => {
@@ -84,11 +84,9 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
     if (d !== undefined) {
       const p = filterData(d, filter_data, platform_data)
         ?.map((item: LPair, index: any) => {
+          const mint = item.address_id;
           const isVaultActive =
-            userVaultInfos &&
-            userVaultInfos[item.address_id] &&
-            userVaultInfos[item.address_id].totalColl.toNumber() !== 0;
-
+            userVaultInfos && userVaultInfos[mint] && userVaultInfos[mint].totalColl.toNumber() !== 0;
           let tvl = 0;
           let apr = 0;
 
@@ -96,11 +94,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             tvl = saberTvlData[item.address_id]?.tvl ?? 0;
             apr = saberTvlData[item.address_id]?.apy ?? 0;
           }
-
+          const earned_rewards = userVaultInfos && userVaultInfos[mint] ? userVaultInfos[mint].reward : 0;
           if (showOnlyActive === false || isVaultActive) {
             return {
               id: index,
-              mint: item.address_id, //MINTADDRESS[key]
+              mint,
               icons: item.lpasset?.map((item) =>
                 item.token_icon?.trim() === '' || item.token_icon === undefined
                   ? getCoinPicSymbol(item.token_symbole)
@@ -110,7 +108,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               title: item.symbol,
               tvl,
               apr,
-              earned_rewards: item.earned_rewards,
+              earned_rewards,
               platform: {
                 link: item.platform_site,
                 name: item.platform_name,
@@ -144,21 +142,31 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }
 
   useEffect(() => {
-    setFactorial(factorialOf(vaultsWithAllData, filter_data, sort_data, view_data, platform_data));
-  }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaultsWithAllData, saberTvlData]);
+    setFactorial(factorialOf(vaults, filter_data, sort_data, view_data, platform_data));
+  }, [
+    connected,
+    filter_data,
+    sort_data,
+    view_data,
+    platform_data,
+    overview,
+    vaults,
+    userVaultInfos,
+    poolInfos,
+    saberTvlData,
+  ]);
 
-  useEffect(() => {
-    let vaultsWithData: any = vaults;
-    if (vaultsWithPlatformInformation.length) {
-      vaultsWithData = vaultsWithPlatformInformation;
-    }
-    console.log('BaseVaultsPage vaultsWithData =', vaultsWithData);
-    setVaultsWithAllData(vaultsWithData);
-    return () => {
-      setVaultsWithAllData([]);
-    };
-    //In case a cleanup function needs to be added, consider that setting state to default values might race against other pages that use this same base page.
-  }, [vaultsWithPlatformInformation, vaults]);
+  // useEffect(() => {
+  //   let vaultsWithData: any = vaults;
+  //   if (vaultsWithPlatformInformation.length) {
+  //     vaultsWithData = vaultsWithPlatformInformation;
+  //   }
+  //   setVaultsWithAllData(vaultsWithData);
+  //   return () => {
+  //     setVaultsWithAllData([]);
+  //   };
+  //   //In case a cleanup function needs to be added, consider that setting state to default values might race against other pages that use this same base page.
+  // }, [vaultsWithPlatformInformation, vaults]);
 
   const showContent = (vtype: string) => {
     if (!overview || !userVaultInfos) {
@@ -182,9 +190,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       return (
         <div className="row">
           {factorial.map((item: any) => {
-            if (showOnlyActive === false)
-              return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
-            else return <ActivePairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+            if (!(poolInfos[item.mint] && poolInfos[item.mint].isPaused > 0)) {
+              if (showOnlyActive === false)
+                return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+              else return <ActivePairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
+            }
           })}
         </div>
       );
@@ -222,9 +232,11 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           </thead>
           <tbody>
             {factorial.map((item: any) => {
-              if (showOnlyActive === false)
-                return <TokenPairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
-              else return <ActivePairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+              if (!(poolInfos[item.mint] && poolInfos[item.mint].isPaused > 0)) {
+                if (showOnlyActive === false)
+                  return <TokenPairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+                else return <ActivePairListItem data={item} key={item.id} onCompareVault={onCompareVault} />;
+              }
             })}
           </tbody>
         </table>

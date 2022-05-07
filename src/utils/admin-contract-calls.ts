@@ -292,6 +292,15 @@ export async function getPool(connection: Connection, wallet: any, poolKey: Publ
   return pool;
 }
 
+// getPool
+export async function getAllPools(connection: Connection, wallet: any) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+
+  const all = await program.account.pool.all();
+  return all;
+}
+
 export async function getCurrentEmergencyState(
   connection: Connection,
   wallet: WalletAdapter | undefined
@@ -425,6 +434,27 @@ export async function setPoolDebtCeiling(
   }
   console.log('tx id->', tx);
   return 'Set Vault Debt Ceiling to' + vaultDebtCeiling + ', transaction id = ' + tx;
+}
+
+export async function setPoolPaused(connection: Connection, wallet: any, poolKey: PublicKey, value: number) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  console.log('wallet', wallet);
+  const program = getProgramInstance(connection, wallet);
+  const globalStateKey = getGlobalStatePDA();
+
+  const tx = await program.rpc.setPoolPaused(value, {
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      pool: poolKey,
+    },
+  });
+  const txResult = await connection.confirmTransaction(tx);
+  if (txResult.value.err) {
+    throw txResult.value.err;
+  }
+  console.log('tx id->', tx);
+  return 'Set Vault paused status to' + (value === 0 ? 'false' : 'true') + ', transaction id = ' + tx;
 }
 
 export async function setUserDebtCeiling(connection: Connection, wallet: any, newDebtCeiling: number) {

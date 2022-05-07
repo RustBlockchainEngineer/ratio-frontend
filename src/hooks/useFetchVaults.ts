@@ -56,6 +56,13 @@ export const useFetchVaults = () => {
 
           if (response.ok) {
             data = await response.json();
+            // for (let i = 0; i < data.length; i++) {
+            //   const pool = await getPool(connection, wallet, new PublicKey(data[i].vault_address_id));
+            //   console.log('pool', pool);
+            //   if (pool) {
+            //     data[i].pool = pool;
+            //   }
+            // }
             cache.current = data;
           } else {
             if (cancelRequest) return;

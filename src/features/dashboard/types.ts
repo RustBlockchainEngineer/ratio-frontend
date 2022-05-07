@@ -5,7 +5,6 @@ import {
   SET_ALL_VAULT,
   SET_SORT_DATA,
   SET_VIEW_DATA,
-  SET_OVERVIEW,
   SET_PLATFORM_DATA,
   SET_ACTIVE_VAULT,
   SET_INACTIVE_VAULT,
@@ -47,10 +46,6 @@ interface setViewData {
   payload: any;
 }
 
-interface setOverview {
-  type: typeof SET_OVERVIEW;
-  payload: any;
-}
 interface setActiveVaultsAction {
   type: typeof SET_ACTIVE_VAULT;
   payload: any;
@@ -89,7 +84,6 @@ export type dashboardActionTypes =
   | setAllVaultAction
   | setSortData
   | setViewData
-  | setOverview
   | setPlatformData
   | setActiveVaultsAction
   | setInactiveVaultsAction

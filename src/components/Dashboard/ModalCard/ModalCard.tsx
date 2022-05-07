@@ -19,6 +19,7 @@ const ModalCard = ({
   debtValue,
   usdrWalletValue,
   riskLevel,
+  price,
 }: any) => {
   const depositData = {
     mint: mintAddress,
@@ -28,6 +29,7 @@ const ModalCard = ({
     value: depositValue,
     usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
+    tokenPrice: price,
   };
 
   const withdrawData = {
@@ -39,6 +41,7 @@ const ModalCard = ({
     debtValue: debtValue,
     usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
+    tokenPrice: price,
   };
   const paybackData = {
     mint: mintAddress,

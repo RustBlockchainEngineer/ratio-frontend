@@ -6,7 +6,6 @@ import {
   SET_ALL_VAULT,
   SET_SORT_DATA,
   SET_VIEW_DATA,
-  SET_OVERVIEW,
   SET_PLATFORM_DATA,
   SET_ACTIVE_VAULT,
   SET_INACTIVE_VAULT,
@@ -47,8 +46,6 @@ export default (state = initialState, action: dashboardActionTypes) => {
       return { ...state, view_data: action.payload };
     case SET_PLATFORM_DATA:
       return { ...state, platform_data: action.payload };
-    case SET_OVERVIEW:
-      return { ...state, overview: action.payload };
     case SET_VIEW_TYPE:
       return { ...state, view_type: action.payload };
     default:

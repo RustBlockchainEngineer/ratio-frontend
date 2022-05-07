@@ -57,6 +57,7 @@ export interface LPair {
   created_on?: number;
   updated_on: number;
   lpasset?: LPAsset[];
+  pool?: any;
 }
 
 export interface LPairAPRLast {

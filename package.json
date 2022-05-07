@@ -48,6 +48,7 @@
     "@pythnetwork/client": "^2.5.3",
     "@quarryprotocol/quarry-sdk": "^2.0.1",
     "@saberhq/anchor-contrib": "1.12.37",
+    "@saberhq/saber-periphery": "^1.1.2",
     "@saberhq/stableswap-sdk": "^1.10.3",
     "@solana/buffer-layout": "^4.0.0",
     "@solana/buffer-layout-utils": "^0.2.0",
@@ -104,7 +105,7 @@
     "redux-mock-store": "^1.5.4",
     "redux-persist": "^6.0.0",
     "set-interval-async": "^2.0.3",
-    "typescript": "~4.2.0"
+    "typescript": "4.6.4"
   },
   "scripts": {
     "start": "CHOKIDAR_USEPOLLING=true react-scripts start",
