@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 import NavbarItem from './../NavbarItem/NavbarItem';
@@ -16,7 +16,7 @@ import { IoWalletOutline } from 'react-icons/io5';
 import { useConnection } from '../../contexts/connection';
 import { TokenAmount } from '../../utils/safe-math';
 import { getMint } from '../../utils/utils';
-import { actionTypes, selectors } from '../../features/dashboard';
+import { selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useAllVaultInfo, useUserOverview } from '../../contexts/state';
@@ -33,15 +33,16 @@ type NavbarProps = {
 };
 
 const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }: NavbarProps) => {
-  const dispatch = useDispatch();
   const location = useLocation();
   const history = useHistory();
   const [navIndex, setNavIndex] = useState(location.pathname);
   const { connected, connect } = useWallet();
   const connection = useConnection();
+  const userOverview = useUserOverview();
 
-  const [activeVaultCount, setActiveVaultCount] = useState<string>('');
-  const [totalMinted, setTotalMinted] = useState(0);
+  const activeVaultCount = userOverview ? userOverview.activeVaults.toString() : '0';
+  const totalMinted = Number(new TokenAmount(userOverview ? userOverview.totalDebt : 0, USDR_MINT_DECIMALS).fixed());
+
   const [totalLocked, setTotalLocked] = useState(0);
   const [activeVaultsData, setActiveVaultsData] = useState([]);
   const userVaultInfos = useAllVaultInfo();
@@ -52,8 +53,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   React.useEffect(() => {
     setNavIndex(location.pathname);
   }, [location.pathname]);
-
-  const userOverview = useUserOverview();
 
   const getActiveVaultInfo = async function (activeVaults: any[]) {
     let tmpTotalValueLocked = 0;
@@ -79,22 +78,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
       activeVaults: avdArr,
     };
   };
-
-  React.useEffect(() => {
-    if (userOverview) {
-      console.log(userOverview);
-      dispatch({ type: actionTypes.SET_OVERVIEW, payload: userOverview });
-
-      const { totalDebt, activeVaults } = userOverview;
-      setTotalMinted(Number(new TokenAmount(totalDebt ?? 0, USDR_MINT_DECIMALS).fixed()));
-      setActiveVaultCount(activeVaults);
-    }
-
-    return () => {
-      setActiveVaultsData([]);
-      setTotalLocked(0);
-    };
-  }, [userOverview]);
 
   React.useEffect(() => {
     if (userVaultInfos) {

@@ -25,7 +25,7 @@ import { FetchingStatus } from '../../types/fetching-types';
 import { useIsTotalUSDrLimitReached } from '../../hooks/useIsTotalUSDrLimitReached';
 import { useIsTVLLimitReached } from '../../hooks/useIsTVLLimitReached';
 import { useIsUserUSDrLimitReached } from '../../hooks/useIsUserUSDrLimitReached';
-import { useAllPoolInfo, useAllVaultInfo } from '../../contexts/state';
+import { useAllPoolInfo, useAllVaultInfo, useUserOverview } from '../../contexts/state';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -34,7 +34,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   const sort_data = useSelector(selectors.getSortData);
   const view_data = useSelector(selectors.getViewData);
   const platform_data = useSelector(selectors.getPlatformData);
-  const overview = useSelector(selectors.getOverview);
+  const overview = useUserOverview();
   const userVaultInfos = useAllVaultInfo();
   const poolInfos = useAllPoolInfo();
   const viewType = useSelector(selectors.getViewType);
