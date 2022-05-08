@@ -3,20 +3,19 @@ import {
   Account,
   clusterApiUrl,
   Connection,
-  PublicKey,
   Transaction,
   TransactionInstruction,
   ConnectionConfig as Web3ConnectionConfig,
 } from '@solana/web3.js';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { tokenAuthFetchMiddleware } from '@strata-foundation/web3-token-auth';
-import { TokenListProvider, ENV as ChainID, TokenInfo } from '@solana/spl-token-registry';
+import { ENV as ChainID } from '@solana/spl-token-registry';
 
 import { useLocalStorageState } from '../utils/utils';
 import { notify } from '../utils/notifications';
 import { setProgramIds } from '../utils/ids';
 import { WalletAdapter } from './wallet';
-import { cache, getMultipleAccounts, MintParser } from './accounts';
+// import { cache, getMultipleAccounts, MintParser } from './accounts';
 import { API_ENDPOINT } from '../constants';
 
 export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
@@ -57,8 +56,8 @@ interface ConnectionConfig {
   setSlippage: (val: number) => void;
   env: ENV;
   setEndpoint: (val: string) => void;
-  tokens: TokenInfo[];
-  tokenMap: Map<string, TokenInfo>;
+  // tokens: TokenInfo[];
+  // tokenMap: Map<string, TokenInfo>;
 }
 
 const ConnectionContext = React.createContext<ConnectionConfig>({
@@ -71,8 +70,8 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
   connection: new Connection(DEFAULT.endpoint, 'recent'),
   sendConnection: new Connection(DEFAULT.endpoint, 'recent'),
   env: DEFAULT.name,
-  tokens: [],
-  tokenMap: new Map<string, TokenInfo>(),
+  // tokens: [],
+  // tokenMap: new Map<string, TokenInfo>(),
 });
 
 const getRpcAuthToken = async () => {
@@ -106,33 +105,33 @@ export function ConnectionProvider({ children = undefined as any }) {
   const chain = ENDPOINTS.find((end) => end.endpoint === endpoint) || DEFAULT;
   const env = chain.name;
 
-  const [tokens, setTokens] = useState<TokenInfo[]>([]);
-  const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
-  useEffect(() => {
-    cache.clear();
-    // fetch token files
-    (async () => {
-      const res = await new TokenListProvider().resolve();
-      const list = res.filterByChainId(chain.chainID).excludeByTag('nft').getList();
-      const knownMints = list.reduce((map, item) => {
-        map.set(item.address, item);
-        return map;
-      }, new Map<string, TokenInfo>());
+  // const [tokens, setTokens] = useState<TokenInfo[]>([]);
+  // const [tokenMap, setTokenMap] = useState<Map<string, TokenInfo>>(new Map());
+  // useEffect(() => {
+  //   cache.clear();
+  //   // fetch token files
+  //   (async () => {
+  //     const res = await new TokenListProvider().resolve();
+  //     const list = res.filterByChainId(chain.chainID).excludeByTag('nft').getList();
+  //     const knownMints = list.reduce((map, item) => {
+  //       map.set(item.address, item);
+  //       return map;
+  //     }, new Map<string, TokenInfo>());
 
-      const accounts = await getMultipleAccounts(connection, [...knownMints.keys()], 'single');
-      accounts.keys.forEach((key, index) => {
-        const account = accounts.array[index];
-        if (!account) {
-          return;
-        }
+  //     const accounts = await getMultipleAccounts(connection, [...knownMints.keys()], 'single');
+  //     accounts.keys.forEach((key, index) => {
+  //       const account = accounts.array[index];
+  //       if (!account) {
+  //         return;
+  //       }
 
-        cache.add(new PublicKey(key), account, MintParser);
-      });
+  //       cache.add(new PublicKey(key), account, MintParser);
+  //     });
 
-      setTokenMap(knownMints);
-      setTokens(list);
-    })();
-  }, [connection, chain]);
+  //     setTokenMap(knownMints);
+  //     setTokens(list);
+  //   })();
+  // }, [connection, chain]);
 
   setProgramIds(env);
 
@@ -176,8 +175,6 @@ export function ConnectionProvider({ children = undefined as any }) {
         setSlippage: (val) => setSlippage(val.toString()),
         connection,
         sendConnection,
-        tokens,
-        tokenMap,
         env,
       }}
     >
@@ -200,8 +197,8 @@ export function useConnectionConfig() {
     endpoint: context.endpoint,
     setEndpoint: context.setEndpoint,
     env: context.env,
-    tokens: context.tokens,
-    tokenMap: context.tokenMap,
+    // tokens: context.tokens,
+    // tokenMap: context.tokenMap,
   };
 }
 
