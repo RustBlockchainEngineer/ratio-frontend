@@ -95,10 +95,17 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   };
 
   const printTvl = () => {
-    if (isNaN(data.tvl)) {
+    if (isNaN(data.tvl) || data.tvl === 0) {
       return <LoadingSpinner className="spinner-border-sm text-info" />;
     }
     return formatUSD.format(data.tvl);
+  };
+
+  const printApy = () => {
+    if (isNaN(data?.apr) || data?.apr === 0) {
+      return <LoadingSpinner className="spinner-border-sm text-info" />;
+    }
+    return Number(data?.apr).toFixed(2) + '%';
   };
 
   return (
@@ -134,7 +141,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
             </div>
             <div className="d-flex justify-content-between align-items-center mt-2">
               <h6>APY</h6>
-              <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
+              <h6 className="semiBold">{printApy()}</h6>
             </div>
             <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
               <div className="d-flex align-items-center">

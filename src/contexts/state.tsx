@@ -1,6 +1,5 @@
 import { sleep } from '@project-serum/common';
 import React, { useEffect, useState } from 'react';
-import { API_ENDPOINT } from '../constants';
 import {
   USDR_MINT_DECIMALS,
   calculateRewardByPlatform,
@@ -102,7 +101,6 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const getPoolInfo = async (globalState, oracleState, poolInfo: any) => {
-    const mint = poolInfo.mintCollat.toString();
     const mintInfo = await getMint(connection, poolInfo.mintCollat);
     if (poolInfo && mintInfo && oracleState && globalState) {
       const oracleInfoA = oracleState[poolInfo.swapMintA];
@@ -129,19 +127,13 @@ export function RFStateProvider({ children = undefined as any }) {
         tokenAmountB,
         oracleInfoB.price.toNumber()
       );
-
-      try {
-        const apr = (await (await fetch(`${API_ENDPOINT}/lpairs/${mint}/apr/last`)).json()).apr;
-        poolInfo['platformAPR'] = apr ?? 0;
-      } catch {
-        poolInfo['platformAPR'] = 0;
-      }
+      poolInfo['tokenAmountA'] = tokenAmountA;
+      poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['oraclePrice'] = price;
       poolInfo['currentPrice'] = new TokenAmount(price, USDR_MINT_DECIMALS).fixed();
       poolInfo['ratio'] = ratio;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
-      poolInfo['platformTVL'] = lpSupply * poolInfo['currentPrice'];
     }
     return poolInfo;
   };
@@ -327,6 +319,11 @@ export function useOracleInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
   return context.oracleState[mint];
+}
+
+export function useAllOracleInfo() {
+  const context = React.useContext(RFStateContext);
+  return context.oracleState;
 }
 
 export function useUserOverview() {
