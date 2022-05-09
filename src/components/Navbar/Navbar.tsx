@@ -61,9 +61,8 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
     const avdArr: any = [];
     for (const vault of vaults) {
       const { mint, lockedAmount, debt, poolInfo }: any = vault;
-      const { oraclePrice } = poolInfo;
       const mintInfo = await getMint(connection, mint);
-      const pv = oraclePrice * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
+      const pv = poolInfo.oraclePrice * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
       const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
       const vaultValue: any = {
         title,
