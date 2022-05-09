@@ -1,18 +1,10 @@
 import { sleep } from '@project-serum/common';
 import React, { useEffect, useState } from 'react';
 import {
-  DEFAULT_GLOBAL_STATE,
-  DEFAULT_ORACLE_STATE,
-  DEFAULT_POOL_STATE,
-  DEFAULT_USER_STATE,
-  DEFAULT_VAULT_STATE,
-} from '../utils/cache';
-import {
   USDR_MINT_DECIMALS,
   calculateRewardByPlatform,
   getAllOracleState,
   getGlobalState,
-  getLendingPoolByMint,
   getUserState,
   getVaultState,
   COLL_RATIOS_DECIMALS,
@@ -45,26 +37,20 @@ const RFStateContext = React.createContext<RFStateConfig>({
 export declare type UpdateStateType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export const UPDATE_GLOBAL_STATE: UpdateStateType = 0;
-export const UPDATE_POOL_STATE: UpdateStateType = 1;
-export const UPDATE_USER_STATE: UpdateStateType = 2;
-export const UPDATE_REWARD_STATE: UpdateStateType = 3;
+export const UPDATE_REWARD_STATE: UpdateStateType = 1;
 
 export function RFStateProvider({ children = undefined as any }) {
   const connection = useConnection();
   const { wallet } = useWallet();
 
-  const [globalState, setGlobalState] = useState<any>(DEFAULT_GLOBAL_STATE);
-  const [oracleState, setOracleState] = useState<any>(DEFAULT_ORACLE_STATE);
-  const [poolState, setPoolState] = useState<any>(DEFAULT_POOL_STATE);
-  const [overview, setOverview] = useState<any>(DEFAULT_USER_STATE);
-  const [vaultState, setVaultState] = useState<any>(DEFAULT_VAULT_STATE);
+  const [globalState, setGlobalState] = useState<any>(null);
+  const [oracleState, setOracleState] = useState<any>(null);
+  const [poolState, setPoolState] = useState<any>(null);
+  const [overview, setOverview] = useState<any>(null);
+  const [vaultState, setVaultState] = useState<any>(null);
   const { updateWalletFlag, setUpdateWalletFlag } = useUpdateWallet();
 
   const [isStateLoading, setStateLoading] = useState(false);
-  const [isOracleLoading, setOracleLoading] = useState(false);
-  const [isPoolLoading, setPoolLoading] = useState(false);
-  const [isOverviewLoading, setOverviewLoading] = useState(false);
-  const [isVaultLoading, setVaultLoading] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const updateRFState = async (action: UpdateStateType, mint = '') => {
@@ -72,12 +58,7 @@ export function RFStateProvider({ children = undefined as any }) {
     setUpdateWalletFlag(!updateWalletFlag);
 
     if (action === UPDATE_GLOBAL_STATE) {
-      updateGlobalState();
-    } else if (action === UPDATE_POOL_STATE) {
-      updatePoolStateByMint(mint);
-    } else if (action === UPDATE_USER_STATE) {
-      // updateVaultStateByMint(mint);
-      updateOverview();
+      updateTotalState();
     } else if (action === UPDATE_REWARD_STATE) {
       updateUserRewardByMint(mint);
     }
@@ -86,8 +67,9 @@ export function RFStateProvider({ children = undefined as any }) {
   const updateGlobalState = async () => {
     console.log('1. Updating global state...');
     const res = await getGlobalState(connection, wallet);
+    let info = null;
     if (res) {
-      const info = {
+      info = {
         ...res.globalState,
         mintableDebt: Math.max(
           0,
@@ -101,7 +83,7 @@ export function RFStateProvider({ children = undefined as any }) {
       };
       setGlobalState(info);
     }
-    setStateLoading(false);
+    return info;
   };
 
   const updateOracleState = async () => {
@@ -115,10 +97,10 @@ export function RFStateProvider({ children = undefined as any }) {
       oracleInfos[oracleMint] = oracle;
     });
     setOracleState(oracleInfos);
-    setOracleLoading(false);
+    return oracleInfos;
   };
 
-  const getPoolInfo = async (poolInfo: any) => {
+  const getPoolInfo = async (globalState, oracleState, poolInfo: any) => {
     const mintInfo = await getMint(connection, poolInfo.mintCollat);
     if (poolInfo && mintInfo && oracleState && globalState) {
       const oracleInfoA = oracleState[poolInfo.swapMintA];
@@ -156,7 +138,7 @@ export function RFStateProvider({ children = undefined as any }) {
     return poolInfo;
   };
 
-  const updateAllPoolStates = async () => {
+  const updatePoolState = async (globalState, oracleState) => {
     console.log('3. Updating pool state...');
 
     const poolInfos: any = {};
@@ -166,7 +148,7 @@ export function RFStateProvider({ children = undefined as any }) {
         const pool = allPools[i].account;
         const mint = pool.mintCollat.toString();
 
-        const poolInfo = await getPoolInfo(pool);
+        const poolInfo = await getPoolInfo(globalState, oracleState, pool);
         if (poolInfo) {
           poolInfos[mint] = poolInfo;
         }
@@ -175,29 +157,19 @@ export function RFStateProvider({ children = undefined as any }) {
       console.log(e);
     }
     setPoolState(poolInfos);
-    setPoolLoading(false);
+    return poolInfos;
   };
 
-  const updatePoolStateByMint = async (mint: string) => {
-    const pool = await getLendingPoolByMint(connection, mint);
-    const poolInfo = await getPoolInfo(pool);
-
-    setPoolState((prev) => {
-      return {
-        ...prev,
-        [mint]: poolInfo,
-      };
-    });
-  };
   const updateOverview = async () => {
     console.log('4. Updating overview.....');
 
     const userState = await getUserState(connection, wallet);
-    setOverview(userState ?? {});
-    setOverviewLoading(false);
+    const info = userState ?? null;
+    setOverview(info);
+    return info;
   };
 
-  const getVaultStateByMint = async (mint: string) => {
+  const getVaultStateByMint = async (globalState, poolState, overview, mint: string) => {
     const vaultInfo = await getVaultState(connection, wallet, mint);
 
     if (
@@ -235,15 +207,12 @@ export function RFStateProvider({ children = undefined as any }) {
     return null;
   };
 
-  const updateAllVaultState = async () => {
-    if (!poolState) {
-      return;
-    }
+  const updateVaultState = async (globalState, poolState, overview) => {
     console.log('5. Updating vaults.....');
     const vaultInfos: any = {};
     try {
       for (const mint of Object.keys(poolState)) {
-        const vaultInfo = await getVaultStateByMint(mint);
+        const vaultInfo = await getVaultStateByMint(globalState, poolState, overview, mint);
         if (vaultInfo) {
           vaultInfos[mint] = {
             ...vaultInfo,
@@ -254,7 +223,7 @@ export function RFStateProvider({ children = undefined as any }) {
       console.error(e);
     }
     setVaultState(vaultInfos);
-    setVaultLoading(false);
+    return vaultInfos;
   };
 
   const updateUserRewardByMint = async (mint: string) => {
@@ -276,60 +245,28 @@ export function RFStateProvider({ children = undefined as any }) {
     setVaultState(newStates);
   };
 
-  //runtime updates
-  useEffect(() => {
-    if (connection && !isStateLoading) {
-      setStateLoading(true);
-      updateGlobalState();
-    }
-    return () => {
-      setGlobalState(null);
-    };
-  }, [connection]);
+  const updateTotalState = async () => {
+    setStateLoading(true);
 
-  useEffect(() => {
-    if (globalState && !isOracleLoading) {
-      setOracleLoading(true);
-      updateOracleState();
-    }
-    return () => {
-      setOracleState(null);
-    };
-  }, [globalState]);
-
-  useEffect(() => {
-    if (oracleState && !isPoolLoading) {
-      setPoolLoading(true);
-
-      updateAllPoolStates();
-    }
-    return () => {
-      setPoolState(null);
-    };
-  }, [oracleState]);
-
-  useEffect(() => {
-    if (poolState && wallet && wallet.publicKey && !isOverviewLoading) {
-      setOverviewLoading(true);
-      updateOverview();
+    const globalState = await updateGlobalState();
+    const oracleState = await updateOracleState();
+    const poolState = await updatePoolState(globalState, oracleState);
+    const overview = await updateOverview();
+    if (overview) {
+      await updateVaultState(globalState, poolState, overview);
     }
 
-    return () => {
-      setOverview(null);
-    };
-  }, [wallet, wallet?.publicKey, poolState]);
-
+    setStateLoading(false);
+  };
   useEffect(() => {
-    if (wallet && wallet.publicKey && poolState && overview && !isVaultLoading) {
-      setVaultLoading(true);
-
-      updateAllVaultState();
+    if (wallet && wallet.publicKey && connection && !isStateLoading) {
+      updateTotalState();
     }
 
     return () => {
       setVaultState(null);
     };
-  }, [wallet, wallet?.publicKey, poolState, overview]);
+  }, [wallet, wallet?.publicKey, connection]);
 
   return (
     <RFStateContext.Provider
