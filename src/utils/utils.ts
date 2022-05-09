@@ -269,7 +269,12 @@ export const calculateCollateralPrice = (
   tokenAmountB: number,
   priceB: number
 ) => {
-  return ((Math.sqrt(tokenAmountA * priceA) * Math.sqrt(tokenAmountB * priceB)) / lpSupply) * 2;
+  const valueA = tokenAmountA * priceA;
+  const valueB = tokenAmountB * priceB;
+  return {
+    fairPrice: ((Math.sqrt(valueA) * Math.sqrt(valueB)) / lpSupply) * 2,
+    displayPrice: (valueA + valueB) / lpSupply,
+  };
 };
 
 // export const getMint = async (connection: Connection, key: any) => {

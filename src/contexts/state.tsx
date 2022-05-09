@@ -120,7 +120,7 @@ export function RFStateProvider({ children = undefined as any }) {
       );
       const ratio = globalState.collPerRisklv[poolInfo?.riskLevel].toNumber() / 10 ** COLL_RATIOS_DECIMALS;
 
-      const price = calculateCollateralPrice(
+      const { fairPrice: price } = calculateCollateralPrice(
         lpSupply,
         tokenAmountA,
         oracleInfoA.price.toNumber(),
@@ -199,7 +199,6 @@ export function RFStateProvider({ children = undefined as any }) {
         debt: vaultInfo.debt.toNumber(),
         debtLimit: new TokenAmount(debtLimit, USDR_MINT_DECIMALS).toWei().toNumber(),
         mintableDebt: new TokenAmount(mintableDebt, USDR_MINT_DECIMALS).toWei().toNumber(),
-        collPrice: poolInfo.oraclePrice,
         isReachedDebt: mintableDebt <= 0 && vaultInfo.debt.toNumber() > 0,
         pool: poolInfo,
       };
