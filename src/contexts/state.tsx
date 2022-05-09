@@ -171,15 +171,15 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const getVaultStateByMint = async (globalState, poolState, overview, mint: string) => {
     const vaultInfo = await getVaultState(connection, wallet, mint);
-
+    const poolInfo = poolState[mint];
     if (
-      overview.totalDebt &&
       globalState.debtCeilingUser &&
       globalState.debtCeilingGlobal &&
       globalState.totalDebt &&
+      overview.totalDebt &&
+      poolInfo &&
       vaultInfo
     ) {
-      const poolInfo = poolState[mint];
       const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
 
       const lockedColl = parseFloat(new TokenAmount(vaultInfo.totalColl.toString(), poolInfo.mintDecimals).fixed());
@@ -200,7 +200,7 @@ export function RFStateProvider({ children = undefined as any }) {
         debtLimit: new TokenAmount(debtLimit, USDR_MINT_DECIMALS).toWei().toNumber(),
         mintableDebt: new TokenAmount(mintableDebt, USDR_MINT_DECIMALS).toWei().toNumber(),
         isReachedDebt: mintableDebt <= 0 && vaultInfo.debt.toNumber() > 0,
-        pool: poolInfo,
+        poolInfo,
       };
     }
     return null;
