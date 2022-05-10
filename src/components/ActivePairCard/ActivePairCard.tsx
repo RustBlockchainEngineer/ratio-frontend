@@ -30,7 +30,6 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const updateRFStates = useUpdateRFStates();
 
   const vaultState = useUserVaultInfo(data.mint);
-
   const totalDebt = +new TokenAmount((vaultState as any)?.debt ?? 0, USDR_MINT_DECIMALS).fixed();
   const positionValue = +new TokenAmount((vaultState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
   const mintableDebt = +new TokenAmount((vaultState as any)?.mintableDebt ?? 0, USDR_MINT_DECIMALS).fixed();
