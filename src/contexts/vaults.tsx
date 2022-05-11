@@ -2,6 +2,7 @@ import React from 'react';
 import { useFetchVaults } from '../hooks/useFetchVaults';
 import { FetchingStatus } from '../types/fetching-types';
 import { LPair } from '../types/VaultTypes';
+// import { useWallet } from './wallet';
 
 export const VAULTS_CONTEXT_DEFAULT_VALUE: {
   status: FetchingStatus;
@@ -18,6 +19,8 @@ export const VAULTS_CONTEXT_DEFAULT_VALUE: {
 const VaultsContext = React.createContext(VAULTS_CONTEXT_DEFAULT_VALUE);
 
 export const VaultsContextProvider = (props: any) => {
+  // const { wallet } = useWallet();
+  // const { status, error, vaults, forceUpdate } = useFetchVaults(wallet?.publicKey);
   const { status, error, vaults, forceUpdate } = useFetchVaults();
   const value = {
     status,

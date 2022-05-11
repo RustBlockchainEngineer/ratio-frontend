@@ -5,7 +5,7 @@ import { getOrcaSwapPoolInfo } from '../utils/orca-pools';
 import { getRaydiumPools } from '../utils/ray-pools';
 import { getSaberFarmsInfo } from '../utils/saber-pools';
 import { useConnection, useConnectionConfig } from './connection';
-
+// import { useWallet } from './wallet';
 interface PoolsConfig {
   raydiumPools: any;
   saberPools: any;
@@ -23,7 +23,9 @@ const PoolsContext = React.createContext<PoolsConfig>({
 export function PoolProvider({ children = undefined as any }) {
   const connection = useConnection();
   const connectionConfig = useConnectionConfig();
+  // const { wallet } = useWallet();
 
+  // const { vaults: platformVaultsFromBackend } = useFetchVaults(wallet?.publicKey);
   const { vaults: platformVaultsFromBackend } = useFetchVaults();
 
   const [raydiumPools, setRaydiumPools] = useState<any>(null);
