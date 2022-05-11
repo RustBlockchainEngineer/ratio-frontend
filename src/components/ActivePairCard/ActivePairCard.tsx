@@ -13,6 +13,7 @@ import LoadingSpinner from '../../atoms/LoadingSpinner';
 import Button from '../Button';
 import { useWallet } from '../../contexts/wallet';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
+import { useFetchSaberPrice } from '../../hooks/useCoinGeckoPrices';
 
 import { TokenPairCardProps } from '../../models/UInterface';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
@@ -21,6 +22,7 @@ import { isWalletApproveError } from '../../utils/utils';
 
 import { useUpdateRFStates, useUserVaultInfo, UPDATE_REWARD_STATE } from '../../contexts/state';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
+import { FetchingStatus } from '../../types/fetching-types';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
@@ -37,6 +39,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const [isHarvesting, setIsHarvesting] = useState(false);
 
   const PoolManagerFactory = useGetPoolManager(data.item);
+  const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
 
   const printTvl = () => {
     if (isNaN(data.tvl)) {
@@ -161,7 +164,18 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
           <div className="activepaircard__detailBox">
             <div className="d-flex justify-content-between">
               <h6>Rewards Earned:</h6>
-              <h6 className="semiBold">${data.earned_rewards}</h6>
+
+              <h6 className="semiBold">
+                {saberPriceStatus === FetchingStatus.Loading && (
+                  <LoadingSpinner className="spinner-border-sm text-info" />
+                )}
+                {saberPriceStatus === FetchingStatus.Error &&
+                  toast.error('There was an error when fetching the saber pricehistory') &&
+                  console.error(saberPriceError)}
+                {saberPriceStatus === FetchingStatus.Finish &&
+                  saberPrice &&
+                  `$  ${(data.earned_rewards * saberPrice)?.toFixed(USDR_MINT_DECIMALS)}`}
+              </h6>
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>Position Value:</h6>

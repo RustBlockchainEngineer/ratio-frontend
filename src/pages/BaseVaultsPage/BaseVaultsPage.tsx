@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useWallet } from '../../contexts/wallet';
+import { useSaberTvlData } from '../../contexts/platformTvl';
 import { PairType } from '../../models/UInterface';
 import { selectors, actionTypes } from '../../features/dashboard';
 
@@ -51,7 +52,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   };
 
   const { status, error, vaults } = useVaultsContextProvider();
-
+  const saberTvlData = useSaberTvlData();
   // const vaultsWithPlatformInformation = useFillPlatformInformation(vaults);
 
   // const [vaultsWithAllData, setVaultsWithAllData] = useState<any>(vaults);
@@ -86,8 +87,13 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           const mint = item.address_id;
           const isVaultActive =
             userVaultInfos && userVaultInfos[mint] && userVaultInfos[mint].totalColl.toNumber() !== 0;
-          const tvl = poolInfos && poolInfos[mint] ? poolInfos[mint]['platformTVL'] : 0;
-          const apr = poolInfos && poolInfos[mint] ? poolInfos[mint]['platformAPR'] : 0;
+          let tvl = 0;
+          let apr = 0;
+
+          if (item.platform_name === 'SABER') {
+            tvl = saberTvlData[item.address_id]?.tvl ?? 0;
+            apr = saberTvlData[item.address_id]?.apy ?? 0;
+          }
           const earned_rewards = userVaultInfos && userVaultInfos[mint] ? userVaultInfos[mint].reward : 0;
           if (showOnlyActive === false || isVaultActive) {
             return {
@@ -137,7 +143,18 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   useEffect(() => {
     setFactorial(factorialOf(vaults, filter_data, sort_data, view_data, platform_data));
-  }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaults, userVaultInfos, poolInfos]);
+  }, [
+    connected,
+    filter_data,
+    sort_data,
+    view_data,
+    platform_data,
+    overview,
+    vaults,
+    userVaultInfos,
+    poolInfos,
+    saberTvlData,
+  ]);
 
   // useEffect(() => {
   //   let vaultsWithData: any = vaults;
@@ -239,29 +256,33 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   return (
     <>
-      {hasUserReachedUSDrLimit && !hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
-        <Banner
-          title="USDr Debt Limit Reached:"
-          message="USDr Debt Limit Reached: You have reached your overall USDr Debt Limit."
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
-      )}
-      {hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
-        <Banner
-          title="USDr Debt Limit Reached:"
-          message="USDr Debt Limit Reached: The global debt ceiling on the Ratio platform has been reached."
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
-      )}
-      {hasReachedTVLLimit && (
-        <Banner
-          title="TVL Limit Reached:"
-          message="TVL Limit Reached: The global deposit ceiling on the Ratio platform has been reached."
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
+      {overview && (
+        <div>
+          {hasUserReachedUSDrLimit && !hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
+            <Banner
+              title="USDr Debt Limit Reached:"
+              message="USDr Debt Limit Reached: You have reached your overall USDr Debt Limit."
+              bannerIcon={BannerIcon.riskLevel}
+              className="debt-limit-reached"
+            />
+          )}
+          {hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
+            <Banner
+              title="USDr Debt Limit Reached:"
+              message="USDr Debt Limit Reached: The global debt ceiling on the Ratio platform has been reached."
+              bannerIcon={BannerIcon.riskLevel}
+              className="debt-limit-reached"
+            />
+          )}
+          {hasReachedTVLLimit && (
+            <Banner
+              title="TVL Limit Reached:"
+              message="TVL Limit Reached: The global deposit ceiling on the Ratio platform has been reached."
+              bannerIcon={BannerIcon.riskLevel}
+              className="debt-limit-reached"
+            />
+          )}
+        </div>
       )}
       <div className="allvaults mt-4">
         <FilterPanel label={title} viewType={viewType} onViewType={onViewType} />

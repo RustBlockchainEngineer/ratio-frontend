@@ -1,6 +1,5 @@
 import { sleep } from '@project-serum/common';
 import React, { useEffect, useState } from 'react';
-import { API_ENDPOINT } from '../constants';
 import {
   USDR_MINT_DECIMALS,
   calculateRewardByPlatform,
@@ -102,7 +101,6 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const getPoolInfo = async (globalState, oracleState, poolInfo: any) => {
-    const mint = poolInfo.mintCollat.toString();
     const mintInfo = await getMint(connection, poolInfo.mintCollat);
     if (poolInfo && mintInfo && oracleState && globalState) {
       const oracleInfoA = oracleState[poolInfo.swapMintA];
@@ -122,26 +120,20 @@ export function RFStateProvider({ children = undefined as any }) {
       );
       const ratio = globalState.collPerRisklv[poolInfo?.riskLevel].toNumber() / 10 ** COLL_RATIOS_DECIMALS;
 
-      const price = calculateCollateralPrice(
+      const { fairPrice: price } = calculateCollateralPrice(
         lpSupply,
         tokenAmountA,
         oracleInfoA.price.toNumber(),
         tokenAmountB,
         oracleInfoB.price.toNumber()
       );
-
-      try {
-        const apr = (await (await fetch(`${API_ENDPOINT}/lpairs/${mint}/apr/last`)).json()).apr;
-        poolInfo['platformAPR'] = apr ?? 0;
-      } catch {
-        poolInfo['platformAPR'] = 0;
-      }
+      poolInfo['tokenAmountA'] = tokenAmountA;
+      poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['oraclePrice'] = price;
       poolInfo['currentPrice'] = new TokenAmount(price, USDR_MINT_DECIMALS).fixed();
       poolInfo['ratio'] = ratio;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
-      poolInfo['platformTVL'] = lpSupply * poolInfo['currentPrice'];
     }
     return poolInfo;
   };
@@ -179,15 +171,15 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const getVaultStateByMint = async (globalState, poolState, overview, mint: string) => {
     const vaultInfo = await getVaultState(connection, wallet, mint);
-
+    const poolInfo = poolState[mint];
     if (
-      overview.totalDebt &&
       globalState.debtCeilingUser &&
       globalState.debtCeilingGlobal &&
       globalState.totalDebt &&
+      overview.totalDebt &&
+      poolInfo &&
       vaultInfo
     ) {
-      const poolInfo = poolState[mint];
       const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
 
       const lockedColl = parseFloat(new TokenAmount(vaultInfo.totalColl.toString(), poolInfo.mintDecimals).fixed());
@@ -207,9 +199,8 @@ export function RFStateProvider({ children = undefined as any }) {
         debt: vaultInfo.debt.toNumber(),
         debtLimit: new TokenAmount(debtLimit, USDR_MINT_DECIMALS).toWei().toNumber(),
         mintableDebt: new TokenAmount(mintableDebt, USDR_MINT_DECIMALS).toWei().toNumber(),
-        collPrice: poolInfo.oraclePrice,
         isReachedDebt: mintableDebt <= 0 && vaultInfo.debt.toNumber() > 0,
-        pool: poolInfo,
+        poolInfo,
       };
     }
     return null;
@@ -327,6 +318,11 @@ export function useOracleInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
   return context.oracleState[mint];
+}
+
+export function useAllOracleInfo() {
+  const context = React.useContext(RFStateContext);
+  return context.oracleState;
 }
 
 export function useUserOverview() {

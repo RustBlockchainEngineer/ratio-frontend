@@ -16,6 +16,7 @@ import { LPair } from '../../../types/VaultTypes';
 import { TokenAmount } from '../../../utils/safe-math';
 import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
+import { useUpdateTvl } from '../../../contexts/platformTvl';
 
 const DepositModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -42,6 +43,7 @@ const DepositModal = ({ data }: any) => {
   const [amountValue, setAmountValue] = useState(0);
 
   const updateRFStates = useUpdateRFStates();
+  const updatePlatformTVL = useUpdateTvl();
 
   const depositAmountUSD = new TokenAmount(depositAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
@@ -79,6 +81,7 @@ const DepositModal = ({ data }: any) => {
       );
 
       await updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
+      updatePlatformTVL(vault.platform_name, vault.address_id);
       setDepositAmount(0);
       toast.success('Successfully Deposited!');
     } catch (err) {

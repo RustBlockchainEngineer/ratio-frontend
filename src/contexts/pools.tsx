@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useFetchVaults } from '../hooks/useFetchVaults';
 import { getMercurialSwapPoolsInfo } from '../utils/mercurial-pools';
 import { getOrcaSwapPoolInfo } from '../utils/orca-pools';
 import { getRaydiumPools } from '../utils/ray-pools';
-import { getSaberSwapPoolsInfo } from '../utils/saber-pools';
+import { getSaberFarmsInfo } from '../utils/saber-pools';
 import { useConnection, useConnectionConfig } from './connection';
 
 interface PoolsConfig {
@@ -22,6 +23,8 @@ const PoolsContext = React.createContext<PoolsConfig>({
 export function PoolProvider({ children = undefined as any }) {
   const connection = useConnection();
   const connectionConfig = useConnectionConfig();
+
+  const { vaults: platformVaultsFromBackend } = useFetchVaults();
 
   const [raydiumPools, setRaydiumPools] = useState<any>(null);
   const [saberPools, setSaberPools] = useState<any>(null);
@@ -43,13 +46,13 @@ export function PoolProvider({ children = undefined as any }) {
 
   useEffect(() => {
     try {
-      getSaberSwapPoolsInfo(connection, connectionConfig.env).then((res: any) => {
+      getSaberFarmsInfo(connection, connectionConfig.env, platformVaultsFromBackend).then((res: any) => {
         setSaberPools(res);
       });
     } catch (e) {
       console.error(e);
     }
-  }, [connection]);
+  }, [connection, platformVaultsFromBackend]);
 
   useEffect(() => {
     try {

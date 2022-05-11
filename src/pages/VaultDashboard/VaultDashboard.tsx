@@ -273,13 +273,6 @@ const VaultDashboard = () => {
                 </div>
               </div>
             )} */}
-            {
-              <div className="vaultdashboard__bodyleft row pt-0 my-5">
-                <div className="col">
-                  <VaultHistoryTable mintAddress={vault_mint} />
-                </div>
-              </div>
-            }
           </div>
           <div className="col col-xxl-4 ">
             <div className="vaultdashboard__bodyright">
@@ -295,6 +288,13 @@ const VaultDashboard = () => {
               />
             </div>
           </div>
+        </div>
+        <div className="col col-xxl-8">
+          {
+            <div className="vaultdashboard__bodyleft row pt-0 my-5">
+              <VaultHistoryTable mintAddress={vault_mint} />
+            </div>
+          }
         </div>
       </div>
     </>
