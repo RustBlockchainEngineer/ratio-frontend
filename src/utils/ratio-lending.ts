@@ -120,11 +120,7 @@ export async function getUserState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
 
   const userStateKey = getUserStatePDA(wallet.publicKey);
-  try {
-    return await program.account.userState.fetch(userStateKey);
-  } catch (e) {
-    return null;
-  }
+  return await program.account.userState.fetchNullable(userStateKey);
 }
 
 export async function getVaultState(connection: Connection, wallet: any, mintCollat: string | PublicKey) {
@@ -134,22 +130,13 @@ export async function getVaultState(connection: Connection, wallet: any, mintCol
   const program = getProgramInstance(connection, wallet);
 
   const vaultKey = getVaultPDA(wallet.publicKey, new PublicKey(mintCollat));
-  try {
-    return await program.account.vault.fetch(vaultKey);
-  } catch (e) {
-    return null;
-  }
+  return await program.account.vault.fetchNullable(vaultKey);
 }
 
 export async function getLendingPoolByMint(connection: Connection, mint: string | PublicKey): Promise<any | undefined> {
   const program = getProgramInstance(connection, null);
   const tokenPoolKey = getPoolPDA(mint);
-  try {
-    const tokenPool = await program.account.pool.fetch(tokenPoolKey);
-    return tokenPool;
-  } catch (e) {
-    return null;
-  }
+  return await program.account.pool.fetchNullable(tokenPoolKey);
 }
 
 export async function getAllLendingPool(connection: Connection): Promise<any[]> {

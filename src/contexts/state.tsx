@@ -164,9 +164,8 @@ export function RFStateProvider({ children = undefined as any }) {
     console.log('4. Updating overview.....');
 
     const userState = await getUserState(connection, wallet);
-    const info = userState ?? null;
-    setOverview(info);
-    return info;
+    setOverview(userState);
+    return userState;
   };
 
   const getVaultStateByMint = async (globalState, poolState, overview, mint: string) => {
@@ -209,7 +208,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const updateVaultState = async (globalState, poolState, overview) => {
     console.log('5. Updating vaults.....');
     const vaultInfos: any = {};
-    try {
+    if (overview) {
       for (const mint of Object.keys(poolState)) {
         const vaultInfo = await getVaultStateByMint(globalState, poolState, overview, mint);
         if (vaultInfo) {
@@ -218,8 +217,6 @@ export function RFStateProvider({ children = undefined as any }) {
           };
         }
       }
-    } catch (e) {
-      console.error(e);
     }
     setVaultState(vaultInfos);
     return vaultInfos;
@@ -251,9 +248,7 @@ export function RFStateProvider({ children = undefined as any }) {
     const oracleState = await updateOracleState();
     const poolState = await updatePoolState(globalState, oracleState);
     const overview = await updateOverview();
-    if (overview) {
-      await updateVaultState(globalState, poolState, overview);
-    }
+    await updateVaultState(globalState, poolState, overview);
 
     setStateLoading(false);
   };
