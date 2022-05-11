@@ -31,7 +31,7 @@ const selectBanner = (poolData: any, userVaultData: any, globalStateData: any) =
       .multipliedBy(100)
       .dividedBy(poolData.debtCeiling.toString())
       .toString();
-    const userUSDrDebtPercentage = (userVaultData.debt * 100) / userVaultData.debtLimit;
+    const userUSDrDebtPercentage = (userVaultData.debt * 100) / globalStateData.debtCeilingUser;
     const globalUSDrDebtPercentage = new BigNumber(globalStateData.totalDebt.toString())
       .multipliedBy(100)
       .dividedBy(globalStateData.debtCeilingGlobal.toString())
