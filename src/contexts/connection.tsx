@@ -23,8 +23,7 @@ export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 export const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
-    endpoint: 'https://cropper.rpcpool.com/',
-    // endpoint: 'https://solitary-crimson-bird.solana-mainnet.quiknode.pro/39cd0952fe1e01cead4b69f4637ceb3b8e7d96e0/',
+    endpoint: 'https://ratio.genesysgo.net/',
     chainID: ChainID.MainnetBeta,
   },
   {
