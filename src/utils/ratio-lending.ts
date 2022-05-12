@@ -15,21 +15,18 @@ import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 import { RATIO_LENDING_PROGRAM_ID } from './ids';
 import { calculateSaberReward } from './saber/saber-utils';
-import {
-  getATAKey,
-  getGlobalStatePDA,
-  getOraclePDA,
-  getPoolPDA,
-  getUserStatePDA,
-  getVaultPDA,
-} from './ratio-pda';
+import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA, getUserStatePDA, getVaultPDA } from './ratio-pda';
 import { Program } from '@project-serum/anchor';
 export const COLL_RATIOS_DECIMALS = 8;
 export const COLL_RATIOS_ARR_SIZE = 10;
 
 export const USDR_MINT_DECIMALS = 6;
 export const USDR_MINT_KEY = 'USDrbBQwQbQ2oWHUPfA8QBHcyVxKUq1xHyXsSLKdUq2';
-export const USDR_MINT_KEYPAIR = [251, 13, 59, 235, 78, 236, 123, 64, 175, 12, 131, 201, 144, 193, 154, 173, 223, 234, 42, 241, 204, 119, 249, 83, 15, 47, 6, 121, 184, 68, 85, 163, 7, 7, 51, 53, 239, 27, 86, 29, 79, 32, 112, 12, 85, 30, 202, 238, 51, 40, 170, 112, 17, 54, 255, 88, 82, 72, 138, 64, 134, 44, 240, 141];
+export const USDR_MINT_KEYPAIR = [
+  251, 13, 59, 235, 78, 236, 123, 64, 175, 12, 131, 201, 144, 193, 154, 173, 223, 234, 42, 241, 204, 119, 249, 83, 15,
+  47, 6, 121, 184, 68, 85, 163, 7, 7, 51, 53, 239, 27, 86, 29, 79, 32, 112, 12, 85, 30, 202, 238, 51, 40, 170, 112, 17,
+  54, 255, 88, 82, 72, 138, 64, 134, 44, 240, 141,
+];
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
