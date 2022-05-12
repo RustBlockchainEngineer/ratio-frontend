@@ -7,10 +7,11 @@ import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { API_ENDPOINT } from '../../../constants';
 import { useAuthContextProvider } from '../../../contexts/authAPI';
 import { useConnection } from '../../../contexts/connection';
+import { useAllPoolInfo } from '../../../contexts/state';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { useWallet } from '../../../contexts/wallet';
 import { FetchingStatus } from '../../../types/fetching-types';
-import { LPair } from '../../../types/VaultTypes';
+import { LPair, LPEditionData } from '../../../types/VaultTypes';
 import { getAllPools, setPoolPaused } from '../../../utils/admin-contract-calls';
 import VaultEditionModal from '../VaultEditionModal';
 
@@ -22,8 +23,8 @@ export default function VaultsTable() {
   const { accessToken } = useAuthContextProvider();
   const [disableEdit, setDisableEdit] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [currentEdit, setCurrentEdit] = useState<Maybe<LPair>>(null);
-
+  const [currentEdit, setCurrentEdit] = useState<Maybe<LPEditionData>>(null);
+  const poolInfos = useAllPoolInfo();
   const connection = useConnection();
   const wallet = useWallet();
   const handleRemoveVault = async (address_id: string) => {
@@ -53,7 +54,16 @@ export default function VaultsTable() {
   const handleEditVault = async (item: LPair) => {
     setDisableEdit(true);
     setShowEditModal(true);
-    setCurrentEdit(item);
+    const onChainPoolInfo = poolInfos[item.address_id];
+    const extendedInfo: any = { ...item };
+    if (onChainPoolInfo) {
+      extendedInfo.reward_mint = onChainPoolInfo.mintReward.toString();
+      extendedInfo.token_mint_a = onChainPoolInfo.swapMintA.toString();
+      extendedInfo.token_mint_b = onChainPoolInfo.swapMintB.toString();
+      extendedInfo.token_reserve_a = onChainPoolInfo.swapTokenA.toString();
+      extendedInfo.token_reserve_b = onChainPoolInfo.swapTokenB.toString();
+    }
+    setCurrentEdit(extendedInfo);
   };
   const setPoolPause = async (poolKey: string, value: number) => {
     try {
@@ -81,14 +91,15 @@ export default function VaultsTable() {
     <div>
       <h5 className="mt-3">Current vaults:</h5>
       {status === FetchingStatus.Error && toast.error(error)}
-      {(status === FetchingStatus.Loading || status === FetchingStatus.NotAsked) && (
+      {(status === FetchingStatus.Loading || status === FetchingStatus.NotAsked || !poolInfos) && (
         <LoadingSpinner className="spinner-border-lg text-info" />
       )}
-      {status === FetchingStatus.Finish && (
+      {status === FetchingStatus.Finish && poolInfos && (
         <Table className="mt-3" striped bordered hover size="sm">
           <thead>
             <tr>
-              <th>Vault address</th>
+              <th></th>
+              <th>Pool address</th>
               <th>LP mint address</th>
               <th>Name</th>
               <th>Created on</th>
@@ -102,6 +113,7 @@ export default function VaultsTable() {
           <tbody>
             {vaults?.map((item) => (
               <tr key={item.address_id}>
+                <td>{poolInfos[item.address_id] && poolInfos[item.address_id].isPaused ? 'Paused' : ''}</td>
                 <td>{item.vault_address_id}</td>
                 <td>{item.address_id}</td>
                 <td>{item.symbol}</td>

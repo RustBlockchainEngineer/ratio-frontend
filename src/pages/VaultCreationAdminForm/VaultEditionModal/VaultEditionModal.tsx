@@ -1,4 +1,4 @@
-import { LPair, LPEditionData } from '../../../types/VaultTypes';
+import { LPEditionData } from '../../../types/VaultTypes';
 import { Modal, Button } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import VaultEditionForm from '../VaultEditionForm';
@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 interface VaultEditionModalProps {
   show: boolean;
   close: () => void;
-  vault: Maybe<LPair>;
+  vault: Maybe<LPEditionData>;
 }
 
 export default function VaultEditionModal({ show, close, vault }: VaultEditionModalProps) {
@@ -26,12 +26,12 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
     page_url: vault?.page_url ?? null,
     icon: vault?.icon ?? null,
     platform_id: vault?.platform_id ?? null,
-    platform_symbol: vault?.platform_name ?? null,
+    platform_symbol: vault?.platform_symbol ?? null,
     pool_size: vault?.pool_size ?? null,
     symbol: vault?.symbol ?? null,
     collateralization_ratio: vault?.collateralization_ratio ?? null,
     liquidation_ratio: vault?.liquidation_ratio ?? null,
-    risk_rating: vault?.risk_rating?.toString() ?? null,
+    risk_rating: vault?.risk_rating,
     lpasset:
       vault?.lpasset?.map((x) => {
         return {
@@ -39,7 +39,11 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
           token_pool_size: x.token_pool_size,
         };
       }) ?? [],
-    reward_mint: '',
+    reward_mint: vault?.reward_mint,
+    token_mint_a: vault?.token_mint_a,
+    token_mint_b: vault?.token_mint_b,
+    token_reserve_a: vault?.token_reserve_a,
+    token_reserve_b: vault?.token_reserve_b,
   };
   useEffect(() => {
     if (vault && vault.vault_address_id) {

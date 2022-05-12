@@ -757,6 +757,51 @@ export type RatioLending = {
       ];
     },
     {
+      name: 'updatePool';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'globalState';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'swapTokenA';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'swapTokenB';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'mintReward';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: 'riskLevel';
+          type: 'u8';
+        },
+        {
+          name: 'platformType';
+          type: 'u8';
+        }
+      ];
+    },
+    {
       name: 'setHarvestFee';
       accounts: [
         {
@@ -2369,6 +2414,51 @@ export const IDL: RatioLending = {
       args: [
         {
           name: 'isPaused',
+          type: 'u8',
+        },
+      ],
+    },
+    {
+      name: 'updatePool',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'globalState',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'swapTokenA',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'swapTokenB',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'mintReward',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'riskLevel',
+          type: 'u8',
+        },
+        {
+          name: 'platformType',
           type: 'u8',
         },
       ],

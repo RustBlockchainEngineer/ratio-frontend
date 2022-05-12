@@ -25,9 +25,13 @@ export default function VaultCreationAdminForm() {
     symbol: '',
     collateralization_ratio: 0,
     liquidation_ratio: 0,
-    risk_rating: '',
+    risk_rating: null,
     lpasset: [],
     reward_mint: '',
+    token_mint_a: '',
+    token_mint_b: '',
+    token_reserve_a: '',
+    token_reserve_b: '',
   };
   const onCreateProgramState = async () => {
     await createGlobalState(connection, wallet);

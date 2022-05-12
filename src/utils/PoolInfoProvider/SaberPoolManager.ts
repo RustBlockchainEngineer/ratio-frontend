@@ -1,7 +1,7 @@
 import { LPair } from '../../types/VaultTypes';
 import { GenericPoolManager } from './GenericPoolManager';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { calculateRewardByPlatform, TYPE_ID_SABER } from '../ratio-lending';
+import { calculateRewardByPlatform, PLATFORM_IDS } from '../ratio-lending';
 import { deposit, harvest, withdraw } from '../saber/saber-utils';
 
 export class SaberPoolManager extends GenericPoolManager {
@@ -50,7 +50,7 @@ export class SaberPoolManager extends GenericPoolManager {
         connection,
         wallet,
         new PublicKey(vault.address_id),
-        TYPE_ID_SABER
+        PLATFORM_IDS.SABER
       );
 
       return amount;

@@ -37,11 +37,13 @@ export const HISTORY_TO_SHOW = 5;
 
 // default platform values
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-export const TYPE_ID_RAYDIUM: PlatformType = 0;
-export const TYPE_ID_ORCA: PlatformType = 1;
-export const TYPE_ID_SABER: PlatformType = 2;
-export const TYPE_ID_MERCURIAL: PlatformType = 3;
-export const TYPE_ID_UNKNOWN: PlatformType = 4;
+export const PLATFORM_IDS = {
+  "RAYDIUM": 0,
+  "ORCA": 1,
+  "SABER": 2,
+  "MERCURIAL": 3,
+  "UNKNOWN": 4
+};
 
 export const DEFAULT_PROGRAMS = {
   systemProgram: SystemProgram.programId,
@@ -493,7 +495,7 @@ export async function calculateRewardByPlatform(
   platformType: number
 ) {
   let reward = 0;
-  if (platformType === TYPE_ID_SABER) {
+  if (platformType === PLATFORM_IDS.SABER) {
     reward = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
   }
 

@@ -191,7 +191,7 @@ export async function reportPriceOracle(
 export async function createPool(
   connection: Connection,
   wallet: any,
-  mintCollKey: PublicKey,
+  mintCollKey: string | PublicKey,
   riskLevel: number,
   platformType: PlatformType,
 
@@ -207,15 +207,6 @@ export async function createPool(
   const poolKey = getPoolPDA(mintCollKey);
 
   const globalStateKey = getGlobalStatePDA();
-
-  try {
-    const pool = await program.account.pool.fetch(poolKey);
-    console.log('already created');
-    console.log('pool', pool);
-    return 'already created';
-  } catch (e) {
-    console.log("pool didn't exist");
-  }
 
   const transaction = new Transaction();
   const oracleAKey = getOraclePDA(oracleMintA);
@@ -263,12 +254,94 @@ export async function createPool(
     );
   }
   transaction.add(
-    program.instruction.createPool(new BN(riskLevel), new BN(POOL_DEBT_CEILING), platformType, {
+    program.instruction.createPool(riskLevel, new BN(POOL_DEBT_CEILING), platformType, {
       accounts: {
         authority: wallet.publicKey,
         pool: poolKey,
         globalState: globalStateKey,
         mintCollat: mintCollKey,
+        swapTokenA,
+        swapTokenB,
+        mintReward,
+        ...DEFAULT_PROGRAMS,
+      },
+    })
+  );
+  const tx = await sendTransaction(connection, wallet, transaction);
+  return tx;
+}
+
+export async function updatePool(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: string | PublicKey,
+  riskLevel: number,
+  platformType: PlatformType,
+
+  mintReward: string | PublicKey,
+  oracleMintA: string | PublicKey,
+  oracleMintB: string | PublicKey,
+  swapTokenA: string | PublicKey,
+  swapTokenB: string | PublicKey
+) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+
+  const poolKey = getPoolPDA(mintCollKey);
+
+  const globalStateKey = getGlobalStatePDA();
+
+  const transaction = new Transaction();
+  const oracleAKey = getOraclePDA(oracleMintA);
+  const oracleBKey = getOraclePDA(oracleMintB);
+
+  try {
+    await program.account.oracle.fetch(oracleAKey);
+  } catch {
+    transaction.add(
+      program.instruction.createOracle(
+        // price of token
+        new BN(10 ** USDR_MINT_DECIMALS),
+        {
+          accounts: {
+            authority: wallet.publicKey,
+            globalState: globalStateKey,
+            oracle: oracleAKey,
+            mint: oracleMintA, // the mint account that represents the token this oracle reports for
+            // system accts
+            ...DEFAULT_PROGRAMS,
+          },
+        }
+      )
+    );
+  }
+
+  try {
+    await program.account.oracle.fetch(oracleBKey);
+  } catch {
+    transaction.add(
+      program.instruction.createOracle(
+        // price of token
+        new BN(10 ** USDR_MINT_DECIMALS),
+        {
+          accounts: {
+            authority: wallet.publicKey,
+            globalState: globalStateKey,
+            oracle: oracleBKey,
+            mint: oracleMintB, // the mint account that represents the token this oracle reports for
+            // system accts
+            ...DEFAULT_PROGRAMS,
+          },
+        }
+      )
+    );
+  }
+  transaction.add(
+    program.instruction.updatePool(riskLevel, platformType, {
+      accounts: {
+        authority: wallet.publicKey,
+        pool: poolKey,
+        globalState: globalStateKey,
         swapTokenA,
         swapTokenB,
         mintReward,
@@ -446,11 +519,11 @@ export async function setPoolPaused(connection: Connection, wallet: any, poolKey
       pool: poolKey,
     },
   });
+  console.log('tx id->', tx);
   const txResult = await connection.confirmTransaction(tx);
   if (txResult.value.err) {
     throw txResult.value.err;
   }
-  console.log('tx id->', tx);
   return 'Set Vault paused status to' + (value === 0 ? 'false' : 'true') + ', transaction id = ' + tx;
 }
 

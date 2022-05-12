@@ -41,8 +41,6 @@ export interface LPair {
   page_url: string;
   icon: string;
   pool_size: number;
-  platform_tvl: number;
-  platform_ratio_apy: number;
   platform_id: string;
   platform_symbol?: string;
   platform_name?: string;
@@ -52,10 +50,7 @@ export interface LPair {
   earned_rewards?: number;
   liquidation_ratio: number;
   risk_rating: RISK_RATING;
-  has_reached_user_debt_limit: boolean;
-  remaining_debt: number;
   created_on?: number;
-  updated_on: number;
   lpasset?: LPAsset[];
   pool?: any;
 }
@@ -99,5 +94,10 @@ export interface LPEditionData {
   liquidation_ratio: Maybe<number>;
   risk_rating: Maybe<string>;
   lpasset: LPAssetCreationData[];
+
   reward_mint: string;
+  token_mint_a: string;
+  token_mint_b: string;
+  token_reserve_a: string;
+  token_reserve_b: string;
 }

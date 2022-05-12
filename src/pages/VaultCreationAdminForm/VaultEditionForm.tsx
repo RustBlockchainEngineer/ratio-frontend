@@ -12,8 +12,8 @@ import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
 
 import { FetchingStatus } from '../../types/fetching-types';
 import { LPAssetCreationData, LPEditionData, RISK_RATING } from '../../types/VaultTypes';
-import { createPool } from '../../utils/admin-contract-calls';
-import { getLendingPoolByMint, TYPE_ID_SABER } from '../../utils/ratio-lending';
+import { createPool, updatePool } from '../../utils/admin-contract-calls';
+import { getLendingPoolByMint, PLATFORM_IDS } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
 import { getPoolPDA } from '../../utils/ratio-pda';
 import { useRFStateInfo } from '../../contexts/state';
@@ -23,30 +23,13 @@ interface VaultEditionFormProps {
   onSave?: () => void;
 }
 
-interface PoolData {
-  mintA: string;
-  mintB: string;
-  accountA: string;
-  accountB: string;
-  mintReward: string;
-}
-
 export default function VaultEditionForm({ values, onSave = () => {} }: VaultEditionFormProps) {
   const globalState = useRFStateInfo();
   const superOwner = globalState ? globalState.authority.toString() : '';
 
   const [validated, setValidated] = useState(false);
-  const [data, setData] = useState<LPEditionData>({
-    ...values,
-    address_id: '',
-  });
-  const [poolData, setPoolData] = useState<PoolData>({
-    mintA: '',
-    mintB: '',
-    accountA: '',
-    accountB: '',
-    mintReward: 'iouQcQBAiEXe6cKLS85zmZxUqaCqBdeHFpqKoSz615u',
-  });
+  const [data, setData] = useState<LPEditionData>(values);
+
   const { accessToken } = useAuthContextProvider();
   const { data: platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
   const { forceUpdate } = useVaultsContextProvider();
@@ -64,39 +47,49 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     }));
   };
 
-  const handlePoolChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setPoolData((values) => ({
-      ...values,
-      [event.target.name]: event.target.value ?? 0,
-    }));
-  };
-
   const getOrCreateTokenVault = async (connection: Connection, data: LPEditionData): Promise<PublicKey | undefined> => {
+    if (wallet?.publicKey?.toBase58()?.toLowerCase() !== superOwner?.toLowerCase()) {
+      toast.error("Can't create vault, connected user is not the contract authority");
+      return;
+    }
+    const riskRatingValue: number = RISK_RATING[data?.risk_rating as unknown as keyof typeof RISK_RATING];
+    const platformName: string | undefined = platforms?.find((item) => item.id === data.platform_id)?.name;
+    if (!platformName) {
+      toast.error('Platform needs to be selected to create a vault');
+      return;
+    }
+    const platformID = PLATFORM_IDS[platformName];
     if (await getLendingPoolByMint(connection, data?.address_id)) {
       toast.info('Token vault program already exists');
+      try {
+        await updatePool(
+          connection,
+          wallet,
+          data?.address_id,
+          riskRatingValue,
+          platformID,
+          data.reward_mint,
+          data.token_mint_a,
+          data.token_mint_b,
+          data.token_reserve_a,
+          data.token_reserve_b
+        );
+      } catch {
+        toast.error('There was an error when updating the token vault program');
+      }
     } else {
       try {
-        if (wallet?.publicKey?.toBase58()?.toLowerCase() !== superOwner?.toLowerCase()) {
-          toast.error("Can't create vault, connected user is not the contract authority");
-          return;
-        }
-        const riskRatingValue: number = RISK_RATING[data?.risk_rating as keyof typeof RISK_RATING];
-        const platformName: string | undefined = platforms?.find((item) => item.id === data.platform_id)?.name;
-        if (!platformName) {
-          toast.error('Platform needs to be selected to create a vault');
-          return;
-        }
         const result = await createPool(
           connection,
           wallet,
-          new PublicKey(data?.address_id), // mintCollKey
+          data?.address_id,
           riskRatingValue,
-          TYPE_ID_SABER,
-          poolData.mintReward,
-          poolData.mintA,
-          poolData.mintB,
-          poolData.accountA,
-          poolData.accountB
+          platformID,
+          data.reward_mint,
+          data.token_mint_a,
+          data.token_mint_b,
+          data.token_reserve_a,
+          data.token_reserve_b
         );
         if (!result) {
           toast.error('There was an error when creating the token vault program');
@@ -109,12 +102,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
         toast.info('Token vault program created successfully');
       }
     }
-    const vaultProgramAddress = await getPoolPDA(data?.address_id);
-    if (!vaultProgramAddress) {
-      toast.error("Couldn't get the vault's address");
-      return;
-    }
-    return vaultProgramAddress;
+    return getPoolPDA(data?.address_id);
   };
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
@@ -129,6 +117,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     if (!vaultProgramAddress) {
       return;
     }
+
     data.vault_address_id = vaultProgramAddress.toBase58();
     const response = await fetch(`${API_ENDPOINT}/lpairs/${data.address_id}`, {
       body: JSON.stringify(data),
@@ -164,52 +153,55 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     <>
       <Form validated={validated} onSubmit={handleSubmit}>
         <Row className="mb-3">
-          <AdminFormInput handleChange={handleChange} label="LP Address" name="address_id" value={data?.address_id} />
-          <AdminFormInput
-            handleChange={handlePoolChange}
-            label="Token A Address"
-            name="mintA"
-            value={poolData?.mintA}
-          />
-          <AdminFormInput
-            handleChange={handlePoolChange}
-            label="Token B Address"
-            name="mintB"
-            value={poolData?.mintB}
-          />
-          <AdminFormInput
-            handleChange={handlePoolChange}
-            label="Token A Reserves"
-            name="accountA"
-            value={poolData?.accountA}
-          />
-          <AdminFormInput
-            handleChange={handlePoolChange}
-            label="Token B Reserves"
-            name="accountB"
-            value={poolData?.accountB}
-          />
-          <AdminFormInput
-            handleChange={handlePoolChange}
-            label="Reward Mint"
-            name="mintReward"
-            value={poolData?.mintReward}
-          />
-          <AdminFormInput handleChange={handleChange} label="Symbol" name="symbol" value={data?.symbol} />
           <AdminFormInput
             handleChange={handleChange}
-            label="Page url"
-            required={false}
+            label="Collateral Token Address"
+            name="address_id"
+            value={data?.address_id}
+          />
+          <AdminFormInput handleChange={handleChange} label="Token Symbol" name="symbol" value={data?.symbol} />
+          <AdminFormInput handleChange={handleChange} label="Icon url" required={true} name="icon" value={data?.icon} />
+
+          <AdminFormInput
+            handleChange={handleChange}
+            label="Deposit Page url"
+            required={true}
             name="page_url"
             value={data?.page_url}
           />
+
           <AdminFormInput
             handleChange={handleChange}
-            label="Icon url"
-            required={false}
-            name="icon"
-            value={data?.icon}
+            label="Token A Address"
+            name="token_mint_a"
+            value={data?.token_mint_a}
           />
+
+          <AdminFormInput
+            handleChange={handleChange}
+            label="Token B Address"
+            name="token_mint_b"
+            value={data?.token_mint_b}
+          />
+          <AdminFormInput
+            handleChange={handleChange}
+            label="Token A Reserves"
+            name="token_reserve_a"
+            value={data?.token_reserve_a}
+          />
+          <AdminFormInput
+            handleChange={handleChange}
+            label="Token B Reserves"
+            name="token_reserve_b"
+            value={data?.token_reserve_b}
+          />
+          <AdminFormInput
+            handleChange={handleChange}
+            label="Reward Mint"
+            name="reward_mint"
+            value={data?.reward_mint}
+          />
+
           <AdminFormInput
             handleChange={handleChange}
             label="Platform"
