@@ -4,7 +4,7 @@ import * as anchor from '@project-serum/anchor';
 import {
   getGlobalState,
   getProgramInstance,
-  defaultPrograms,
+  DEFAULT_PROGRAMS,
   GLOBAL_TVL_LIMIT,
   GLOBAL_DEBT_CEILING,
   USER_DEBT_CEILING,
@@ -12,6 +12,7 @@ import {
   PlatformType,
   COLL_RATIOS_DECIMALS,
   COLL_RATIOS_ARR_SIZE,
+  USDR_MINT_KEYPAIR,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
@@ -19,8 +20,8 @@ import BN from 'bn.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 
-import { getGlobalStatePDA, getOraclePDA, getPoolPDA, getUSDrMintKey } from './ratio-pda';
-import { USDR_MINT_DECIMALS } from './ratio-lending';
+import { getGlobalStatePDA, getOraclePDA, getPoolPDA } from './ratio-pda';
+import { USDR_MINT_DECIMALS, USDR_MINT_KEY } from './ratio-lending';
 
 export async function setEmergencyState(
   connection: Connection,
@@ -69,15 +70,10 @@ export async function createGlobalState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = getGlobalStatePDA();
   console.log('globalStateKey', globalStateKey.toBase58());
-  const mintUsdKey = getUSDrMintKey();
-  console.log('mintUsdKey', mintUsdKey.toBase58());
-  try {
-    const globalState = await program.account.globalState.fetch(globalStateKey);
-    console.log('already created');
-    console.log('globalState', globalState);
-    return 'already created';
-  } catch (e) {
-    console.log("Global state didn't exist");
+  const globalState = await program.account.globalState.fetchNullable(globalStateKey);
+  if (globalState) {
+    console.log('GlobalState exists');
+    return 'GlobalState exists';
   }
   try {
     await program.rpc.createGlobalState(
@@ -89,9 +85,10 @@ export async function createGlobalState(connection: Connection, wallet: any) {
         accounts: {
           authority: wallet.publicKey,
           globalState: globalStateKey,
-          mintUsdr: mintUsdKey,
-          ...defaultPrograms,
+          mintUsdr: USDR_MINT_KEY,
+          ...DEFAULT_PROGRAMS,
         },
+        signers: [Keypair.fromSecretKey(new Uint8Array(USDR_MINT_KEYPAIR))],
       }
     );
   } catch (e) {
@@ -123,7 +120,7 @@ export async function createPriceOracle(
         oracle: oracleKey,
         mint, // the mint account that represents the token this oracle reports for
         // system accts
-        ...defaultPrograms,
+        ...DEFAULT_PROGRAMS,
       },
     }
   );
@@ -174,7 +171,7 @@ export async function reportPriceOracle(
         globalState: globalStateKey,
         oracle: oracleKey,
         mint: mint,
-        ...defaultPrograms,
+        ...DEFAULT_PROGRAMS,
       },
     }
   );
@@ -238,7 +235,7 @@ export async function createPool(
             oracle: oracleAKey,
             mint: oracleMintA, // the mint account that represents the token this oracle reports for
             // system accts
-            ...defaultPrograms,
+            ...DEFAULT_PROGRAMS,
           },
         }
       )
@@ -259,7 +256,7 @@ export async function createPool(
             oracle: oracleBKey,
             mint: oracleMintB, // the mint account that represents the token this oracle reports for
             // system accts
-            ...defaultPrograms,
+            ...DEFAULT_PROGRAMS,
           },
         }
       )
@@ -275,7 +272,7 @@ export async function createPool(
         swapTokenA,
         swapTokenB,
         mintReward,
-        ...defaultPrograms,
+        ...DEFAULT_PROGRAMS,
       },
     })
   );

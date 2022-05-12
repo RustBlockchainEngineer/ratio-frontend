@@ -1,13 +1,13 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { AccountInfo, ConfirmedSignatureInfo, ConfirmedTransaction, Connection, PublicKey } from '@solana/web3.js';
-import { AccountLayout, u64, MintInfo, MintLayout } from '@solana/spl-token';
+import { AccountLayout, u64, MintInfo, MintLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { useConnection } from './connection';
 import { useWallet } from './wallet';
 import { TokenAccount } from '../models';
 import { chunks } from '../utils/utils';
 import { EventEmitter } from '../utils/eventEmitter';
 import { useUserAccounts } from '../hooks/useUserAccounts';
-import { WRAPPED_SOL_MINT, programIds } from '../utils/ids';
+import { WRAPPED_SOL_MINT } from '../utils/ids';
 import { useUpdateWallet } from './auth';
 
 const AccountsContext = React.createContext<any>(null);
@@ -295,7 +295,7 @@ const precacheUserTokenAccounts = async (connection: Connection, owner?: PublicK
 
   // user accounts are update via ws subscription
   const accounts = await connection.getTokenAccountsByOwner(owner, {
-    programId: programIds().token,
+    programId: TOKEN_PROGRAM_ID,
   });
 
   accounts.value.forEach((info) => {
@@ -359,7 +359,7 @@ export function AccountsProvider({ children = null as any }) {
       // TODO: web3.js expose ability to filter.
       // this should use only filter syntax to only get accounts that are owned by user
       const tokenSubID = connection.onProgramAccountChange(
-        programIds().token,
+        TOKEN_PROGRAM_ID,
         (info) => {
           // TODO: fix type in web3.js
           const id = info.accountId as unknown as string;

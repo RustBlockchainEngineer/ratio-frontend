@@ -36,7 +36,7 @@ export function PlatformTvlProvider({ children = undefined as any }) {
   const poolState = useAllPoolInfo();
 
   const calcTvl = (mint: string, tvlData: FarmsTvlData) => {
-    if (!poolState || !oracleState) {
+    if (!poolState || !oracleState || !poolState[mint]) {
       return {
         tvl: tvlData.tvl,
         apy: tvlData.apy,

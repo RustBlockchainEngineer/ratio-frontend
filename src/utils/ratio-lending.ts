@@ -20,7 +20,6 @@ import {
   getGlobalStatePDA,
   getOraclePDA,
   getPoolPDA,
-  getUSDrMintKey,
   getUserStatePDA,
   getVaultPDA,
 } from './ratio-pda';
@@ -29,7 +28,8 @@ export const COLL_RATIOS_DECIMALS = 8;
 export const COLL_RATIOS_ARR_SIZE = 10;
 
 export const USDR_MINT_DECIMALS = 6;
-export const USDR_MINT_KEY = getUSDrMintKey().toString();
+export const USDR_MINT_KEY = 'USDrbBQwQbQ2oWHUPfA8QBHcyVxKUq1xHyXsSLKdUq2';
+export const USDR_MINT_KEYPAIR = [251, 13, 59, 235, 78, 236, 123, 64, 175, 12, 131, 201, 144, 193, 154, 173, 223, 234, 42, 241, 204, 119, 249, 83, 15, 47, 6, 121, 184, 68, 85, 163, 7, 7, 51, 53, 239, 27, 86, 29, 79, 32, 112, 12, 85, 30, 202, 238, 51, 40, 170, 112, 17, 54, 255, 88, 82, 72, 138, 64, 134, 44, 240, 141];
 
 export const DEPOSIT_ACTION = 'deposit';
 export const HARVEST_ACTION = 'harvest';
@@ -46,7 +46,7 @@ export const TYPE_ID_SABER: PlatformType = 2;
 export const TYPE_ID_MERCURIAL: PlatformType = 3;
 export const TYPE_ID_UNKNOWN: PlatformType = 4;
 
-export const defaultPrograms = {
+export const DEFAULT_PROGRAMS = {
   systemProgram: SystemProgram.programId,
   tokenProgram: TOKEN_PROGRAM_ID,
   associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -187,7 +187,7 @@ export async function depositCollateralTx(
         accounts: {
           authority: wallet.publicKey,
           userState: userStateKey,
-          ...defaultPrograms,
+          ...DEFAULT_PROGRAMS,
         },
       })
     );
@@ -208,7 +208,7 @@ export async function depositCollateralTx(
         ataCollatVault: vaultATAKey,
         // the mint address for the specific collateral provided to this vault
         mintCollat: mintCollat,
-        ...defaultPrograms,
+        ...DEFAULT_PROGRAMS,
       },
     });
     transaction.add(tx);
@@ -224,7 +224,7 @@ export async function depositCollateralTx(
         ataRewardVault: ataRewardVaultKey,
         mintReward: rewardMint,
 
-        ...defaultPrograms,
+        ...DEFAULT_PROGRAMS,
       },
     });
     transaction.add(ix);
@@ -245,7 +245,7 @@ export async function depositCollateralTx(
       oracleB: oracleBKey,
       swapTokenA,
       swapTokenB,
-      ...defaultPrograms,
+      ...DEFAULT_PROGRAMS,
     },
   });
 
@@ -309,7 +309,7 @@ export async function withdrawCollateralTx(connection: Connection, wallet: any, 
       swapTokenA,
       swapTokenB,
 
-      ...defaultPrograms,
+      ...DEFAULT_PROGRAMS,
     },
   });
 
@@ -369,8 +369,7 @@ export async function distributeRewardTx(connection: Connection, wallet: any, mi
       ataRewardVault: ataVaultReward,
       ataRewardUser: ataUserReward,
       ataRatioTreasury: ataRatioReward,
-      mintReward: poolInfo.mintReward,
-      ...defaultPrograms,
+      ...DEFAULT_PROGRAMS,
     },
   });
 
@@ -384,7 +383,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
-  const usdrMint = getUSDrMintKey();
+  const usdrMint = new PublicKey(USDR_MINT_KEY);
   const poolKey = getPoolPDA(mintCollat);
   const poolData = await program.account.pool.fetch(poolKey);
 
@@ -433,7 +432,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
 
       mintUsdr: usdrMint,
       ataUsdr: ataUSDr,
-      ...defaultPrograms,
+      ...DEFAULT_PROGRAMS,
     },
   });
 
@@ -457,7 +456,7 @@ export async function repayUSDr(connection: Connection, wallet: any, amount: num
 
   const globalStateKey = getGlobalStatePDA();
   const poolKey = getPoolPDA(mintColl);
-  const usdrMint = getUSDrMintKey();
+  const usdrMint = USDR_MINT_KEY;
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
   const userStateKey = getUserStatePDA(wallet.publicKey);
@@ -474,7 +473,7 @@ export async function repayUSDr(connection: Connection, wallet: any, amount: num
       userState: userStateKey,
       mintUsdr: usdrMint,
       ataUsdr: ataUserUSDr,
-      ...defaultPrograms,
+      ...DEFAULT_PROGRAMS,
     },
   });
   transaction.add(ix);

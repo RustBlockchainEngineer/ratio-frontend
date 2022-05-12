@@ -56,14 +56,25 @@ export const useFetchVaults = () => {
 
           if (response.ok) {
             data = await response.json();
-            // for (let i = 0; i < data.length; i++) {
-            //   const pool = await getPool(connection, wallet, new PublicKey(data[i].vault_address_id));
-            //   console.log('pool', pool);
-            //   if (pool) {
-            //     data[i].pool = pool;
-            //   }
-            // }
-            cache.current = data;
+            // cache.current = data;
+            cache.current = [
+              {
+                address_id: '2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf',
+                collateralization_ratio: 0,
+                icon: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf/icon.png',
+                liquidation_ratio: 0,
+                lpasset: [],
+                page_url: 'https://app.saber.so/pools/usdc_usdt',
+                platform_id: '37102bc5-187e-47d6-9728-234de8553879',
+                platform_symbol: 'SABER',
+                platform_name: 'USDT-USDC',
+                pool_size: 0,
+                reward_mint: '',
+                risk_rating: 'AAA',
+                symbol: 'Saber USDT-USDC',
+                vault_address_id: 'uQV9J7m2xHXmfht3GpHKNdWhhoc3XnCg4KxhCjxFY5P',
+              } as any,
+            ];
           } else {
             if (cancelRequest) return;
             dispatch({ type: 'FETCH_ERROR', payload: await response.json() });

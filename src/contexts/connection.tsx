@@ -13,7 +13,6 @@ import { ENV as ChainID } from '@solana/spl-token-registry';
 
 import { useLocalStorageState } from '../utils/utils';
 import { notify } from '../utils/notifications';
-import { setProgramIds } from '../utils/ids';
 import { WalletAdapter } from './wallet';
 import { cache } from './accounts';
 import { API_ENDPOINT } from '../constants';
@@ -103,8 +102,6 @@ export function ConnectionProvider({ children = undefined as any }) {
   useEffect(() => {
     cache.clear();
   }, [connection, chain]);
-
-  setProgramIds(env);
 
   // The websocket library solana/web3.js uses closes its websocket connection when the subscription list
   // is empty after opening its first time, preventing subsequent subscriptions from receiving responses.

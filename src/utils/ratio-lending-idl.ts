@@ -18,7 +18,7 @@ export type RatioLending = {
         {
           name: 'mintUsdr';
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         },
         {
           name: 'tokenProgram';
@@ -39,7 +39,7 @@ export type RatioLending = {
       args: [
         {
           name: 'tvlLimit';
-          type: 'u64';
+          type: 'u128';
         },
         {
           name: 'globalDebtCeiling';
@@ -206,7 +206,7 @@ export type RatioLending = {
       accounts: [
         {
           name: 'authority';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -282,7 +282,7 @@ export type RatioLending = {
       accounts: [
         {
           name: 'authority';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -358,7 +358,7 @@ export type RatioLending = {
       accounts: [
         {
           name: 'authority';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -392,11 +392,6 @@ export type RatioLending = {
           isSigner: false;
         },
         {
-          name: 'mintReward';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
@@ -419,7 +414,7 @@ export type RatioLending = {
       accounts: [
         {
           name: 'authority';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -495,7 +490,7 @@ export type RatioLending = {
       accounts: [
         {
           name: 'authority';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -639,8 +634,8 @@ export type RatioLending = {
       ];
       args: [
         {
-          name: 'limitPrecise';
-          type: 'u64';
+          name: 'tvlLimit';
+          type: 'u128';
         }
       ];
     },
@@ -977,7 +972,7 @@ export type RatioLending = {
       accounts: [
         {
           name: 'authority';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -1040,7 +1035,7 @@ export type RatioLending = {
       accounts: [
         {
           name: 'authority';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -1101,7 +1096,7 @@ export type RatioLending = {
       accounts: [
         {
           name: 'authority';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -1225,21 +1220,17 @@ export type RatioLending = {
             type: 'publicKey';
           },
           {
-            name: 'mintUsdrBump';
-            type: 'u8';
-          },
-          {
             name: 'tvlCollatCeilingUsd';
-            type: 'u64';
+            type: 'u128';
           },
           {
             name: 'tvlUsd';
-            type: 'u64';
+            type: 'u128';
           },
           {
             name: 'tvlCollat';
             type: {
-              array: ['u64', 4];
+              array: ['u128', 4];
             };
           },
           {
@@ -1252,10 +1243,6 @@ export type RatioLending = {
           },
           {
             name: 'debtCeilingGlobal';
-            type: 'u64';
-          },
-          {
-            name: 'unusedDebtCeilingPool';
             type: 'u64';
           },
           {
@@ -1342,7 +1329,7 @@ export type RatioLending = {
           },
           {
             name: 'tvlUsd';
-            type: 'u64';
+            type: 'u128';
           },
           {
             name: 'totalColl';
@@ -1365,7 +1352,11 @@ export type RatioLending = {
             type: 'u8';
           },
           {
-            name: 'farmInfo';
+            name: 'farmId';
+            type: 'publicKey';
+          },
+          {
+            name: 'ammId';
             type: 'publicKey';
           },
           {
@@ -1412,7 +1403,7 @@ export type RatioLending = {
           },
           {
             name: 'tvlUsd';
-            type: 'u64';
+            type: 'u128';
           },
           {
             name: 'activeVaults';
@@ -1453,10 +1444,6 @@ export type RatioLending = {
             type: 'publicKey';
           },
           {
-            name: 'mintReward';
-            type: 'publicKey';
-          },
-          {
             name: 'ataCollatVault';
             type: 'publicKey';
           },
@@ -1474,7 +1461,7 @@ export type RatioLending = {
           },
           {
             name: 'tvlUsd';
-            type: 'u64';
+            type: 'u128';
           },
           {
             name: 'debt';
@@ -1607,8 +1594,8 @@ export type RatioLending = {
     },
     {
       code: 6018;
-      name: 'InvalidPlatformNotSaber';
-      msg: 'Invalid platform, needs to be Saber';
+      name: 'InvalidSaberPlatformType';
+      msg: 'Invalid platform, should be Saber';
     },
     {
       code: 6019;
@@ -1619,6 +1606,11 @@ export type RatioLending = {
       code: 6020;
       name: 'RewardMintMismatch';
       msg: 'Reward mint account mismatch';
+    },
+    {
+      code: 6021;
+      name: 'PoolPaused';
+      msg: 'The pool is paused by admin';
     }
   ];
 };
@@ -1643,7 +1635,7 @@ export const IDL: RatioLending = {
         {
           name: 'mintUsdr',
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
         {
           name: 'tokenProgram',
@@ -1664,7 +1656,7 @@ export const IDL: RatioLending = {
       args: [
         {
           name: 'tvlLimit',
-          type: 'u64',
+          type: 'u128',
         },
         {
           name: 'globalDebtCeiling',
@@ -1831,7 +1823,7 @@ export const IDL: RatioLending = {
       accounts: [
         {
           name: 'authority',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -1907,7 +1899,7 @@ export const IDL: RatioLending = {
       accounts: [
         {
           name: 'authority',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -1983,7 +1975,7 @@ export const IDL: RatioLending = {
       accounts: [
         {
           name: 'authority',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -2017,11 +2009,6 @@ export const IDL: RatioLending = {
           isSigner: false,
         },
         {
-          name: 'mintReward',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
@@ -2044,7 +2031,7 @@ export const IDL: RatioLending = {
       accounts: [
         {
           name: 'authority',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -2120,7 +2107,7 @@ export const IDL: RatioLending = {
       accounts: [
         {
           name: 'authority',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -2264,8 +2251,8 @@ export const IDL: RatioLending = {
       ],
       args: [
         {
-          name: 'limitPrecise',
-          type: 'u64',
+          name: 'tvlLimit',
+          type: 'u128',
         },
       ],
     },
@@ -2602,7 +2589,7 @@ export const IDL: RatioLending = {
       accounts: [
         {
           name: 'authority',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -2665,7 +2652,7 @@ export const IDL: RatioLending = {
       accounts: [
         {
           name: 'authority',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -2726,7 +2713,7 @@ export const IDL: RatioLending = {
       accounts: [
         {
           name: 'authority',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -2850,21 +2837,17 @@ export const IDL: RatioLending = {
             type: 'publicKey',
           },
           {
-            name: 'mintUsdrBump',
-            type: 'u8',
-          },
-          {
             name: 'tvlCollatCeilingUsd',
-            type: 'u64',
+            type: 'u128',
           },
           {
             name: 'tvlUsd',
-            type: 'u64',
+            type: 'u128',
           },
           {
             name: 'tvlCollat',
             type: {
-              array: ['u64', 4],
+              array: ['u128', 4],
             },
           },
           {
@@ -2877,10 +2860,6 @@ export const IDL: RatioLending = {
           },
           {
             name: 'debtCeilingGlobal',
-            type: 'u64',
-          },
-          {
-            name: 'unusedDebtCeilingPool',
             type: 'u64',
           },
           {
@@ -2967,7 +2946,7 @@ export const IDL: RatioLending = {
           },
           {
             name: 'tvlUsd',
-            type: 'u64',
+            type: 'u128',
           },
           {
             name: 'totalColl',
@@ -2990,7 +2969,11 @@ export const IDL: RatioLending = {
             type: 'u8',
           },
           {
-            name: 'farmInfo',
+            name: 'farmId',
+            type: 'publicKey',
+          },
+          {
+            name: 'ammId',
             type: 'publicKey',
           },
           {
@@ -3037,7 +3020,7 @@ export const IDL: RatioLending = {
           },
           {
             name: 'tvlUsd',
-            type: 'u64',
+            type: 'u128',
           },
           {
             name: 'activeVaults',
@@ -3078,10 +3061,6 @@ export const IDL: RatioLending = {
             type: 'publicKey',
           },
           {
-            name: 'mintReward',
-            type: 'publicKey',
-          },
-          {
             name: 'ataCollatVault',
             type: 'publicKey',
           },
@@ -3099,7 +3078,7 @@ export const IDL: RatioLending = {
           },
           {
             name: 'tvlUsd',
-            type: 'u64',
+            type: 'u128',
           },
           {
             name: 'debt',
@@ -3232,8 +3211,8 @@ export const IDL: RatioLending = {
     },
     {
       code: 6018,
-      name: 'InvalidPlatformNotSaber',
-      msg: 'Invalid platform, needs to be Saber',
+      name: 'InvalidSaberPlatformType',
+      msg: 'Invalid platform, should be Saber',
     },
     {
       code: 6019,
@@ -3244,6 +3223,11 @@ export const IDL: RatioLending = {
       code: 6020,
       name: 'RewardMintMismatch',
       msg: 'Reward mint account mismatch',
+    },
+    {
+      code: 6021,
+      name: 'PoolPaused',
+      msg: 'The pool is paused by admin',
     },
   ],
 };

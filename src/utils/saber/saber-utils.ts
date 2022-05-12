@@ -2,7 +2,7 @@ import * as anchor from '@project-serum/anchor';
 import * as serumCmn from '@project-serum/common';
 
 import {
-  defaultPrograms,
+  DEFAULT_PROGRAMS,
   depositCollateralTx,
   distributeRewardTx,
   getProgramInstance,
@@ -179,7 +179,7 @@ export const createSaberQuarryMinerIfneededTx = async (
           rewarder: rewarderKey,
           mintCollat: mintCollKey,
           quarryProgram: QUARRY_ADDRESSES.Mine,
-          ...defaultPrograms,
+          ...DEFAULT_PROGRAMS,
         },
       })
     );
@@ -218,7 +218,7 @@ const stakeCollateralToSaberTx = async (
         miner: minerKey,
         rewarder: rewarderKey,
         quarryProgram: QUARRY_ADDRESSES.Mine,
-        ...defaultPrograms,
+        ...DEFAULT_PROGRAMS,
       },
     })
   );
@@ -256,7 +256,7 @@ const unstakeColalteralFromSaberTx = async (
         miner: minerKey,
         rewarder: rewarderKey,
         quarryProgram: QUARRY_ADDRESSES.Mine,
-        ...defaultPrograms,
+        ...DEFAULT_PROGRAMS,
       },
     })
   );
@@ -309,7 +309,7 @@ export const harvestRewardsFromSaberTx = async (
         // system accounts
         mintReward: SABER_REWARD_IOU_MINT, // SBR for this example
         quarryProgram: QUARRY_ADDRESSES.Mine,
-        ...defaultPrograms,
+        ...DEFAULT_PROGRAMS,
       },
     })
   );

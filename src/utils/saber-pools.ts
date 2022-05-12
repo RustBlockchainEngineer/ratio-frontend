@@ -8,7 +8,7 @@ export async function getSaberFarmsInfo(conn: Connection, connEnv: string, vault
   const saberFarms = [];
   const pools = connEnv === 'devnet' ? await getDevnetPools() : await getMainnetPools();
   for (let i = 0; i < pools.length; i++) {
-    if (vaults.find((v) => v.platform_symbol === pools[i].name && v.platform_name === 'SABER')) {
+    if (vaults.find((v) => v.address_id === pools[i].lpAddress)) {
       saberFarms.push(pools[i]);
     }
   }

@@ -1,7 +1,7 @@
 import { Account, AccountInfo, PublicKey, TransactionInstruction } from '@solana/web3.js';
 
 import { AccountInfo as TokenAccountInfo, Token } from '@solana/spl-token';
-import { TOKEN_PROGRAM_ID } from '../utils/ids';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 export interface TokenAccount {
   pubkey: PublicKey;

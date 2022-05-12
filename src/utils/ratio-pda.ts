@@ -7,7 +7,6 @@ const GLOBAL_STATE_SEED = 'GLOBAL_STATE_SEED';
 const POOL_SEED = 'POOL_SEED';
 const USER_STATE_SEED = 'USER_STATE_SEED';
 const VAULT_SEED = 'VAULT_SEED';
-const MINT_USDR_SEED = 'MINT_USDR_SEED';
 const ORACLE_SEED = 'ORACLE_SEED';
 
 export const getPda = (seeds: Buffer[], programId: PublicKey) => {
@@ -21,15 +20,6 @@ export const getGlobalStatePDA = () => {
 
 export const getGlobalStatePDAWithBump = () => {
   return getPda([Buffer.from(GLOBAL_STATE_SEED)], RATIO_LENDING_PROGRAM_ID);
-};
-
-export const getUSDrMintKey = () => {
-  const [pda] = getPda([Buffer.from(MINT_USDR_SEED)], RATIO_LENDING_PROGRAM_ID);
-  return pda;
-};
-
-export const getUSDrMintKeyWithBump = () => {
-  return getPda([Buffer.from(MINT_USDR_SEED)], RATIO_LENDING_PROGRAM_ID);
 };
 
 export const getOraclePDA = (mint: string | PublicKey) => {
