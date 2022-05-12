@@ -1,7 +1,7 @@
 import BaseVaultsPage from '../BaseVaultsPage';
 
 const ActiveVaults = () => {
-  return <BaseVaultsPage showOnlyActive={true} title="Active vaults" />;
+  return <BaseVaultsPage showOnlyActive={true} title="Active Vaults" />;
 };
 
 export default ActiveVaults;

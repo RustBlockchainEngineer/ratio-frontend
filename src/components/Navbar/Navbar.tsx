@@ -18,7 +18,6 @@ import { selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useAllVaultInfo, useUserOverview } from '../../contexts/state';
-import { NavBarProgressBarMyUSDr } from './NavBarProgressBarMyUSDr';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 type NavbarProps = {
@@ -161,7 +160,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
                 <h6>USDr Minted</h6>
                 <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
-              <NavBarProgressBarMyUSDr className="navbar-vertical__progressbar" />
             </div>
           ) : null
         ) : (

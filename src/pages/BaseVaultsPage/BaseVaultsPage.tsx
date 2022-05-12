@@ -261,7 +261,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           {hasUserReachedUSDrLimit && !hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
             <Banner
               title="USDr Debt Limit Reached:"
-              message="USDr Debt Limit Reached: You have reached your overall USDr Debt Limit."
+              message="You have reached your overall USDr Debt Limit."
               bannerIcon={BannerIcon.riskLevel}
               className="debt-limit-reached"
             />
@@ -269,7 +269,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           {hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
             <Banner
               title="USDr Debt Limit Reached:"
-              message="USDr Debt Limit Reached: The global debt ceiling on the Ratio platform has been reached."
+              message="The global debt ceiling on the Ratio platform has been reached."
               bannerIcon={BannerIcon.riskLevel}
               className="debt-limit-reached"
             />
@@ -277,7 +277,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           {hasReachedTVLLimit && (
             <Banner
               title="TVL Limit Reached:"
-              message="TVL Limit Reached: The global deposit ceiling on the Ratio platform has been reached."
+              message="The global deposit ceiling on the Ratio platform has been reached."
               bannerIcon={BannerIcon.riskLevel}
               className="debt-limit-reached"
             />
