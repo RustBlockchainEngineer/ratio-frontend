@@ -15,7 +15,7 @@ import { LPair } from '../types/VaultTypes';
   Example usage: 
     const { status, error, vaults } = useFetchVaults();
 */
-export const useFetchVaults = () => {
+export const useFetchVaults = (wallet_address: any) => {
   const cache = useRef<LPair[]>([]);
   const [update, setUpdate] = useState(true);
 
@@ -41,7 +41,7 @@ export const useFetchVaults = () => {
   useEffect(() => {
     let cancelRequest = false;
     if (!API_ENDPOINT || !API_ENDPOINT.trim()) return;
-    const url = `${API_ENDPOINT}/lpairs`;
+    const url = `${API_ENDPOINT}/pools/${wallet_address}`;
 
     // Gets the data for all the existent vaults. If a cached version is found, it gets returned.
     const fetchData = async () => {
@@ -51,6 +51,7 @@ export const useFetchVaults = () => {
         dispatch({ type: 'FETCHED', payload: data });
       } else {
         try {
+          if (!wallet_address) return;
           const response = await fetch(url);
           let data: LPair[] = [];
 
@@ -85,7 +86,7 @@ export const useFetchVaults = () => {
     return () => {
       cancelRequest = true;
     };
-  }, [API_ENDPOINT, update]);
+  }, [API_ENDPOINT, update, wallet_address]);
 
   const forceUpdate = () => {
     setUpdate(true);
