@@ -15,7 +15,7 @@ import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { LPair } from '../../../types/VaultTypes';
 import { TokenAmount } from '../../../utils/safe-math';
 import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
-import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
+import { usePoolInfo } from '../../../contexts/state';
 import { useUpdateTvl } from '../../../contexts/platformTvl';
 
 const DepositModal = ({ data }: any) => {
@@ -42,7 +42,6 @@ const DepositModal = ({ data }: any) => {
   const [isDepositing, setIsDepositing] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
 
-  const updateRFStates = useUpdateRFStates();
   const updatePlatformTVL = useUpdateTvl();
 
   const depositAmountUSD = new TokenAmount(depositAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
@@ -80,7 +79,6 @@ const DepositModal = ({ data }: any) => {
         collAccount?.pubkey.toString() as string
       );
 
-      await updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
       updatePlatformTVL(vault.platform_name, vault.address_id);
       setDepositAmount(0);
       toast.success('Successfully Deposited!');

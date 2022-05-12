@@ -8,7 +8,6 @@ import { chunks } from '../utils/utils';
 import { EventEmitter } from '../utils/eventEmitter';
 import { useUserAccounts } from '../hooks/useUserAccounts';
 import { WRAPPED_SOL_MINT } from '../utils/ids';
-import { useUpdateWallet } from './auth';
 
 const AccountsContext = React.createContext<any>(null);
 
@@ -241,9 +240,7 @@ function wrapNativeAccount(pubkey: PublicKey, account?: AccountInfo<Buffer>): To
 const UseNativeAccount = () => {
   const connection = useConnection();
   const { wallet, publicKey } = useWallet();
-
   const [nativeAccount, setNativeAccount] = useState<AccountInfo<Buffer>>();
-  const { updateWalletFlag } = useUpdateWallet();
   const updateCache = useCallback(
     (account) => {
       if (!connection || !publicKey) {
@@ -279,7 +276,7 @@ const UseNativeAccount = () => {
         setNativeAccount(acc);
       }
     });
-  }, [setNativeAccount, wallet, publicKey, connection, updateCache, updateWalletFlag]);
+  }, [setNativeAccount, wallet, publicKey, connection, updateCache]);
 
   return { nativeAccount };
 };
@@ -309,7 +306,6 @@ export function AccountsProvider({ children = null as any }) {
   const [tokenAccounts, setTokenAccounts] = useState<TokenAccount[]>([]);
   const [userAccounts, setUserAccounts] = useState<TokenAccount[]>([]);
   const { nativeAccount } = UseNativeAccount();
-  const { updateWalletFlag } = useUpdateWallet();
 
   const selectUserAccounts = useCallback(() => {
     if (!publicKey) {
@@ -350,7 +346,6 @@ export function AccountsProvider({ children = null as any }) {
     if (!connection || !publicKey) {
       setTokenAccounts([]);
     } else {
-      console.log('*************Updating all wallet account**********');
       precacheUserTokenAccounts(connection, publicKey).then(() => {
         setTokenAccounts(selectUserAccounts());
       });
@@ -380,7 +375,7 @@ export function AccountsProvider({ children = null as any }) {
         connection.removeProgramAccountChangeListener(tokenSubID);
       };
     }
-  }, [connection, connected, publicKey, selectUserAccounts, updateWalletFlag]);
+  }, [connection, connected, publicKey, selectUserAccounts]);
 
   return (
     <AccountsContext.Provider

@@ -53,10 +53,3 @@ export function useUpdateHistory() {
     setUpdateHistoryFlag: useContext(AuthContext)?.setUpdateHistory,
   };
 }
-
-export function useUpdateWallet() {
-  return {
-    updateWalletFlag: useContext(AuthContext)?.updateWalletFlag,
-    setUpdateWalletFlag: useContext(AuthContext)?.setUpdateWalletFlag,
-  };
-}

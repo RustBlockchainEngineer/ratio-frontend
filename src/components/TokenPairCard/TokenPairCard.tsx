@@ -17,7 +17,6 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
-import { UPDATE_REWARD_STATE, useUpdateRFStates } from '../../contexts/state';
 
 const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const { data, onCompareVault } = tokenPairCardProps;
@@ -29,7 +28,6 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
 
   const [checked, setChecked] = React.useState(false);
 
-  const updateRFStates = useUpdateRFStates();
   const hasUserReachedDebtLimit = false;
   const PoolManagerFactory = useGetPoolManager(data.item);
 
@@ -37,9 +35,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const harvest = () => {
     console.log('harvesting');
     PoolManagerFactory?.harvestReward(connection, wallet, data.item)
-      .then(() => {
-        updateRFStates(UPDATE_REWARD_STATE, data.mint);
-      })
+      .then(() => {})
       .catch((e) => {
         console.log(e);
       })

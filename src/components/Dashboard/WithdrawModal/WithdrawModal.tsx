@@ -13,7 +13,7 @@ import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
-import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../../contexts/state';
+import { usePoolInfo } from '../../../contexts/state';
 import { useUpdateTvl } from '../../../contexts/platformTvl';
 import { isWalletApproveError } from '../../../utils/utils';
 import { TokenAmount } from '../../../utils/safe-math';
@@ -30,7 +30,6 @@ const WithdrawModal = ({ data }: any) => {
   const poolInfo = usePoolInfo(data?.mint);
 
   const [withdrawAmount, setWithdrawAmount] = useState<any>();
-  const updateRFStates = useUpdateRFStates();
   const [withdrawStatus, setWithdrawStatus] = useState(false);
   const [invalidStr, setInvalidStr] = useState('');
   const [buttonDisabled, setButtonDisabled] = useState(+data.debtValue !== 0);
@@ -90,7 +89,6 @@ const WithdrawModal = ({ data }: any) => {
         withdrawAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         userCollAccount
       );
-      await updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
       updatePlatformTVL(vault.platform_name, vault.address_id);
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');

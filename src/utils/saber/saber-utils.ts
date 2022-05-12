@@ -91,7 +91,7 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
     tx2.add(ix5);
   }
 
-  const txHashs = await sendAllTransaction(connection, wallet, [tx1, tx2]);
+  const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
 
   await connection.confirmTransaction(txHashs[0]);
   if (txHashs[0]?.value?.err) {
@@ -100,7 +100,7 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
   }
 
   console.log('Saber withdraw tx', txHashs[0]);
-  console.log('Saber harvest tx', txHashs[1]);
+  // console.log('Saber harvest tx', txHashs[1]);
 
   return txHashs[0];
 }

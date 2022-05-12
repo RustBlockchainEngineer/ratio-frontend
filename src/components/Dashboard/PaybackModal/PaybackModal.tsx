@@ -10,7 +10,6 @@ import { PublicKey } from '@solana/web3.js';
 import { repayUSDr, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { toast } from 'react-toastify';
 import AmountSlider from '../AmountSlider';
-import { UPDATE_GLOBAL_STATE, useUpdateRFStates } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { postToRatioApi } from '../../../utils/ratioApi';
 
@@ -24,7 +23,6 @@ const PaybackModal = ({ data }: any) => {
   const { wallet } = useWallet();
 
   const [paybackAmount, setPayBackAmount] = useState<any>();
-  const updateRFStates = useUpdateRFStates();
   const [paybackStatus, setPaybackStatus] = useState(false);
   const [invalidStr, setInvalidStr] = useState('');
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -60,7 +58,6 @@ const PaybackModal = ({ data }: any) => {
 
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, USDR_MINT_DECIMALS), new PublicKey(data.mint))
       .then((txSignature: string) => {
-        updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
         toast.success('Successfully Paid back!');
         postToRatioApi(
           {

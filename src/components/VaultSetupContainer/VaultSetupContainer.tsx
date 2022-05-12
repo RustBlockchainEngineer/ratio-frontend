@@ -12,7 +12,7 @@ import CustomInput from '../CustomInput';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
-import { UPDATE_GLOBAL_STATE, usePoolInfo, useUpdateRFStates } from '../../contexts/state';
+import { usePoolInfo } from '../../contexts/state';
 import { useUpdateTvl } from '../../contexts/platformTvl';
 import WarningLimitBox from './WarningLimitBox';
 import { TokenAmount } from '../../utils/safe-math';
@@ -39,7 +39,6 @@ const VaultSetupContainer = ({ data }: any) => {
   const [invalidStr, setInvalidStr] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
-  const updateRFStates = useUpdateRFStates();
   const updatePlatformTVL = useUpdateTvl();
 
   React.useEffect(() => {
@@ -73,7 +72,6 @@ const VaultSetupContainer = ({ data }: any) => {
       collAccount?.pubkey.toString() as string
     )
       .then(() => {
-        updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
         updatePlatformTVL(vault.platform_name, vault.address_id);
         setDepositAmount(0);
         toast.success('Successfully Deposited!');

@@ -14,7 +14,7 @@ import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
-import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserVaultInfo, usePoolInfo } from '../../contexts/state';
+import { useUserVaultInfo, usePoolInfo } from '../../contexts/state';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
@@ -28,7 +28,6 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const vaultState = useUserVaultInfo(data.mint);
   const poolState = usePoolInfo(data.mint);
-  const updateRFStates = useUpdateRFStates();
 
   const positionValue = +new TokenAmount((vaultState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
   // eslint-disable-next-line
@@ -95,7 +94,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
       console.log('Harvesting...');
       await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
-      await updateRFStates(UPDATE_REWARD_STATE, data.mint);
+
       toast.success('Successfully Harvested!');
     } catch (err) {
       console.error(err);

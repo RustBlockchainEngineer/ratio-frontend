@@ -20,7 +20,7 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
 import { isWalletApproveError } from '../../utils/utils';
 
-import { useUpdateRFStates, useUserVaultInfo, UPDATE_REWARD_STATE } from '../../contexts/state';
+import { useUserVaultInfo } from '../../contexts/state';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import { FetchingStatus } from '../../types/fetching-types';
 
@@ -29,7 +29,6 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const updateRFStates = useUpdateRFStates();
 
   const vaultState = useUserVaultInfo(data.mint);
 
@@ -67,7 +66,6 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
       console.log('Harvesting...');
       await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
-      await updateRFStates(UPDATE_REWARD_STATE, data.mint);
       toast.success('Successfully Harvested!');
     } catch (err) {
       console.error(err);

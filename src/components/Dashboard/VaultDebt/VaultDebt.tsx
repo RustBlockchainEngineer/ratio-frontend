@@ -6,14 +6,12 @@ import { useWallet } from '../../../contexts/wallet';
 import { repayUSDr, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 
 import usdrIcon from '../../../assets/images/USDr.png';
-import { UPDATE_GLOBAL_STATE, useUpdateRFStates } from '../../../contexts/state';
 
 const VaultDebt = ({ data }: any) => {
   const connection = useConnection();
   const { wallet } = useWallet();
 
   const [didMount, setDidMount] = React.useState(false);
-  const updateRFStates = useUpdateRFStates();
 
   // eslint-disable-next-line
   const paybackData = {
@@ -41,9 +39,7 @@ const VaultDebt = ({ data }: any) => {
     }
 
     repayUSDr(connection, wallet, Number(data.usdrValue) * Math.pow(10, USDR_MINT_DECIMALS), new PublicKey(data.mint))
-      .then(() => {
-        updateRFStates(UPDATE_GLOBAL_STATE, data.mint);
-      })
+      .then(() => {})
       .catch((e) => {
         console.log(e);
       })

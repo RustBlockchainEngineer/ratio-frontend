@@ -7,7 +7,7 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { UPDATE_REWARD_STATE, useUpdateRFStates, useUserVaultInfo } from '../../../contexts/state';
+import { useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
 import { FetchingStatus } from '../../../types/fetching-types';
@@ -20,7 +20,7 @@ const TokensEarned = ({ data }: any) => {
 
   const connection = useConnection();
   const { wallet } = useWallet();
-  const updateRFStates = useUpdateRFStates();
+
   const PoolManagerFactory = useGetPoolManager(vault);
 
   const userState = useUserVaultInfo(data.mintAddress);
@@ -37,7 +37,6 @@ const TokensEarned = ({ data }: any) => {
       console.log('Harvesting...');
       setIsHarvesting(true);
       await PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair);
-      await updateRFStates(UPDATE_REWARD_STATE, data.mintAddress);
       toast.success('Successfully Harvested!');
     } catch (err) {
       console.error(err);
