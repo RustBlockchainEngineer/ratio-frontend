@@ -2,6 +2,7 @@ import { useEffect, useRef, useReducer, useState } from 'react';
 import { API_ENDPOINT } from '../constants';
 import { FetchingStatus } from '../types/fetching-types';
 import { LPair } from '../types/VaultTypes';
+import { getPoolPDA } from '../utils/ratio-pda';
 // import { getPoolPDA } from '../utils/ratio-pda';
 
 /* 
@@ -56,25 +57,14 @@ export const useFetchVaults = () => {
 
           if (response.ok) {
             data = await response.json();
-            // cache.current = data;
-            cache.current = [
-              {
-                address_id: '2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf',
-                collateralization_ratio: 0,
-                icon: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf/icon.png',
-                liquidation_ratio: 0,
-                lpasset: [],
-                page_url: 'https://app.saber.so/pools/usdc_usdt',
-                platform_id: '37102bc5-187e-47d6-9728-234de8553879',
-                platform_symbol: 'SBR',
-                platform_name: 'SABER',
-                pool_size: 0,
-                reward_mint: '',
-                risk_rating: 'AAA',
-                symbol: 'Saber USDT-USDC',
-                vault_address_id: 'uQV9J7m2xHXmfht3GpHKNdWhhoc3XnCg4KxhCjxFY5P',
-              } as any,
-            ];
+            data = data.map((item) => {
+              return {
+                ...item,
+                vault_address_id: getPoolPDA(item.address_id).toString(),
+              };
+            });
+
+            cache.current = data;
           } else {
             if (cancelRequest) return;
             dispatch({ type: 'FETCH_ERROR', payload: await response.json() });

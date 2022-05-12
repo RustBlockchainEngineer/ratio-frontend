@@ -38,13 +38,13 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
   const [validated, setValidated] = useState(false);
   const [data, setData] = useState<LPEditionData>({
     ...values,
-    address_id: '2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf',
+    address_id: '',
   });
   const [poolData, setPoolData] = useState<PoolData>({
-    mintA: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-    mintB: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-    accountA: 'CfWX7o2TswwbxusJ4hCaPobu2jLCb1hfXuXJQjVq3jQF',
-    accountB: 'EnTrdMMpdhugeH6Ban6gYZWXughWxKtVGfCwFn78ZmY3',
+    mintA: '',
+    mintB: '',
+    accountA: '',
+    accountB: '',
     mintReward: 'iouQcQBAiEXe6cKLS85zmZxUqaCqBdeHFpqKoSz615u',
   });
   const { accessToken } = useAuthContextProvider();

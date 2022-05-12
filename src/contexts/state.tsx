@@ -193,7 +193,6 @@ export function RFStateProvider({ children = undefined as any }) {
       for (const mint of Object.keys(poolState)) {
         const vaultInfo = await getVaultStateByMint(globalState, poolState, overview, mint);
         if (vaultInfo) {
-          console.log(vaultInfo.totalColl.toString());
           vaultInfos[mint] = {
             ...vaultInfo,
           };
