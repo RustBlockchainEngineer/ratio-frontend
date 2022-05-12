@@ -56,8 +56,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
     const avdArr: any = [];
     for (const vault of vaults) {
-      const { mint, debt, collPrice: price }: any = vault;
-      console.log(price);
+      const { mint, debt }: any = vault;
       const pv = +new TokenAmount((vault as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
       // const pv = price * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
       const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
