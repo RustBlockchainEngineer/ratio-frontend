@@ -268,6 +268,7 @@ export async function createPool(
     })
   );
   const tx = await sendTransaction(connection, wallet, transaction);
+  await connection.confirmTransaction(tx);
   return tx;
 }
 
@@ -350,6 +351,7 @@ export async function updatePool(
     })
   );
   const tx = await sendTransaction(connection, wallet, transaction);
+  await connection.confirmTransaction(tx);
   return tx;
 }
 
@@ -371,18 +373,6 @@ export async function getAllPools(connection: Connection, wallet: any) {
   return all;
 }
 
-export async function getCurrentEmergencyState(
-  connection: Connection,
-  wallet: WalletAdapter | undefined
-): Promise<EmergencyState> {
-  try {
-    const { globalState } = await getGlobalState(connection, wallet);
-    return globalState.paused as EmergencyState;
-  } catch (e) {
-    console.error('Error while fetching the emergency state');
-    throw e;
-  }
-}
 export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, newOwner: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
@@ -570,12 +560,17 @@ export async function setCollateralRatio(
     })
     .slice(0, COLL_RATIOS_ARR_SIZE);
   try {
-    await program.rpc.setCollateralRatios(bigNumberValues, {
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setCollateralRatios(bigNumberValues, {
       accounts: {
         authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
+    console.log(tx);
     return true;
   } catch (error) {
     console.log('ERROR');
@@ -590,19 +585,23 @@ export async function setHarvestFee(
   feeNum: number
 ): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
-  const { globalState, globalStateKey } = await getGlobalState(connection, wallet);
+  const globalStateKey = getGlobalStatePDA();
+  const globalState = await getGlobalState(connection, wallet);
 
   const feeDeno = globalState.feeDeno.toNumber();
   const feeNumNew = (feeNum / 100) * feeDeno;
   console.log(`Set Harvest fees ${feeNumNew} / ${feeDeno}`);
   try {
-    const tx = await program.rpc.setHarvestFee(new BN(feeNumNew), {
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setHarvestFee(new BN(feeNumNew), {
       accounts: {
         authority: wallet?.publicKey,
         globalState: globalStateKey,
       },
     });
-    console.log('----- TX HARVEST FEE ------');
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
     console.log(tx);
   } catch (error) {
     console.log('ERROR');

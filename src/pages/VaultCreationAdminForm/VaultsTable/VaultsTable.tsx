@@ -99,8 +99,8 @@ export default function VaultsTable() {
           <thead>
             <tr>
               <th></th>
-              <th>Pool address</th>
               <th>LP mint address</th>
+              <th>Pool address</th>
               <th>Name</th>
               <th>Created on</th>
               <th>Platform</th>
@@ -114,8 +114,8 @@ export default function VaultsTable() {
             {vaults?.map((item) => (
               <tr key={item.address_id}>
                 <td>{poolInfos[item.address_id] && poolInfos[item.address_id].isPaused ? 'Paused' : ''}</td>
-                <td>{item.vault_address_id}</td>
                 <td>{item.address_id}</td>
+                <td>{item.vault_address_id.slice(0, 4) + '....' + item.vault_address_id.slice(-4)}</td>
                 <td>{item.symbol}</td>
                 <td>{item.created_on}</td>
                 <td>{item.platform_name}</td>

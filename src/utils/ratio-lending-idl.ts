@@ -766,7 +766,7 @@ export type RatioLending = {
         },
         {
           name: 'pool';
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
@@ -2428,7 +2428,7 @@ export const IDL: RatioLending = {
         },
         {
           name: 'pool',
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {

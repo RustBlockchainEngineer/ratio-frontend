@@ -13,9 +13,7 @@ import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import fairdropIcon from '../../assets/images/fairdrop.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
-import { useConnection } from '../../contexts/connection';
 import { TokenAmount } from '../../utils/safe-math';
-import { getMint } from '../../utils/utils';
 import { selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
@@ -37,13 +35,12 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const history = useHistory();
   const [navIndex, setNavIndex] = useState(location.pathname);
   const { connected, connect } = useWallet();
-  const connection = useConnection();
   const userOverview = useUserOverview();
 
   const activeVaultCount = userOverview ? userOverview.activeVaults.toString() : '0';
   const totalMinted = Number(new TokenAmount(userOverview ? userOverview.totalDebt : 0, USDR_MINT_DECIMALS).fixed());
 
-  const [totalLocked, setTotalLocked] = useState(0);
+  const totalLocked = Number(new TokenAmount(userOverview ? userOverview.tvlUsd : 0, USDR_MINT_DECIMALS).fixed());
   const [activeVaultsData, setActiveVaultsData] = useState([]);
   const userVaultInfos = useAllVaultInfo();
 
@@ -55,26 +52,21 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   }, [location.pathname]);
 
   const getActiveVaultInfo = async function (activeVaults: any[]) {
-    let tmpTotalValueLocked = 0;
     const vaults = Object.values(activeVaults);
 
     const avdArr: any = [];
     for (const vault of vaults) {
-      const { mint, lockedAmount, debt, poolInfo }: any = vault;
-      const mintInfo = await getMint(connection, mint);
-      const pv = poolInfo.oraclePrice * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
+      const { mint, debt, tvlUsd }: any = vault;
       const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
       const vaultValue: any = {
         title,
         mint,
-        pv,
+        pv: tvlUsd,
         debt: new TokenAmount(debt, USDR_MINT_DECIMALS).fixed(),
       };
       avdArr.push(vaultValue);
-      tmpTotalValueLocked += pv;
     }
     return {
-      tvl: tmpTotalValueLocked / 10 ** USDR_MINT_DECIMALS,
       activeVaults: avdArr,
     };
   };
@@ -83,7 +75,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
     if (userVaultInfos) {
       getActiveVaultInfo(userVaultInfos).then((res) => {
         setActiveVaultsData(res.activeVaults);
-        setTotalLocked(res.tvl);
       });
     }
   }, [userVaultInfos]);

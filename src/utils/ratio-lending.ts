@@ -34,15 +34,15 @@ export const WIHTDRAW_ACTION = 'withdraw';
 export const BORROW_ACTION = 'borrow';
 export const PAYBACK_ACTION = 'payback';
 export const HISTORY_TO_SHOW = 5;
-
+export const USD_FAIR_PRICE = false;
 // default platform values
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export const PLATFORM_IDS = {
-  "RAYDIUM": 0,
-  "ORCA": 1,
-  "SABER": 2,
-  "MERCURIAL": 3,
-  "UNKNOWN": 4
+  RAYDIUM: 0,
+  ORCA: 1,
+  SABER: 2,
+  MERCURIAL: 3,
+  UNKNOWN: 4,
 };
 
 export const DEFAULT_PROGRAMS = {
@@ -74,42 +74,15 @@ export function getProgramInstance(connection: Connection, wallet: any) {
   return program;
 }
 
-async function retrieveGlobalState(connection: Connection, wallet: any) {
+export async function getGlobalState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = getGlobalStatePDA();
-  const globalState = await program.account.globalState.fetch(globalStateKey);
-  return { globalState, globalStateKey };
+  return await program.account.globalState.fetchNullable(globalStateKey);
 }
 
-export async function getGlobalState(connection: Connection, wallet: any) {
-  try {
-    const { globalState, globalStateKey } = await retrieveGlobalState(connection, wallet);
-    if (globalState) {
-      return { globalState, globalStateKey };
-    } else {
-      throw new Error(`Global state doesn't exist`);
-    }
-  } catch (e) {
-    console.log('globalState was not created');
-    throw e;
-  }
-}
 export async function getAllOracleState(connection: Connection, wallet: any) {
   const program = getProgramInstance(connection, wallet);
   return await program.account.oracle.all();
-}
-
-export async function isGlobalStateCreated(connection: Connection, wallet: any) {
-  try {
-    const globalState = await retrieveGlobalState(connection, wallet);
-    if (globalState) {
-      return true;
-    }
-    return false;
-  } catch (e) {
-    console.log('globalState was not created');
-    return false;
-  }
 }
 
 export async function getUserState(connection: Connection, wallet: any) {

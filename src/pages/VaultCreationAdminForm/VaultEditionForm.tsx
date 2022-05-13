@@ -60,7 +60,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     }
     const platformID = PLATFORM_IDS[platformName];
     if (await getLendingPoolByMint(connection, data?.address_id)) {
-      toast.info('Token vault program already exists');
+      toast.info(`Updating Pool ${data?.address_id}`);
       try {
         await updatePool(
           connection,
@@ -78,6 +78,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
         toast.error('There was an error when updating the token vault program');
       }
     } else {
+      toast.info(`Creating Pool ${data?.address_id}`);
       try {
         const result = await createPool(
           connection,

@@ -34,7 +34,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const totalDebt = +new TokenAmount((vaultState as any)?.debt ?? 0, USDR_MINT_DECIMALS).fixed();
   const positionValue = +new TokenAmount((vaultState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
-  const mintableDebt = +new TokenAmount((vaultState as any)?.mintableDebt ?? 0, USDR_MINT_DECIMALS).fixed();
+  const mintableUSDr = +new TokenAmount((vaultState as any)?.mintableUSDr ?? 0, USDR_MINT_DECIMALS).fixed();
 
   const [isHarvesting, setIsHarvesting] = useState(false);
 
@@ -157,7 +157,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Available to Mint:</h6>
-              <h6 className="semiBold">{Number(mintableDebt.toFixed(2)).toFixed(2)}</h6>
+              <h6 className="semiBold">{Number(mintableUSDr.toFixed(2)).toFixed(2)}</h6>
             </div>
           </div>
           <div className="activepaircard__detailBox">

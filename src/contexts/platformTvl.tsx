@@ -43,15 +43,7 @@ export function PlatformTvlProvider({ children = undefined as any }) {
       };
     }
     const poolInfo = poolState[mint];
-    const oracleInfoA = oracleState[poolInfo.swapMintA];
-    const oracleInfoB = oracleState[poolInfo.swapMintB];
-    const lpSupply = new TokenAmount(poolInfo.mintSupply.toString(), poolInfo.mintDecimals).toEther().toNumber();
-    const lpPrice =
-      (poolInfo.tokenAmountA * oracleInfoA.price.toNumber() + poolInfo.tokenAmountB * oracleInfoB.price.toNumber()) /
-      lpSupply /
-      Math.pow(10, USDR_MINT_DECIMALS);
-
-    const tvl = lpPrice * tvlData.totalTokensDeposited.toEther().toNumber();
+    const tvl = poolInfo.currentPrice * tvlData.totalTokensDeposited.toEther().toNumber();
     const apy = ((saberPrice * tvlData.annualRewardsRate.toEther().toNumber()) / tvl) * 100;
     return {
       tvl: Number(tvl).toFixed(2),
@@ -106,6 +98,9 @@ export function PlatformTvlProvider({ children = undefined as any }) {
         if (saberPoolsInfo.length > 0) setIsInitialized(true);
       });
     }
+    return () =>{
+      setSaberFarmsTvlData({});
+    }
   }, [saberPoolsInfo]);
 
   /// This useEffect is for updating saber farms tvl every 5 minutes.
@@ -115,6 +110,9 @@ export function PlatformTvlProvider({ children = undefined as any }) {
     if (isInitialized) {
       updateAllTVLs();
     }
+    return () =>{
+      setSaberFarmsTvlData({});
+    }
   }, [update]);
 
   // We update tvl every 2 minutes
@@ -122,6 +120,9 @@ export function PlatformTvlProvider({ children = undefined as any }) {
     setInterval(() => {
       toggleUpdate((update) => !update);
     }, 2000 * 60);
+    return () =>{
+      setSaberFarmsTvlData({});
+    }
   }, []);
 
   // Update USD calculation of TVL and APY
@@ -134,6 +135,9 @@ export function PlatformTvlProvider({ children = undefined as any }) {
       if (apy) updatedData[mint].apy = apy;
     });
     setSaberFarmsTvlData(updatedData);
+    return () =>{
+      setSaberFarmsTvlData({});
+    }
   }, [saberPrice, oracleState, poolState]);
 
   return (

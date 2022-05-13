@@ -8,6 +8,7 @@ import {
   getVaultState,
   COLL_RATIOS_DECIMALS,
   getAllLendingPool,
+  USD_FAIR_PRICE,
 } from '../utils/ratio-lending';
 import { TokenAmount } from '../utils/safe-math';
 import { calculateCollateralPrice, getMint } from '../utils/utils';
@@ -47,18 +48,15 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateGlobalState = async () => {
     console.log('1. Updating global state...');
-    const res = await getGlobalState(connection, wallet);
+    const state = await getGlobalState(connection, wallet);
     let info = null;
-    if (res) {
+    if (state) {
       info = {
-        ...res.globalState,
-        mintableDebt: Math.max(
+        ...state,
+        mintableUSDr: Math.max(
           0,
           parseFloat(
-            new TokenAmount(
-              res.globalState.debtCeilingGlobal.toNumber() - res.globalState.totalDebt.toNumber(),
-              USDR_MINT_DECIMALS
-            ).fixed()
+            new TokenAmount(state.debtCeilingGlobal.toNumber() - state.totalDebt.toNumber(), USDR_MINT_DECIMALS).fixed()
           )
         ),
       };
@@ -101,18 +99,24 @@ export function RFStateProvider({ children = undefined as any }) {
       );
       const ratio = globalState.collPerRisklv[poolInfo?.riskLevel].toNumber() / 10 ** COLL_RATIOS_DECIMALS;
 
-      const { fairPrice: price } = calculateCollateralPrice(
+      const { fairPrice, virtualPrice } = calculateCollateralPrice(
         lpSupply,
         tokenAmountA,
         oracleInfoA.price.toNumber(),
         tokenAmountB,
         oracleInfoB.price.toNumber()
       );
+      const activePrice = USD_FAIR_PRICE ? fairPrice : virtualPrice;
+
+      poolInfo['fairPrice'] = fairPrice;
+      poolInfo['virtualPrice'] = virtualPrice;
+
+      poolInfo['oraclePrice'] = activePrice;
+      poolInfo['currentPrice'] = +new TokenAmount(activePrice, USDR_MINT_DECIMALS).fixed();
+
+      poolInfo['ratio'] = ratio;
       poolInfo['tokenAmountA'] = tokenAmountA;
       poolInfo['tokenAmountB'] = tokenAmountB;
-      poolInfo['oraclePrice'] = price;
-      poolInfo['currentPrice'] = new TokenAmount(price, USDR_MINT_DECIMALS).fixed();
-      poolInfo['ratio'] = ratio;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
     }
@@ -169,7 +173,7 @@ export function RFStateProvider({ children = undefined as any }) {
       const userDebtLimit = globalState.debtCeilingUser.toNumber() - overview.totalDebt.toNumber();
       const poolDebtLimit = poolInfo.debtCeiling.toNumber() - poolInfo.totalDebt.toNumber();
       const globalDebtLimit = globalState.debtCeilingGlobal.toNumber() - globalState.totalDebt.toNumber();
-      const mintableDebt = Math.max(0, Math.min(vaultDebtLimit, userDebtLimit, poolDebtLimit, globalDebtLimit));
+      const mintableUSDr = Math.max(0, Math.min(vaultDebtLimit, userDebtLimit, poolDebtLimit, globalDebtLimit));
 
       return {
         ...vaultInfo,
@@ -178,8 +182,8 @@ export function RFStateProvider({ children = undefined as any }) {
         lockedAmount: vaultInfo.totalColl.toNumber(),
         debt: vaultInfo.debt.toNumber(),
         debtLimit: new TokenAmount(debtLimit, USDR_MINT_DECIMALS).toWei().toNumber(),
-        mintableDebt: new TokenAmount(mintableDebt, USDR_MINT_DECIMALS).toWei().toNumber(),
-        isReachedDebt: mintableDebt <= 0 && vaultInfo.debt.toNumber() > 0,
+        mintableUSDr: new TokenAmount(mintableUSDr, USDR_MINT_DECIMALS).toWei().toNumber(),
+        isReachedDebt: mintableUSDr <= 0 && vaultInfo.debt.toNumber() > 0,
         poolInfo,
       };
     }
@@ -199,6 +203,8 @@ export function RFStateProvider({ children = undefined as any }) {
         }
       }
     }
+    console.log(vaultInfos);
+
     setVaultState(vaultInfos);
     return vaultInfos;
   };
@@ -233,6 +239,7 @@ export function RFStateProvider({ children = undefined as any }) {
       const poolState = await updatePoolState(globalState, oracleState);
       const overview = await updateOverview();
       await updateVaultState(globalState, poolState, overview);
+
       console.log('***** Updated all state *****');
       setStateLoading(false);
     }
