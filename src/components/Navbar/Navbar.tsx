@@ -13,14 +13,11 @@ import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 import fairdropIcon from '../../assets/images/fairdrop.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import { IoWalletOutline } from 'react-icons/io5';
-import { useConnection } from '../../contexts/connection';
 import { TokenAmount } from '../../utils/safe-math';
-import { getMint } from '../../utils/utils';
 import { selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useAllVaultInfo, useUserOverview } from '../../contexts/state';
-import { NavBarProgressBarMyUSDr } from './NavBarProgressBarMyUSDr';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 type NavbarProps = {
@@ -37,7 +34,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
   const history = useHistory();
   const [navIndex, setNavIndex] = useState(location.pathname);
   const { connected, connect } = useWallet();
-  const connection = useConnection();
   const userOverview = useUserOverview();
 
   const activeVaultCount = userOverview ? userOverview.activeVaults.toString() : '0';
@@ -60,9 +56,9 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
 
     const avdArr: any = [];
     for (const vault of vaults) {
-      const { mint, lockedAmount, debt, poolInfo }: any = vault;
-      const mintInfo = await getMint(connection, mint);
-      const pv = poolInfo.oraclePrice * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
+      const { mint, debt }: any = vault;
+      const pv = +new TokenAmount((vault as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
+      // const pv = price * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
       const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
       const vaultValue: any = {
         title,
@@ -163,7 +159,6 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
                 <h6>USDr Minted</h6>
                 <h6 className="navbar-vertical__item--green">{(Math.ceil(totalMinted * 100) / 100).toFixed(2)}</h6>
               </div>
-              <NavBarProgressBarMyUSDr className="navbar-vertical__progressbar" />
             </div>
           ) : null
         ) : (
