@@ -26,12 +26,12 @@ const getTokenCapBanner = (key: string, percentage: number) => {
 };
 
 const selectBanner = (poolData: any, userVaultData: any, globalStateData: any) => {
-  if (poolData && userVaultData && globalStateData) {
+  if (poolData && globalStateData) {
     const poolUSDrDebtPercentage = new BigNumber(poolData.totalDebt.toString())
       .multipliedBy(100)
       .dividedBy(poolData.debtCeiling.toString())
       .toString();
-    const userUSDrDebtPercentage = (userVaultData.debt * 100) / globalStateData.debtCeilingUser;
+    const userUSDrDebtPercentage = userVaultData ? (userVaultData.debt * 100) / globalStateData.debtCeilingUser : 0;
     const globalUSDrDebtPercentage = new BigNumber(globalStateData.totalDebt.toString())
       .multipliedBy(100)
       .dividedBy(globalStateData.debtCeilingGlobal.toString())
