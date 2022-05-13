@@ -29,14 +29,12 @@ export const useFillPlatformInformation = (vaults: LPair[]) => {
     if (!vaults || vaults.length === 0) {
       return;
     }
-    console.log(vaults);
     const getPlatformInformation = async () => {
       const promises = vaults.map(async (item: LPair) => {
         item.earned_rewards = 0;
         if (onChainVaultInfos[item.address_id]) {
           item.earned_rewards = onChainVaultInfos[item.address_id]?.reward;
         }
-        console.log(item);
         return item;
       });
 
