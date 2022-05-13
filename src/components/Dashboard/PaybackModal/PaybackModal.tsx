@@ -73,7 +73,7 @@ const PaybackModal = ({ data }: any) => {
           })
           .catch((error: any) => {
             console.error('ERROR FROM BACKEND', error);
-            throw error;
+            // throw error;
           });
       })
       .catch((e) => {

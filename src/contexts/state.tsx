@@ -49,7 +49,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const updateGlobalState = async () => {
     console.log('1. Updating global state...');
     const state = await getGlobalState(connection, wallet);
-    let info = null;
+    let info = globalState ?? {};
     if (state) {
       info = {
         ...state,
@@ -60,8 +60,8 @@ export function RFStateProvider({ children = undefined as any }) {
           )
         ),
       };
-      setGlobalState(info);
     }
+    setGlobalState(info);
     return info;
   };
 
@@ -69,7 +69,7 @@ export function RFStateProvider({ children = undefined as any }) {
     console.log('2. Updating oracle state...');
 
     const oracles = await getAllOracleState(connection, wallet);
-    const oracleInfos: any = {};
+    const oracleInfos: any = oracleState ?? {};
     oracles.forEach((item) => {
       const oracle = item.account;
       const oracleMint = oracle.mint.toString();
@@ -126,7 +126,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const updatePoolState = async (globalState, oracleState) => {
     console.log('3. Updating pool state...');
 
-    const poolInfos: any = {};
+    const poolInfos: any = poolState ?? {};
     try {
       const allPools = await getAllLendingPool(connection);
       for (let i = 0; i < allPools.length; i++) {
@@ -192,7 +192,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateVaultState = async (globalState, poolState, overview) => {
     console.log('5. Updating vaults.....');
-    const vaultInfos: any = {};
+    const vaultInfos: any = vaultState ?? {};
     if (overview) {
       for (const mint of Object.keys(poolState)) {
         const vaultInfo = await getVaultStateByMint(globalState, poolState, overview, mint);
@@ -203,7 +203,6 @@ export function RFStateProvider({ children = undefined as any }) {
         }
       }
     }
-    console.log(vaultInfos);
 
     setVaultState(vaultInfos);
     return vaultInfos;

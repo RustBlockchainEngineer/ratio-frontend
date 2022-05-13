@@ -98,9 +98,9 @@ export function PlatformTvlProvider({ children = undefined as any }) {
         if (saberPoolsInfo.length > 0) setIsInitialized(true);
       });
     }
-    return () =>{
+    return () => {
       setSaberFarmsTvlData({});
-    }
+    };
   }, [saberPoolsInfo]);
 
   /// This useEffect is for updating saber farms tvl every 5 minutes.
@@ -110,9 +110,9 @@ export function PlatformTvlProvider({ children = undefined as any }) {
     if (isInitialized) {
       updateAllTVLs();
     }
-    return () =>{
+    return () => {
       setSaberFarmsTvlData({});
-    }
+    };
   }, [update]);
 
   // We update tvl every 2 minutes
@@ -120,9 +120,9 @@ export function PlatformTvlProvider({ children = undefined as any }) {
     setInterval(() => {
       toggleUpdate((update) => !update);
     }, 2000 * 60);
-    return () =>{
+    return () => {
       setSaberFarmsTvlData({});
-    }
+    };
   }, []);
 
   // Update USD calculation of TVL and APY
@@ -135,9 +135,9 @@ export function PlatformTvlProvider({ children = undefined as any }) {
       if (apy) updatedData[mint].apy = apy;
     });
     setSaberFarmsTvlData(updatedData);
-    return () =>{
+    return () => {
       setSaberFarmsTvlData({});
-    }
+    };
   }, [saberPrice, oracleState, poolState]);
 
   return (
