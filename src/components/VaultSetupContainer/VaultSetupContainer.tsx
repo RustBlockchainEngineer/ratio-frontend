@@ -127,7 +127,7 @@ const VaultSetupContainer = ({ data }: any) => {
           <p className="vaultsetupcontainer-title">Details</p>
         </div>
         <div className="d-flex justify-content-between mt-3">
-          <p className="vaultsetupcontainer-label">Outstanding debt</p>
+          <p className="vaultsetupcontainer-label">Global outstanding debt</p>
           <strong className="vaultsetupcontainer-value">0.000</strong>
         </div>
         <div>
