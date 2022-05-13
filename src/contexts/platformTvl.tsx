@@ -57,6 +57,7 @@ export function PlatformTvlProvider({ children = undefined as any }) {
   };
 
   const updateAllTVLs = () => {
+    console.log('Updating pool info');
     // log ('updateTvlByMint', platformName, mint);
     updateSaberTvls();
     // updateRaydiumTvls
@@ -113,7 +114,7 @@ export function PlatformTvlProvider({ children = undefined as any }) {
     return () => {
       setSaberFarmsTvlData({});
     };
-  }, [update]);
+  }, [update, isInitialized, poolState]);
 
   // We update tvl every 2 minutes
   useEffect(() => {
