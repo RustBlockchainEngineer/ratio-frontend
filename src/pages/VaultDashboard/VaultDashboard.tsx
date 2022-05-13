@@ -17,7 +17,6 @@ import { useWallet } from '../../contexts/wallet';
 import { USDR_MINT_KEY, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import { useAccountByMint } from '../../contexts/accounts';
 import { TokenAmount } from '../../utils/safe-math';
-import { getRiskLevelNumber } from '../../utils/utils';
 import { selectors } from '../../features/dashboard';
 
 import Breadcrumb from '../../components/Breadcrumb';
@@ -239,7 +238,6 @@ const VaultDashboard = () => {
                   withdrawValue={withdrawValue}
                   debtValue={debtValue}
                   type="deposit_withdraw"
-                  riskLevel={getRiskLevelNumber(vault_mint)}
                   price={poolInfo?.oraclePrice}
                 />
               </div>
@@ -253,7 +251,6 @@ const VaultDashboard = () => {
                   generateValue={generateValue}
                   usdrWalletValue={usdrWalletBalance}
                   type="borrow_payback"
-                  riskLevel={getRiskLevelNumber(vault_mint)}
                 />
               </div>
             </div>

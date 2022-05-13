@@ -7,7 +7,7 @@ import { MintInfo } from '@solana/spl-token';
 import { Connection, PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import { TokenInfo } from '@solana/spl-token-registry';
-import { WAD, ZERO, LP_PAIR_MINT_KEYS } from '../constants';
+import { WAD, ZERO } from '../constants';
 import { TokenAccount } from './../models';
 
 import * as serumCmn from '@project-serum/common';
@@ -240,27 +240,6 @@ export function nFormatter(num: number, digits: number) {
     });
   return item ? (num / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : '0';
 }
-
-export const getRiskLevelNumber = (vaultMint: any) => {
-  switch (vaultMint) {
-    case LP_PAIR_MINT_KEYS['USDC-USDR']:
-      return 0;
-      break;
-    case LP_PAIR_MINT_KEYS['ETH-SOL']:
-      return 1;
-      break;
-    case LP_PAIR_MINT_KEYS['ATLAS-RAY']:
-      return 2;
-      break;
-    case LP_PAIR_MINT_KEYS['SAMO-RAY']:
-      return 3;
-      break;
-
-    default:
-      break;
-  }
-  return 10;
-};
 
 export const calculateCollateralPrice = (
   lpSupply: number,

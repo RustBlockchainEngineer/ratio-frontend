@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-import { formatUSD, getRiskLevelNumber } from '../../utils/utils';
+import { formatUSD } from '../../utils/utils';
 import { TokenAmount } from '../../utils/safe-math';
 
 import { useConnection } from '../../contexts/connection';
@@ -158,7 +158,6 @@ const VaultSetup = () => {
                   title: vaultData.title,
                   value: depositValue,
                   usdrMint: USDR_MINT_KEY,
-                  riskLevel: getRiskLevelNumber(vault_mint),
                   risk: vaultData?.risk,
                   tokenPrice: poolInfo?.oraclePrice,
                 }}

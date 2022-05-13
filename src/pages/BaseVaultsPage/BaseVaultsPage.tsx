@@ -5,15 +5,13 @@ import { useSaberTvlData } from '../../contexts/platformTvl';
 import { PairType } from '../../models/UInterface';
 import { selectors, actionTypes } from '../../features/dashboard';
 
-import { getRiskLevelNumber } from '../../libs/helper';
-
 import FilterPanel from '../../components/FilterPanel';
 import ComparingFooter from '../../components/ComparingFooter';
 import TokenPairCard from '../../components/TokenPairCard';
 import ActivePairCard from '../../components/ActivePairCard';
 import TokenPairListItem from '../../components/TokenPairListItem';
 import { getCoinPicSymbol } from '../../utils/helper';
-import { LPair } from '../../types/VaultTypes';
+import { LPair, RISK_RATING } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { Banner, BannerIcon } from '../../components/Banner';
 // import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
@@ -116,7 +114,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 symbol: item.platform_symbol,
               },
               risk: item.risk_rating,
-              riskLevel: getRiskLevelNumber(item.risk_rating),
+              riskLevel: RISK_RATING[item.risk_rating as unknown as keyof typeof RISK_RATING],
               item: item,
               activeStatus: isVaultActive,
             };
