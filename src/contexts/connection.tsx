@@ -22,7 +22,8 @@ export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 export const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
-    endpoint: 'https://ratio.genesysgo.net/',
+    // endpoint: 'https://ratio.genesysgo.net/',
+    endpoint: 'https://cropper.rpcpool.com/',
     chainID: ChainID.MainnetBeta,
   },
   {
