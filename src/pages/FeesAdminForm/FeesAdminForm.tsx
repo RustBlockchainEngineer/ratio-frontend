@@ -17,7 +17,7 @@ import {
   setStakeFee,
   setSwapFee,
   setWithdrawFee,
-} from '../../utils/admin-contract-calls';
+} from '../../utils/ratio-lending-admin';
 import AdminFormLayout from '../AdminFormLayout';
 
 interface Fees {

@@ -3,7 +3,7 @@ import { useConnection } from '../../contexts/connection';
 import { useRFStateInfo } from '../../contexts/state';
 import { useWallet } from '../../contexts/wallet';
 import { LPEditionData } from '../../types/VaultTypes';
-import { createGlobalState } from '../../utils/admin-contract-calls';
+import { createGlobalState } from '../../utils/ratio-lending-admin';
 import AdminFormLayout from '../AdminFormLayout';
 import VaultEditionForm from './VaultEditionForm';
 import VaultsTable from './VaultsTable';

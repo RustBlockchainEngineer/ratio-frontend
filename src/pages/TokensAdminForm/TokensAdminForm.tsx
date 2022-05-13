@@ -11,7 +11,7 @@ import { useWallet } from '../../contexts/wallet';
 import { useFetchData } from '../../hooks/useFetchData';
 import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
 import { FetchingStatus } from '../../types/fetching-types';
-import { createPriceOracle, getPriceOracle } from '../../utils/admin-contract-calls';
+import { createPriceOracle, getPriceOracle } from '../../utils/ratio-lending-admin';
 import AdminFormLayout from '../AdminFormLayout';
 import PlatformAdditionModal from './PlatformAdditionModal';
 import PriceSourceAdditionModal from './PriceSourceAdditionModal';

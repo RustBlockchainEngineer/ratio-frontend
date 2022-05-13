@@ -12,7 +12,7 @@ import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
 
 import { FetchingStatus } from '../../types/fetching-types';
 import { LPAssetCreationData, LPEditionData, RISK_RATING } from '../../types/VaultTypes';
-import { createPool, updatePool } from '../../utils/admin-contract-calls';
+import { createPool, updatePool } from '../../utils/ratio-lending-admin';
 import { getLendingPoolByMint, PLATFORM_IDS } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
 import { getPoolPDA } from '../../utils/ratio-pda';

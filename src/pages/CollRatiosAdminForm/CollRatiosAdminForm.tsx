@@ -8,7 +8,7 @@ import { useConnection } from '../../contexts/connection';
 import { useRFStateInfo } from '../../contexts/state';
 import { useWallet } from '../../contexts/wallet';
 import { CollateralizationRatios } from '../../types/admin-types';
-import { setCollateralRatio } from '../../utils/admin-contract-calls';
+import { setCollateralRatio } from '../../utils/ratio-lending-admin';
 import { COLL_RATIOS_DECIMALS } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 

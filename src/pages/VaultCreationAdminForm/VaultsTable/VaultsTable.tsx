@@ -12,7 +12,7 @@ import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { useWallet } from '../../../contexts/wallet';
 import { FetchingStatus } from '../../../types/fetching-types';
 import { LPair, LPEditionData } from '../../../types/VaultTypes';
-import { getAllPools, setPoolPaused } from '../../../utils/admin-contract-calls';
+import { getAllPools, setPoolPaused } from '../../../utils/ratio-lending-admin';
 import VaultEditionModal from '../VaultEditionModal';
 
 export default function VaultsTable() {

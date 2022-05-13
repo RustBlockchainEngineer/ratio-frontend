@@ -9,7 +9,7 @@ import { useConnection } from '../../contexts/connection';
 import { useRFStateInfo } from '../../contexts/state';
 import { useWallet, WalletAdapter } from '../../contexts/wallet';
 import { IIndexable } from '../../types/admin-types';
-import { setGlobalDebtCeiling, setGlobalTvlLimit, setUserDebtCeiling } from '../../utils/admin-contract-calls';
+import { setGlobalDebtCeiling, setGlobalTvlLimit, setUserDebtCeiling } from '../../utils/ratio-lending-admin';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import AdminFormLayout from '../AdminFormLayout';
 

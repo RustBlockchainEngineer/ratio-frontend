@@ -11,7 +11,7 @@ import {
   changeSuperOwner,
   changeTreasury,
   setEmergencyState as setEmergencyStateOnContract,
-} from '../../utils/admin-contract-calls';
+} from '../../utils/ratio-lending-admin';
 import AdminFormLayout from '../AdminFormLayout';
 
 export default function AdminTasksForm() {

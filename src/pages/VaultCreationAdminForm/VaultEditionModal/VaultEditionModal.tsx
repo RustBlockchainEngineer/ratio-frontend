@@ -4,7 +4,7 @@ import { IoMdClose } from 'react-icons/io';
 import VaultEditionForm from '../VaultEditionForm';
 import AdminFormInput from '../../../components/AdminFormInput';
 import { useEffect, useState } from 'react';
-import { getPool, setPoolDebtCeiling } from '../../../utils/admin-contract-calls';
+import { getPool, setPoolDebtCeiling } from '../../../utils/ratio-lending-admin';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
