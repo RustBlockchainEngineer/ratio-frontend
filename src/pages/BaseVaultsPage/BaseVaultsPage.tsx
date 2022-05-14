@@ -254,29 +254,33 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   return (
     <>
-      {hasUserReachedUSDrLimit && !hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
-        <Banner
-          title="USDr Debt Limit Reached:"
-          message="You have reached your overall USDr Debt Limit."
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
-      )}
-      {hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
-        <Banner
-          title="USDr Debt Limit Reached:"
-          message="The global debt ceiling on the Ratio platform has been reached."
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
-      )}
-      {hasReachedTVLLimit && (
-        <Banner
-          title="TVL Limit Reached:"
-          message="The global deposit ceiling on the Ratio platform has been reached."
-          bannerIcon={BannerIcon.riskLevel}
-          className="debt-limit-reached"
-        />
+      {overview && (
+        <div>
+          {hasUserReachedUSDrLimit && !hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
+            <Banner
+              title="USDr Debt Limit Reached:"
+              message="USDr Debt Limit Reached: You have reached your overall USDr Debt Limit."
+              bannerIcon={BannerIcon.riskLevel}
+              className="debt-limit-reached"
+            />
+          )}
+          {hasReachedGlobalDebtLimit && !hasReachedTVLLimit && (
+            <Banner
+              title="USDr Debt Limit Reached:"
+              message="USDr Debt Limit Reached: The global debt ceiling on the Ratio platform has been reached."
+              bannerIcon={BannerIcon.riskLevel}
+              className="debt-limit-reached"
+            />
+          )}
+          {hasReachedTVLLimit && (
+            <Banner
+              title="TVL Limit Reached:"
+              message="TVL Limit Reached: The global deposit ceiling on the Ratio platform has been reached."
+              bannerIcon={BannerIcon.riskLevel}
+              className="debt-limit-reached"
+            />
+          )}
+        </div>
       )}
       <div className="allvaults mt-4">
         <FilterPanel label={title} viewType={viewType} onViewType={onViewType} />

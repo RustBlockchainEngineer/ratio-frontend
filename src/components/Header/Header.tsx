@@ -51,6 +51,7 @@ const Header = (headerProps: HeaderProps) => {
     console.log(providerUrl);
     setAutoConnect(null);
     setProviderUrl(null);
+    history.push('/dashboard');
     window.location.reload();
   };
 
