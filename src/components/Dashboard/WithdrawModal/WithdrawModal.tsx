@@ -93,7 +93,6 @@ const WithdrawModal = ({ data }: any) => {
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');
     } catch (err) {
-      console.error(err);
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
       else toast.error('Transaction Error!');
     }
@@ -149,8 +148,10 @@ const WithdrawModal = ({ data }: any) => {
               </strong>{' '}
               tokens from your vault.
             </h5>
-            {Number(data.debtValue) !== 0 && (
+            {Number(data.debtValue) !== 0 ? (
               <div className="customInput--valid">LP cannot be withdrawn until USDr debt is paid back</div>
+            ) : (
+              <div className="customInput--valid">Please harvest your rewards before withdrawing LP</div>
             )}
           </div>
         </Modal.Header>

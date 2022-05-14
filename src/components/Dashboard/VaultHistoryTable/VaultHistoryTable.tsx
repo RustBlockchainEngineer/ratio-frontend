@@ -25,6 +25,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
       const headers: { [k: string]: any } = {
         'Content-Type': 'application/json',
       };
+      console.log(makeRatioApiEndpointTxHistory(wallet, mintAddress));
       const response = await fetch(makeRatioApiEndpointTxHistory(wallet, mintAddress), {
         headers: headers,
         method: 'GET',

@@ -68,7 +68,7 @@ const NavbarItem = (navBarItemProps: NavbarItemProps) => {
                       delay={{ show: 100, hide: 100 }}
                       overlay={<Tooltip id="tooltip">Position Value</Tooltip>}
                     >
-                      <div className="navbarItem__expand-positionvalue">$ {item && nFormatter(item.pv || 0, 1)}</div>
+                      <div className="navbarItem__expand-positionvalue">$ {item && nFormatter(item.pv || 0, 2)}</div>
                     </OverlayTrigger>
                   </div>
                   <div>

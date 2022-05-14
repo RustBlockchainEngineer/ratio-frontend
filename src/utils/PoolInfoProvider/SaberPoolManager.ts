@@ -27,19 +27,19 @@ export class SaberPoolManager extends GenericPoolManager {
       new PublicKey(tokenAccount),
       amount
     );
-    this.postTransactionToApi(txHash, vault.address_id, 'deposit', wallet?.publicKey);
+    this.postTransactionToApi(txHash, vault.address_id, 'deposit', wallet?.publicKey, 'confirmed');
     return txHash;
   }
 
   async withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number): Promise<string> {
     const txHash = await withdraw(connection, wallet, new PublicKey(vault.address_id), amount);
-    this.postTransactionToApi(txHash, vault.address_id, 'withdraw', wallet?.publicKey);
+    this.postTransactionToApi(txHash, vault.address_id, 'withdraw', wallet?.publicKey, 'confirmed');
     return txHash;
   }
 
   async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     const txHash = await harvest(connection, wallet, new PublicKey(vault.address_id));
-    this.postTransactionToApi(txHash as string, vault.address_id, 'harvest', wallet?.publicKey);
+    this.postTransactionToApi(txHash as string, vault.address_id, 'harvest', wallet?.publicKey, 'confirmed');
     return txHash;
   }
 

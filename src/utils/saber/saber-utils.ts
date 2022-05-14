@@ -52,11 +52,14 @@ export async function deposit(
     transaction.add(tx3);
   }
   const txHash = await sendTransaction(connection, wallet, transaction);
-  await connection.confirmTransaction(txHash);
-  if (txHash?.value?.err) {
-    console.error('ERROR ON TX ', txHash.value.err);
-    throw txHash.value.err;
+  try {
+    await connection.confirmTransaction(txHash);
+  } catch (error) {
+    console.log(error);
+    console.log(txHash.toString());
+    return txHash.toString();
   }
+
   console.log('Saber deposit tx', txHash);
   return txHash.toString();
 }
@@ -92,6 +95,8 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
   }
 
   const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
+
+  console.log(txHashs);
 
   await connection.confirmTransaction(txHashs[0]);
   if (txHashs[0]?.value?.err) {

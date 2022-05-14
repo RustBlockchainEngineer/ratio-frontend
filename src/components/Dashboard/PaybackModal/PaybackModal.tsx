@@ -65,6 +65,7 @@ const PaybackModal = ({ data }: any) => {
             address_id: USDR_MINT_KEY,
             signature: txSignature,
             vault_address: new PublicKey(data.mint),
+            status: 'confirmed',
           },
           `/transaction/${wallet?.publicKey?.toBase58()}/new`
         )
@@ -78,6 +79,23 @@ const PaybackModal = ({ data }: any) => {
       })
       .catch((e) => {
         console.log(e);
+        postToRatioApi(
+          {
+            tx_type: 'payback',
+            address_id: USDR_MINT_KEY,
+            signature: '',
+            vault_address: new PublicKey(data.mint),
+            status: 'failed',
+          },
+          `/transaction/${wallet?.publicKey?.toBase58()}/new`
+        )
+          .then((res: string) => {
+            console.log('RES FROM BACKEND', res);
+          })
+          .catch((error: any) => {
+            console.error('ERROR FROM BACKEND', error);
+            throw error;
+          });
         if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
         else toast.error('Transaction Error!');
       })
