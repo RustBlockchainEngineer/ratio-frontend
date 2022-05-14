@@ -71,7 +71,8 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
     txSignature: string,
     lp_token_address: string,
     txType: string,
-    walletPublicKey: string
+    walletPublicKey: string,
+    status: string
   ): Promise<any> {
     // /transaction/:wallet_id/new`
     try {
@@ -81,6 +82,7 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
           address_id: txType === 'harvest' ? USDR_MINT_KEY : lp_token_address,
           signature: txSignature,
           vault_address: lp_token_address,
+          status: status,
         },
         `/transaction/${walletPublicKey}/new`
       );
