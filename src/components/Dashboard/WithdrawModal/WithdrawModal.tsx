@@ -93,7 +93,6 @@ const WithdrawModal = ({ data }: any) => {
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');
     } catch (err) {
-      console.error(err);
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
       else toast.error('Transaction Error!');
     }
