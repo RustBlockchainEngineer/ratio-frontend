@@ -79,7 +79,7 @@ const ModalCard = ({
               {type === 'borrow_payback' && (
                 <div>
                   <label>Able to mint</label>
-                  <p className="mt-0">{generateValue.toFixed(2)} USDr</p>
+                  <p className="mt-0">{generateValue} USDr</p>
                 </div>
               )}
             </div>
@@ -104,13 +104,13 @@ const ModalCard = ({
             {type === 'borrow_payback' && (
               <div className="d-flex align-items-center">
                 {icons && <img src={icons[0]} alt={icons[0].toString()} />}
-                <p className="ml-2">{Math.ceil(paybackData.debtValue * 100) / 100} USDr</p>
+                <p className="ml-2">{paybackData.debtValue} USDr</p>
               </div>
             )}
             {type === 'deposit_withdraw' && (
               <div>
                 <p>{tokenName === 'USDC-USDR' ? 'USDC-USDr' : tokenName}</p>
-                <h6>{withdrawValue.toFixed(2)}</h6>
+                <h6>{withdrawValue}</h6>
               </div>
             )}
           </div>

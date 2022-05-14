@@ -3,6 +3,7 @@ import { LPair } from '../types/VaultTypes';
 export type PairType = {
   id: number;
   mint: string;
+  rewardMint: string;
   icons: Array<string>;
   icon: any;
   icon1?: string;

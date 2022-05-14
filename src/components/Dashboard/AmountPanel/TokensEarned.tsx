@@ -7,12 +7,12 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { useUserVaultInfo } from '../../../contexts/state';
+import { useAppendUserAction, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
 import { FetchingStatus } from '../../../types/fetching-types';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
-import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
+import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -28,6 +28,8 @@ const TokensEarned = ({ data }: any) => {
 
   const [isHarvesting, setIsHarvesting] = useState(false);
 
+  const appendUserAction = useAppendUserAction();
+
   const harvest = async () => {
     try {
       if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
@@ -36,7 +38,9 @@ const TokensEarned = ({ data }: any) => {
 
       console.log('Harvesting...');
       setIsHarvesting(true);
-      await PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair);
+      const txHash = await PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair);
+      appendUserAction(wallet.publicKey.toString(), data.mintAddress, data.rewardMint, HARVEST_ACTION, 0, txHash);
+
       toast.success('Successfully Harvested!');
     } catch (err) {
       console.error(err);

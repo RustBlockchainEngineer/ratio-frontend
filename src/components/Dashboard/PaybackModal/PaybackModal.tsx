@@ -7,11 +7,12 @@ import { ThemeContext } from '../../../contexts/ThemeContext';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
-import { repayUSDr, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { PAYBACK_ACTION, repayUSDr, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import { toast } from 'react-toastify';
 import AmountSlider from '../AmountSlider';
 import { isWalletApproveError } from '../../../utils/utils';
-import { postToRatioApi } from '../../../utils/ratioApi';
+// import { postToRatioApi } from '../../../utils/ratioApi';
+import { useAppendUserAction } from '../../../contexts/state';
 
 const PaybackModal = ({ data }: any) => {
   const maxPaybackAmount = Math.min(data.usdrValue, data.debtValue);
@@ -31,6 +32,8 @@ const PaybackModal = ({ data }: any) => {
 
   const [isPayingBack, setIsPayingBack] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
+
+  const appendUserAction = useAppendUserAction();
 
   useEffect(() => {
     setDidMount(true);
@@ -57,45 +60,12 @@ const PaybackModal = ({ data }: any) => {
     setIsPayingBack(true);
 
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, USDR_MINT_DECIMALS), new PublicKey(data.mint))
-      .then((txSignature: string) => {
+      .then((txHash: string) => {
         toast.success('Successfully Paid back!');
-        postToRatioApi(
-          {
-            tx_type: 'payback',
-            address_id: USDR_MINT_KEY,
-            signature: txSignature,
-            vault_address: new PublicKey(data.mint),
-            status: 'confirmed',
-          },
-          `/transaction/${wallet?.publicKey?.toBase58()}/new`
-        )
-          .then((res: string) => {
-            console.log('RES FROM BACKEND', res);
-          })
-          .catch((error: any) => {
-            console.error('ERROR FROM BACKEND', error);
-            // throw error;
-          });
+        appendUserAction(wallet.publicKey.toString(), data.mint, USDR_MINT_KEY, PAYBACK_ACTION, paybackAmount, txHash);
       })
       .catch((e) => {
         console.log(e);
-        postToRatioApi(
-          {
-            tx_type: 'payback',
-            address_id: USDR_MINT_KEY,
-            signature: '',
-            vault_address: new PublicKey(data.mint),
-            status: 'failed',
-          },
-          `/transaction/${wallet?.publicKey?.toBase58()}/new`
-        )
-          .then((res: string) => {
-            console.log('RES FROM BACKEND', res);
-          })
-          .catch((error: any) => {
-            console.error('ERROR FROM BACKEND', error);
-            throw error;
-          });
         if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
         else toast.error('Transaction Error!');
       })
@@ -155,15 +125,15 @@ const PaybackModal = ({ data }: any) => {
             <CustomInput
               appendStr="Max"
               // initValue={'0'}
-              appendValueStr={'' + data.usdrValue}
+              appendValueStr={'' + maxPaybackAmount}
               tokenStr={`USDr`}
               onTextChange={(value: any) => {
-                setAmountValue((value / data.usdrValue) * 100);
+                setAmountValue((value / maxPaybackAmount) * 100);
                 setPayBackAmount(value);
                 setPaybackStatus(false);
                 setButtonDisabled(false);
               }}
-              maxValue={data.usdrValue}
+              maxValue={maxPaybackAmount}
               valid={paybackStatus}
               invalidStr={invalidStr}
               value={paybackAmount}

@@ -25,14 +25,12 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
       const headers: { [k: string]: any } = {
         'Content-Type': 'application/json',
       };
-      console.log(makeRatioApiEndpointTxHistory(wallet, mintAddress));
       const response = await fetch(makeRatioApiEndpointTxHistory(wallet, mintAddress), {
         headers: headers,
         method: 'GET',
       });
       if (response.ok) {
         const rawTransactions = await response.json();
-        console.log(rawTransactions);
         const d: any = rawTransactions.sort(function (a: any, b: any) {
           const c: any = new Date(a.created_on);
           const d: any = new Date(b.created_on);

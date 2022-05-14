@@ -21,14 +21,14 @@ const WalletBalances = ({ icon, tokenName, collAmount, collAmountUSD, usdrAmount
               <img src={data.icons ? data.icons[1] : null} alt="TokenB" style={{ width: 32 }} className="lastToken" /> */}
               {tokenName === 'USDC-USDR' ? 'USDC-USDr' : tokenName}
             </td>
-            <td className="align-middle">{collAmount?.toFixed(2)}</td>
+            <td className="align-middle">{collAmount}</td>
             <td className="text-right align-middle">${collAmountUSD?.toFixed(2)}</td>
           </tr>
           <tr>
             <td>
               <img src={USDr} alt="RAY" style={{ width: 32, marginRight: '0.5rem' }} /> USDr
             </td>
-            <td className="align-middle">{usdrAmount?.toFixed(2)}</td>
+            <td className="align-middle">{usdrAmount}</td>
             <td className="text-right align-middle">${usdrAmount?.toFixed(2)}</td>
           </tr>
         </tbody>

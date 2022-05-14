@@ -89,7 +89,7 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
       console.log('SUCCESSFUL RESPONSE FROM BACKEND', response);
     } catch (error) {
       console.error('ERROR FROM BACKEND', error);
-      throw error;
+      // throw error;
     }
   }
 }

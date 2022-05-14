@@ -10,39 +10,23 @@ import Button from '../Button';
 import { selectors } from '../../features/dashboard';
 import { TokenPairCardProps } from '../../models/UInterface';
 import { formatUSD } from '../../utils/utils';
-import { useConnection } from '../../contexts/connection';
 
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 
 const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const { data, onCompareVault } = tokenPairCardProps;
   const history = useHistory();
 
   const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
-  const connection = useConnection();
-  const { wallet, connected } = useWallet();
+  const { connected } = useWallet();
 
   const [checked, setChecked] = React.useState(false);
 
   const hasUserReachedDebtLimit = false;
-  const PoolManagerFactory = useGetPoolManager(data.item);
 
-  // eslint-disable-next-line
-  const harvest = () => {
-    console.log('harvesting');
-    PoolManagerFactory?.harvestReward(connection, wallet, data.item)
-      .then(() => {})
-      .catch((e) => {
-        console.log(e);
-      })
-      .finally(() => {
-        toast('Successfully Harvested!');
-      });
-  };
   const renderModalButton = (status: boolean) => {
     return (
       <div className="col">

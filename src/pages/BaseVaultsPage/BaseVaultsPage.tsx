@@ -117,6 +117,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               riskLevel: RISK_RATING[item.risk_rating as unknown as keyof typeof RISK_RATING],
               item: item,
               activeStatus: isVaultActive,
+              rewardMint: poolInfos ? poolInfos[mint].mintReward.toString() : '',
             };
           }
         })

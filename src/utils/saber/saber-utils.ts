@@ -52,13 +52,6 @@ export async function deposit(
     transaction.add(tx3);
   }
   const txHash = await sendTransaction(connection, wallet, transaction);
-  try {
-    await connection.confirmTransaction(txHash);
-  } catch (error) {
-    console.log(error);
-    console.log(txHash.toString());
-    return txHash.toString();
-  }
 
   console.log('Saber deposit tx', txHash);
   return txHash.toString();
@@ -98,12 +91,6 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
 
   console.log(txHashs);
 
-  await connection.confirmTransaction(txHashs[0]);
-  if (txHashs[0]?.value?.err) {
-    console.error('ERROR ON TX ', txHashs[0].value.err);
-    throw txHashs[0].value.err;
-  }
-
   console.log('Saber withdraw tx', txHashs[0]);
   // console.log('Saber harvest tx', txHashs[1]);
 
@@ -130,12 +117,6 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
   }
 
   const txHash = await sendTransaction(connection, wallet, transaction);
-  await connection.confirmTransaction(txHash);
-  if (txHash?.value?.err) {
-    console.error('ERROR ON TX ', txHash.value.err);
-    throw txHash.value.err;
-  }
-  console.log('Saber harvest tx', txHash);
 
   return txHash;
 }

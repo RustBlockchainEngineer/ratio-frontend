@@ -14,8 +14,8 @@ import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { LPair } from '../../../types/VaultTypes';
 import { TokenAmount } from '../../../utils/safe-math';
-import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
-import { usePoolInfo } from '../../../contexts/state';
+import { DEPOSIT_ACTION, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
+import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
 import { useUpdateTvl } from '../../../contexts/platformTvl';
 
 const DepositModal = ({ data }: any) => {
@@ -41,6 +41,8 @@ const DepositModal = ({ data }: any) => {
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [isDepositing, setIsDepositing] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
+
+  const appendUserAction = useAppendUserAction();
 
   const updatePlatformTVL = useUpdateTvl();
 
@@ -71,13 +73,14 @@ const DepositModal = ({ data }: any) => {
       }
 
       setIsDepositing(true);
-      await PoolManagerFactory?.depositLP(
+      const txHash = await PoolManagerFactory?.depositLP(
         connection,
         wallet,
         vault as LPair,
         depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         collAccount?.pubkey.toString() as string
       );
+      appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, DEPOSIT_ACTION, depositAmount, txHash);
 
       updatePlatformTVL(vault.platform_name, vault.address_id);
       setDepositAmount(0);

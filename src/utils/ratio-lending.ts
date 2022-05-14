@@ -411,7 +411,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   transaction.add(borrowInstruction);
 
   const txHash = await sendTransaction(connection, wallet, transaction);
-  await connection.confirmTransaction(txHash);
+
   if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
@@ -451,7 +451,7 @@ export async function repayUSDr(connection: Connection, wallet: any, amount: num
   transaction.add(ix);
 
   const txHash = await sendTransaction(connection, wallet, transaction, []);
-  await connection.confirmTransaction(txHash);
+
   if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;

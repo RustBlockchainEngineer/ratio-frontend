@@ -13,11 +13,11 @@ import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
-import { usePoolInfo } from '../../../contexts/state';
+import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
 import { useUpdateTvl } from '../../../contexts/platformTvl';
 import { isWalletApproveError } from '../../../utils/utils';
 import { TokenAmount } from '../../../utils/safe-math';
-import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
+import { USDR_MINT_DECIMALS, WIHTDRAW_ACTION } from '../../../utils/ratio-lending';
 
 const WithdrawModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -42,6 +42,8 @@ const WithdrawModal = ({ data }: any) => {
   const PoolManagerFactory = useGetPoolManager(vault);
   const updatePlatformTVL = useUpdateTvl();
   const withdrawAmountUSD = new TokenAmount(withdrawAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
+
+  const appendUserAction = useAppendUserAction();
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -82,13 +84,15 @@ const WithdrawModal = ({ data }: any) => {
 
       setIsWithdrawing(true);
 
-      await PoolManagerFactory?.withdrawLP(
+      const txHash = await PoolManagerFactory?.withdrawLP(
         connection,
         wallet,
         vault as LPair,
         withdrawAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         userCollAccount
       );
+      appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, WIHTDRAW_ACTION, withdrawAmount, txHash);
+
       updatePlatformTVL(vault.platform_name, vault.address_id);
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');

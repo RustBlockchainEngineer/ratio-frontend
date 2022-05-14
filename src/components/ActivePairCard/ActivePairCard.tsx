@@ -20,8 +20,8 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import linkIcon from '../../assets/images/link.svg';
 import { isWalletApproveError } from '../../utils/utils';
 
-import { useUserVaultInfo } from '../../contexts/state';
-import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
+import { useAppendUserAction, useUserVaultInfo } from '../../contexts/state';
+import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import { FetchingStatus } from '../../types/fetching-types';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
@@ -39,6 +39,8 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const PoolManagerFactory = useGetPoolManager(data.item);
   const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
+
+  const appendUserAction = useAppendUserAction();
 
   const printTvl = () => {
     if (isNaN(data.tvl)) {
@@ -64,7 +66,9 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
       }
 
       console.log('Harvesting...');
-      await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
+      const txHash = await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
+      appendUserAction(wallet.publicKey.toString(), data.mint, data.rewardMint, HARVEST_ACTION, 0, txHash);
+
       toast.success('Successfully Harvested!');
     } catch (err) {
       console.error(err);

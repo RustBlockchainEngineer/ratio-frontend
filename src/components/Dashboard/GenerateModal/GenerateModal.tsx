@@ -5,15 +5,15 @@ import { IoMdClose } from 'react-icons/io';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { ThemeContext } from '../../../contexts/ThemeContext';
-import { borrowUSDr, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
+import { borrowUSDr, BORROW_ACTION, USDR_MINT_DECIMALS, USDR_MINT_KEY } from '../../../utils/ratio-lending';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { useUserVaultInfo } from '../../../contexts/state';
+import { useAppendUserAction, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
-import { postToRatioApi } from '../../../utils/ratioApi';
+// import { postToRatioApi } from '../../../utils/ratioApi';
 
 const GenerateModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -35,6 +35,8 @@ const GenerateModal = ({ data }: any) => {
   const [isMinting, setIsMinting] = useState(false);
   const [didMount, setDidMount] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
+
+  const appendUserAction = useAppendUserAction();
 
   useEffect(() => {
     if (userState) {
@@ -68,24 +70,9 @@ const GenerateModal = ({ data }: any) => {
 
     setIsMinting(true);
     borrowUSDr(connection, wallet, borrowAmount * 10 ** USDR_MINT_DECIMALS, new PublicKey(data.mint))
-      .then((txSignature: string) => {
+      .then((txHash: string) => {
         toast.success('Successfully minted USDr tokens!');
-        postToRatioApi(
-          {
-            tx_type: 'borrow',
-            address_id: USDR_MINT_KEY,
-            signature: txSignature,
-            vault_address: new PublicKey(data.mint),
-          },
-          `/transaction/${wallet?.publicKey.toBase58()}/new`
-        )
-          .then((res: string) => {
-            console.log('RES FROM BACKEND', res);
-          })
-          .catch((error: any) => {
-            console.error('ERROR FROM BACKEND', error);
-            // throw error;
-          });
+        appendUserAction(wallet.publicKey.toString(), data.mint, USDR_MINT_KEY, BORROW_ACTION, borrowAmount, txHash);
       })
       .catch((e) => {
         console.log(e);

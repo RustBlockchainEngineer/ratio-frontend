@@ -14,8 +14,8 @@ import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
-import { useUserVaultInfo, usePoolInfo } from '../../contexts/state';
-import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
+import { useUserVaultInfo, usePoolInfo, useAppendUserAction } from '../../contexts/state';
+import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
@@ -42,6 +42,8 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const [isHarvesting, setIsHarvesting] = useState(false);
 
   const PoolManagerFactory = useGetPoolManager(data.item);
+
+  const appendUserAction = useAppendUserAction();
 
   useEffect(() => {
     // replace this boolean value with a function to determine wether user limit reached
@@ -93,7 +95,8 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
       }
 
       console.log('Harvesting...');
-      await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
+      const txHash = await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
+      appendUserAction(wallet.publicKey.toString(), data.mint, data.rewardMint, HARVEST_ACTION, 0, txHash);
 
       toast.success('Successfully Harvested!');
     } catch (err) {

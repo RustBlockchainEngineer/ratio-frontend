@@ -1,13 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { API_ENDPOINT } from '../../constants';
 
-export async function postToRatioApi(data = {}, route = '', authToken?: any) {
-  console.log(authToken);
+export async function postToRatioApi(data, route, authToken?: any) {
   if (authToken) {
     return await postWithAuthToRatioApi(data, route, authToken);
   } else {
-    console.log(`${API_ENDPOINT}${route}`);
-    console.log(data);
+    console.log(route, data.signature, data.status);
     const response = await fetch(`${API_ENDPOINT}${route}`, {
       body: JSON.stringify(data),
       headers: {

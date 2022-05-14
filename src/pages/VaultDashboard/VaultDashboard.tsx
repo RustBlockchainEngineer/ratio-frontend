@@ -282,6 +282,7 @@ const VaultDashboard = () => {
                 tokenName={vaultData.title}
                 usdrAmount={usdrWalletBalance}
                 platform={vaultData.platform}
+                rewardMint={poolInfo ? poolInfo.mintReward.toString() : ''}
               />
             </div>
           </div>
