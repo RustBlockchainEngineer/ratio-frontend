@@ -88,9 +88,9 @@ export function RFStateProvider({ children = undefined as any }) {
       txHash,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async function (signatureResult: SignatureResult) {
-        let status: TxStatus = 'Failed';
+        let newStatus: TxStatus = 'Failed';
         if (!signatureResult.err) {
-          status = 'Success';
+          newStatus = 'Success';
           console.log('Transaction confirmed', txHash);
         } else {
           console.log('Transaction failed', txHash);
@@ -99,7 +99,7 @@ export function RFStateProvider({ children = undefined as any }) {
         const newAmount = getBalanceChange(txInfo, walletKey, affectedMint);
 
         postToRatioApi(
-          prepareTransactionData(action, mintCollat, affectedMint, newAmount, txHash, status),
+          prepareTransactionData(action, mintCollat, affectedMint, newAmount, txHash, newStatus),
           `/transaction/${walletKey}/update`
         )
           .then(() => {})

@@ -157,7 +157,6 @@ export const createSaberQuarryMinerIfneededTx = async (
     const [minerKey, minerBump] = await findMinerAddress(quarry.key, vaultKey, QUARRY_ADDRESSES.Mine);
     const ataCollatMinerKey = getATAKey(minerKey, mintCollKey);
     transaction.add(
-      // programPeriphery.instruction.createSaberQuarryMiner(miner.bump, {
       program.instruction.createSaberQuarryMiner(minerBump, {
         accounts: {
           authority: wallet.publicKey,
@@ -165,8 +164,7 @@ export const createSaberQuarryMinerIfneededTx = async (
           vault: vaultKey,
           miner: minerKey,
           ataCollatMiner: ataCollatMinerKey,
-          // quarry
-          quarry: quarry,
+          quarry: quarry.key,
           rewarder: SBR_REWARDER,
           mintCollat: mintCollKey,
           quarryProgram: QUARRY_ADDRESSES.Mine,
@@ -190,9 +188,9 @@ const stakeCollateralToSaberTx = async (
   const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
 
   const ataCollatVault = getATAKey(vaultKey, mintCollKey);
-  const [quarry] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
+  const [quarryKey] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
 
-  const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+  const [minerKey] = await findMinerAddress(quarryKey, vaultKey, QUARRY_ADDRESSES.Mine);
   const ataCollatMiner = getATAKey(minerKey, mintCollKey);
 
   console.log('staking to saber');
@@ -205,7 +203,7 @@ const stakeCollateralToSaberTx = async (
         vault: vaultKey,
         ataCollatVault: ataCollatVault,
         ataCollatMiner: ataCollatMiner,
-        quarry,
+        quarry: quarryKey,
         miner: minerKey,
         rewarder: SBR_REWARDER,
         quarryProgram: QUARRY_ADDRESSES.Mine,
@@ -228,9 +226,9 @@ const unstakeColalteralFromSaberTx = async (
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
 
   const ataCollatVault = getATAKey(vaultKey, mintCollKey);
-  const [quarry] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
+  const [quarryKey] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
 
-  const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+  const [minerKey] = await findMinerAddress(quarryKey, vaultKey, QUARRY_ADDRESSES.Mine);
   const ataCollatMiner = getATAKey(minerKey, mintCollKey);
 
   const transaction = new Transaction();
@@ -243,7 +241,7 @@ const unstakeColalteralFromSaberTx = async (
         vault: vaultKey,
         ataCollatVault: ataCollatVault,
         ataCollatMiner: ataCollatMiner,
-        quarry,
+        quarry: quarryKey,
         miner: minerKey,
         rewarder: SBR_REWARDER,
         quarryProgram: QUARRY_ADDRESSES.Mine,
@@ -273,9 +271,9 @@ export const harvestRewardsFromSaberTx = async (
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
 
   const ataCollatVaultKey = getATAKey(vaultKey, mintCollKey);
-  const [quarry] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
+  const [quarryKey] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
 
-  const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+  const [minerKey] = await findMinerAddress(quarryKey, vaultKey, QUARRY_ADDRESSES.Mine);
   const ataCollatMinerKey = getATAKey(minerKey, mintCollKey);
 
   const ataRewardVaultKey = getATAKey(vaultKey, SABER_IOU_MINT);
@@ -290,7 +288,7 @@ export const harvestRewardsFromSaberTx = async (
         ataRewardVault: ataRewardVaultKey,
         ataCollatMiner: ataCollatMinerKey,
         ataCollatVault: ataCollatVaultKey, // this is SBR for this example
-        quarry,
+        quarry: quarryKey,
         miner: minerKey,
         rewarder: SBR_REWARDER,
         mintWrapper: SBR_MINT_WRAPPER,
