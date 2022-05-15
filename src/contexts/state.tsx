@@ -1,5 +1,8 @@
-import { Context, SignatureResult } from '@solana/web3.js';
+import { SABER_IOU_MINT, SBR_MINT } from '@saberhq/saber-periphery';
+import { SignatureResult } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
+import { REFRESH_TIME_INTERVAL } from '../constants';
+import { useFetchSaberPrice } from '../hooks/useCoinGeckoPrices';
 import {
   USDR_MINT_DECIMALS,
   calculateRewardByPlatform,
@@ -11,8 +14,10 @@ import {
   getAllLendingPool,
   USD_FAIR_PRICE,
   getLendingPoolByMint,
+  getFarmInfoByPlatform,
 } from '../utils/ratio-lending';
-import { postToRatioApi } from '../utils/ratioApi';
+import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
+import { SABER_IOU_MINT_DECIMALS } from '../utils/saber/saber-utils';
 import { TokenAmount } from '../utils/safe-math';
 import { calculateCollateralPrice, getMint } from '../utils/utils';
 import { useConnection } from './connection';
@@ -44,11 +49,10 @@ const RFStateContext = React.createContext<RFStateConfig>({
   appendUserAction: () => {},
 });
 
-export declare type UpdateStateType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-
 export function RFStateProvider({ children = undefined as any }) {
   const connection = useConnection();
   const { wallet } = useWallet();
+  const { saberPrice } = useFetchSaberPrice();
 
   const [globalState, setGlobalState] = useState<any>(null);
   const [oracleState, setOracleState] = useState<any>(null);
@@ -57,13 +61,13 @@ export function RFStateProvider({ children = undefined as any }) {
   const [vaultState, setVaultState] = useState<any>(null);
 
   const [isStateLoading, setStateLoading] = useState(false);
-  const [toogleUpdateReward, setToogleUpdateReward] = useState(false);
+  const [toogleUpdateState, setToogleUpdateState] = useState(false);
   const [walletUpdated, setWalletUpdated] = useState(false);
   const [mintToUpdate, setMintToUpdate] = useState({
     mint: '',
     signal: false,
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const appendUserAction = async (
     walletKey: string,
     mintCollat: string,
@@ -73,44 +77,38 @@ export function RFStateProvider({ children = undefined as any }) {
     txHash: string
   ) => {
     postToRatioApi(
-      {
-        tx_type: action,
-        address_id: affectedMint,
-        signature: txHash,
-        vault_address: mintCollat,
-        status: 'waiting confirmation',
-      },
+      prepareTransactionData(action, mintCollat, affectedMint, amount, txHash, 'Waiting Confirmation ...'),
       `/transaction/${walletKey}/new`
     )
       .then(() => {})
       .catch((e) => {
         console.log(e);
       });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    connection.onSignature(txHash, function (signatureResult: SignatureResult, context: Context) {
-      // const { slot } = context;
-      let status = 'failed';
-      if (!signatureResult.err) {
-        status = 'confirmed';
-        console.log('Transaction confirmed', txHash);
-      } else {
-        console.log('Transaction failed', txHash);
-      }
-      postToRatioApi(
-        {
-          tx_type: action,
-          address_id: affectedMint,
-          signature: txHash,
-          status,
-          vault_address: mintCollat,
-        },
-        `/transaction/${walletKey}/new`
-      )
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        });
-    });
+    connection.onSignature(
+      txHash,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      async function (signatureResult: SignatureResult) {
+        let status: TxStatus = 'Failed';
+        if (!signatureResult.err) {
+          status = 'Success';
+          console.log('Transaction confirmed', txHash);
+        } else {
+          console.log('Transaction failed', txHash);
+        }
+        const txInfo = await connection.getTransaction(txHash, { commitment: 'confirmed' });
+        const newAmount = getBalanceChange(txInfo, walletKey, affectedMint);
+
+        postToRatioApi(
+          prepareTransactionData(action, mintCollat, affectedMint, newAmount, txHash, status),
+          `/transaction/${walletKey}/update`
+        )
+          .then(() => {})
+          .catch((e) => {
+            console.log(e);
+          });
+      },
+      'confirmed'
+    );
 
     actionList.push({
       mint: mintCollat,
@@ -151,7 +149,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const getPoolInfo = async (globalState, oracleState, poolInfo: any) => {
     const mintInfo = await getMint(connection, poolInfo.mintCollat);
-    if (poolInfo && mintInfo && oracleState && globalState) {
+    if (poolInfo && mintInfo && oracleState && globalState && !poolInfo.isPaused) {
       const oracleInfoA = oracleState[poolInfo.swapMintA];
       const oracleInfoB = oracleState[poolInfo.swapMintB];
       const lpSupply = parseFloat(new TokenAmount(mintInfo.supply.toString(), mintInfo.decimals).fixed());
@@ -176,6 +174,10 @@ export function RFStateProvider({ children = undefined as any }) {
         tokenAmountB,
         oracleInfoB.price.toNumber()
       );
+
+      poolInfo.realUserRewardMint =
+        poolInfo.mintReward.toString() === SABER_IOU_MINT.toString() ? SBR_MINT : poolInfo.mintReward.toString();
+
       const activePrice = USD_FAIR_PRICE ? fairPrice : virtualPrice;
 
       poolInfo['fairPrice'] = fairPrice;
@@ -189,6 +191,14 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
+      poolInfo['platformTVL'] = poolInfo['currentPrice'] * lpSupply;
+
+      poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
+      poolInfo['platformAPY'] =
+        ((saberPrice *
+          new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
+          poolInfo['platformTVL']) *
+        100;
     }
     return poolInfo;
   };
@@ -228,6 +238,29 @@ export function RFStateProvider({ children = undefined as any }) {
     } catch (e) {
       console.log(e);
     }
+    setPoolState(poolInfos);
+    return poolInfos;
+  };
+
+  const updateAllPoolStateForAPY = async () => {
+    if (!saberPrice || !poolState) return;
+    console.log('Updating Pool APY...');
+
+    const poolInfos: any = poolState ?? {};
+    for (const mint of Object.keys(poolState)) {
+      const poolInfo = poolState[mint];
+      if (poolInfo && !poolInfo.isPaused) {
+        poolInfo['platformAPY'] =
+          ((saberPrice *
+            new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
+            poolInfo['platformTVL']) *
+          100;
+        poolInfos[mint] = {
+          ...poolInfo,
+        };
+      }
+    }
+
     setPoolState(poolInfos);
     return poolInfos;
   };
@@ -311,36 +344,22 @@ export function RFStateProvider({ children = undefined as any }) {
     return vaultInfos;
   };
 
-  const updateUserReward = async () => {
-    if (isStateLoading || !vaultState) return;
-    console.log('*. Updating user reward by time.....');
-
-    const newStates = {
-      ...vaultState,
-    };
-    for (const mint of Object.keys(newStates)) {
-      const vaultInfo = newStates[mint];
-      if (!vaultInfo) continue;
-
-      if (vaultInfo) {
-        const reward = await calculateRewardByPlatform(connection, wallet, mint, vaultInfo.poolInfo.platformType);
-        newStates[mint] = {
-          ...vaultInfo,
-          reward,
-        };
-      }
-    }
-    setVaultState(newStates);
-  };
+  useEffect(() => {
+    updateAllPoolStateForAPY();
+    return () => {};
+  }, [saberPrice]);
 
   useEffect(() => {
     setInterval(() => {
-      setToogleUpdateReward((prev) => !prev);
-    }, 1000 * 60);
+      setToogleUpdateState((prev) => !prev);
+    }, 1000 * REFRESH_TIME_INTERVAL);
   }, []);
+
   useEffect(() => {
-    updateUserReward();
-  }, [toogleUpdateReward]);
+    console.log('Updated is toggled ....................');
+    updateRFState();
+    return () => {};
+  }, [toogleUpdateState]);
 
   const updateRFStateByMint = async (mint) => {
     console.log('***** Updating state by mint*****');
@@ -391,6 +410,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   useEffect(() => {
     if (wallet && wallet.publicKey && connection) {
+      console.log('Wallet is updated ....................');
       updateRFState();
 
       connection.onAccountChange(wallet.publicKey, (acc) => {

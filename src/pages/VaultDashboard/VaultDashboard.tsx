@@ -254,22 +254,6 @@ const VaultDashboard = () => {
                 />
               </div>
             </div>
-            {/* {!isBigScreen && (
-              <div className="col col-xxl-4 ">
-                <div className="vaultdashboard__bodyright">
-                  <AmountPanel
-                    mintAddress={vault_mint}
-                    collAmount={lpWalletBalance}
-                    collAmountUSD={lpWalletBalanceUSD}
-                    icon={vaultData.icon}
-                    icons={vaultData.icons}
-                    tokenName={vaultData.title}
-                    usdrAmount={usdrWalletBalance}
-                    platform={vaultData.platform}
-                  />
-                </div>
-              </div>
-            )} */}
           </div>
           <div className="col col-xxl-4 ">
             <div className="vaultdashboard__bodyright">
@@ -282,7 +266,7 @@ const VaultDashboard = () => {
                 tokenName={vaultData.title}
                 usdrAmount={usdrWalletBalance}
                 platform={vaultData.platform}
-                rewardMint={poolInfo ? poolInfo.mintReward.toString() : ''}
+                realUserRewardMint={poolInfo ? poolInfo.realUserRewardMint : ''}
               />
             </div>
           </div>

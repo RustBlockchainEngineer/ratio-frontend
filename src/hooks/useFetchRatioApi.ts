@@ -39,6 +39,7 @@ export function formatTxHistory(transactions: WalletTXDetail[], cluster: string)
       status: tx?.status,
       txSignature: tx?.transaction_id,
       txExplorerUrl: makeSolanaExplorerLink(tx?.transaction_id, cluster),
+      amount: parseFloat(tx?.amount),
     };
   });
   return formattedTxs;

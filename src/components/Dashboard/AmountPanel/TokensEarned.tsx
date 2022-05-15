@@ -39,7 +39,14 @@ const TokensEarned = ({ data }: any) => {
       console.log('Harvesting...');
       setIsHarvesting(true);
       const txHash = await PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair);
-      appendUserAction(wallet.publicKey.toString(), data.mintAddress, data.rewardMint, HARVEST_ACTION, 0, txHash);
+      appendUserAction(
+        wallet.publicKey.toString(),
+        data.mintAddress,
+        data.realUserRewardMint,
+        HARVEST_ACTION,
+        0,
+        txHash
+      );
 
       toast.success('Successfully Harvested!');
     } catch (err) {
@@ -83,7 +90,7 @@ const TokensEarned = ({ data }: any) => {
               {getTokenNameByPlatform(data?.platform?.name)}
             </td>
             <td className="align-middle">
-              {userState?.reward} {getTokenNameByPlatform(data?.platform?.name)}
+              {userState ? userState.reward : 0} {getTokenNameByPlatform(data?.platform?.name)}
             </td>
             <td className="align-middle">
               {saberPriceStatus === FetchingStatus.Loading && (
@@ -93,8 +100,9 @@ const TokensEarned = ({ data }: any) => {
                 toast.error('There was an error when fetching the saber pricehistory') &&
                 console.error(saberPriceError)}
               {saberPriceStatus === FetchingStatus.Finish &&
-                saberPrice &&
-                `$  ${(userState?.reward * saberPrice)?.toFixed(USDR_MINT_DECIMALS)}`}
+                `$  ${(saberPrice && userState && userState.reward ? userState?.reward * saberPrice : 0).toFixed(
+                  USDR_MINT_DECIMALS
+                )}`}
             </td>
           </tr>
         </tbody>

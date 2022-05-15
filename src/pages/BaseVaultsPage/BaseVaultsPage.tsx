@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useWallet } from '../../contexts/wallet';
-import { useSaberTvlData } from '../../contexts/platformTvl';
 import { PairType } from '../../models/UInterface';
 import { selectors, actionTypes } from '../../features/dashboard';
 
@@ -50,10 +49,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   };
 
   const { status, error, vaults } = useVaultsContextProvider();
-  const saberTvlData = useSaberTvlData();
-  // const vaultsWithPlatformInformation = useFillPlatformInformation(vaults);
-
-  // const [vaultsWithAllData, setVaultsWithAllData] = useState<any>(vaults);
 
   // eslint-disable-next-line
   const filterData = (array1: any, array2: any, platform_data: any) => {
@@ -85,12 +80,15 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           const mint = item.address_id;
           const isVaultActive =
             userVaultInfos && userVaultInfos[mint] && userVaultInfos[mint].totalColl.toNumber() !== 0;
-          let tvl = 0;
-          let apr = 0;
-
-          if (item.platform_name === 'SABER') {
-            tvl = saberTvlData[item.address_id]?.tvl ?? 0;
-            apr = saberTvlData[item.address_id]?.apy ?? 0;
+          const poolData = {
+            tvl: 0,
+            apr: 0,
+            realUserRewardMint: '',
+          };
+          if (poolInfos && poolInfos[mint]) {
+            poolData.tvl = poolInfos[mint].platformTVL;
+            poolData.apr = poolInfos[mint].platformAPY;
+            poolData.realUserRewardMint = poolInfos[mint].realUserRewardMint;
           }
           const earned_rewards = userVaultInfos && userVaultInfos[mint] ? userVaultInfos[mint].reward : 0;
           if (showOnlyActive === false || isVaultActive) {
@@ -104,8 +102,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               ),
               icon: item.icon,
               title: item.symbol,
-              tvl,
-              apr,
               earned_rewards,
               platform: {
                 link: item.platform_site,
@@ -117,7 +113,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               riskLevel: RISK_RATING[item.risk_rating as unknown as keyof typeof RISK_RATING],
               item: item,
               activeStatus: isVaultActive,
-              rewardMint: poolInfos ? poolInfos[mint].mintReward.toString() : '',
+              ...poolData,
             };
           }
         })
@@ -142,30 +138,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   useEffect(() => {
     setFactorial(factorialOf(vaults, filter_data, sort_data, view_data, platform_data));
-  }, [
-    connected,
-    filter_data,
-    sort_data,
-    view_data,
-    platform_data,
-    overview,
-    vaults,
-    userVaultInfos,
-    poolInfos,
-    saberTvlData,
-  ]);
-
-  // useEffect(() => {
-  //   let vaultsWithData: any = vaults;
-  //   if (vaultsWithPlatformInformation.length) {
-  //     vaultsWithData = vaultsWithPlatformInformation;
-  //   }
-  //   setVaultsWithAllData(vaultsWithData);
-  //   return () => {
-  //     setVaultsWithAllData([]);
-  //   };
-  //   //In case a cleanup function needs to be added, consider that setting state to default values might race against other pages that use this same base page.
-  // }, [vaultsWithPlatformInformation, vaults]);
+  }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaults, userVaultInfos, poolInfos]);
 
   const showContent = (vtype: string) => {
     if (!userVaultInfos) {

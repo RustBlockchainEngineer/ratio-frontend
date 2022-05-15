@@ -14,7 +14,6 @@ import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
 import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
-import { useUpdateTvl } from '../../../contexts/platformTvl';
 import { isWalletApproveError } from '../../../utils/utils';
 import { TokenAmount } from '../../../utils/safe-math';
 import { USDR_MINT_DECIMALS, WIHTDRAW_ACTION } from '../../../utils/ratio-lending';
@@ -40,7 +39,6 @@ const WithdrawModal = ({ data }: any) => {
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
 
   const PoolManagerFactory = useGetPoolManager(vault);
-  const updatePlatformTVL = useUpdateTvl();
   const withdrawAmountUSD = new TokenAmount(withdrawAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
   const appendUserAction = useAppendUserAction();
@@ -93,7 +91,6 @@ const WithdrawModal = ({ data }: any) => {
       );
       appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, WIHTDRAW_ACTION, withdrawAmount, txHash);
 
-      updatePlatformTVL(vault.platform_name, vault.address_id);
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');
     } catch (err) {

@@ -18,14 +18,14 @@ import {
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
 import { sendAllTransaction, sendTransaction } from '../web3';
-import { SABER_MINT_WRAPPER, SABER_REWARDER, SABER_REWARD_IOU_MINT, SABER_REWARD_MINT_REDEEM } from './constants';
+
 import { TokenAmount } from '../safe-math';
 import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../ratio-pda';
-import { Saber } from '@saberhq/saber-periphery';
+import { Saber, SABER_IOU_MINT, SBR_REWARDER, SBR_MINT_WRAPPER, SBR_ADDRESS } from '@saberhq/saber-periphery';
+import { QUARRY_INFO_LAYOUT } from '../layout';
 
-const rewarderKey = new PublicKey(SABER_REWARDER);
-const mintWrapperKey = new PublicKey(SABER_MINT_WRAPPER);
-const saberMintKey = new PublicKey(SABER_REWARD_IOU_MINT);
+export const SABER_IOU_MINT_DECIMALS = 6;
+
 export async function deposit(
   connection: Connection,
   wallet: any,
@@ -121,6 +121,13 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
   return txHash;
 }
 
+export const getQuarryInfo = async (connection: Connection, mintCollKey: PublicKey) => {
+  const [quarryKey] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
+  const quarryInfo = await connection.getAccountInfo(quarryKey);
+  const parsedData = QUARRY_INFO_LAYOUT.decode(quarryInfo.data);
+  return parsedData;
+};
+
 export const createSaberQuarryMinerIfneededTx = async (
   connection: Connection,
   wallet: typeof anchor.Wallet,
@@ -134,7 +141,7 @@ export const createSaberQuarryMinerIfneededTx = async (
   const sdk: QuarrySDK = QuarrySDK.load({
     provider: program.provider as any,
   });
-  const rewarder = await sdk.mine.loadRewarderWrapper(rewarderKey);
+  const rewarder = await sdk.mine.loadRewarderWrapper(SBR_REWARDER);
 
   const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
 
@@ -147,9 +154,7 @@ export const createSaberQuarryMinerIfneededTx = async (
     console.log('creating quarry miner');
     const poolKey = getPoolPDA(mintCollKey);
 
-    const [quarry] = await findQuarryAddress(rewarderKey, mintCollKey, QUARRY_ADDRESSES.Mine);
-
-    const [minerKey, minerBump] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
+    const [minerKey, minerBump] = await findMinerAddress(quarry.key, vaultKey, QUARRY_ADDRESSES.Mine);
     const ataCollatMinerKey = getATAKey(minerKey, mintCollKey);
     transaction.add(
       // programPeriphery.instruction.createSaberQuarryMiner(miner.bump, {
@@ -162,7 +167,7 @@ export const createSaberQuarryMinerIfneededTx = async (
           ataCollatMiner: ataCollatMinerKey,
           // quarry
           quarry: quarry,
-          rewarder: rewarderKey,
+          rewarder: SBR_REWARDER,
           mintCollat: mintCollKey,
           quarryProgram: QUARRY_ADDRESSES.Mine,
           ...DEFAULT_PROGRAMS,
@@ -185,7 +190,7 @@ const stakeCollateralToSaberTx = async (
   const vaultKey = getVaultPDA(userWallet.publicKey, mintCollKey);
 
   const ataCollatVault = getATAKey(vaultKey, mintCollKey);
-  const [quarry] = await findQuarryAddress(rewarderKey, mintCollKey, QUARRY_ADDRESSES.Mine);
+  const [quarry] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
 
   const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
   const ataCollatMiner = getATAKey(minerKey, mintCollKey);
@@ -202,7 +207,7 @@ const stakeCollateralToSaberTx = async (
         ataCollatMiner: ataCollatMiner,
         quarry,
         miner: minerKey,
-        rewarder: rewarderKey,
+        rewarder: SBR_REWARDER,
         quarryProgram: QUARRY_ADDRESSES.Mine,
         ...DEFAULT_PROGRAMS,
       },
@@ -223,7 +228,7 @@ const unstakeColalteralFromSaberTx = async (
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
 
   const ataCollatVault = getATAKey(vaultKey, mintCollKey);
-  const [quarry] = await findQuarryAddress(rewarderKey, mintCollKey, QUARRY_ADDRESSES.Mine);
+  const [quarry] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
 
   const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
   const ataCollatMiner = getATAKey(minerKey, mintCollKey);
@@ -240,7 +245,7 @@ const unstakeColalteralFromSaberTx = async (
         ataCollatMiner: ataCollatMiner,
         quarry,
         miner: minerKey,
-        rewarder: rewarderKey,
+        rewarder: SBR_REWARDER,
         quarryProgram: QUARRY_ADDRESSES.Mine,
         ...DEFAULT_PROGRAMS,
       },
@@ -259,21 +264,21 @@ export const harvestRewardsFromSaberTx = async (
     provider: program.provider as any,
   });
 
-  const rewarderWrapper = await sdk.mine.loadRewarderWrapper(rewarderKey);
+  const rewarderWrapper = await sdk.mine.loadRewarderWrapper(SBR_REWARDER);
   const claimFeeTokenAccount = rewarderWrapper.rewarderData.claimFeeTokenAccount;
 
-  const [minter] = await findMinterAddress(mintWrapperKey, rewarderKey, QUARRY_ADDRESSES.MintWrapper);
+  const [minter] = await findMinterAddress(SBR_MINT_WRAPPER, SBR_REWARDER, QUARRY_ADDRESSES.MintWrapper);
   const globalStateKey = getGlobalStatePDA();
   const poolKey = getPoolPDA(mintCollKey);
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollKey);
 
   const ataCollatVaultKey = getATAKey(vaultKey, mintCollKey);
-  const [quarry] = await findQuarryAddress(rewarderKey, mintCollKey, QUARRY_ADDRESSES.Mine);
+  const [quarry] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
 
   const [minerKey] = await findMinerAddress(quarry, vaultKey, QUARRY_ADDRESSES.Mine);
   const ataCollatMinerKey = getATAKey(minerKey, mintCollKey);
 
-  const ataRewardVaultKey = getATAKey(vaultKey, SABER_REWARD_IOU_MINT);
+  const ataRewardVaultKey = getATAKey(vaultKey, SABER_IOU_MINT);
 
   const txn = new Transaction().add(
     program.instruction.harvestRewardsFromSaber({
@@ -287,13 +292,13 @@ export const harvestRewardsFromSaberTx = async (
         ataCollatVault: ataCollatVaultKey, // this is SBR for this example
         quarry,
         miner: minerKey,
-        rewarder: rewarderKey,
-        mintWrapper: mintWrapperKey,
+        rewarder: SBR_REWARDER,
+        mintWrapper: SBR_MINT_WRAPPER,
         mintWrapperProgram: QUARRY_ADDRESSES.MintWrapper,
         minter,
         claimFeeTokenAccount, // is this a quarry-specific account
         // system accounts
-        mintReward: SABER_REWARD_IOU_MINT, // SBR for this example
+        mintReward: SABER_IOU_MINT, // SBR for this example
         quarryProgram: QUARRY_ADDRESSES.Mine,
         ...DEFAULT_PROGRAMS,
       },
@@ -309,12 +314,12 @@ export const redeemAllTokensTx = async (connection: Connection, wallet: typeof a
   });
 
   const redeemer = await sdk.loadRedeemer({
-    iouMint: new PublicKey(SABER_REWARD_IOU_MINT),
-    redemptionMint: new PublicKey(SABER_REWARD_MINT_REDEEM),
+    iouMint: new PublicKey(SABER_IOU_MINT),
+    redemptionMint: SBR_ADDRESS,
   });
 
-  const ataSaberIouVaultKey = getATAKey(wallet.publicKey, SABER_REWARD_IOU_MINT);
-  const ataSaberProtocolVaultKey = getATAKey(wallet.publicKey, SABER_REWARD_MINT_REDEEM);
+  const ataSaberIouVaultKey = getATAKey(wallet.publicKey, SABER_IOU_MINT);
+  const ataSaberProtocolVaultKey = getATAKey(wallet.publicKey, SBR_ADDRESS);
 
   const txn = new Transaction().add(
     await redeemer.redeemAllTokensFromMintProxyIx({
@@ -335,10 +340,9 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     const sdk: QuarrySDK = QuarrySDK.load({
       provider: program.provider as any,
     });
-    const rewarder = await sdk.mine.loadRewarderWrapper(rewarderKey);
+    const rewarder = await sdk.mine.loadRewarderWrapper(SBR_REWARDER);
 
     const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
-    const rewardMintInfo = await serumCmn.getMintInfo(program.provider, saberMintKey);
 
     const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
     const quarry = await rewarder.getQuarry(poolMintToken);
@@ -357,7 +361,7 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
           miner?.rewardsEarned as anchor.BN
         )
       ).toNumber();
-      return parseFloat(new TokenAmount(expectedWagesEarned, rewardMintInfo.decimals).fixed());
+      return parseFloat(new TokenAmount(expectedWagesEarned, SABER_IOU_MINT_DECIMALS).fixed());
     } else {
       return 0;
     }

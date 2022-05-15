@@ -16,7 +16,6 @@ import { LPair } from '../../../types/VaultTypes';
 import { TokenAmount } from '../../../utils/safe-math';
 import { DEPOSIT_ACTION, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
-import { useUpdateTvl } from '../../../contexts/platformTvl';
 
 const DepositModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -43,8 +42,6 @@ const DepositModal = ({ data }: any) => {
   const [amountValue, setAmountValue] = useState(0);
 
   const appendUserAction = useAppendUserAction();
-
-  const updatePlatformTVL = useUpdateTvl();
 
   const depositAmountUSD = new TokenAmount(depositAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
@@ -82,7 +79,6 @@ const DepositModal = ({ data }: any) => {
       );
       appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, DEPOSIT_ACTION, depositAmount, txHash);
 
-      updatePlatformTVL(vault.platform_name, vault.address_id);
       setDepositAmount(0);
       toast.success('Successfully Deposited!');
     } catch (err) {

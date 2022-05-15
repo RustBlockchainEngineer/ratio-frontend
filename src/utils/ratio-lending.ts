@@ -14,7 +14,7 @@ import {
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './web3';
 import { RATIO_LENDING_PROGRAM_ID } from './ids';
-import { calculateSaberReward } from './saber/saber-utils';
+import { calculateSaberReward, getQuarryInfo } from './saber/saber-utils';
 import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA, getUserStatePDA, getVaultPDA } from './ratio-pda';
 import { Program } from '@project-serum/anchor';
 export const COLL_RATIOS_DECIMALS = 8;
@@ -28,11 +28,12 @@ export const USDR_MINT_KEYPAIR = [
   54, 255, 88, 82, 72, 138, 64, 134, 44, 240, 141,
 ];
 
-export const DEPOSIT_ACTION = 'deposit';
-export const HARVEST_ACTION = 'harvest';
-export const WIHTDRAW_ACTION = 'withdraw';
-export const BORROW_ACTION = 'borrow';
-export const PAYBACK_ACTION = 'payback';
+export const DEPOSIT_ACTION = 'Deposit';
+export const WIHTDRAW_ACTION = 'Withdraw';
+export const BORROW_ACTION = 'Borrow';
+export const PAYBACK_ACTION = 'Payback';
+export const HARVEST_ACTION = 'Harvest';
+
 export const HISTORY_TO_SHOW = 5;
 export const USD_FAIR_PRICE = true;
 // default platform values
@@ -141,7 +142,7 @@ export async function depositCollateralTx(
   const oracleAKey = getOraclePDA(oracleMintA);
   const oracleBKey = getOraclePDA(oracleMintB);
 
-  const rewardMint = poolData.mintReward;
+  const mintReward = poolData.mintReward;
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);
@@ -186,7 +187,7 @@ export async function depositCollateralTx(
     transaction.add(tx);
     console.log('creating reward vault');
 
-    const ataRewardVaultKey = getATAKey(vaultKey, rewardMint);
+    const ataRewardVaultKey = getATAKey(vaultKey, mintReward);
     const ix = await program.instruction.createRewardVault({
       accounts: {
         authority: wallet.publicKey,
@@ -194,7 +195,7 @@ export async function depositCollateralTx(
         vault: vaultKey,
 
         ataRewardVault: ataRewardVaultKey,
-        mintReward: rewardMint,
+        mintReward: mintReward,
 
         ...DEFAULT_PROGRAMS,
       },
@@ -473,4 +474,14 @@ export async function calculateRewardByPlatform(
   }
 
   return parseFloat(reward.toFixed(USDR_MINT_DECIMALS));
+}
+
+export async function getFarmInfoByPlatform(
+  connection: Connection,
+  mintCollKey: string | PublicKey,
+  platformType: number
+) {
+  if (platformType === PLATFORM_IDS.SABER) {
+    return await getQuarryInfo(connection, new PublicKey(mintCollKey));
+  }
 }
