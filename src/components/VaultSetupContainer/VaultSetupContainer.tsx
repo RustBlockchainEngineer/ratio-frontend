@@ -12,14 +12,13 @@ import CustomInput from '../CustomInput';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
-import { usePoolInfo } from '../../contexts/state';
+import { useAppendUserAction, usePoolInfo } from '../../contexts/state';
 import WarningLimitBox from './WarningLimitBox';
 import { TokenAmount } from '../../utils/safe-math';
-import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
+import { DEPOSIT_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const VaultSetupContainer = ({ data }: any) => {
   const history = useHistory();
-  const [show, setShow] = React.useState(false);
   const connection = useConnection();
   const { wallet, connected } = useWallet();
   const { vaults } = useVaultsContextProvider();
@@ -30,13 +29,16 @@ const VaultSetupContainer = ({ data }: any) => {
   const collAccount = useAccountByMint(data.mint);
   const [depositAmount, setDepositAmount] = React.useState(0);
 
-  const depositAmountUSD = new TokenAmount(depositAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
+  const depositAmountUSD = new TokenAmount(depositAmount * (data.tokenPrice ?? 0), USDR_MINT_DECIMALS).fixed();
 
   const [didMount, setDidMount] = React.useState(false);
 
+  const [isDepositing, setIsDepositing] = React.useState(false);
   const [depositStatus, setDepositStatus] = React.useState(false);
   const [invalidStr, setInvalidStr] = React.useState('');
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
+
+  const appendUserAction = useAppendUserAction();
 
   React.useEffect(() => {
     setDidMount(true);
@@ -48,41 +50,38 @@ const VaultSetupContainer = ({ data }: any) => {
     return null;
   }
 
-  const depositLP = () => {
-    console.log('Depositing', depositAmount, data.value);
-    console.log(data.mint);
-    if (!(depositAmount && data?.value >= depositAmount)) {
-      setDepositStatus(true);
-      setInvalidStr('Insufficient funds to deposit!');
-      return;
+  const deposit = async () => {
+    try {
+      console.log('Depositing', depositAmount);
+      if (!(depositAmount && data?.value >= depositAmount)) {
+        setDepositStatus(true);
+        setInvalidStr('Insufficient funds to deposit!');
+        return;
+      }
+      if (!(collAccount && connected)) {
+        setDepositStatus(true);
+        setInvalidStr('Invalid  User Collateral account to deposit!');
+        return;
+      }
+
+      setIsDepositing(true);
+      const txHash = await PoolManagerFactory?.depositLP(
+        connection,
+        wallet,
+        vault as LPair,
+        depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
+        collAccount?.pubkey.toString() as string
+      );
+      appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, DEPOSIT_ACTION, depositAmount, txHash);
+      history.push(`/dashboard/vaultdashboard/${data.mint}`);
+      setDepositAmount(0);
+      toast.success('Successfully Deposited!');
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
     }
-    if (!(collAccount && poolInfo && connected)) {
-      setDepositStatus(true);
-      setInvalidStr('Invalid  User Collateral account to deposit!');
-      return;
-    }
-    PoolManagerFactory?.depositLP(
-      connection,
-      wallet,
-      vault as LPair,
-      depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
-      collAccount?.pubkey.toString() as string
-    )
-      .then(() => {
-        setDepositAmount(0);
-        toast.success('Successfully Deposited!');
-        history.push(`/dashboard/vaultdashboard/${data.mint}`);
-      })
-      .catch((e) => {
-        console.log(e);
-        if (isWalletApproveError(e)) toast.warn('Wallet is not approved!');
-        else toast.error('Transaction Error!');
-      })
-      .finally(() => {
-        setShow(!show);
-        setDepositAmount(0);
-        setDepositStatus(false);
-      });
+    setIsDepositing(false);
   };
 
   return (
@@ -131,9 +130,9 @@ const VaultSetupContainer = ({ data }: any) => {
         </div>
         <div>
           <Button
-            disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount)}
+            disabled={depositAmount <= 0 || buttonDisabled || isNaN(depositAmount) || isDepositing}
             className="button--blue setup"
-            onClick={depositLP}
+            onClick={deposit}
           >
             Set up vault
           </Button>
