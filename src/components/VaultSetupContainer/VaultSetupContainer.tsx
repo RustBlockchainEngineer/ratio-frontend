@@ -121,10 +121,6 @@ const VaultSetupContainer = ({ data }: any) => {
         <div className="d-flex justify-content-between">
           <p className="vaultsetupcontainer-title">Details</p>
         </div>
-        <div className="d-flex justify-content-between mt-3">
-          <p className="vaultsetupcontainer-label">Global outstanding debt</p>
-          <strong className="vaultsetupcontainer-value">0.000</strong>
-        </div>
         <div>
           <WarningLimitBox mint={data.mint} />
         </div>

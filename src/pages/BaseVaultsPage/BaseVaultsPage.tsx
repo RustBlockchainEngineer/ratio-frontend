@@ -13,7 +13,6 @@ import { getCoinPicSymbol } from '../../utils/helper';
 import { LPair, RISK_RATING } from '../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { Banner, BannerIcon } from '../../components/Banner';
-// import { useFillPlatformInformation } from '../../hooks/useFillPlatformInformation';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import ActivePairListItem from '../../components/ActivePairListItem';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
@@ -90,7 +89,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             poolData.apr = poolInfos[mint].platformAPY;
             poolData.realUserRewardMint = poolInfos[mint].realUserRewardMint;
           }
-          const earned_rewards = userVaultInfos && userVaultInfos[mint] ? userVaultInfos[mint].reward : 0;
           if (showOnlyActive === false || isVaultActive) {
             return {
               id: index,
@@ -102,7 +100,6 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               ),
               icon: item.icon,
               title: item.symbol,
-              earned_rewards,
               platform: {
                 link: item.platform_site,
                 name: item.platform_name,
@@ -138,7 +135,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
 
   useEffect(() => {
     setFactorial(factorialOf(vaults, filter_data, sort_data, view_data, platform_data));
-  }, [connected, filter_data, sort_data, view_data, platform_data, overview, vaults, userVaultInfos, poolInfos]);
+  }, [connected, filter_data, sort_data, view_data, platform_data, vaults, userVaultInfos, poolInfos]);
 
   const showContent = (vtype: string) => {
     if (!userVaultInfos) {

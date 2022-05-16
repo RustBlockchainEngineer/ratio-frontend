@@ -47,7 +47,6 @@ export interface LPair {
   platform_site?: string;
   platform_icon?: string;
   collateralization_ratio: number;
-  earned_rewards?: number;
   liquidation_ratio: number;
   risk_rating: RISK_RATING;
   created_on?: number;

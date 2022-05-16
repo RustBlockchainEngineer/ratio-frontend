@@ -52,7 +52,7 @@ const WarningLimitBox = (mint: any) => {
   return (
     <div className="warningLimitBox">
       <NavBarProgressBar
-        label={ProgressBarLabelType.VaultMint}
+        label={ProgressBarLabelType.VaultDebt}
         className={classNames(
           { 'navbarprogressbar--warning': warning && !caution && !success },
           { 'navbarprogressbar--caution': caution && !warning && !success },

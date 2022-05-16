@@ -16,6 +16,7 @@ export enum ProgressBarLabelType {
   USDr = 'My USDr Debt',
   None = '',
   VaultMint = 'Vault mintable USDr',
+  VaultDebt = 'Minted USDR',
 }
 
 export const NavBarProgressBar = (data: NavBarProgressBarProps) => {

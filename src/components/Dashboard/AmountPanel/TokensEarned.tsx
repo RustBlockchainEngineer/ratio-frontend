@@ -9,10 +9,8 @@ import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
 import { useAppendUserAction, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
-import { useFetchSaberPrice } from '../../../hooks/useCoinGeckoPrices';
-import { FetchingStatus } from '../../../types/fetching-types';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
-import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
+import { HARVEST_ACTION } from '../../../utils/ratio-lending';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -23,8 +21,7 @@ const TokensEarned = ({ data }: any) => {
 
   const PoolManagerFactory = useGetPoolManager(vault);
 
-  const userState = useUserVaultInfo(data.mintAddress);
-  const { saberPrice, status: saberPriceStatus, error: saberPriceError } = useFetchSaberPrice();
+  const vaultState = useUserVaultInfo(data.mintAddress);
 
   const [isHarvesting, setIsHarvesting] = useState(false);
 
@@ -90,19 +87,14 @@ const TokensEarned = ({ data }: any) => {
               {getTokenNameByPlatform(data?.platform?.name)}
             </td>
             <td className="align-middle">
-              {userState ? userState.reward : 0} {getTokenNameByPlatform(data?.platform?.name)}
+              {vaultState ? vaultState.reward : 0} {getTokenNameByPlatform(data?.platform?.name)}
             </td>
             <td className="align-middle">
-              {saberPriceStatus === FetchingStatus.Loading && (
+              {!vaultState?.rewardUSD ? (
                 <LoadingSpinner className="spinner-border-sm text-info" />
+              ) : (
+                `$  ${vaultState?.rewardUSD}`
               )}
-              {saberPriceStatus === FetchingStatus.Error &&
-                toast.error('There was an error when fetching the saber pricehistory') &&
-                console.error(saberPriceError)}
-              {saberPriceStatus === FetchingStatus.Finish &&
-                `$  ${(saberPrice && userState && userState.reward ? userState?.reward * saberPrice : 0).toFixed(
-                  USDR_MINT_DECIMALS
-                )}`}
             </td>
           </tr>
         </tbody>

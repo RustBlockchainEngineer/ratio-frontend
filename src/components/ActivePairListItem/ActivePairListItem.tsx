@@ -193,7 +193,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{formatUSD.format(data.earned_rewards)}</h6>
+            <h6 className="semiBold">{`$ ${vaultState.rewardUSD}`}</h6>
           </div>
         </td>
         <td>

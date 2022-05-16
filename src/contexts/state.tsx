@@ -1,8 +1,7 @@
 import { SABER_IOU_MINT, SBR_MINT } from '@saberhq/saber-periphery';
 import { SignatureResult } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
-import { REFRESH_TIME_INTERVAL } from '../constants';
-import { useFetchSaberPrice } from '../hooks/useCoinGeckoPrices';
+import { API_ENDPOINT, REFRESH_TIME_INTERVAL } from '../constants';
 import {
   USDR_MINT_DECIMALS,
   calculateRewardByPlatform,
@@ -24,6 +23,7 @@ import { useConnection } from './connection';
 import { useWallet } from './wallet';
 
 const actionList = [];
+let isStateLoading = false;
 interface RFStateConfig {
   globalState: any;
   oracleState: any;
@@ -52,7 +52,6 @@ const RFStateContext = React.createContext<RFStateConfig>({
 export function RFStateProvider({ children = undefined as any }) {
   const connection = useConnection();
   const { wallet } = useWallet();
-  const { saberPrice } = useFetchSaberPrice();
 
   const [globalState, setGlobalState] = useState<any>(null);
   const [oracleState, setOracleState] = useState<any>(null);
@@ -60,7 +59,6 @@ export function RFStateProvider({ children = undefined as any }) {
   const [overview, setOverview] = useState<any>(null);
   const [vaultState, setVaultState] = useState<any>(null);
 
-  const [isStateLoading, setStateLoading] = useState(false);
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
   const [walletUpdated, setWalletUpdated] = useState(false);
   const [mintToUpdate, setMintToUpdate] = useState({
@@ -143,7 +141,12 @@ export function RFStateProvider({ children = undefined as any }) {
       const oracleMint = oracle.mint.toString();
       oracleInfos[oracleMint] = oracle;
     });
+
+    const response = await fetch(`${API_ENDPOINT}/coingecko/saberprice`);
+    oracleInfos[SBR_MINT] = await response.json();
+
     setOracleState(oracleInfos);
+
     return oracleInfos;
   };
 
@@ -195,7 +198,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
       poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
       poolInfo['platformAPY'] =
-        ((saberPrice *
+        ((oracleState[SBR_MINT] *
           new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
           poolInfo['platformTVL']) *
         100;
@@ -242,28 +245,28 @@ export function RFStateProvider({ children = undefined as any }) {
     return poolInfos;
   };
 
-  const updateAllPoolStateForAPY = async () => {
-    if (!saberPrice || !poolState) return;
-    console.log('Updating Pool APY...');
+  // const updateAllPoolStateForAPY = async () => {
+  //   if (!saberPrice || !poolState) return;
+  //   console.log('Updating Pool APY...');
 
-    const poolInfos: any = poolState ?? {};
-    for (const mint of Object.keys(poolState)) {
-      const poolInfo = poolState[mint];
-      if (poolInfo && !poolInfo.isPaused) {
-        poolInfo['platformAPY'] =
-          ((saberPrice *
-            new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
-            poolInfo['platformTVL']) *
-          100;
-        poolInfos[mint] = {
-          ...poolInfo,
-        };
-      }
-    }
+  //   const poolInfos: any = poolState ?? {};
+  //   for (const mint of Object.keys(poolState)) {
+  //     const poolInfo = poolState[mint];
+  //     if (poolInfo && !poolInfo.isPaused) {
+  //       poolInfo['platformAPY'] =
+  //         ((saberPrice *
+  //           new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
+  //           poolInfo['platformTVL']) *
+  //         100;
+  //       poolInfos[mint] = {
+  //         ...poolInfo,
+  //       };
+  //     }
+  //   }
 
-    setPoolState(poolInfos);
-    return poolInfos;
-  };
+  //   setPoolState(poolInfos);
+  //   return poolInfos;
+  // };
 
   const updateOverview = async () => {
     console.log('4. Updating overview.....');
@@ -273,7 +276,7 @@ export function RFStateProvider({ children = undefined as any }) {
     return userState;
   };
 
-  const getVaultStateByMint = async (globalState, poolInfo, overview, mint: string) => {
+  const getVaultStateByMint = async (globalState, oracleState, poolInfo, overview, mint: string) => {
     const vaultInfo = await getVaultState(connection, wallet, mint);
     if (
       globalState.debtCeilingUser &&
@@ -298,6 +301,7 @@ export function RFStateProvider({ children = undefined as any }) {
         ...vaultInfo,
         mint,
         reward,
+        rewardUSD: new TokenAmount(oracleState[SBR_MINT] * reward, USDR_MINT_DECIMALS, false).fixed(),
         lockedAmount: vaultInfo.totalColl.toNumber(),
         debt: vaultInfo.debt.toNumber(),
         debtLimit: new TokenAmount(debtLimit, USDR_MINT_DECIMALS).toWei().toNumber(),
@@ -309,12 +313,12 @@ export function RFStateProvider({ children = undefined as any }) {
     return null;
   };
 
-  const updateAllVaultState = async (globalState, poolState, overview) => {
+  const updateAllVaultState = async (globalState, oracelState, poolState, overview) => {
     console.log('5. Updating vaults.....');
     const vaultInfos: any = vaultState ?? {};
     if (overview) {
       for (const mint of Object.keys(poolState)) {
-        const vaultInfo = await getVaultStateByMint(globalState, poolState[mint], overview, mint);
+        const vaultInfo = await getVaultStateByMint(globalState, oracelState, poolState[mint], overview, mint);
         if (vaultInfo) {
           vaultInfos[mint] = {
             ...vaultInfo,
@@ -327,12 +331,12 @@ export function RFStateProvider({ children = undefined as any }) {
     return vaultInfos;
   };
 
-  const updateVaultStateByMint = async (globalState, poolInfo, overview, mint) => {
+  const updateVaultStateByMint = async (globalState, oracleState, poolInfo, overview, mint) => {
     console.log('5. Updating vault by mint.....');
 
     const vaultInfos: any = vaultState ?? {};
     if (overview) {
-      const vaultInfo = await getVaultStateByMint(globalState, poolInfo, overview, mint);
+      const vaultInfo = await getVaultStateByMint(globalState, oracleState, poolInfo, overview, mint);
       if (vaultInfo) {
         vaultInfos[mint] = {
           ...vaultInfo,
@@ -344,10 +348,24 @@ export function RFStateProvider({ children = undefined as any }) {
     return vaultInfos;
   };
 
-  useEffect(() => {
-    updateAllPoolStateForAPY();
-    return () => {};
-  }, [saberPrice]);
+  // const updateAllUserReward = async () => {
+  //   if (!saberPrice || !vaultState) return;
+  //   console.log('Updating User Reward...');
+
+  //   const vaultInfos: any = vaultState ?? {};
+  //   for (const mint of Object.keys(vaultState)) {
+  //     const vaultInfo = vaultState[mint];
+  //     if (vaultInfo) {
+  //       vaultInfo['rewardUSD'] = new TokenAmount(saberPrice * vaultInfo.reward, USDR_MINT_DECIMALS, false).fixed();
+  //       vaultInfos[mint] = {
+  //         ...vaultInfo,
+  //       };
+  //     }
+  //   }
+
+  //   setVaultState(vaultInfos);
+  //   return vaultInfos;
+  // };
 
   useEffect(() => {
     setInterval(() => {
@@ -367,13 +385,13 @@ export function RFStateProvider({ children = undefined as any }) {
     const newOracleState = await updateOracleState();
     const newPoolState = await updatePoolStateByMint(newGlobalState, newOracleState, mint);
     const newOverview = await updateOracleState();
-    await updateVaultStateByMint(newGlobalState, newPoolState[mint], newOverview, mint);
+    await updateVaultStateByMint(newGlobalState, newOracleState, newPoolState[mint], newOverview, mint);
     console.log('***** Updated state by mint*****');
   };
 
   const updateRFState = async () => {
     if (!isStateLoading) {
-      setStateLoading(true);
+      isStateLoading = true;
       //we can't determine which vault is updated;
       if (actionList.length === 0) {
         console.log('***** Updating all state *****');
@@ -382,13 +400,13 @@ export function RFStateProvider({ children = undefined as any }) {
         const oracleState = await updateOracleState();
         const poolState = await updateAllPoolState(globalState, oracleState);
         const overview = await updateOverview();
-        await updateAllVaultState(globalState, poolState, overview);
+        await updateAllVaultState(globalState, oracleState, poolState, overview);
 
         console.log('***** Updated all state *****');
       } else {
         const lastAction = actionList[0];
         console.log('**** Updating the vault first ****', lastAction.mint);
-        await updateVaultStateByMint(globalState, poolState[lastAction.mint], overview, lastAction.mint);
+        await updateVaultStateByMint(globalState, oracleState, poolState[lastAction.mint], overview, lastAction.mint);
         setMintToUpdate((prev) => {
           return {
             mint: lastAction.mint,
@@ -396,7 +414,9 @@ export function RFStateProvider({ children = undefined as any }) {
           };
         });
       }
-      setStateLoading(false);
+      isStateLoading = false;
+    } else {
+      console.log('Ignoring the signal ...... ');
     }
   };
 
