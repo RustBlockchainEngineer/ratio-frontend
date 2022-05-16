@@ -86,7 +86,6 @@ export function RFStateProvider({ children = undefined as any }) {
       });
     connection.onSignature(
       txHash,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async function (signatureResult: SignatureResult) {
         let newStatus: TxStatus = 'Failed';
         if (!signatureResult.err) {
