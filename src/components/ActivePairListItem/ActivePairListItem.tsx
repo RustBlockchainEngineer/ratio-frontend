@@ -35,7 +35,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   // eslint-disable-next-line
   const [tvlUSD, setTVLUSD] = useState(0);
   const [totalDebt, setTotalDebt] = useState(0);
-  const [reaminDebt, setRemainDebt] = useState(0);
+  const [mintableUSDr, setMintableUsdr] = useState(0);
 
   const [hasUserReachedDebtLimit, setHasUserReachedDebtLimit] = useState('');
 
@@ -62,16 +62,14 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
     if (connection && poolState) {
       const tvlAmount = new TokenAmount((poolState as any)?.totalColl ?? 0, poolState?.mintDecimals);
       const tvlUSDAmount = new TokenAmount((poolState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS);
-      const debtAmount = new TokenAmount((poolState as any)?.totalDebt ?? 0, USDR_MINT_DECIMALS);
-      const remainAmount = new TokenAmount(
-        ((poolState as any)?.debtCeiling ?? 0) - ((poolState as any)?.totalDebt ?? 0),
-        USDR_MINT_DECIMALS
-      );
+      const totalDebtAmount = new TokenAmount((vaultState as any)?.debt ?? 0, USDR_MINT_DECIMALS);
+      const mintableUSDrAmount = new TokenAmount((vaultState as any)?.mintableUSDr ?? 0, USDR_MINT_DECIMALS);
+
       setTVL(Number(tvlAmount.fixed()));
       setTVLUSD(Number(tvlUSDAmount.fixed()));
 
-      setTotalDebt(Number(debtAmount.fixed()));
-      setRemainDebt(Number(remainAmount.fixed()));
+      setTotalDebt(Number(totalDebtAmount.fixed()));
+      setMintableUsdr(Number(mintableUSDrAmount.fixed()));
     }
     return () => {
       setTVL(0);
@@ -188,7 +186,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{Number(reaminDebt.toFixed(2))}</h6>
+            <h6 className="semiBold">{Number(mintableUSDr?.toFixed(2))}</h6>
           </div>
         </td>
         <td>
