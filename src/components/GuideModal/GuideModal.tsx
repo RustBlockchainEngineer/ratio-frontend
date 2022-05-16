@@ -8,9 +8,13 @@ const GuideModal = () => {
   const [show, setShow] = React.useState(false);
   const { connected } = useWallet();
 
+  const onClickGuideBtn = () => {
+    window.open('https://app.gitbook.com/o/6gq6zK9zYcsbHkTov1Uy/home');
+  };
+
   return (
     <div className="guidemodal">
-      <Button disabled={!connected} className="button--blue guidemodal__button" onClick={() => setShow(!show)}>
+      <Button disabled={!connected} className="button--blue guidemodal__button" onClick={onClickGuideBtn}>
         Guide
       </Button>
 
