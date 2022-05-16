@@ -2,27 +2,28 @@ import React from 'react';
 import classNames from 'classnames';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
-import { useRFStateInfo } from '../../../contexts/state';
+import { usePoolInfo } from '../../../contexts/state';
 import { TokenAmount } from '../../../utils/safe-math';
 import { NavBarProgressBar } from '../../Navbar/NavBarProgressBar';
 
-const MintableProgressBar = () => {
+const MintableProgressBar = (mint: any) => {
   const [currentValue, setValue] = React.useState(0);
   const [percentage, setPercentage] = React.useState(0);
   const [warning, setWarning] = React.useState(false);
 
-  const globalState = useRFStateInfo();
+  const poolInfo = usePoolInfo(mint.mint);
 
   const connection = useConnection();
   const { wallet } = useWallet();
 
   React.useEffect(() => {
-    if (!wallet || !wallet.publicKey || !globalState) {
+    if (!wallet || !wallet.publicKey || !poolInfo) {
       return;
     }
 
-    const currentValue = Number(new TokenAmount(globalState.totalDebt as string, 6).fixed());
-    const maxValue = Number(new TokenAmount(globalState.debtCeiling as string, 6).fixed());
+    let currentValue = Number(new TokenAmount(poolInfo.totalDebt as string, 6).fixed());
+    const maxValue = Number(new TokenAmount(poolInfo.debtCeiling as string, 6).fixed());
+    currentValue = maxValue - currentValue;
 
     // Current Value
     setValue(currentValue);
@@ -35,7 +36,7 @@ const MintableProgressBar = () => {
       setPercentage(parseFloat(percentageFull));
       setWarning(currentValue / maxValue === 1);
     }
-  }, [wallet, connection, globalState]);
+  }, [wallet, connection, poolInfo]);
 
   return (
     <div className="mintableProgressbar">

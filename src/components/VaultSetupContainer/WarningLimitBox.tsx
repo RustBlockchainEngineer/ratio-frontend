@@ -21,8 +21,9 @@ const WarningLimitBox = (mint: any) => {
     if (!wallet || !wallet.publicKey || !poolInfo) {
       return;
     }
-    const currentValue = Number(new TokenAmount(poolInfo.totalDebt as string, 6).fixed());
+    let currentValue = Number(new TokenAmount(poolInfo.totalDebt as string, 6).fixed());
     const maxValue = Number(new TokenAmount(poolInfo.debtCeiling as string, 6).fixed());
+    currentValue = maxValue - currentValue;
 
     // Current Value
     setValue(currentValue);
@@ -31,15 +32,15 @@ const WarningLimitBox = (mint: any) => {
       setPercentage(0);
     } else {
       const percentageFull = (currentValue / maxValue) * 100;
-      if (percentageFull >= 0 && percentageFull <= 80) {
+      if (percentageFull <= 100 && percentageFull >= 20) {
         setSuccess(true);
         setCaution(false);
         setWarning(false);
-      } else if (percentageFull > 80 && percentageFull < 100) {
+      } else if (percentageFull < 20 && percentageFull > 0) {
         setSuccess(false);
         setCaution(true);
         setWarning(false);
-      } else if (percentageFull >= 100) {
+      } else if (percentageFull <= 0) {
         setSuccess(false);
         setCaution(false);
         setWarning(true);
