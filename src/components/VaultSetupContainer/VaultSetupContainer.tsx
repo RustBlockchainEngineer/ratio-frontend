@@ -84,12 +84,39 @@ const VaultSetupContainer = ({ data }: any) => {
     setIsDepositing(false);
   };
 
+  const getSaberLpLink = (value: string) => {
+    switch (value) {
+      case 'USDH-USDC':
+        return 'https://app.saber.so/pools/usdh_usdc/deposit';
+        break;
+      case 'UXD-USDC':
+        return 'https://app.saber.so/pools/uxd_usdc/deposit';
+        break;
+      case 'USDT-USDC':
+        return 'https://app.saber.so/pools/usdc_usdt/deposit';
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="vaultsetupcontainer">
       <div className="p-4">
-        <p className="vaultsetupcontainer-title">
-          Deposit your {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} LP
-        </p>
+        <div className="d-flex justify-content-between align-items-center">
+          <p className="vaultsetupcontainer-title">
+            Deposit your {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} LP
+          </p>
+          <a
+            target="_blank"
+            href={getSaberLpLink(data.title)}
+            rel="noreferrer"
+            className="vaultsetupcontainer-getsaberlp"
+          >
+            Get Saber LP
+          </a>
+        </div>
         <div className="d-flex justify-content-between align-items-end mt-2">
           <p className="vaultsetupcontainer-label">
             Deposit {data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title} LP
