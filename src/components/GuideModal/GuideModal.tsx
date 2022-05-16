@@ -9,7 +9,7 @@ const GuideModal = () => {
   const { connected } = useWallet();
 
   const onClickGuideBtn = () => {
-    window.open('https://app.gitbook.com/o/6gq6zK9zYcsbHkTov1Uy/home');
+    window.open('https://docs.ratio.finance');
   };
 
   return (

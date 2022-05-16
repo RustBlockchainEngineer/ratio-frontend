@@ -194,13 +194,15 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
-      poolInfo['platformTVL'] = poolInfo['currentPrice'] * lpSupply;
 
       poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
-      poolInfo['platformAPY'] =
+      poolInfo['farmTVL'] =
+        +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() *
+        +new TokenAmount(poolInfo['farmInfo'].totalTokensDeposited, mintInfo.decimals).fixed();
+      poolInfo['farmAPY'] =
         ((oracleState[SBR_MINT] *
           new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
-          poolInfo['platformTVL']) *
+          poolInfo['farmTVL']) *
         100;
     }
     return poolInfo;
@@ -244,29 +246,6 @@ export function RFStateProvider({ children = undefined as any }) {
     setPoolState(poolInfos);
     return poolInfos;
   };
-
-  // const updateAllPoolStateForAPY = async () => {
-  //   if (!saberPrice || !poolState) return;
-  //   console.log('Updating Pool APY...');
-
-  //   const poolInfos: any = poolState ?? {};
-  //   for (const mint of Object.keys(poolState)) {
-  //     const poolInfo = poolState[mint];
-  //     if (poolInfo && !poolInfo.isPaused) {
-  //       poolInfo['platformAPY'] =
-  //         ((saberPrice *
-  //           new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
-  //           poolInfo['platformTVL']) *
-  //         100;
-  //       poolInfos[mint] = {
-  //         ...poolInfo,
-  //       };
-  //     }
-  //   }
-
-  //   setPoolState(poolInfos);
-  //   return poolInfos;
-  // };
 
   const updateOverview = async () => {
     console.log('4. Updating overview.....');
@@ -347,25 +326,6 @@ export function RFStateProvider({ children = undefined as any }) {
     setVaultState(vaultInfos);
     return vaultInfos;
   };
-
-  // const updateAllUserReward = async () => {
-  //   if (!saberPrice || !vaultState) return;
-  //   console.log('Updating User Reward...');
-
-  //   const vaultInfos: any = vaultState ?? {};
-  //   for (const mint of Object.keys(vaultState)) {
-  //     const vaultInfo = vaultState[mint];
-  //     if (vaultInfo) {
-  //       vaultInfo['rewardUSD'] = new TokenAmount(saberPrice * vaultInfo.reward, USDR_MINT_DECIMALS, false).fixed();
-  //       vaultInfos[mint] = {
-  //         ...vaultInfo,
-  //       };
-  //     }
-  //   }
-
-  //   setVaultState(vaultInfos);
-  //   return vaultInfos;
-  // };
 
   useEffect(() => {
     setInterval(() => {
