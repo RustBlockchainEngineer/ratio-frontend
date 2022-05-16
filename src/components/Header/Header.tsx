@@ -107,7 +107,6 @@ const Header = (headerProps: HeaderProps) => {
       {isDesktop && (
         <>
           <div className="d-flex justify-content-end col-lg-auto col-md-auto ">
-            {connected && network.value === 'devnet' && enable && <GuideModal />}
             {connected && network.value === 'devnet' && enable && (
               <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
                 Faucet
@@ -117,7 +116,8 @@ const Header = (headerProps: HeaderProps) => {
           {/* {connected && network.value === 'devnet' && <div className="header__gap" />} */}
           <div className="col-lg-auto col-md-auto ">{renderTotalUSDrDebt()}</div>
           <div className="col-lg-auto col-md-auto">{renderTotalTVLCap()}</div>
-          {/* {connected && <div className="header__gap" />} */}
+          {connected && <div className="header__gap" />}
+          <div className="mr-1">{connected && enable && <GuideModal />}</div>
           <div className="d-flex justify-content-end col-lg-auto col-md-auto">
             <SwitchButton />
             {/* <NetworkSelector /> */}
@@ -129,7 +129,7 @@ const Header = (headerProps: HeaderProps) => {
         <>
           <div className="d-flex justify-content-end align-items-center w-100">
             <div className="d-flex justify-content-end col ">
-              {connected && network.value === 'devnet' && enable && <GuideModal />}
+              {connected && enable && <GuideModal />}
               {connected && network.value === 'devnet' && enable && (
                 <Button
                   disabled={!connected}
@@ -158,7 +158,7 @@ const Header = (headerProps: HeaderProps) => {
             {renderWalletConnection()}
           </div>
           <div className="d-flex justify-content-end col mt-3 ">
-            {connected && network.value === 'devnet' && enable && <GuideModal />}
+            {connected && enable && <GuideModal />}
             {connected && network.value === 'devnet' && enable && (
               <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
                 Faucet
