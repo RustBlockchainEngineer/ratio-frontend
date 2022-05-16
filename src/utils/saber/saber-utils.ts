@@ -89,8 +89,6 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
 
   const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
 
-  console.log(txHashs);
-
   console.log('Saber withdraw tx', txHashs[0]);
   // console.log('Saber harvest tx', txHashs[1]);
 

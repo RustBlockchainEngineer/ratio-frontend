@@ -72,7 +72,7 @@ const GenerateModal = ({ data }: any) => {
     borrowUSDr(connection, wallet, borrowAmount * 10 ** USDR_MINT_DECIMALS, new PublicKey(data.mint))
       .then((txHash: string) => {
         toast.success('Successfully minted USDr tokens!');
-        appendUserAction(wallet.publicKey.toString(), data.mint, USDR_MINT_KEY, BORROW_ACTION, borrowAmount, txHash);
+        appendUserAction(wallet.publicKey.toString(), data.mint, USDR_MINT_KEY, BORROW_ACTION, +borrowAmount, txHash);
       })
       .catch((e) => {
         console.log(e);

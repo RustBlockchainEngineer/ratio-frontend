@@ -95,17 +95,21 @@ export function RFStateProvider({ children = undefined as any }) {
         } else {
           console.log('Transaction failed', txHash);
         }
-        const txInfo = await connection.getTransaction(txHash, { commitment: 'confirmed' });
+        const txInfo = await connection.getTransaction(
+          '5K97wy6uSCqUQPg2uZK3GgVvCzYuLAKzMJ9GqFUxVhBJzYg61cjbF4LSZojFKpJE4HNsQ4HK4hr1hH1fALesW4RX',
+          { commitment: 'confirmed' }
+        );
         const newAmount = getBalanceChange(txInfo, walletKey, affectedMint);
-
-        postToRatioApi(
-          prepareTransactionData(action, mintCollat, affectedMint, newAmount, txHash, newStatus),
-          `/transaction/${walletKey}/update`
-        )
-          .then(() => {})
-          .catch((e) => {
-            console.log(e);
-          });
+        if (newAmount) {
+          postToRatioApi(
+            prepareTransactionData(action, mintCollat, affectedMint, newAmount, txHash, newStatus),
+            `/transaction/${walletKey}/update`
+          )
+            .then(() => {})
+            .catch((e) => {
+              console.log(e);
+            });
+        }
       },
       'confirmed'
     );

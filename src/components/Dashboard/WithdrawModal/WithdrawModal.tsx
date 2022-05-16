@@ -89,7 +89,7 @@ const WithdrawModal = ({ data }: any) => {
         withdrawAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         userCollAccount
       );
-      appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, WIHTDRAW_ACTION, withdrawAmount, txHash);
+      appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, WIHTDRAW_ACTION, +withdrawAmount, txHash);
 
       setWithdrawAmount(0);
       toast.success('Successfully Withdrawn!');

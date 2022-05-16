@@ -10,8 +10,6 @@ export const getBalanceChange = (
 ): number => {
   const tk_pre_balance = txInfo?.meta?.preTokenBalances;
   const tk_post_balance = txInfo?.meta?.postTokenBalances;
-  let pretx = undefined;
-  let posttx = undefined;
   let post_amount = 0;
   let pre_amount = 0;
 
@@ -19,19 +17,20 @@ export const getBalanceChange = (
     const post = tk_post_balance.filter((ele) => {
       return ele.owner === wallet_address && ele.mint === mint_address;
     });
-    if (post) posttx = post[0];
-    if (posttx) if (posttx.uiTokenAmount.uiAmount) post_amount = posttx.uiTokenAmount.uiAmount;
+    if (post.length > 0){
+      post_amount = post[0].uiTokenAmount.uiAmount;
+    } 
   }
 
   if (tk_pre_balance) {
     const pre = tk_pre_balance.filter((ele) => {
       return ele.owner === wallet_address && ele.mint === mint_address;
     });
-    if (pre) pretx = pre[0];
-    if (pretx) if (pretx.uiTokenAmount.uiAmount) pre_amount = pretx.uiTokenAmount.uiAmount;
+    if (pre.length > 0){
+      pre_amount = pre[0].uiTokenAmount.uiAmount
+    }
   }
-  if (posttx && pretx) return post_amount - pre_amount;
-  else return 0;
+  return post_amount - pre_amount;
 };
 
 export function prepareTransactionData(

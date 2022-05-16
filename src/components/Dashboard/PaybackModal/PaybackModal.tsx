@@ -62,7 +62,7 @@ const PaybackModal = ({ data }: any) => {
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, USDR_MINT_DECIMALS), new PublicKey(data.mint))
       .then((txHash: string) => {
         toast.success('Successfully Paid back!');
-        appendUserAction(wallet.publicKey.toString(), data.mint, USDR_MINT_KEY, PAYBACK_ACTION, paybackAmount, txHash);
+        appendUserAction(wallet.publicKey.toString(), data.mint, USDR_MINT_KEY, PAYBACK_ACTION, -paybackAmount, txHash);
       })
       .catch((e) => {
         console.log(e);
