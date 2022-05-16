@@ -18,7 +18,9 @@
     padding-left: 0rem;
     padding-right: 1px;
   }
-
+  &__emptyText {
+    color: var(--unnamed-color-3c4760);
+  }
   &__empty {
     width: 100%;
     height: 70vh;
