@@ -27,7 +27,7 @@ const VaultSetupContainer = ({ data }: any) => {
   const PoolManagerFactory = useGetPoolManager(vault);
 
   const collAccount = useAccountByMint(data.mint);
-  const [depositAmount, setDepositAmount] = React.useState(0);
+  const [depositAmount, setDepositAmount] = React.useState<any>();
 
   const depositAmountUSD = new TokenAmount(depositAmount * (data.tokenPrice ?? 0), USDR_MINT_DECIMALS).fixed();
 
@@ -103,7 +103,7 @@ const VaultSetupContainer = ({ data }: any) => {
             appendValueStr={data.value}
             tokenStr={`${data.title}`}
             onTextChange={(value) => {
-              setDepositAmount(Number(value));
+              setDepositAmount(value);
               setDepositStatus(false);
               setButtonDisabled(false);
             }}

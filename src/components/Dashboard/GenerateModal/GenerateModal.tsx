@@ -121,7 +121,7 @@ const GenerateModal = ({ data }: any) => {
             <div>
               <img src={data?.icons[0]} alt={data?.icons[0]?.toString()} />
             </div>
-            <h4>Mint more USDr</h4>
+            <h4>Mint USDr</h4>
             <h5>
               Mint up to <strong>{data.usdrValue} USDr</strong>
             </h5>
