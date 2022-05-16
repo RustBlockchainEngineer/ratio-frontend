@@ -183,6 +183,11 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
+            <h6 className="semiBold">{(100 / poolState.ratio).toFixed(2)}%</h6>
+          </div>
+        </td>
+        <td>
+          <div className="tokenpaircard__table__td">
             <h6 className="semiBold">{Number(totalDebt.toFixed(2))}</h6>
           </div>
         </td>
