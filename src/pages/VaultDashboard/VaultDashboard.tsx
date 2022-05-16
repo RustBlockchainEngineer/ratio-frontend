@@ -177,7 +177,7 @@ const VaultDashboard = () => {
                   <RiskLevel level={vaultData.risk} />
                 </div>
                 <div className="col-lg-auto col-md-4 col-sm-12">
-                  <MintableProgressBar />
+                  <MintableProgressBar mint={vault_mint as string} />
                 </div>
                 {/* {isDefault && <div className="header__gap"></div>} */}
                 <div className="col-lg-auto col-md-4 col-sm-12">

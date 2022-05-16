@@ -2,30 +2,28 @@ import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-import { useRFStateInfo } from '../../contexts/state';
 import { TokenAmount } from '../../utils/safe-math';
 import { NavBarProgressBar, ProgressBarLabelType } from '../Navbar/NavBarProgressBar';
 import highriskIcon from '../../assets/images/highrisk.svg';
+import { usePoolInfo } from '../../contexts/state';
 
-const WarningLimitBox = () => {
+const WarningLimitBox = (mint: any) => {
   const [currentValue, setValue] = useState(0);
   const [percentage, setPercentage] = useState(0);
   const [success, setSuccess] = useState(false);
   const [caution, setCaution] = useState(false);
   const [warning, setWarning] = useState(false);
-
-  const globalState = useRFStateInfo();
-
+  const poolInfo = usePoolInfo(mint.mint);
   const connection = useConnection();
   const { wallet } = useWallet();
 
   useEffect(() => {
-    if (!wallet || !wallet.publicKey || !globalState) {
+    if (!wallet || !wallet.publicKey || !poolInfo) {
       return;
     }
-
-    const currentValue = Number(new TokenAmount(globalState.totalDebt as string, 6).fixed());
-    const maxValue = Number(new TokenAmount(globalState.debtCeiling as string, 6).fixed());
+    let currentValue = Number(new TokenAmount(poolInfo.totalDebt as string, 6).fixed());
+    const maxValue = Number(new TokenAmount(poolInfo.debtCeiling as string, 6).fixed());
+    currentValue = maxValue - currentValue;
 
     // Current Value
     setValue(currentValue);
@@ -34,22 +32,22 @@ const WarningLimitBox = () => {
       setPercentage(0);
     } else {
       const percentageFull = (currentValue / maxValue) * 100;
-      if (percentageFull >= 0 && percentageFull <= 80) {
+      if (percentageFull <= 100 && percentageFull >= 20) {
         setSuccess(true);
         setCaution(false);
         setWarning(false);
-      } else if (percentageFull > 80 && percentageFull < 100) {
+      } else if (percentageFull < 20 && percentageFull > 0) {
         setSuccess(false);
         setCaution(true);
         setWarning(false);
-      } else if (percentageFull >= 100) {
+      } else if (percentageFull <= 0) {
         setSuccess(false);
         setCaution(false);
         setWarning(true);
       }
       setPercentage(parseFloat(percentageFull.toFixed(2)));
     }
-  }, [wallet, connection, globalState]);
+  }, [wallet, connection, poolInfo]);
 
   return (
     <div className="warningLimitBox">

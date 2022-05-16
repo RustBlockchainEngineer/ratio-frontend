@@ -31,8 +31,7 @@ export const NavBarProgressBarTotalUSDr = (data: NavBarProgressBarTotalUSDrProps
     }
 
     const currentValue = Number(new TokenAmount(globalState.totalDebt as string, 6).fixed());
-    const maxValue = Number(new TokenAmount(globalState.debtCeiling as string, 6).fixed());
-
+    const maxValue = Number(new TokenAmount(globalState.debtCeilingGlobal as string, 6).fixed());
     // Current Value
     setValue(currentValue);
 
