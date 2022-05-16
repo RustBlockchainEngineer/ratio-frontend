@@ -17,17 +17,17 @@ export const getBalanceChange = (
     const post = tk_post_balance.filter((ele) => {
       return ele.owner === wallet_address && ele.mint === mint_address;
     });
-    if (post.length > 0){
+    if (post.length > 0) {
       post_amount = post[0].uiTokenAmount.uiAmount;
-    } 
+    }
   }
 
   if (tk_pre_balance) {
     const pre = tk_pre_balance.filter((ele) => {
       return ele.owner === wallet_address && ele.mint === mint_address;
     });
-    if (pre.length > 0){
-      pre_amount = pre[0].uiTokenAmount.uiAmount
+    if (pre.length > 0) {
+      pre_amount = pre[0].uiTokenAmount.uiAmount;
     }
   }
   return post_amount - pre_amount;
