@@ -126,7 +126,7 @@ const VaultSetupContainer = ({ data }: any) => {
           <strong className="vaultsetupcontainer-value">0.000</strong>
         </div>
         <div>
-          <WarningLimitBox />
+          <WarningLimitBox mint={data.mint} />
         </div>
         <div>
           <Button
