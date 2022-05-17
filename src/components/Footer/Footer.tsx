@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import imageLogo from '../../assets/images/image-logo.svg';
 import telegram from '../../assets/images/telegram.svg';
 import twitter from '../../assets/images/twitter.svg';
@@ -7,6 +6,7 @@ import medium from '../../assets/images/medium.svg';
 import telegramDark from '../../assets/images/telegram-dark.svg';
 import twitterDark from '../../assets/images/twitter-dark.svg';
 import mediumDark from '../../assets/images/medium-dark.svg';
+import whitepaperPDF from '../../assets/whitepaper.pdf';
 
 type FooterProps = {
   darkMode: boolean;
@@ -36,7 +36,9 @@ const Footer = ({ darkMode }: FooterProps) => {
         </h6>
         <ul className="list-group list-group-horizontal">
           <li className="list-group-item">
-            <Link to="/">Whitepaper</Link>
+            <a target="_blank" href={whitepaperPDF} rel="noreferrer">
+              Whitepaper
+            </a>
           </li>
           <li className="list-group-item">
             <a

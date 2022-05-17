@@ -12,6 +12,7 @@ import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 
 import LoadingSpinner from '../../atoms/LoadingSpinner';
+import { usePoolInfo } from '../../contexts/state';
 
 const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
@@ -20,6 +21,7 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { connected } = useWallet();
 
   const hasUserReachedDebtLimit = false;
+  const poolInfo = usePoolInfo(data.mint);
 
   const showDashboard = () => {
     if (!connected) {
@@ -105,6 +107,11 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         <td>
           <div className="tokenpaircard__table__td">
             <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
+          </div>
+        </td>
+        <td>
+          <div className="tokenpaircard__table__td">
+            <h6 className="semiBold">{(100 / poolInfo.ratio).toFixed(2)}%</h6>
           </div>
         </td>
         <td>

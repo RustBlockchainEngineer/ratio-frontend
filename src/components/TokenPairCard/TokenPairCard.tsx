@@ -15,6 +15,7 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
+import { usePoolInfo } from '../../contexts/state';
 
 const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const { data, onCompareVault } = tokenPairCardProps;
@@ -26,6 +27,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const [checked, setChecked] = React.useState(false);
 
   const hasUserReachedDebtLimit = false;
+  const poolInfo = usePoolInfo(data.mint);
 
   const renderModalButton = (status: boolean) => {
     return (
@@ -122,6 +124,10 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
             <div className="d-flex justify-content-between align-items-center mt-2">
               <h6>APY</h6>
               <h6 className="semiBold">{printApy()}</h6>
+            </div>
+            <div className="mt-2 d-flex justify-content-between">
+              <h6>Collateralization Ratio:</h6>
+              <h6 className="semiBold">{(100 / poolInfo.ratio).toFixed(2)}%</h6>
             </div>
             <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
               <div className="d-flex align-items-center">
