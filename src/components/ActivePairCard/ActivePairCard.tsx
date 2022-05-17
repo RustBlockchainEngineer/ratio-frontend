@@ -100,6 +100,23 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     );
   };
 
+  const getSaberLpLink = (value: string) => {
+    switch (value) {
+      case 'USDH-USDC':
+        return 'https://app.saber.so/pools/usdh_usdc/deposit';
+        break;
+      case 'UXD-USDC':
+        return 'https://app.saber.so/pools/uxd_usdc/deposit';
+        break;
+      case 'USDT-USDC':
+        return 'https://app.saber.so/pools/usdc_usdt/deposit';
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <div className="col-xxl-4 col-md-6 col-sm-12">
@@ -132,6 +149,14 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
                 </div>
               </div>
             </div> */}
+            <a
+              target="_blank"
+              href={getSaberLpLink(data.title)}
+              rel="noreferrer"
+              className="vaultsetupcontainer-getsaberlp"
+            >
+              Get Saber LP
+            </a>
           </div>
           <div className="activepaircard__aprBox">
             <div className="d-flex align-items-center justify-content-between">
