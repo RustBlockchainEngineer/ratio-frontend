@@ -7,6 +7,8 @@ import telegramDark from '../../assets/images/telegram-dark.svg';
 import twitterDark from '../../assets/images/twitter-dark.svg';
 import mediumDark from '../../assets/images/medium-dark.svg';
 import whitepaperPDF from '../../assets/whitepaper.pdf';
+import privacypolicyPDF from '../../assets/privacy-policy.pdf';
+import termsPDF from '../../assets/terms.pdf';
 
 type FooterProps = {
   darkMode: boolean;
@@ -41,20 +43,12 @@ const Footer = ({ darkMode }: FooterProps) => {
             </a>
           </li>
           <li className="list-group-item">
-            <a
-              target="_blank"
-              href="https://www.termsandconditionsgenerator.com/live.php?token=rsyWvkb1kWABkMw0tccnyaYF1VErQeOk"
-              rel="noreferrer"
-            >
+            <a target="_blank" href={termsPDF} rel="noreferrer">
               Terms & Conditions
             </a>
           </li>
           <li className="list-group-item">
-            <a
-              target="_blank"
-              href="https://www.privacypolicygenerator.info/live.php?token=BdvNralxCwYJOo06TYdHMniHdNH4icGj"
-              rel="noreferrer"
-            >
+            <a target="_blank" href={privacypolicyPDF} rel="noreferrer">
               Privacy Policy
             </a>
           </li>
