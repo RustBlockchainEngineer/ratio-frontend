@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import {
   Account,
   clusterApiUrl,
@@ -8,22 +7,19 @@ import {
   ConnectionConfig as Web3ConnectionConfig,
 } from '@solana/web3.js';
 import React, { useContext, useEffect, useMemo } from 'react';
-import { tokenAuthFetchMiddleware } from '@strata-foundation/web3-token-auth';
 import { ENV as ChainID } from '@solana/spl-token-registry';
 
 import { useLocalStorageState } from '../utils/utils';
 import { notify } from '../utils/notifications';
 import { WalletAdapter } from './wallet';
 import { cache } from './accounts';
-import { API_ENDPOINT } from '../constants';
 
 export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 
 export const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
-    // endpoint: 'https://ratio.genesysgo.net/',
-    endpoint: 'https://cropper.rpcpool.com/',
+    endpoint: 'https://solana--mainnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
     chainID: ChainID.MainnetBeta,
   },
   {
@@ -33,8 +29,7 @@ export const ENDPOINTS = [
   },
   {
     name: 'devnet' as ENV,
-    endpoint: 'https://psytrbhymqlkfrhudd.dev.genesysgo.net:8899/',
-    // endpoint: clusterApiUrl('devnet'),
+    endpoint: 'https://solana--devnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
     chainID: ChainID.Devnet,
   },
   {
@@ -69,30 +64,13 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
   env: DEFAULT.name,
 });
 
-const getRpcAuthToken = async () => {
-  const url = new URL('rpcauth/get-token', API_ENDPOINT);
-  const resp = await Axios.post(url.toString());
-  const { access_token }: { access_token: string } = resp.data;
-  return access_token;
-};
-/*    | 'processed'
-    | 'confirmed'
-    | 'finalized'
-    | 'recent'
-    | 'single'
-    | 'singleGossip'
-    | 'root'
-    | 'max';*/
 export function ConnectionProvider({ children = undefined as any }) {
   const [endpoint, setEndpoint] = useLocalStorageState('connectionEndpts', DEFAULT.endpoint);
 
   const [slippage, setSlippage] = useLocalStorageState('slippage', DEFAULT_SLIPPAGE.toString());
 
   const web3ConnectionConfig: Web3ConnectionConfig = {
-    commitment: 'confirmed', // TODO: Set to "confirmed"?
-    fetchMiddleware: tokenAuthFetchMiddleware({
-      getToken: getRpcAuthToken,
-    }),
+    commitment: 'confirmed',
   };
   const connection = useMemo(() => new Connection(endpoint, web3ConnectionConfig), [endpoint]);
   const sendConnection = useMemo(() => new Connection(endpoint, web3ConnectionConfig), [endpoint]);
