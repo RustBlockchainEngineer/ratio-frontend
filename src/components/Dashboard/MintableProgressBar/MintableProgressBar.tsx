@@ -1,42 +1,17 @@
 import React from 'react';
 import classNames from 'classnames';
-import { useConnection } from '../../../contexts/connection';
-import { useWallet } from '../../../contexts/wallet';
 import { usePoolInfo } from '../../../contexts/state';
 import { TokenAmount } from '../../../utils/safe-math';
 import { NavBarProgressBar } from '../../Navbar/NavBarProgressBar';
+import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 
-const MintableProgressBar = (mint: any) => {
-  const [currentValue, setValue] = React.useState(0);
-  const [percentage, setPercentage] = React.useState(0);
-  const [warning, setWarning] = React.useState(false);
+const MintableProgressBar = ({ mint }: any) => {
+  const poolInfo = usePoolInfo(mint);
+  const currentValue = Number(new TokenAmount(poolInfo?.totalDebt ?? 0, USDR_MINT_DECIMALS).fixed());
+  const limit = Number(new TokenAmount(poolInfo?.debtCeiling ?? 1, USDR_MINT_DECIMALS).fixed());
+  const percentage = (currentValue * 100) / limit;
 
-  const poolInfo = usePoolInfo(mint.mint);
-
-  const connection = useConnection();
-  const { wallet } = useWallet();
-
-  React.useEffect(() => {
-    if (!wallet || !wallet.publicKey || !poolInfo) {
-      return;
-    }
-
-    let currentValue = Number(new TokenAmount(poolInfo.totalDebt as string, 6).fixed());
-    const maxValue = Number(new TokenAmount(poolInfo.debtCeiling as string, 6).fixed());
-    currentValue = maxValue - currentValue;
-
-    // Current Value
-    setValue(currentValue);
-
-    if (maxValue === 0 || isNaN(maxValue)) {
-      setPercentage(0);
-      setWarning(false);
-    } else {
-      const percentageFull = ((currentValue / maxValue) * 100).toFixed(2);
-      setPercentage(parseFloat(percentageFull));
-      setWarning(currentValue / maxValue === 1);
-    }
-  }, [wallet, connection, poolInfo]);
+  const warning = percentage >= 80;
 
   return (
     <div className="mintableProgressbar">

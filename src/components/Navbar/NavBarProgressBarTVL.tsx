@@ -1,7 +1,4 @@
-import { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useConnection } from '../../contexts/connection';
-import { useWallet } from '../../contexts/wallet';
 import { TokenAmount } from '../../utils/safe-math';
 import { useRFStateInfo } from '../../contexts/state';
 import { NavBarProgressBar, ProgressBarLabelType } from './NavBarProgressBar';
@@ -15,49 +12,14 @@ interface NavBarProgressBarTVLProps {
 export const NavBarProgressBarTVL = (data: NavBarProgressBarTVLProps) => {
   const { className, shouldDisplayLabel = true } = data;
 
-  const [currentValue, setValue] = useState(0);
-  const [percentage, setPercentage] = useState(0);
-  const [success, setSuccess] = useState(false);
-  const [caution, setCaution] = useState(false);
-  const [warning, setWarning] = useState(false);
-
   const globalState = useRFStateInfo();
-  const connection = useConnection();
-  const { wallet } = useWallet();
+  const currentValue = Number(new TokenAmount(globalState?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed());
+  const limit = Number(new TokenAmount(globalState?.tvlCollatCeilingUsd ?? 1, USDR_MINT_DECIMALS).fixed());
+  const percentage = (currentValue * 100) / limit;
 
-  useEffect(() => {
-    if (!wallet || !wallet.publicKey || !globalState) {
-      return;
-    }
-
-    // globalState.tvl ? globalState.tvl.toNumber() : 1;
-    const currentValue = Number(new TokenAmount(globalState.tvlUsd as string, USDR_MINT_DECIMALS).fixed());
-    setValue(currentValue);
-
-    // globalState.tvlLimit ? globalState.tvlLimit.toNumber() : 20;
-    const maxValue = Number(new TokenAmount(globalState.tvlCollatCeilingUsd as string, USDR_MINT_DECIMALS).fixed());
-
-    if (maxValue === 0 || isNaN(maxValue)) {
-      setPercentage(0);
-    } else {
-      const percentageFull = (currentValue / maxValue) * 100;
-      if (percentageFull >= 0 && percentageFull <= 80) {
-        setSuccess(true);
-        setCaution(false);
-        setWarning(false);
-      } else if (percentageFull > 80 && percentageFull < 100) {
-        setSuccess(false);
-        setCaution(true);
-        setWarning(false);
-      } else if (percentageFull >= 100) {
-        setSuccess(false);
-        setCaution(false);
-        setWarning(true);
-      }
-      setPercentage(parseFloat(percentageFull.toFixed(2)));
-    }
-  }, [wallet, connection, globalState]);
-
+  const success = percentage <= 80;
+  const caution = percentage < 100 && percentage > 80;
+  const warning = percentage >= 100;
   const label = shouldDisplayLabel ? ProgressBarLabelType.TVL : ProgressBarLabelType.None;
 
   return (

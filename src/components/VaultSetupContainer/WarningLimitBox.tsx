@@ -1,64 +1,31 @@
-import { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useConnection } from '../../contexts/connection';
-import { useWallet } from '../../contexts/wallet';
 import { TokenAmount } from '../../utils/safe-math';
 import { NavBarProgressBar, ProgressBarLabelType } from '../Navbar/NavBarProgressBar';
 import highriskIcon from '../../assets/images/highrisk.svg';
 import { usePoolInfo } from '../../contexts/state';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
-const WarningLimitBox = (mint: any) => {
-  const [currentValue, setValue] = useState(0);
-  const [percentage, setPercentage] = useState(0);
-  const [success, setSuccess] = useState(false);
-  const [caution, setCaution] = useState(false);
-  const [warning, setWarning] = useState(false);
-  const poolInfo = usePoolInfo(mint.mint);
-  const connection = useConnection();
-  const { wallet } = useWallet();
+const WarningLimitBox = ({ mint }: any) => {
+  const poolInfo = usePoolInfo(mint);
 
-  useEffect(() => {
-    if (!wallet || !wallet.publicKey || !poolInfo) {
-      return;
-    }
-    let currentValue = Number(new TokenAmount(poolInfo.totalDebt as string, 6).fixed());
-    const maxValue = Number(new TokenAmount(poolInfo.debtCeiling as string, 6).fixed());
-    currentValue = maxValue - currentValue;
+  const currentValue = Number(new TokenAmount(poolInfo?.totalDebt ?? 0, USDR_MINT_DECIMALS).fixed());
+  const limit = Number(new TokenAmount(poolInfo?.debtCeiling ?? 1, USDR_MINT_DECIMALS).fixed());
+  const percentage = (currentValue * 100) / limit;
 
-    // Current Value
-    setValue(currentValue);
-
-    if (maxValue === 0 || isNaN(maxValue)) {
-      setPercentage(0);
-    } else {
-      const percentageFull = (currentValue / maxValue) * 100;
-      if (percentageFull <= 100 && percentageFull >= 20) {
-        setSuccess(true);
-        setCaution(false);
-        setWarning(false);
-      } else if (percentageFull < 20 && percentageFull > 0) {
-        setSuccess(false);
-        setCaution(true);
-        setWarning(false);
-      } else if (percentageFull <= 0) {
-        setSuccess(false);
-        setCaution(false);
-        setWarning(true);
-      }
-      setPercentage(parseFloat(percentageFull.toFixed(2)));
-    }
-  }, [wallet, connection, poolInfo]);
+  const success = percentage <= 80;
+  const caution = percentage < 100 && percentage > 80;
+  const warning = percentage >= 100;
 
   return (
     <div className="warningLimitBox">
       <NavBarProgressBar
         label={ProgressBarLabelType.VaultDebt}
         className={classNames(
-          { 'navbarprogressbar--warning': warning && !caution && !success },
-          { 'navbarprogressbar--caution': caution && !warning && !success },
-          { 'navbarprogressbar--success': success && !caution && !warning }
+          { 'navbarprogressbar--warning': warning },
+          { 'navbarprogressbar--caution': caution },
+          { 'navbarprogressbar--success': success }
         )}
-        shouldDisplayCurrency={true}
+        shouldDisplayCurrency={false}
         currentValue={currentValue}
         percentage={percentage}
       />

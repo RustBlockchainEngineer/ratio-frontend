@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useConnection } from '../../contexts/connection';
-import { useWallet } from '../../contexts/wallet';
 import { NavBarProgressBar, ProgressBarLabelType } from './NavBarProgressBar';
 import { useRFStateInfo } from '../../contexts/state';
 import { TokenAmount } from '../../utils/safe-math';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 interface NavBarProgressBarTotalUSDrProps {
   className: string;
@@ -14,47 +12,14 @@ interface NavBarProgressBarTotalUSDrProps {
 export const NavBarProgressBarTotalUSDr = (data: NavBarProgressBarTotalUSDrProps) => {
   const { className, shouldDisplayLabel = true } = data;
 
-  const [currentValue, setValue] = useState(0);
-  const [percentage, setPercentage] = useState(0);
-  const [success, setSuccess] = useState(false);
-  const [caution, setCaution] = useState(false);
-  const [warning, setWarning] = useState(false);
-
   const globalState = useRFStateInfo();
+  const currentValue = Number(new TokenAmount(globalState?.totalDebt ?? 0, USDR_MINT_DECIMALS).fixed());
+  const limit = Number(new TokenAmount(globalState?.debtCeilingGlobal ?? 1, USDR_MINT_DECIMALS).fixed());
+  const percentage = (currentValue * 100) / limit;
 
-  const connection = useConnection();
-  const { wallet } = useWallet();
-
-  useEffect(() => {
-    if (!wallet || !wallet.publicKey || !globalState) {
-      return;
-    }
-
-    const currentValue = Number(new TokenAmount(globalState.totalDebt as string, 6).fixed());
-    const maxValue = Number(new TokenAmount(globalState.debtCeilingGlobal as string, 6).fixed());
-    // Current Value
-    setValue(currentValue);
-
-    if (maxValue === 0 || isNaN(maxValue)) {
-      setPercentage(0);
-    } else {
-      const percentageFull = (currentValue / maxValue) * 100;
-      if (percentageFull >= 0 && percentageFull <= 80) {
-        setSuccess(true);
-        setCaution(false);
-        setWarning(false);
-      } else if (percentageFull > 80 && percentageFull < 100) {
-        setSuccess(false);
-        setCaution(true);
-        setWarning(false);
-      } else if (percentageFull >= 100) {
-        setSuccess(false);
-        setCaution(false);
-        setWarning(true);
-      }
-      setPercentage(parseFloat(percentageFull.toFixed(2)));
-    }
-  }, [wallet, connection, globalState]);
+  const success = percentage <= 80;
+  const caution = percentage < 100 && percentage > 80;
+  const warning = percentage >= 100;
 
   const label = shouldDisplayLabel ? ProgressBarLabelType.USDr : ProgressBarLabelType.None;
 
@@ -67,7 +32,7 @@ export const NavBarProgressBarTotalUSDr = (data: NavBarProgressBarTotalUSDrProps
         { 'navbarprogressbar--success': success && !caution && !warning }
       )}
       label={label}
-      shouldDisplayCurrency={true}
+      shouldDisplayCurrency={false}
       currentValue={currentValue}
       percentage={percentage}
     />
