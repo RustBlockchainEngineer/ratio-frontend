@@ -22,7 +22,8 @@ import { calculateCollateralPrice, getMint } from '../utils/utils';
 import { useConnection } from './connection';
 import { useWallet } from './wallet';
 
-const actionList = [];
+let actionList = [];
+const UPDATE_ALL = 'UPDATE_ALL';
 let isStateLoading = false;
 interface RFStateConfig {
   globalState: any;
@@ -59,12 +60,10 @@ export function RFStateProvider({ children = undefined as any }) {
   const [overview, setOverview] = useState<any>(null);
   const [vaultState, setVaultState] = useState<any>(null);
 
+  const [updateFinished, setUpdateFinished] = useState(false);
+
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
   const [walletUpdated, setWalletUpdated] = useState(false);
-  const [mintToUpdate, setMintToUpdate] = useState({
-    mint: '',
-    signal: false,
-  });
 
   const appendUserAction = async (
     walletKey: string,
@@ -108,12 +107,9 @@ export function RFStateProvider({ children = undefined as any }) {
       'confirmed'
     );
 
-    actionList.push({
-      mint: mintCollat,
-    });
+    actionList.push(mintCollat);
   };
   const updateGlobalState = async () => {
-    console.log('1. Updating global state...');
     const state = await getGlobalState(connection, wallet);
     let info = globalState ?? {};
     if (state) {
@@ -132,8 +128,6 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOracleState = async () => {
-    console.log('2. Updating oracle state...');
-
     const oracles = await getAllOracleState(connection, wallet);
     const oracleInfos: any = oracleState ?? {};
     oracles.forEach((item) => {
@@ -209,8 +203,6 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updatePoolStateByMint = async (globalState, oracleState, mint) => {
-    console.log('3. Updating pool state by mint...');
-
     const poolInfos: any = poolState ?? {};
     try {
       const pool = await getLendingPoolByMint(connection, mint);
@@ -226,8 +218,6 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateAllPoolState = async (globalState, oracleState) => {
-    console.log('3. Updating pool state...');
-
     const poolInfos: any = poolState ?? {};
     try {
       const allPools = await getAllLendingPool(connection);
@@ -248,8 +238,6 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOverview = async () => {
-    console.log('4. Updating overview.....');
-
     const userState = await getUserState(connection, wallet);
     setOverview(userState);
     return userState;
@@ -293,7 +281,6 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateAllVaultState = async (globalState, oracelState, poolState, overview) => {
-    console.log('5. Updating vaults.....');
     const vaultInfos: any = vaultState ?? {};
     if (overview) {
       for (const mint of Object.keys(poolState)) {
@@ -311,8 +298,6 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateVaultStateByMint = async (globalState, oracleState, poolInfo, overview, mint) => {
-    console.log('5. Updating vault by mint.....');
-
     const vaultInfos: any = vaultState ?? {};
     if (overview) {
       const vaultInfo = await getVaultStateByMint(globalState, oracleState, poolInfo, overview, mint);
@@ -327,20 +312,10 @@ export function RFStateProvider({ children = undefined as any }) {
     return vaultInfos;
   };
 
-  useEffect(() => {
-    setInterval(() => {
-      setToogleUpdateState((prev) => !prev);
-    }, 1000 * REFRESH_TIME_INTERVAL);
-  }, []);
-
-  useEffect(() => {
-    console.log('Updated is toggled ....................');
-    updateRFState();
-    return () => {};
-  }, [toogleUpdateState]);
-
   const updateRFStateByMint = async (mint) => {
     console.log('***** Updating state by mint*****');
+    await updateVaultStateByMint(globalState, oracleState, poolState[mint], overview, mint);
+
     const newGlobalState = await updateGlobalState();
     const newOracleState = await updateOracleState();
     const newPoolState = await updatePoolStateByMint(newGlobalState, newOracleState, mint);
@@ -349,53 +324,77 @@ export function RFStateProvider({ children = undefined as any }) {
     console.log('***** Updated state by mint*****');
   };
 
+  const updateRFStateOverall = async () => {
+    console.log('***** Updating all state *****');
+    const globalState = await updateGlobalState();
+    const oracleState = await updateOracleState();
+    const poolState = await updateAllPoolState(globalState, oracleState);
+    const overview = await updateOverview();
+    await updateAllVaultState(globalState, oracleState, poolState, overview);
+
+    console.log('***** Updated all state *****');
+  };
+
   const updateRFState = async () => {
     if (!isStateLoading) {
+      if (!actionList.length) {
+        console.log('Pending action is empty');
+        return;
+      }
+      console.log('Updating state', actionList);
+
       isStateLoading = true;
-      //we can't determine which vault is updated;
-      if (actionList.length === 0) {
-        console.log('***** Updating all state *****');
-
-        const globalState = await updateGlobalState();
-        const oracleState = await updateOracleState();
-        const poolState = await updateAllPoolState(globalState, oracleState);
-        const overview = await updateOverview();
-        await updateAllVaultState(globalState, oracleState, poolState, overview);
-
-        console.log('***** Updated all state *****');
+      let activeAction = actionList[0];
+      if (actionList.indexOf(UPDATE_ALL) !== -1) {
+        activeAction = UPDATE_ALL;
+      }
+      if (activeAction === UPDATE_ALL) {
+        actionList = [];
       } else {
-        const lastAction = actionList[0];
-        console.log('**** Updating the vault first ****', lastAction.mint);
-        await updateVaultStateByMint(globalState, oracleState, poolState[lastAction.mint], overview, lastAction.mint);
-        setMintToUpdate((prev) => {
-          return {
-            mint: lastAction.mint,
-            signal: !prev.signal,
-          };
-        });
+        actionList = actionList.filter((item, index) => actionList.indexOf(item) === index);
+        actionList = actionList.slice(1);
+      }
+
+      if (activeAction === UPDATE_ALL) {
+        await updateRFStateOverall();
+      } else {
+        await updateRFStateByMint(activeAction);
       }
       isStateLoading = false;
+      setUpdateFinished((prev) => !prev);
     } else {
       console.log('Ignoring the signal ...... ');
     }
   };
 
   useEffect(() => {
-    if (mintToUpdate.mint) {
-      updateRFStateByMint(mintToUpdate.mint);
-      const index = actionList.indexOf(mintToUpdate.mint);
-      actionList.splice(index, 1);
+    setInterval(() => {
+      setToogleUpdateState((prev) => !prev);
+    }, 1000 * REFRESH_TIME_INTERVAL);
+  }, []);
+
+  useEffect(() => {
+    console.log('Updated is toggled');
+    actionList.push(UPDATE_ALL);
+    updateRFState();
+    return () => {};
+  }, [toogleUpdateState]);
+
+  useEffect(() => {
+    if (actionList.length) {
+      console.log('Pending actions exist', actionList);
+      updateRFState();
     }
-  }, [mintToUpdate]);
+  }, [updateFinished]);
 
   useEffect(() => {
     if (wallet && wallet.publicKey && connection) {
-      console.log('Wallet is updated ....................');
+      console.log('Wallet is connected');
+      actionList.push(UPDATE_ALL);
       updateRFState();
 
       connection.onAccountChange(wallet.publicKey, (acc) => {
         if (acc) {
-          console.log('Changing RFState since the wallet is updated');
           setWalletUpdated((prev) => !prev);
         }
       });
@@ -404,7 +403,14 @@ export function RFStateProvider({ children = undefined as any }) {
     return () => {
       setVaultState(null);
     };
-  }, [wallet, wallet?.publicKey, connection, walletUpdated]);
+  }, [wallet, wallet?.publicKey, connection]);
+
+  useEffect(() => {
+    if (wallet && wallet.publicKey && connection) {
+      console.log('Wallet is updated');
+      updateRFState();
+    }
+  }, [walletUpdated]);
 
   return (
     <RFStateContext.Provider
