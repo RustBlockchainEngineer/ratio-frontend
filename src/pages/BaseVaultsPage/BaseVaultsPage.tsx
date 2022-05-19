@@ -63,8 +63,8 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   };
 
   function dynamicSort(sortProperty: string, viewProperty: string) {
-    let sortOrder = viewProperty === 'ascending' ? 1 : -1;
-    sortOrder = sortProperty === 'risk' ? 1 : -1;
+    const sortOrder = viewProperty === 'ascending' ? 1 : -1;
+    // sortOrder = sortProperty === 'risk' ? 1 : -1;
 
     return function (a: any, b: any) {
       const result = a[sortProperty] < b[sortProperty] ? -1 : a[sortProperty] > b[sortProperty] ? 1 : 0;
@@ -121,12 +121,13 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       } else {
         x = p;
       }
-
+      // const fd = x.filter((item) => item.apr !== undefined);
       x.sort(dynamicSort(sort_data.value, view_data.value));
+
       if (showOnlyActive) {
-        dispatch({ type: actionTypes.SET_ACTIVE_VAULT, payload: p });
+        dispatch({ type: actionTypes.SET_ACTIVE_VAULT, payload: x });
       } else {
-        dispatch({ type: actionTypes.SET_ALL_VAULT, payload: p });
+        dispatch({ type: actionTypes.SET_ALL_VAULT, payload: x });
       }
       return x;
     }
