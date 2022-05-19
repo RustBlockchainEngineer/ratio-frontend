@@ -32,20 +32,21 @@ const selectBanner = (poolData: any, userVaultData: any, globalStateData: any) =
       .dividedBy(poolData.debtCeiling.toString())
       .toString();
     const userUSDrDebtPercentage = userVaultData ? (userVaultData.debt * 100) / globalStateData.debtCeilingUser : 0;
-    const globalUSDrDebtPercentage = new BigNumber(globalStateData.totalDebt.toString())
-      .multipliedBy(100)
-      .dividedBy(globalStateData.debtCeilingGlobal.toString())
-      .toString();
-    const totalTVLPercentage = new BigNumber(globalStateData.tvlUsd.toString())
-      .multipliedBy(100)
-      .dividedBy(globalStateData.tvlCollatCeilingUsd.toString())
-      .toString();
+    // const globalUSDrDebtPercentage = new BigNumber(globalStateData.totalDebt.toString())
+    //   .multipliedBy(100)
+    //   .dividedBy(globalStateData.debtCeilingGlobal.toString())
+    //   .toString();
+    // const totalTVLPercentage = new BigNumber(globalStateData.tvlUsd.toString())
+    //   .multipliedBy(100)
+    //   .dividedBy(globalStateData.tvlCollatCeilingUsd.toString())
+    //   .toString();
 
-    if (parseFloat(totalTVLPercentage) >= 80) {
-      return getTokenCapBanner('totalTVL', parseFloat(totalTVLPercentage));
-    } else if (parseFloat(globalUSDrDebtPercentage) >= 80) {
-      return getTokenCapBanner('globalUSDrDebt', parseFloat(globalUSDrDebtPercentage));
-    } else if (userUSDrDebtPercentage >= 80) {
+    // if (parseFloat(totalTVLPercentage) >= 80) {
+    //   return getTokenCapBanner('totalTVL', parseFloat(totalTVLPercentage));
+    // } else if (parseFloat(globalUSDrDebtPercentage) >= 80) {
+    //   return getTokenCapBanner('globalUSDrDebt', parseFloat(globalUSDrDebtPercentage));
+    // } else
+    if (userUSDrDebtPercentage >= 80) {
       return getTokenCapBanner('userUSDrDebt', userUSDrDebtPercentage);
     } else if (parseFloat(poolUSDrDebtPercentage) >= 80) {
       return getTokenCapBanner('vaultUSDrDebt', parseFloat(poolUSDrDebtPercentage));
