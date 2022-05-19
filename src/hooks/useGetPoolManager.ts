@@ -2,20 +2,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { getPoolManager } from '../utils/PoolInfoProvider/PoolManagerFactory';
 import { LPair } from '../types/VaultTypes';
 import { IPoolManagerStrategy } from '../utils/PoolInfoProvider/IPoolManagerStrategy';
-import { useMercurialPools, useOrcaPools, useRaydiumPools, useSaberPools } from '../contexts/pools';
+import { useSaberPools } from '../contexts/pools';
+//import { useMercurialPools, useOrcaPools, useRaydiumPools, useSaberPools } from '../contexts/pools';
 
 export const useGetPoolManager = (vault: LPair | undefined): Maybe<IPoolManagerStrategy> => {
-  const raydiumPools = useRaydiumPools();
-  const orcaPools = useOrcaPools();
+  //const raydiumPools = useRaydiumPools();
+  //const orcaPools = useOrcaPools();
   const saberPools = useSaberPools();
-  const mercurialPools = useMercurialPools();
+  //const mercurialPools = useMercurialPools();
 
   const [poolInfoProvider, setPoolInfoProvider] = useState<Maybe<IPoolManagerStrategy>>(null);
 
-  const PoolManagerFactory = useMemo(
-    () => getPoolManager(raydiumPools, orcaPools, saberPools, mercurialPools),
-    [raydiumPools, orcaPools, saberPools, mercurialPools]
-  );
+  const PoolManagerFactory = useMemo(() => getPoolManager({ saberPools }), [saberPools]);
 
   useEffect(() => {
     if (!vault) {

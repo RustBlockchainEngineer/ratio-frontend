@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
-import { TokenPairCardProps } from '../../models/UInterface';
+import { TokenPairCardProps } from '../../types/VaultTypes';
 
 import { formatUSD } from '../../utils/utils';
 import linkIcon from '../../assets/images/link.svg';

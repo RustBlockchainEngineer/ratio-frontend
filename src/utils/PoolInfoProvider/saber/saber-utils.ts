@@ -7,7 +7,7 @@ import {
   distributeRewardTx,
   getProgramInstance,
   withdrawCollateralTx,
-} from '../ratio-lending';
+} from '../../ratio-lending';
 import { PublicKey, Transaction, Connection } from '@solana/web3.js';
 import {
   findMinerAddress,
@@ -17,12 +17,12 @@ import {
   QUARRY_ADDRESSES,
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
-import { sendAllTransaction, sendTransaction } from '../web3';
+import { sendAllTransaction, sendTransaction } from '../../rf-web3';
 
-import { TokenAmount } from '../safe-math';
-import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../ratio-pda';
+import { TokenAmount } from '../../safe-math';
+import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../../ratio-pda';
 import { Saber, SABER_IOU_MINT, SBR_REWARDER, SBR_MINT_WRAPPER, SBR_ADDRESS } from '@saberhq/saber-periphery';
-import { QUARRY_INFO_LAYOUT } from '../layout';
+import { QUARRY_INFO_LAYOUT } from '../../layout';
 
 export const SABER_IOU_MINT_DECIMALS = 6;
 

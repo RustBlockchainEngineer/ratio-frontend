@@ -6,12 +6,44 @@ export interface Platform {
   created_on?: number;
   updated_on?: number;
 }
+export type PairType = {
+  id: number;
+  mint: string;
+  realUserRewardMint: string;
+  icons: Array<string>;
+  icon: any;
+  icon1?: string;
+  icon2?: string;
+  title: string;
+  platform: any;
+  tvl: number;
+  risk: string;
+  riskLevel: number;
+  apr: number;
+  details: string;
+  riskPercentage: number;
+  item: LPair;
+  activeStatus: boolean;
+};
+
+export interface TokenPairCardProps {
+  data: PairType;
+  onCompareVault: (data: PairType, status: boolean) => void;
+}
 
 export interface PlatformsDict {
   [key: string]: Platform;
 }
 export interface AssetsDict {
   [key: string]: LPAsset[];
+}
+
+export enum ERiskLevel {
+  EXTREME = 'DDD',
+  HIGH = 'DD',
+  MEDIUM = 'AA',
+  LOW = 'A',
+  VERY_LOW = 'AAA',
 }
 
 export enum RISK_RATING {

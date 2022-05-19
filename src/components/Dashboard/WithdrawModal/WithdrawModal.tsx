@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { ThemeContext } from '../../../contexts/ThemeContext';
-import { getOneFilteredTokenAccountsByOwner } from '../../../utils/web3';
+import { getOneFilteredTokenAccountsByOwner } from '../../../utils/rf-web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';

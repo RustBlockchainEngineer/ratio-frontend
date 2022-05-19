@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
-import { TokenPairCardProps } from '../../models/UInterface';
+import { TokenPairCardProps } from '../../types/VaultTypes';
 import { TokenAmount } from '../../utils/safe-math';
 import { formatUSD, isWalletApproveError } from '../../utils/utils';
 import { useConnection } from '../../contexts/connection';

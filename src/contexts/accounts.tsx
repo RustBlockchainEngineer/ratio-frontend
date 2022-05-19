@@ -7,7 +7,7 @@ import { TokenAccount } from '../models';
 import { chunks } from '../utils/utils';
 import { EventEmitter } from '../utils/eventEmitter';
 import { useUserAccounts } from '../hooks/useUserAccounts';
-import { WRAPPED_SOL_MINT } from '../utils/ids';
+import { WRAPPED_SOL_MINT } from '../constants/ids';
 
 const AccountsContext = React.createContext<any>(null);
 

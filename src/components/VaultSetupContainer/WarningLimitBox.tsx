@@ -29,7 +29,7 @@ const WarningLimitBox = ({ mint }: any) => {
         currentValue={currentValue}
         percentage={percentage}
       />
-      {(caution || warning) && (
+      {warning && (
         <div className="warningLimitBox__warningBox">
           <img src={highriskIcon} alt="highriskIcon" />
           <p>
