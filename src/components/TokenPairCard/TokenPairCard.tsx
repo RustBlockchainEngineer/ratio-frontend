@@ -16,6 +16,7 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { usePoolInfo } from '../../contexts/state';
+import { getSaberLpLink } from '../../libs/helper';
 
 const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const { data, onCompareVault } = tokenPairCardProps;
@@ -90,23 +91,6 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
     return Number(data?.apr).toFixed(2) + '%';
   };
 
-  const getSaberLpLink = (value: string) => {
-    switch (value) {
-      case 'USDH-USDC':
-        return 'https://app.saber.so/pools/usdh_usdc/deposit';
-        break;
-      case 'UXD-USDC':
-        return 'https://app.saber.so/pools/uxd_usdc/deposit';
-        break;
-      case 'USDT-USDC':
-        return 'https://app.saber.so/pools/usdc_usdt/deposit';
-        break;
-
-      default:
-        break;
-    }
-  };
-
   return (
     <>
       <div className="col-xxl-4 col-md-6 col-sm-12">
@@ -125,20 +109,12 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
                 <p>TVL {printTvl()}</p>
               </div>
             </div>
-            <a
-              target="_blank"
-              href={getSaberLpLink(data.title)}
-              rel="noreferrer"
-              className="vaultsetupcontainer-getsaberlp mb-4"
-            >
-              Get Saber LP
-            </a>
             {data.activeStatus && <div className="tokenpaircard__header--activeSticker">● Active</div>}
           </div>
           <div className="tokenpaircard__aprBox">
             <div className="d-flex justify-content-between align-items-center">
               <h6>Platform</h6>
-              <a href={data.platform.link} target="_blank" rel="noreferrer">
+              <a href={getSaberLpLink(data.title)} target="_blank" rel="noreferrer">
                 <div className="d-flex align-items-center mt-1 position-relative">
                   <img src={data.platform.icon} />
                   <h6 className="semiBold ml-1 tokenpaircard__aprBox--platformName">{data.platform.name}</h6>

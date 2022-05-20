@@ -16,6 +16,7 @@ import { useAppendUserAction, usePoolInfo } from '../../contexts/state';
 import WarningLimitBox from './WarningLimitBox';
 import { TokenAmount } from '../../utils/safe-math';
 import { DEPOSIT_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
+import { getSaberLpLink } from '../../libs/helper';
 
 const VaultSetupContainer = ({ data }: any) => {
   const history = useHistory();
@@ -82,23 +83,6 @@ const VaultSetupContainer = ({ data }: any) => {
       else toast.error('Transaction Error!');
     }
     setIsDepositing(false);
-  };
-
-  const getSaberLpLink = (value: string) => {
-    switch (value) {
-      case 'USDH-USDC':
-        return 'https://app.saber.so/pools/usdh_usdc/deposit';
-        break;
-      case 'UXD-USDC':
-        return 'https://app.saber.so/pools/uxd_usdc/deposit';
-        break;
-      case 'USDT-USDC':
-        return 'https://app.saber.so/pools/usdc_usdt/deposit';
-        break;
-
-      default:
-        break;
-    }
   };
 
   return (

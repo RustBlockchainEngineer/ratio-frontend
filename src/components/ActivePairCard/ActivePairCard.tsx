@@ -21,6 +21,8 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { useAppendUserAction, usePoolInfo, useUserVaultInfo } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
+import { getSaberLpLink } from '../../libs/helper';
+
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
 
@@ -100,23 +102,6 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     );
   };
 
-  const getSaberLpLink = (value: string) => {
-    switch (value) {
-      case 'USDH-USDC':
-        return 'https://app.saber.so/pools/usdh_usdc/deposit';
-        break;
-      case 'UXD-USDC':
-        return 'https://app.saber.so/pools/uxd_usdc/deposit';
-        break;
-      case 'USDT-USDC':
-        return 'https://app.saber.so/pools/usdc_usdt/deposit';
-        break;
-
-      default:
-        break;
-    }
-  };
-
   return (
     <>
       <div className="col-xxl-4 col-md-6 col-sm-12">
@@ -149,20 +134,12 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
                 </div>
               </div>
             </div> */}
-            <a
-              target="_blank"
-              href={getSaberLpLink(data.title)}
-              rel="noreferrer"
-              className="vaultsetupcontainer-getsaberlp"
-            >
-              Get Saber LP
-            </a>
           </div>
           <div className="activepaircard__aprBox">
             <div className="d-flex align-items-center justify-content-between">
               <h6>Platform:</h6>
               <h6 className="semiBold">
-                <a href={data.platform.link} target="_blank" rel="noreferrer">
+                <a href={getSaberLpLink(data.title)} target="_blank" rel="noreferrer">
                   <div className="d-inline-flex align-items-center mt-1 position-relative">
                     <img src={data.platform.icon} />
                     <p className="semiBold ml-1">{data.platform.name}</p>

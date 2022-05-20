@@ -13,6 +13,7 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { usePoolInfo } from '../../contexts/state';
+import { getSaberLpLink } from '../../libs/helper';
 
 const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
@@ -116,7 +117,7 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <a href={data.platform.link} target="_blank" rel="noreferrer">
+            <a href={getSaberLpLink(data.title)} target="_blank" rel="noreferrer">
               <div className="d-inline-flex align-items-center mt-1 position-relative">
                 <img src={data.platform.icon} />
                 <p className="semiBold ml-1">{data.platform.name}</p>
