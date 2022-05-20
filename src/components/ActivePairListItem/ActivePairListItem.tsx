@@ -17,6 +17,8 @@ import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useUserVaultInfo, usePoolInfo, useAppendUserAction } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
+import { getSaberLpLink } from '../../libs/helper';
+
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
   const history = useHistory();
@@ -153,7 +155,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
               <div className={classNames('activepaircard__titleBox')}>
                 <h6>{data.title === 'USDC-USDR' ? 'USDC-USDr' : data.title}</h6>
                 <p>TVL {printTvl()}</p>
-                <a href={data.platform.link} target="_blank" rel="noreferrer">
+                <a href={getSaberLpLink(data.title)} target="_blank" rel="noreferrer">
                   <div className="d-inline-flex align-items-center mt-1 position-relative">
                     <img src={data.platform.icon} />
                     <p className="semiBold ml-1">{data.platform.name}</p>
