@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import { PairType } from '../../models/UInterface';
-import { getRiskLevel } from '../../libs/helper';
+import { PairType } from '../../types/VaultTypes';
+import { getRiskLevel } from '../../utils/helper';
 import RayIcon from '../../assets/images/RAY.svg';
 
 type CompareCardProps = {

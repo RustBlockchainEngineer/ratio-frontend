@@ -7,7 +7,6 @@ import { AccountsProvider } from './contexts/accounts';
 // import { MarketProvider } from './contexts/market';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Layer from './pages/Layer';
-import Faucet from './pages/Faucet';
 import AdminPanel from './pages/AdminPanel';
 import { AuthProvider } from './contexts/auth';
 // import { PoolProvider } from './contexts/pools';
@@ -30,7 +29,6 @@ const App: React.FC = () => {
                   <Router>
                     <Switch>
                       <Route path="/dashboard" component={Layer} />
-                      <Route path="/faucet" exact component={Faucet} />
                       <Route path="/adminpanel" component={AdminPanel} />
                       <Route exact path="/">
                         <Redirect to="/dashboard" />

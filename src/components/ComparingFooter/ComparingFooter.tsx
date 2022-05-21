@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { PairType } from '../../models/UInterface';
+import { PairType } from '../../types/VaultTypes';
 import Button from '../Button';
 
 interface ComparingFooterProps {

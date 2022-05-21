@@ -14,7 +14,7 @@ import Button from '../Button';
 import { useWallet } from '../../contexts/wallet';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 
-import { TokenPairCardProps } from '../../models/UInterface';
+import { TokenPairCardProps } from '../../types/VaultTypes';
 import linkIcon from '../../assets/images/link.svg';
 import { isWalletApproveError } from '../../utils/utils';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';

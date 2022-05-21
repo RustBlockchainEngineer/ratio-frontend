@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Connection } from '@solana/web3.js';
-import { getDevnetPools, getMainnetPools } from './saber/ids';
-import { LPair } from '../types/VaultTypes';
+import { getDevnetPools, getMainnetPools } from './ids';
+import { LPair } from '../../../types/VaultTypes';
 // import { SABER_QUARRY_NEW } from './saber/constants';
 
 export async function getSaberFarmsInfo(conn: Connection, connEnv: string, vaults: LPair[]) {
