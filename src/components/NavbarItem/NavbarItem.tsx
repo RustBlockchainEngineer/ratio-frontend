@@ -39,7 +39,7 @@ const NavbarItem = (navBarItemProps: NavbarItemProps) => {
           {icon && <img src={icon} alt="icon" />}
           {!collapseFlag && <p className="ml-3">{name}</p>}
         </div>
-        {expands && !collapseFlag && (
+        {expands && !collapseFlag && positionValues.length > 0 && (
           <div>
             {expandStatus ? (
               <IoIosArrowUp onClick={changeExpandStatus} />

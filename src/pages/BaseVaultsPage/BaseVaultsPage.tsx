@@ -156,6 +156,10 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       }
     };
 
+    if (!connected) {
+      return <h5 className="mt-5 ml-3 allvaults__emptyText">Please connect your wallet</h5>;
+    }
+
     if (vtype === 'grid' && factorial.length === 0) {
       return <h5 className="mt-5 ml-3 allvaults__emptyText">There are no active vaults to display</h5>;
     }
