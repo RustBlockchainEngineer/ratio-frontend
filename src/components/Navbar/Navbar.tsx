@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 import NavbarItem from './../NavbarItem/NavbarItem';
-import Button from '../Button';
+// import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 import collapseLogo from '../../assets/images/image-logo.svg';
@@ -12,7 +12,7 @@ import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
 import activeVaultsIcon from '../../assets/images/active-vaults-icon.svg';
 // import fairdropIcon from '../../assets/images/fairdrop.svg';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
-import { IoWalletOutline } from 'react-icons/io5';
+// import { IoWalletOutline } from 'react-icons/io5';
 import { TokenAmount } from '../../utils/safe-math';
 import { selectors } from '../../features/dashboard';
 import { LPair } from '../../types/VaultTypes';
@@ -21,7 +21,6 @@ import { useAllVaultInfo, useUserOverview } from '../../contexts/state';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 type NavbarProps = {
-  onClickWalletBtn: () => void;
   clickMenuItem: () => void;
   setCollapseFlag: () => void;
   open: boolean;
@@ -29,11 +28,11 @@ type NavbarProps = {
   collapseFlag: boolean;
 };
 
-const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }: NavbarProps) => {
+const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }: NavbarProps) => {
   const location = useLocation();
   const history = useHistory();
   const [navIndex, setNavIndex] = useState(location.pathname);
-  const { connected, connect } = useWallet();
+  const { connected } = useWallet();
   const userOverview = useUserOverview();
 
   const activeVaultCount = userOverview ? userOverview.activeVaults.toString() : '0';
@@ -157,14 +156,7 @@ const Navbar = ({ onClickWalletBtn, clickMenuItem, open, darkMode, collapseFlag,
               </div>
             </div>
           ) : null
-        ) : (
-          <Button
-            onClick={connected ? onClickWalletBtn : connect}
-            className={classNames('button--fill walletBtn', { 'walletBtn--collapse': collapseFlag })}
-          >
-            {!collapseFlag ? <div>Connect Wallet</div> : <IoWalletOutline size={30} />}
-          </Button>
-        )}
+        ) : null}
       </div>
       <div className="navbar-vertical__collapsemenu" onClick={setCollapseFlag}>
         {!collapseFlag ? <RiMenuFoldLine size={25} color="#4c646f" /> : <RiMenuUnfoldLine size={25} color="#4c646f" />}

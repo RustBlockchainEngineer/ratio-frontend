@@ -42,7 +42,7 @@ export const useFetchVaults = (wallet_address: any) => {
   useEffect(() => {
     let cancelRequest = false;
     if (!API_ENDPOINT || !API_ENDPOINT.trim()) return;
-    const url = `${API_ENDPOINT}/pools/${wallet_address}`;
+    const url = `${API_ENDPOINT}/pools`;
 
     // Gets the data for all the existent vaults. If a cached version is found, it gets returned.
     const fetchData = async () => {
@@ -52,12 +52,13 @@ export const useFetchVaults = (wallet_address: any) => {
         dispatch({ type: 'FETCHED', payload: data });
       } else {
         try {
-          if (!wallet_address) return;
+          // if (!wallet_address) return;
           const response = await fetch(url);
           let data: LPair[] = [];
 
           if (response.ok) {
             data = await response.json();
+            console.log(data);
             data = data.map((item) => {
               return {
                 ...item,

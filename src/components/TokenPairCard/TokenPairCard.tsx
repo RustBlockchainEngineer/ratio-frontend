@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+// import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 
 import { useWallet } from '../../contexts/wallet';
@@ -161,22 +161,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
               </label>
             </div>
           ) : (
-            <div className="tokenpaircard__btnBox d-flex">
-              {connected ? (
-                renderModalButton(data.activeStatus)
-              ) : (
-                <OverlayTrigger
-                  placement="top"
-                  trigger="click"
-                  delay={{ show: 250, hide: 400 }}
-                  overlay={<Tooltip id="tooltip">Connect your wallet to unlock this.</Tooltip>}
-                >
-                  <div className="col">
-                    <Button className="button--disabled generate mt-2">Open Vault</Button>
-                  </div>
-                </OverlayTrigger>
-              )}
-            </div>
+            <div className="tokenpaircard__btnBox d-flex">{renderModalButton(data.activeStatus)}</div>
           )}
           {
             /* TODO: fix this */ hasUserReachedDebtLimit && (
