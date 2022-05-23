@@ -24,20 +24,3 @@ export const getRiskLevel = (c: number) => {
   else if (c > 200 && c <= 250) return ERiskLevel.EXTREME;
   return ERiskLevel.VERY_LOW;
 };
-
-export const getSaberLpLink = (value: string) => {
-  switch (value) {
-    case 'USDH-USDC':
-      return 'https://app.saber.so/pools/usdh/deposit';
-      break;
-    case 'UXD-USDC':
-      return 'https://app.saber.so/pools/uxd/deposit';
-      break;
-    case 'USDT-USDC':
-      return 'https://app.saber.so/pools/usdc_usdt/deposit';
-      break;
-
-    default:
-      break;
-  }
-};

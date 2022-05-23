@@ -16,7 +16,6 @@ import { useAppendUserAction, usePoolInfo } from '../../contexts/state';
 import WarningLimitBox from './WarningLimitBox';
 import { TokenAmount } from '../../utils/safe-math';
 import { DEPOSIT_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
-import { getSaberLpLink } from '../../libs/helper';
 
 const VaultSetupContainer = ({ data }: any) => {
   const history = useHistory();
@@ -25,7 +24,7 @@ const VaultSetupContainer = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
   const poolInfo = usePoolInfo(data?.mint);
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
-  const PoolManagerFactory = useGetPoolManager(vault);
+  const poolManager = useGetPoolManager(vault);
 
   const collAccount = useAccountByMint(data.mint);
   const [depositAmount, setDepositAmount] = React.useState<any>();
@@ -66,7 +65,7 @@ const VaultSetupContainer = ({ data }: any) => {
       }
 
       setIsDepositing(true);
-      const txHash = await PoolManagerFactory?.depositLP(
+      const txHash = await poolManager?.depositLP(
         connection,
         wallet,
         vault as LPair,
@@ -94,7 +93,7 @@ const VaultSetupContainer = ({ data }: any) => {
           </p>
           <a
             target="_blank"
-            href={getSaberLpLink(data.title)}
+            href={poolManager.getLpLink(data.title)}
             rel="noreferrer"
             className="vaultsetupcontainer-getsaberlp"
           >

@@ -57,4 +57,24 @@ export class SaberPoolManager extends GenericPoolManager {
     }
     return 0;
   }
+  getTokenName() {
+    return 'SBR';
+  }
+
+  getLpLink = (value: string) => {
+    switch (value) {
+      case 'USDH-USDC':
+        return 'https://app.saber.so/pools/usdh/deposit';
+        break;
+      case 'UXD-USDC':
+        return 'https://app.saber.so/pools/uxd/deposit';
+        break;
+      case 'USDT-USDC':
+        return 'https://app.saber.so/pools/usdc_usdt/deposit';
+        break;
+
+      default:
+        break;
+    }
+  };
 }
