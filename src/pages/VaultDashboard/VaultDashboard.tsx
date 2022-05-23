@@ -237,6 +237,7 @@ const VaultDashboard = () => {
                   depositValue={depositValue}
                   withdrawValue={withdrawValue}
                   debtValue={debtValue}
+                  generateValue={generateValue}
                   type="deposit_withdraw"
                   price={poolInfo?.oraclePrice}
                 />

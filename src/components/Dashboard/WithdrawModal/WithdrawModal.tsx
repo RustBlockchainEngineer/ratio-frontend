@@ -34,6 +34,7 @@ const WithdrawModal = ({ data }: any) => {
   const [buttonDisabled, setButtonDisabled] = useState(+data.debtValue !== 0);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
+  const [maxWithdrawalAmount, setMaxWithdrawalAmount] = useState(0);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
@@ -42,6 +43,10 @@ const WithdrawModal = ({ data }: any) => {
   const withdrawAmountUSD = new TokenAmount(withdrawAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
   const appendUserAction = useAppendUserAction();
+
+  useEffect(() => {
+    console.log('withdraw modal data =', data);
+  });
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -60,6 +65,13 @@ const WithdrawModal = ({ data }: any) => {
     setWithdrawAmount('');
     return () => setDidMount(false);
   }, []);
+
+  useEffect(() => {
+    // if debt is not zero, user can withdraw up to its risk level
+    const totalUsdr = data.debtValue + data.ableToMint;
+    if (totalUsdr) setMaxWithdrawalAmount(Math.floor(((data.value * data.ableToMint) / totalUsdr) * 100) / 100);
+    else setMaxWithdrawalAmount(0);
+  }, [data]);
 
   if (!didMount) {
     return null;
@@ -145,15 +157,11 @@ const WithdrawModal = ({ data }: any) => {
             <h5>
               Withdraw up to{' '}
               <strong>
-                {data.value} {data.title}
+                {maxWithdrawalAmount} {data.title}
               </strong>{' '}
               tokens from your vault.
             </h5>
-            {Number(data.debtValue) !== 0 ? (
-              <div className="customInput--valid">LP cannot be withdrawn until USDr debt is paid back</div>
-            ) : (
-              <div className="customInput--valid">Please harvest your rewards before withdrawing LP</div>
-            )}
+            <div className="customInput--valid">Please harvest your rewards before withdrawing LP</div>
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -162,15 +170,15 @@ const WithdrawModal = ({ data }: any) => {
             <CustomInput
               appendStr="Max"
               initValue={0}
-              appendValueStr={`${data.value}`}
+              appendValueStr={`${maxWithdrawalAmount}`}
               tokenStr={`${data.title}`}
               onTextChange={(value: any) => {
-                setAmountValue((value / data.value) * 100);
+                setAmountValue((value / maxWithdrawalAmount) * 100);
                 setWithdrawAmount(value);
                 setWithdrawStatus(false);
                 setButtonDisabled(false);
               }}
-              maxValue={data.value}
+              maxValue={maxWithdrawalAmount}
               valid={withdrawStatus}
               invalidStr={invalidStr}
               value={withdrawAmount}
@@ -180,7 +188,7 @@ const WithdrawModal = ({ data }: any) => {
             </p>
             <AmountSlider
               onChangeValue={(value) => {
-                setWithdrawAmount(Number(data.value * (value / 100)).toFixed(2));
+                setWithdrawAmount(Number(maxWithdrawalAmount * (value / 100)).toFixed(2));
                 setAmountValue(value);
                 setWithdrawStatus(false);
                 setButtonDisabled(false);
@@ -189,7 +197,7 @@ const WithdrawModal = ({ data }: any) => {
             />
             <Button
               className="button--blue bottomBtn"
-              disabled={withdrawAmount <= 0 || buttonDisabled || +data.debtValue !== 0 || isWithdrawing}
+              disabled={withdrawAmount <= 0 || buttonDisabled || isWithdrawing}
               onClick={withdraw}
             >
               Withdraw Assets
