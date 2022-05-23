@@ -58,11 +58,10 @@ export function RFStateProvider({ children = undefined as any }) {
   const [globalState, setGlobalState] = useState<any>(null);
   const [oracleState, setOracleState] = useState<any>(null);
   const [poolState, setPoolState] = useState<any>(null);
-  const [overview, setOverview] = useState<any>(null);
   const [vaultState, setVaultState] = useState<any>(null);
+  const [overview, setOverview] = useState<any>(null);
 
   const [updateFinished, setUpdateFinished] = useState(false);
-
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
   const [walletUpdated, setWalletUpdated] = useState(false);
 

@@ -19,7 +19,7 @@ const TokensEarned = ({ data }: any) => {
   const connection = useConnection();
   const { wallet } = useWallet();
 
-  const PoolManagerFactory = useGetPoolManager(vault);
+  const poolManager = useGetPoolManager(vault);
 
   const vaultState = useUserVaultInfo(data.mintAddress);
 
@@ -29,13 +29,13 @@ const TokensEarned = ({ data }: any) => {
 
   const harvest = async () => {
     try {
-      if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
+      if (!poolManager || !poolManager?.harvestReward) {
         throw new Error('Pool manager factory not initialized');
       }
 
       console.log('Harvesting...');
       setIsHarvesting(true);
-      const txHash = await PoolManagerFactory?.harvestReward(connection, wallet, vault as LPair);
+      const txHash = await poolManager?.harvestReward(connection, wallet, vault as LPair);
       appendUserAction(
         wallet.publicKey.toString(),
         data.mintAddress,
@@ -54,20 +54,6 @@ const TokensEarned = ({ data }: any) => {
     setIsHarvesting(false);
   };
 
-  const getTokenNameByPlatform = (name: string) => {
-    let tokenName;
-    switch (name) {
-      case 'SABER':
-        tokenName = 'SBR';
-        break;
-
-      default:
-        tokenName = 'SBR';
-        break;
-    }
-    return tokenName;
-  };
-
   return (
     <div className="tokensearned">
       <h4>Tokens Earned</h4>
@@ -84,10 +70,10 @@ const TokensEarned = ({ data }: any) => {
             <td className="tokensearned__name">
               {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
               <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
-              {getTokenNameByPlatform(data?.platform?.name)}
+              {poolManager.getTokenName()}
             </td>
             <td className="align-middle">
-              {vaultState ? vaultState.reward : 0} {getTokenNameByPlatform(data?.platform?.name)}
+              {vaultState ? vaultState.reward : 0} {poolManager.getTokenName()}
             </td>
             <td className="align-middle">
               {!vaultState?.rewardUSD ? (

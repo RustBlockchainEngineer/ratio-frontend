@@ -44,7 +44,8 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
     // const apy = Number(((1 + (apr / 100) / 365) ** 365 - 1) * 100)
     return apr;
   }
-
+  abstract getTokenName();
+  abstract getLpLink(value: string);
   abstract getTVLbyVault(vault: LPair): number;
 
   abstract depositLP(

@@ -21,8 +21,6 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { useAppendUserAction, usePoolInfo, useUserVaultInfo } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
-import { getSaberLpLink } from '../../libs/helper';
-
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
 
@@ -37,7 +35,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const [isHarvesting, setIsHarvesting] = useState(false);
 
-  const PoolManagerFactory = useGetPoolManager(data.item);
+  const poolManager = useGetPoolManager(data.item);
 
   const appendUserAction = useAppendUserAction();
 
@@ -60,12 +58,12 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     setIsHarvesting(true);
 
     try {
-      if (!PoolManagerFactory || !PoolManagerFactory?.harvestReward) {
+      if (!poolManager || !poolManager?.harvestReward) {
         throw new Error('Pool manager factory not initialized');
       }
 
       console.log('Harvesting...');
-      const txHash = await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
+      const txHash = await poolManager?.harvestReward(connection, wallet, data.item);
       appendUserAction(wallet.publicKey.toString(), data.mint, data.realUserRewardMint, HARVEST_ACTION, 0, txHash);
 
       toast.success('Successfully Harvested!');
@@ -139,7 +137,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             <div className="d-flex align-items-center justify-content-between">
               <h6>Platform:</h6>
               <h6 className="semiBold">
-                <a href={getSaberLpLink(data.title)} target="_blank" rel="noreferrer">
+                <a href={poolManager.getLpLink(data.title)} target="_blank" rel="noreferrer">
                   <div className="d-inline-flex align-items-center mt-1 position-relative">
                     <img src={data.platform.icon} />
                     <p className="semiBold ml-1">{data.platform.name}</p>

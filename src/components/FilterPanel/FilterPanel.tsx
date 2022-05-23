@@ -10,10 +10,10 @@ import { actionTypes, selectors } from '../../features/dashboard';
 
 import { ThemeContext } from '../../contexts/ThemeContext';
 
-import raydiumIcon from '../../assets/images/raydium.svg';
-import orcaIcon from '../../assets/images/orca.svg';
-import mercurialIcon from '../../assets/images/mercurial.svg';
-import saberIcon from '../../assets/images/saber.svg';
+// import raydiumIcon from '../../assets/images/raydium.svg';
+// import orcaIcon from '../../assets/images/orca.svg';
+// import mercurialIcon from '../../assets/images/mercurial.svg';
+// import saberIcon from '../../assets/images/saber.svg';
 
 import title from '../../assets/images/tile.svg';
 import list from '../../assets/images/list.svg';
@@ -41,13 +41,13 @@ const optionsViewBy = [
 ];
 
 // eslint-disable-next-line
-const platformOptions = [
-  { value: 'ALL', label: 'All platforms', icon: null },
-  { value: 'RAYDIUM', label: 'Raydium', icon: raydiumIcon },
-  { value: 'ORCA', label: 'Orca', icon: orcaIcon },
-  { value: 'MERCURIAL', label: 'Mercurial', icon: mercurialIcon },
-  { value: 'SABER', label: 'Saber', icon: saberIcon },
-];
+// const platformOptions = [
+//   { value: 'ALL', label: 'All platforms', icon: null },
+//   { value: 'RAYDIUM', label: 'Raydium', icon: raydiumIcon },
+//   { value: 'ORCA', label: 'Orca', icon: orcaIcon },
+//   { value: 'MERCURIAL', label: 'Mercurial', icon: mercurialIcon },
+//   { value: 'SABER', label: 'Saber', icon: saberIcon },
+// ];
 
 const FilterPanel = ({ label, onViewType, viewType }: FilterPanelProps) => {
   const dispatch = useDispatch();

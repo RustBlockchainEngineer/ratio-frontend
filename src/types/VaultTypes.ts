@@ -43,7 +43,7 @@ export interface LPair {
   pool_size: number;
   platform_id: string;
   platform_symbol?: string;
-  platform_name?: string;
+  platform_name?: PoolProvider;
   platform_site?: string;
   platform_icon?: string;
   collateralization_ratio: number;
