@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useState } from 'react';
 // import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
@@ -94,7 +95,7 @@ const Layer = () => {
     setCollapseFlag(!collapseFlag);
   };
 
-  // console.log(connected);
+  // console.log(authFetchLoading);
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
@@ -118,59 +119,36 @@ const Layer = () => {
         <div
           className={classNames('layer_container', {
             'layer_container--collapse': collapseFlag,
-            'layer_container--empty': !enable || !connected,
           })}
         >
           <Header onClickWalletBtn={onClickWalletBtn} darkMode={darkMode} enable={enable} />
-          {enable && connected ? (
-            <>
-              <Navbar
-                darkMode={darkMode}
-                onClickWalletBtn={onClickWalletBtn}
-                clickMenuItem={clickMenuTrigger}
-                open={menuOpen}
-                collapseFlag={collapseFlag}
-                setCollapseFlag={onCollapseMenu}
-              />
+          <div>
+            <Navbar
+              darkMode={darkMode}
+              clickMenuItem={clickMenuTrigger}
+              open={menuOpen}
+              collapseFlag={collapseFlag}
+              setCollapseFlag={onCollapseMenu}
+            />
 
-              <div>
-                <Switch>
-                  <Route path="/dashboard/available-vaults" component={AllVaults} exact />
-                  <Route path="/dashboard/active-vaults" component={ActiveVaults} exact />
-                  <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
-                  <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
-                  <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
-                  <Route path="/dashboard/vaultsetup/:mint" component={VaultSetup} exact />
-                  <Route path="/dashboard/fairdrop" component={FairdropPage} exact />
-                  <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
-                  <Route exact path="/dashboard">
-                    <Redirect to="/dashboard/available-vaults" />
-                  </Route>
-                </Switch>
-                <Footer darkMode={darkMode} />
-              </div>
-              {isTabletOrMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
-            </>
-          ) : (
-            <div className="layer__empty">
-              <div className="text-center">
-                <img src={darkMode ? darkLogo : logoside} alt="logoside" />
-                <h4 className="mt-4">De-Risking Defi</h4>
-                <h6 className="mt-4">Join our community</h6>
-                <div className="layer__social mt-3">
-                  <a target="_blank" href="https://t.me/ratiofinance" rel="noreferrer">
-                    <img src={darkMode ? telegramDark : telegram} alt="telegram" />
-                  </a>
-                  <a target="_blank" href="https://twitter.com/ratiofinance" rel="noreferrer" className="ml-3">
-                    <img src={darkMode ? twitterDark : twitter} alt="twitter" />
-                  </a>
-                  <a target="_blank" href="https://medium.com/@ratiofinance" rel="noreferrer" className="ml-3">
-                    <img src={darkMode ? mediumDark : medium} alt="medium" />
-                  </a>
-                </div>
-              </div>
+            <div>
+              <Switch>
+                <Route path="/dashboard/available-vaults" component={AllVaults} exact />
+                <Route path="/dashboard/active-vaults" component={ActiveVaults} exact />
+                <Route path="/dashboard/my-archived-vaults" component={ArchivedVaults} exact />
+                <Route path="/dashboard/insta-buy-lp" component={InstaBuyLp} exact />
+                <Route path="/dashboard/vaultdashboard/:mint" component={VaultDashboard} exact />
+                <Route path="/dashboard/vaultsetup/:mint" component={VaultSetup} exact />
+                <Route path="/dashboard/fairdrop" component={FairdropPage} exact />
+                <Route path="/dashboard/compareVaults" component={CompareVaults} exact />
+                <Route exact path="/dashboard">
+                  <Redirect to="/dashboard/available-vaults" />
+                </Route>
+              </Switch>
+              <Footer darkMode={darkMode} />
             </div>
-          )}
+            {isTabletOrMobile && <MobileMenuTrigger clickMenuTrigger={clickMenuTrigger} open={menuOpen} />}
+          </div>
         </div>
       )}
     </div>
