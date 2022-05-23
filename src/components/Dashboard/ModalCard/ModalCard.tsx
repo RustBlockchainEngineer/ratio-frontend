@@ -39,6 +39,7 @@ const ModalCard = ({
     title: tokenName,
     value: withdrawValue,
     debtValue: debtValue,
+    ableToMint: generateValue,
     usdrMint: USDR_MINT_KEY,
     riskLevel: riskLevel,
     tokenPrice: price,
