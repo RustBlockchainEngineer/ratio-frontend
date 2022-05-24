@@ -81,27 +81,6 @@ export const getCoinPicSymbol = (symbol: string) => {
   }
 };
 
-export const getSpreadsheet = async (offset: any, limit: any, callback: any) => {
-  try {
-    await doc.useServiceAccountAuth({
-      client_email: CLIENT_EMAIL || '',
-      private_key: PRIVATE_KEY.replace(/\\n/g, '\n'),
-    });
-    await doc.loadInfo();
-    const sheet = doc.sheetsByIndex[0];
-    const rows = await sheet.getRows({ offset: offset, limit: limit });
-    callback(rows);
-  } catch (e) {
-    console.error('Error: ', e);
-  }
-};
-
-export function chunks(array: any, size: any) {
-  return Array.apply(0, new Array(Math.ceil(array.length / size))).map((_, index) =>
-    array.slice(index * size, (index + 1) * size)
-  );
-}
-
 export const getRiskLevel = (c: number) => {
   if (c <= 130) return ERiskLevel.LOW;
   else if (c > 130 && c <= 145) return ERiskLevel.MEDIUM;

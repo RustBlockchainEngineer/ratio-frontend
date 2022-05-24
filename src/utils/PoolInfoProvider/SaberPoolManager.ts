@@ -5,14 +5,6 @@ import { calculateRewardByPlatform, PLATFORM_IDS } from '../ratio-lending';
 import { deposit, harvest, withdraw } from '../saber/saber-utils';
 
 export class SaberPoolManager extends GenericPoolManager {
-  getTVLbyVault(vault: LPair): number {
-    if (!this.poolInfoCache) {
-      return NaN;
-    }
-    const vaultInfo = this.poolInfoCache[vault.platform_symbol ?? vault.symbol];
-    return vaultInfo?.tvl as number;
-  }
-
   async depositLP(
     connection: Connection,
     wallet: any,

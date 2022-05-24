@@ -1,20 +1,9 @@
-import { ACCOUNT_LAYOUT } from '@project-serum/common/dist/lib/token';
-import { initializeAccount } from '@project-serum/serum/lib/token-instructions';
-import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import {
-  Keypair,
-  Commitment,
-  Connection,
-  PublicKey,
-  Transaction,
-  TransactionSignature,
-  SystemProgram,
-} from '@solana/web3.js';
+import { Keypair, Commitment, Connection, PublicKey, Transaction, TransactionSignature } from '@solana/web3.js';
 
-export const commitment: Commitment = 'confirmed';
+const commitment: Commitment = 'confirmed';
 
 // transaction
-export async function signTransaction(
+async function signTransaction(
   connection: Connection,
   wallet: any,
   transaction: Transaction,
@@ -29,7 +18,7 @@ export async function signTransaction(
 }
 
 // transaction
-export async function signAllTransaction(
+async function signAllTransaction(
   connection: Connection,
   wallet: any,
   transactions: Transaction[],
@@ -89,7 +78,7 @@ export async function sendAllTransaction(
   return txIds;
 }
 
-export async function sendSignedTransaction(connection: Connection, signedTransaction: Transaction): Promise<string> {
+async function sendSignedTransaction(connection: Connection, signedTransaction: Transaction): Promise<string> {
   const rawTransaction = signedTransaction.serialize();
 
   const txid: TransactionSignature = await connection.sendRawTransaction(rawTransaction, {
@@ -100,17 +89,17 @@ export async function sendSignedTransaction(connection: Connection, signedTransa
   return txid;
 }
 
-export function mergeTransactions(transactions: (Transaction | undefined)[]) {
-  const transaction = new Transaction();
-  transactions
-    .filter((t): t is Transaction => t !== undefined)
-    .forEach((t) => {
-      transaction.add(t);
-    });
-  return transaction;
-}
+// function mergeTransactions(transactions: (Transaction | undefined)[]) {
+//   const transaction = new Transaction();
+//   transactions
+//     .filter((t): t is Transaction => t !== undefined)
+//     .forEach((t) => {
+//       transaction.add(t);
+//     });
+//   return transaction;
+// }
 
-export async function getFilteredTokenAccountsByOwner(
+async function getFilteredTokenAccountsByOwner(
   connection: Connection,
   programId: PublicKey,
   mint: PublicKey
@@ -153,129 +142,129 @@ export async function getOneFilteredTokenAccountsByOwner(
   return '';
 }
 
-export async function createTokenAccountIfNotExist(
-  connection: Connection,
-  account: string | undefined | null,
-  owner: PublicKey,
-  mintAddress: string,
-  lamports: number | null,
+// async function createTokenAccountIfNotExist(
+//   connection: Connection,
+//   account: string | undefined | null,
+//   owner: PublicKey,
+//   mintAddress: string,
+//   lamports: number | null,
 
-  transaction: Transaction,
-  signer: Array<Keypair>
-) {
-  let publicKey;
+//   transaction: Transaction,
+//   signer: Array<Keypair>
+// ) {
+//   let publicKey;
 
-  if (account) {
-    publicKey = new PublicKey(account);
-  } else {
-    publicKey = await createProgramAccountIfNotExist(
-      connection,
-      account,
-      owner,
-      TOKEN_PROGRAM_ID,
-      lamports,
-      ACCOUNT_LAYOUT,
-      transaction,
-      signer
-    );
+//   if (account) {
+//     publicKey = new PublicKey(account);
+//   } else {
+//     publicKey = await createProgramAccountIfNotExist(
+//       connection,
+//       account,
+//       owner,
+//       TOKEN_PROGRAM_ID,
+//       lamports,
+//       ACCOUNT_LAYOUT,
+//       transaction,
+//       signer
+//     );
 
-    transaction.add(
-      initializeAccount({
-        account: publicKey,
-        mint: new PublicKey(mintAddress),
-        owner,
-      })
-    );
-  }
+//     transaction.add(
+//       initializeAccount({
+//         account: publicKey,
+//         mint: new PublicKey(mintAddress),
+//         owner,
+//       })
+//     );
+//   }
 
-  return publicKey;
-}
+//   return publicKey;
+// }
 
-export async function createProgramAccountIfNotExist(
-  connection: Connection,
-  account: string | undefined | null,
-  owner: PublicKey,
-  programId: PublicKey,
-  lamports: number | null,
-  layout: any,
+// async function createProgramAccountIfNotExist(
+//   connection: Connection,
+//   account: string | undefined | null,
+//   owner: PublicKey,
+//   programId: PublicKey,
+//   lamports: number | null,
+//   layout: any,
 
-  transaction: Transaction,
-  signer: Array<Keypair>
-) {
-  let publicKey;
+//   transaction: Transaction,
+//   signer: Array<Keypair>
+// ) {
+//   let publicKey;
 
-  if (account) {
-    publicKey = new PublicKey(account);
-  } else {
-    const newAccount = new Keypair();
-    publicKey = newAccount.publicKey;
+//   if (account) {
+//     publicKey = new PublicKey(account);
+//   } else {
+//     const newAccount = new Keypair();
+//     publicKey = newAccount.publicKey;
 
-    transaction.add(
-      SystemProgram.createAccount({
-        fromPubkey: owner,
-        newAccountPubkey: publicKey,
-        lamports: lamports ?? (await connection.getMinimumBalanceForRentExemption(layout.span)),
-        space: layout.span,
-        programId,
-      })
-    );
+//     transaction.add(
+//       SystemProgram.createAccount({
+//         fromPubkey: owner,
+//         newAccountPubkey: publicKey,
+//         lamports: lamports ?? (await connection.getMinimumBalanceForRentExemption(layout.span)),
+//         space: layout.span,
+//         programId,
+//       })
+//     );
 
-    signer.push(newAccount);
-  }
+//     signer.push(newAccount);
+//   }
 
-  return publicKey;
-}
+//   return publicKey;
+// }
 
-export async function checkWalletATA(connection: Connection, walletPubkey: PublicKey, mint: string) {
-  const parsedTokenAccounts = await connection.getParsedTokenAccountsByOwner(
-    walletPubkey,
-    {
-      programId: TOKEN_PROGRAM_ID,
-    },
-    'confirmed'
-  );
-  let result: any = null;
-  parsedTokenAccounts.value.forEach(async (tokenAccountInfo) => {
-    const tokenAccountPubkey = tokenAccountInfo.pubkey;
-    const parsedInfo = tokenAccountInfo.account.data.parsed.info;
-    const mintAddress = parsedInfo.mint;
-    if (mintAddress === mint) {
-      result = tokenAccountPubkey.toBase58();
-    }
-  });
-  return result;
-}
+// async function checkWalletATA(connection: Connection, walletPubkey: PublicKey, mint: string) {
+//   const parsedTokenAccounts = await connection.getParsedTokenAccountsByOwner(
+//     walletPubkey,
+//     {
+//       programId: TOKEN_PROGRAM_ID,
+//     },
+//     'confirmed'
+//   );
+//   let result: any = null;
+//   parsedTokenAccounts.value.forEach(async (tokenAccountInfo) => {
+//     const tokenAccountPubkey = tokenAccountInfo.pubkey;
+//     const parsedInfo = tokenAccountInfo.account.data.parsed.info;
+//     const mintAddress = parsedInfo.mint;
+//     if (mintAddress === mint) {
+//       result = tokenAccountPubkey.toBase58();
+//     }
+//   });
+//   return result;
+// }
 
-export async function createAssociatedTokenAccountIfNotExist(
-  account: string | undefined | null,
-  owner: PublicKey,
-  mintAddress: string,
+// async function createAssociatedTokenAccountIfNotExist(
+//   account: string | undefined | null,
+//   owner: PublicKey,
+//   mintAddress: string,
 
-  transaction: Transaction,
-  atas: string[] = []
-) {
-  let publicKey;
-  if (account) {
-    publicKey = new PublicKey(account);
-  }
+//   transaction: Transaction,
+//   atas: string[] = []
+// ) {
+//   let publicKey;
+//   if (account) {
+//     publicKey = new PublicKey(account);
+//   }
 
-  const mint = new PublicKey(mintAddress);
+//   const mint = new PublicKey(mintAddress);
 
-  const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner);
+//   const ata = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner);
 
-  if ((!publicKey || !ata.equals(publicKey)) && !atas.includes(ata.toBase58())) {
-    transaction.add(
-      Token.createAssociatedTokenAccountInstruction(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        mint,
-        ata,
-        owner,
-        owner
-      )
-    );
-    atas.push(ata.toBase58());
-  }
+//   if ((!publicKey || !ata.equals(publicKey)) && !atas.includes(ata.toBase58())) {
+//     transaction.add(
+//       Token.createAssociatedTokenAccountInstruction(
+//         ASSOCIATED_TOKEN_PROGRAM_ID,
+//         TOKEN_PROGRAM_ID,
+//         mint,
+//         ata,
+//         owner,
+//         owner
+//       )
+//     );
+//     atas.push(ata.toBase58());
+//   }
 
-  return ata;
-}
+//   return ata;
+// }

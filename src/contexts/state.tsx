@@ -431,13 +431,13 @@ export function RFStateProvider({ children = undefined as any }) {
   );
 }
 
-export function useRFState() {
-  const context = React.useContext(RFStateContext);
-  if (!context) {
-    throw new Error('[useRFState] Hook not used under Vaults context provider');
-  }
-  return context;
-}
+// function useRFState() {
+//   const context = React.useContext(RFStateContext);
+//   if (!context) {
+//     throw new Error('[useRFState] Hook not used under Vaults context provider');
+//   }
+//   return context;
+// }
 
 export function useRFStateInfo() {
   const context = React.useContext(RFStateContext);
@@ -462,16 +462,16 @@ export function usePoolInfo(mint: string) {
 
   return context.poolState ? context.poolState[mint] : null;
 }
-export function useOracleInfo(mint: string) {
-  const context = React.useContext(RFStateContext);
+// function useOracleInfo(mint: string) {
+//   const context = React.useContext(RFStateContext);
 
-  return context.oracleState[mint];
-}
+//   return context.oracleState[mint];
+// }
 
-export function useAllOracleInfo() {
-  const context = React.useContext(RFStateContext);
-  return context.oracleState;
-}
+// function useAllOracleInfo() {
+//   const context = React.useContext(RFStateContext);
+//   return context.oracleState;
+// }
 
 export function useUserOverview() {
   const context = React.useContext(RFStateContext);

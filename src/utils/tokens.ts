@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash-es';
 
 import { TokenAmount } from './safe-math';
 
-export interface TokenInfo {
+interface TokenInfo {
   symbol: string;
   name: string;
 
@@ -49,26 +49,26 @@ export function getTokenBySymbol(symbol: string): TokenInfo | null {
 
  * @returns {TokenInfo | null} tokenInfo
  */
-export function getTokenByMintAddress(mintAddress: string): TokenInfo | null {
-  if (mintAddress === NATIVE_SOL.mintAddress) {
-    return cloneDeep(NATIVE_SOL);
-  }
-  const token = Object.values(TOKENS).find((item) => item.mintAddress === mintAddress);
-  return token ? cloneDeep(token) : null;
-}
-export interface Tokens {
+// function getTokenByMintAddress(mintAddress: string): TokenInfo | null {
+//   if (mintAddress === NATIVE_SOL.mintAddress) {
+//     return cloneDeep(NATIVE_SOL);
+//   }
+//   const token = Object.values(TOKENS).find((item) => item.mintAddress === mintAddress);
+//   return token ? cloneDeep(token) : null;
+// }
+interface Tokens {
   [key: string]: any;
   [index: number]: any;
 }
 
-export const TOKENS_TAGS: { [key: string]: { mustShow: boolean; show: boolean; outName: string } } = {
-  raydium: { mustShow: true, show: true, outName: 'Raydium Default List' },
-  userAdd: { mustShow: true, show: true, outName: 'User Added Tokens' },
-  solana: { mustShow: false, show: false, outName: 'Solana Token List' },
-  unofficial: { mustShow: false, show: false, outName: 'Permissionless Pool Tokens' },
-};
+// const TOKENS_TAGS: { [key: string]: { mustShow: boolean; show: boolean; outName: string } } = {
+//   raydium: { mustShow: true, show: true, outName: 'Raydium Default List' },
+//   userAdd: { mustShow: true, show: true, outName: 'User Added Tokens' },
+//   solana: { mustShow: false, show: false, outName: 'Solana Token List' },
+//   unofficial: { mustShow: false, show: false, outName: 'Permissionless Pool Tokens' },
+// };
 
-export const NATIVE_SOL: TokenInfo = {
+const NATIVE_SOL: TokenInfo = {
   symbol: 'SOL',
   name: 'Native Solana',
   mintAddress: 'So11111111111111111111111111111111111111112',
@@ -76,7 +76,7 @@ export const NATIVE_SOL: TokenInfo = {
   tags: [],
 };
 
-export const TOKENS: Tokens = {
+const TOKENS: Tokens = {
   USDT: {
     symbol: 'USDT',
     name: 'USDT',

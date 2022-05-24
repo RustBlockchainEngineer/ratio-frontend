@@ -57,13 +57,13 @@ const HandleTooltip = (props: {
   );
 };
 
-export const handleRender: SliderProps['handleRender'] = (node, props) => {
-  return (
-    <HandleTooltip value={props.value} visible={props.dragging}>
-      {node}
-    </HandleTooltip>
-  );
-};
+// const handleRender: SliderProps['handleRender'] = (node, props) => {
+//   return (
+//     <HandleTooltip value={props.value} visible={props.dragging}>
+//       {node}
+//     </HandleTooltip>
+//   );
+// };
 
 const TooltipSlider = ({
   tipFormatter,

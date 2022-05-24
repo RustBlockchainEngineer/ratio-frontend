@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
 import { EventEmitter as Emitter } from 'eventemitter3';
 
-export class CacheUpdateEvent {
+class CacheUpdateEvent {
   static type = 'CacheUpdate';
   id: string;
   parser: any;
@@ -14,7 +14,7 @@ export class CacheUpdateEvent {
   }
 }
 
-export class CacheDeleteEvent {
+class CacheDeleteEvent {
   static type = 'CacheUpdate';
   id: string;
   constructor(id: string) {
@@ -22,7 +22,7 @@ export class CacheDeleteEvent {
   }
 }
 
-export class MarketUpdateEvent {
+class MarketUpdateEvent {
   static type = 'MarketUpdate';
   ids: Set<string>;
   constructor(ids: Set<string>) {
@@ -30,7 +30,7 @@ export class MarketUpdateEvent {
   }
 }
 
-export class CacheClearEvent {
+class CacheClearEvent {
   static type = 'CacheDelete';
 }
 

@@ -141,7 +141,7 @@ export const getQuarryInfo = async (connection: Connection, mintCollKey: PublicK
   return parsedData;
 };
 
-export const createSaberQuarryMinerIfneededTx = async (
+const createSaberQuarryMinerIfneededTx = async (
   connection: Connection,
   wallet: typeof anchor.Wallet,
   mintCollKey: PublicKey
@@ -265,7 +265,7 @@ const unstakeColalteralFromSaberTx = async (
   return transaction;
 };
 
-export const harvestRewardsFromSaberTx = async (
+const harvestRewardsFromSaberTx = async (
   connection: Connection,
   wallet: typeof anchor.Wallet,
   mintCollKey: PublicKey
@@ -318,7 +318,7 @@ export const harvestRewardsFromSaberTx = async (
   return txn;
 };
 
-export const redeemAllTokensTx = async (connection: Connection, wallet: typeof anchor.Wallet) => {
+const redeemAllTokensTx = async (connection: Connection, wallet: typeof anchor.Wallet) => {
   const program = getProgramInstance(connection, wallet);
   const sdk = Saber.load({
     provider: program.provider as any,

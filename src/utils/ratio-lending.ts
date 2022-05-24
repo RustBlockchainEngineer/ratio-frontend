@@ -34,7 +34,7 @@ export const BORROW_ACTION = 'Borrow';
 export const PAYBACK_ACTION = 'Payback';
 export const HARVEST_ACTION = 'Harvest';
 
-export const HISTORY_TO_SHOW = 5;
+//const HISTORY_TO_SHOW = 5;
 export const USD_FAIR_PRICE = true;
 // default platform values
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;

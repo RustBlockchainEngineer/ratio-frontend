@@ -2,27 +2,22 @@
 /* eslint-disable no-restricted-properties */
 /* eslint-disable no-nested-ternary */
 import { useCallback, useState } from 'react';
-import { MintInfo } from '@solana/spl-token';
 
 import { Connection, PublicKey } from '@solana/web3.js';
-import BN from 'bn.js';
-import { TokenInfo } from '@solana/spl-token-registry';
-import { WAD, ZERO } from '../constants';
-import { TokenAccount } from './../models';
 
 import * as serumCmn from '@project-serum/common';
 import * as anchor from '@project-serum/anchor';
 
-export type KnownTokenMap = Map<string, TokenInfo>;
+//type KnownTokenMap = Map<string, TokenInfo>;
 
-export const formatPriceNumber = new Intl.NumberFormat('en-US', {
-  style: 'decimal',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 8,
-});
-export function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
+// const formatPriceNumber = new Intl.NumberFormat('en-US', {
+//   style: 'decimal',
+//   minimumFractionDigits: 2,
+//   maximumFractionDigits: 8,
+// });
+// function sleep(ms: number) {
+//   return new Promise((r) => setTimeout(r, ms));
+// }
 
 export function useLocalStorageState(key: string, defaultState?: string) {
   const [state, setState] = useState(() => {
@@ -58,113 +53,113 @@ export function shortenAddress(address: string, chars = 4): string {
   return `${address.slice(0, chars)}...${address.slice(-chars)}`;
 }
 
-export function getTokenName(map: KnownTokenMap, mint?: string | PublicKey, shorten = true): string {
-  const mintAddress = typeof mint === 'string' ? mint : mint?.toBase58();
+// function getTokenName(map: KnownTokenMap, mint?: string | PublicKey, shorten = true): string {
+//   const mintAddress = typeof mint === 'string' ? mint : mint?.toBase58();
 
-  if (!mintAddress) {
-    return 'N/A';
-  }
+//   if (!mintAddress) {
+//     return 'N/A';
+//   }
 
-  const knownSymbol = map.get(mintAddress)?.symbol;
-  if (knownSymbol) {
-    return knownSymbol;
-  }
+//   const knownSymbol = map.get(mintAddress)?.symbol;
+//   if (knownSymbol) {
+//     return knownSymbol;
+//   }
 
-  return shorten ? `${mintAddress.substring(0, 5)}...` : mintAddress;
-}
+//   return shorten ? `${mintAddress.substring(0, 5)}...` : mintAddress;
+// }
 
-export function getTokenByName(tokenMap: KnownTokenMap, name: string) {
-  let token: TokenInfo | null = null;
-  for (const val of tokenMap.values()) {
-    if (val.symbol === name) {
-      token = val;
-      break;
-    }
-  }
-  return token;
-}
+// function getTokenByName(tokenMap: KnownTokenMap, name: string) {
+//   let token: TokenInfo | null = null;
+//   for (const val of tokenMap.values()) {
+//     if (val.symbol === name) {
+//       token = val;
+//       break;
+//     }
+//   }
+//   return token;
+// }
 
-export function getTokenIcon(map: KnownTokenMap, mintAddress?: string | PublicKey): string | undefined {
-  const address = typeof mintAddress === 'string' ? mintAddress : mintAddress?.toBase58();
-  if (!address) {
-    return;
-  }
+// function getTokenIcon(map: KnownTokenMap, mintAddress?: string | PublicKey): string | undefined {
+//   const address = typeof mintAddress === 'string' ? mintAddress : mintAddress?.toBase58();
+//   if (!address) {
+//     return;
+//   }
 
-  return map.get(address)?.logoURI;
-}
+//   return map.get(address)?.logoURI;
+// }
 
-export function isKnownMint(map: KnownTokenMap, mintAddress: string) {
-  return !!map.get(mintAddress);
-}
+// function isKnownMint(map: KnownTokenMap, mintAddress: string) {
+//   return !!map.get(mintAddress);
+// }
 
-export const STABLE_COINS = new Set(['USDC', 'wUSDC', 'USDT']);
+//const STABLE_COINS = new Set(['USDC', 'wUSDC', 'USDT']);
 
-export function chunks<T>(array: T[], size: number): T[][] {
-  return Array.apply(0, new Array(Math.ceil(array.length / size))).map((_, index) =>
-    array.slice(index * size, (index + 1) * size)
-  );
-}
+// function chunks<T>(array: T[], size: number): T[][] {
+//   return Array.apply(0, new Array(Math.ceil(array.length / size))).map((_, index) =>
+//     array.slice(index * size, (index + 1) * size)
+//   );
+// }
 
-export function toLamports(account?: TokenAccount | number, mint?: MintInfo): number {
-  if (!account) {
-    return 0;
-  }
+// function toLamports(account?: TokenAccount | number, mint?: MintInfo): number {
+//   if (!account) {
+//     return 0;
+//   }
 
-  const amount = typeof account === 'number' ? account : account.info.amount?.toNumber();
+//   const amount = typeof account === 'number' ? account : account.info.amount?.toNumber();
 
-  const precision = Math.pow(10, mint?.decimals || 0);
-  return Math.floor(amount * precision);
-}
+//   const precision = Math.pow(10, mint?.decimals || 0);
+//   return Math.floor(amount * precision);
+// }
 
-export function wadToLamports(amount?: BN): BN {
-  return amount?.div(WAD) || ZERO;
-}
+// function wadToLamports(amount?: BN): BN {
+//   return amount?.div(WAD) || ZERO;
+// }
 
-export function fromLamports(account?: TokenAccount | number | BN, mint?: MintInfo, rate = 1.0): number {
-  if (!account) {
-    return 0;
-  }
+// function fromLamports(account?: TokenAccount | number | BN, mint?: MintInfo, rate = 1.0): number {
+//   if (!account) {
+//     return 0;
+//   }
 
-  const amount = Math.floor(
-    typeof account === 'number' ? account : BN.isBN(account) ? account.toNumber() : account.info.amount.toNumber()
-  );
+//   const amount = Math.floor(
+//     typeof account === 'number' ? account : BN.isBN(account) ? account.toNumber() : account.info.amount.toNumber()
+//   );
 
-  const precision = Math.pow(10, mint?.decimals || 0);
-  return (amount / precision) * rate;
-}
+//   const precision = Math.pow(10, mint?.decimals || 0);
+//   return (amount / precision) * rate;
+// }
 
-const SI_SYMBOL = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
+// const SI_SYMBOL = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
 
-const abbreviateNumber = (number: number, precision: number) => {
-  const tier = (Math.log10(number) / 3) | 0;
-  let scaled = number;
-  const suffix = SI_SYMBOL[tier];
-  if (tier !== 0) {
-    const scale = Math.pow(10, tier * 3);
-    scaled = number / scale;
-  }
+// const abbreviateNumber = (number: number, precision: number) => {
+//   const tier = (Math.log10(number) / 3) | 0;
+//   let scaled = number;
+//   const suffix = SI_SYMBOL[tier];
+//   if (tier !== 0) {
+//     const scale = Math.pow(10, tier * 3);
+//     scaled = number / scale;
+//   }
 
-  return scaled.toFixed(precision) + suffix;
-};
+//   return scaled.toFixed(precision) + suffix;
+// };
 
-export const formatAmount = (val: number, precision = 6, abbr = true) =>
-  abbr ? abbreviateNumber(val, precision) : val.toFixed(precision);
+// const formatAmount = (val: number, precision = 6, abbr = true) =>
+//   abbr ? abbreviateNumber(val, precision) : val.toFixed(precision);
 
-export function formatTokenAmount(
-  account?: TokenAccount,
-  mint?: MintInfo,
-  rate = 1.0,
-  prefix = '',
-  suffix = '',
-  precision = 6,
-  abbr = false
-): string {
-  if (!account) {
-    return '';
-  }
+// function formatTokenAmount(
+//   account?: TokenAccount,
+//   mint?: MintInfo,
+//   rate = 1.0,
+//   prefix = '',
+//   suffix = '',
+//   precision = 6,
+//   abbr = false
+// ): string {
+//   if (!account) {
+//     return '';
+//   }
 
-  return `${[prefix]}${formatAmount(fromLamports(account, mint, rate), precision, abbr)}${suffix}`;
-}
+//   return `${[prefix]}${formatAmount(fromLamports(account, mint, rate), precision, abbr)}${suffix}`;
+// }
 
 export const formatUSD = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -173,53 +168,53 @@ export const formatUSD = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 4,
 });
 
-export const numberFormatter = new Intl.NumberFormat('en-US', {
-  style: 'decimal',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+// const numberFormatter = new Intl.NumberFormat('en-US', {
+//   style: 'decimal',
+//   minimumFractionDigits: 2,
+//   maximumFractionDigits: 2,
+// });
 
-export const isSmallNumber = (val: number) => {
-  return val < 0.001 && val > 0;
-};
+// const isSmallNumber = (val: number) => {
+//   return val < 0.001 && val > 0;
+// };
 
-export const formatNumber = {
-  format: (val?: number, useSmall?: boolean) => {
-    if (!val) {
-      return '--';
-    }
-    if (useSmall && isSmallNumber(val)) {
-      return 0.001;
-    }
+// const formatNumber = {
+//   format: (val?: number, useSmall?: boolean) => {
+//     if (!val) {
+//       return '--';
+//     }
+//     if (useSmall && isSmallNumber(val)) {
+//       return 0.001;
+//     }
 
-    return numberFormatter.format(val);
-  },
-};
+//     return numberFormatter.format(val);
+//   },
+// };
 
-export const feeFormatter = new Intl.NumberFormat('en-US', {
-  style: 'decimal',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 9,
-});
+// const feeFormatter = new Intl.NumberFormat('en-US', {
+//   style: 'decimal',
+//   minimumFractionDigits: 2,
+//   maximumFractionDigits: 9,
+// });
 
-export const formatPct = new Intl.NumberFormat('en-US', {
-  style: 'percent',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+// const formatPct = new Intl.NumberFormat('en-US', {
+//   style: 'percent',
+//   minimumFractionDigits: 2,
+//   maximumFractionDigits: 2,
+// });
 
-export function convert(account?: TokenAccount | number, mint?: MintInfo, rate = 1.0): number {
-  if (!account) {
-    return 0;
-  }
+// function convert(account?: TokenAccount | number, mint?: MintInfo, rate = 1.0): number {
+//   if (!account) {
+//     return 0;
+//   }
 
-  const amount = typeof account === 'number' ? account : account.info.amount?.toNumber();
+//   const amount = typeof account === 'number' ? account : account.info.amount?.toNumber();
 
-  const precision = Math.pow(10, mint?.decimals || 0);
-  const result = (amount / precision) * rate;
+//   const precision = Math.pow(10, mint?.decimals || 0);
+//   const result = (amount / precision) * rate;
 
-  return result;
-}
+//   return result;
+// }
 
 export function nFormatter(num: number, digits: number) {
   const lookup = [
@@ -273,9 +268,9 @@ export const getMint = async (connection: Connection, key: any) => {
  * @param {number} max
  * @returns {any}
  */
-export const randomInteger = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+// const randomInteger = (min: number, max: number) => {
+//   return Math.floor(Math.random() * (max - min + 1)) + min;
+// };
 
 export const isWalletApproveError = (e: any) => {
   return e && (e.code === 4001 || e.code === -32603);

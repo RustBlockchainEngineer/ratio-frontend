@@ -31,7 +31,7 @@ export async function setEmergencyState(
   await toggleEmergencyState(connection, wallet, newState as number);
 }
 
-export async function toggleEmergencyState(connection: Connection, wallet: any, paused: number) {
+async function toggleEmergencyState(connection: Connection, wallet: any, paused: number) {
   try {
     if (!wallet.publicKey) throw new WalletNotConnectedError();
     const program = getProgramInstance(connection, wallet);
@@ -150,42 +150,42 @@ export async function getPriceOracle(
 
   return oracle;
 }
-export async function reportPriceOracle(
-  connection,
-  wallet,
+// async function reportPriceOracle(
+//   connection,
+//   wallet,
 
-  mint: PublicKey,
-  newPrice: number
-) {
-  const program = getProgramInstance(connection, wallet);
+//   mint: PublicKey,
+//   newPrice: number
+// ) {
+//   const program = getProgramInstance(connection, wallet);
 
-  const globalStateKey = getGlobalStatePDA();
-  const oracleKey = getOraclePDA(mint);
+//   const globalStateKey = getGlobalStatePDA();
+//   const oracleKey = getOraclePDA(mint);
 
-  const tx = program.transaction.reportPriceToOracle(
-    // price of token
-    new BN(newPrice * USDR_MINT_DECIMALS),
-    {
-      accounts: {
-        authority: wallet.publicKey,
-        globalState: globalStateKey,
-        oracle: oracleKey,
-        mint: mint,
-        ...DEFAULT_PROGRAMS,
-      },
-    }
-  );
+//   const tx = program.transaction.reportPriceToOracle(
+//     // price of token
+//     new BN(newPrice * USDR_MINT_DECIMALS),
+//     {
+//       accounts: {
+//         authority: wallet.publicKey,
+//         globalState: globalStateKey,
+//         oracle: oracleKey,
+//         mint: mint,
+//         ...DEFAULT_PROGRAMS,
+//       },
+//     }
+//   );
 
-  const txHash = await sendTransaction(connection, wallet, tx);
-  await connection.confirmTransaction(txHash);
-  if (txHash?.value?.err) {
-    console.error('ERROR ON TX ', txHash.value.err);
-    throw txHash.value.err;
-  }
-  console.log('Updated price of Oracle account  tx = ', txHash);
+//   const txHash = await sendTransaction(connection, wallet, tx);
+//   await connection.confirmTransaction(txHash);
+//   if (txHash?.value?.err) {
+//     console.error('ERROR ON TX ', txHash.value.err);
+//     throw txHash.value.err;
+//   }
+//   console.log('Updated price of Oracle account  tx = ', txHash);
 
-  return txHash;
-}
+//   return txHash;
+// }
 
 // createPool
 export async function createPool(

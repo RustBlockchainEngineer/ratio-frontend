@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 interface AuthConfig {
   loggedIn: boolean;
@@ -40,16 +40,16 @@ export function AuthProvider({ children = undefined as any }) {
   );
 }
 
-export function useLoggedIn() {
-  return {
-    loggedIn: useContext(AuthContext)?.loggedIn,
-    setLoggedIn: useContext(AuthContext)?.setLoggedIn,
-  };
-}
+// function useLoggedIn() {
+//   return {
+//     loggedIn: useContext(AuthContext)?.loggedIn,
+//     setLoggedIn: useContext(AuthContext)?.setLoggedIn,
+//   };
+// }
 
-export function useUpdateHistory() {
-  return {
-    updateHistoryFlag: useContext(AuthContext)?.updateHistory,
-    setUpdateHistoryFlag: useContext(AuthContext)?.setUpdateHistory,
-  };
-}
+// export function useUpdateHistory() {
+//   return {
+//     updateHistoryFlag: useContext(AuthContext)?.updateHistory,
+//     setUpdateHistoryFlag: useContext(AuthContext)?.setUpdateHistory,
+//   };
+// }
