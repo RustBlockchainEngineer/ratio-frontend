@@ -101,10 +101,12 @@ const WithdrawModal = ({ data }: any) => {
         withdrawAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         userCollAccount
       );
-      appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, WIHTDRAW_ACTION, +withdrawAmount, txHash);
+      if (txHash) {
+        appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, WIHTDRAW_ACTION, +withdrawAmount, txHash);
 
-      setWithdrawAmount(0);
-      toast.success('Successfully Withdrawn!');
+        setWithdrawAmount(0);
+        toast.success('Successfully Withdrawn!');
+      }
     } catch (err) {
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
       else toast.error('Transaction Error!');
@@ -161,7 +163,6 @@ const WithdrawModal = ({ data }: any) => {
               </strong>{' '}
               tokens from your vault.
             </h5>
-            <div className="customInput--valid">Please harvest your rewards before withdrawing LP</div>
           </div>
         </Modal.Header>
         <Modal.Body>
