@@ -26,7 +26,7 @@ export default function AdminFormInput({
   handleChange?: React.ChangeEventHandler<FormControlElement>;
   required?: boolean;
   yetNotImplemented?: boolean;
-  as: ElementType<any>;
+  as?: ElementType<any>;
   children?: any;
 }) {
   const renderControl = () => (

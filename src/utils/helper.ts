@@ -11,12 +11,6 @@ export const getCoinPicSymbol = (symbol: string) => {
   }
 };
 
-export function chunks(array: any, size: any) {
-  return Array.apply(0, new Array(Math.ceil(array.length / size))).map((_, index) =>
-    array.slice(index * size, (index + 1) * size)
-  );
-}
-
 export const getRiskLevel = (c: number) => {
   if (c <= 130) return ERiskLevel.LOW;
   else if (c > 130 && c <= 145) return ERiskLevel.MEDIUM;

@@ -69,7 +69,7 @@ export async function postToRatioApi(data, route, authToken?: any) {
   }
 }
 
-export async function postWithAuthToRatioApi(data: any, route: string, authToken: any) {
+async function postWithAuthToRatioApi(data: any, route: string, authToken: any) {
   const response = await fetch(`${API_ENDPOINT}${route}`, {
     body: JSON.stringify(data),
     headers: {
@@ -85,16 +85,16 @@ export async function postWithAuthToRatioApi(data: any, route: string, authToken
   return await response.json();
 }
 
-export async function getFromRatioApi(route = '', authToken: any) {
-  const response = await fetch(`${API_ENDPOINT}/${route}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'x-access-token': JSON.stringify(authToken),
-    },
-    method: 'GET',
-  });
-  if (!response.ok) {
-    throw await response.json();
-  }
-  return await response.json();
-}
+// async function getFromRatioApi(route = '', authToken: any) {
+//   const response = await fetch(`${API_ENDPOINT}/${route}`, {
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'x-access-token': JSON.stringify(authToken),
+//     },
+//     method: 'GET',
+//   });
+//   if (!response.ok) {
+//     throw await response.json();
+//   }
+//   return await response.json();
+// }

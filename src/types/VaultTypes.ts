@@ -31,13 +31,6 @@ export interface TokenPairCardProps {
   onCompareVault: (data: PairType, status: boolean) => void;
 }
 
-export interface PlatformsDict {
-  [key: string]: Platform;
-}
-export interface AssetsDict {
-  [key: string]: LPAsset[];
-}
-
 export enum ERiskLevel {
   EXTREME = 'DDD',
   HIGH = 'DD',
@@ -59,7 +52,7 @@ export enum RISK_RATING {
   'D',
 }
 
-export interface LPAsset {
+interface LPAsset {
   token_address_id: string;
   token_symbole: string;
   token_pool_size: number;

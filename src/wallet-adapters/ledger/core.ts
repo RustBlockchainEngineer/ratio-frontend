@@ -54,7 +54,7 @@ function harden(n = 0) {
   return (n | BIP32_HARDENED_BIT) >>> 0;
 }
 
-export function getSolanaDerivationPath(account?: number, change?: number) {
+function getSolanaDerivationPath(account?: number, change?: number) {
   var length;
   if (account !== undefined) {
     if (change !== undefined) {
@@ -84,20 +84,16 @@ export function getSolanaDerivationPath(account?: number, change?: number) {
   return derivationPath;
 }
 
-export async function signTransaction(
-  transport: Transport,
-  transaction: Transaction,
-  derivationPath: Buffer = getSolanaDerivationPath()
-) {
-  const messageBytes = transaction.serializeMessage();
-  return signBytes(transport, messageBytes, derivationPath);
-}
+// async function signTransaction(
+//   transport: Transport,
+//   transaction: Transaction,
+//   derivationPath: Buffer = getSolanaDerivationPath()
+// ) {
+//   const messageBytes = transaction.serializeMessage();
+//   return signBytes(transport, messageBytes, derivationPath);
+// }
 
-export async function signBytes(
-  transport: Transport,
-  bytes: Buffer,
-  derivationPath: Buffer = getSolanaDerivationPath()
-) {
+async function signBytes(transport: Transport, bytes: Buffer, derivationPath: Buffer = getSolanaDerivationPath()) {
   const numPaths = Buffer.alloc(1);
   numPaths.writeUInt8(1, 0);
 
@@ -108,8 +104,8 @@ export async function signBytes(
   return ledgerSend(transport, INS_SIGN_MESSAGE, P1_CONFIRM, payload);
 }
 
-export async function getPublicKey(transport: Transport, derivationPath: Buffer = getSolanaDerivationPath()) {
-  const publicKeyBytes = await ledgerSend(transport, INS_GET_PUBKEY, P1_NON_CONFIRM, derivationPath);
+// async function getPublicKey(transport: Transport, derivationPath: Buffer = getSolanaDerivationPath()) {
+//   const publicKeyBytes = await ledgerSend(transport, INS_GET_PUBKEY, P1_NON_CONFIRM, derivationPath);
 
-  return new PublicKey(publicKeyBytes);
-}
+//   return new PublicKey(publicKeyBytes);
+// }

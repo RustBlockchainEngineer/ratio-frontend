@@ -11,15 +11,6 @@ const ratioAPRCache: {
 } = {};
 
 export abstract class GenericPoolManager implements IPoolManagerStrategy {
-  poolInfoCache:
-    | {
-        [key: string]: any;
-      }
-    | undefined;
-
-  constructor(poolsInfo: any) {
-    this.poolInfoCache = poolsInfo;
-  }
 
   async getRatioAPYbyVault(vault: LPair): Promise<number> {
     let apr = 0;
@@ -46,7 +37,6 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
   }
   abstract getTokenName();
   abstract getLpLink(value: string);
-  abstract getTVLbyVault(vault: LPair): number;
 
   abstract depositLP(
     connection: Connection,

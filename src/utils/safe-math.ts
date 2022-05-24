@@ -46,39 +46,39 @@ export class TokenAmount {
 }
 
 // >
-export function gt(a: string | number, b: string | number) {
-  const valueA = new BigNumber(a);
-  const valueB = new BigNumber(b);
+// function gt(a: string | number, b: string | number) {
+//   const valueA = new BigNumber(a);
+//   const valueB = new BigNumber(b);
 
-  return valueA.isGreaterThan(valueB);
-}
+//   return valueA.isGreaterThan(valueB);
+// }
 
 // >=
-export function gte(a: string | number, b: string | number) {
-  const valueA = new BigNumber(a);
-  const valueB = new BigNumber(b);
+// function gte(a: string | number, b: string | number) {
+//   const valueA = new BigNumber(a);
+//   const valueB = new BigNumber(b);
 
-  return valueA.isGreaterThanOrEqualTo(valueB);
-}
+//   return valueA.isGreaterThanOrEqualTo(valueB);
+// }
 
 // <
-export function lt(a: string | number, b: string | number) {
-  const valueA = new BigNumber(a);
-  const valueB = new BigNumber(b);
+// function lt(a: string | number, b: string | number) {
+//   const valueA = new BigNumber(a);
+//   const valueB = new BigNumber(b);
 
-  return valueA.isLessThan(valueB);
-}
+//   return valueA.isLessThan(valueB);
+// }
 
 // <=
-export function lte(a: string | number, b: string | number) {
-  const valueA = new BigNumber(a);
-  const valueB = new BigNumber(b);
+// function lte(a: string | number, b: string | number) {
+//   const valueA = new BigNumber(a);
+//   const valueB = new BigNumber(b);
 
-  return valueA.isLessThanOrEqualTo(valueB);
-}
+//   return valueA.isLessThanOrEqualTo(valueB);
+// }
 
-export function isNullOrZero(value: string | number) {
-  const amount = new BigNumber(value);
+// function isNullOrZero(value: string | number) {
+//   const amount = new BigNumber(value);
 
-  return amount.isNaN() || amount.isZero();
-}
+//   return amount.isNaN() || amount.isZero();
+// }

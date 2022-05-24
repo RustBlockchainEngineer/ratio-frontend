@@ -8,8 +8,8 @@ interface DecrementCounterAction {
 }
 export type CounterActionTypes = IncrementCounterAction | DecrementCounterAction;
 
-export interface SystemState {
-  count: {
-    value: number;
-  };
-}
+// interface SystemState {
+//   count: {
+//     value: number;
+//   };
+// }

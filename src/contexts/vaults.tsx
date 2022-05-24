@@ -4,7 +4,7 @@ import { FetchingStatus } from '../types/fetching-types';
 import { LPair } from '../types/VaultTypes';
 import { useWallet } from './wallet';
 
-export const VAULTS_CONTEXT_DEFAULT_VALUE: {
+const VAULTS_CONTEXT_DEFAULT_VALUE: {
   status: FetchingStatus;
   vaults: LPair[];
   error: any;

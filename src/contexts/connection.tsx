@@ -1,22 +1,13 @@
-import {
-  Account,
-  clusterApiUrl,
-  Connection,
-  Transaction,
-  TransactionInstruction,
-  ConnectionConfig as Web3ConnectionConfig,
-} from '@solana/web3.js';
+import { Account, clusterApiUrl, Connection, ConnectionConfig as Web3ConnectionConfig } from '@solana/web3.js';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { ENV as ChainID } from '@solana/spl-token-registry';
 
 import { useLocalStorageState } from '../utils/utils';
-import { notify } from '../utils/notifications';
-import { WalletAdapter } from './wallet';
 import { cache } from './accounts';
 
-export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
+type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 
-export const ENDPOINTS = [
+const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
     endpoint: 'https://solana--mainnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
@@ -134,9 +125,9 @@ export function useConnection() {
   return useContext(ConnectionContext).connection as Connection;
 }
 
-export function useSendConnection() {
-  return useContext(ConnectionContext)?.sendConnection;
-}
+// function useSendConnection() {
+//   return useContext(ConnectionContext)?.sendConnection;
+// }
 
 export function useConnectionConfig() {
   const context = useContext(ConnectionContext);
@@ -149,90 +140,90 @@ export function useConnectionConfig() {
   };
 }
 
-export function useSlippageConfig() {
-  const { slippage, setSlippage } = useContext(ConnectionContext);
-  return { slippage, setSlippage };
-}
+// function useSlippageConfig() {
+//   const { slippage, setSlippage } = useContext(ConnectionContext);
+//   return { slippage, setSlippage };
+// }
 
-const getErrorForTransaction = async (connection: Connection, txid: string) => {
-  // wait for all confirmation before geting transaction
-  await connection.confirmTransaction(txid, 'max');
+// const getErrorForTransaction = async (connection: Connection, txid: string) => {
+//   // wait for all confirmation before geting transaction
+//   await connection.confirmTransaction(txid, 'max');
 
-  const tx = await connection.getParsedConfirmedTransaction(txid);
+//   const tx = await connection.getParsedConfirmedTransaction(txid);
 
-  const errors: string[] = [];
-  if (tx?.meta && tx.meta.logMessages) {
-    tx.meta.logMessages.forEach((log) => {
-      const regex = /Error: (.*)/gm;
-      let m;
-      while ((m = regex.exec(log)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (m.index === regex.lastIndex) {
-          regex.lastIndex++;
-        }
+//   const errors: string[] = [];
+//   if (tx?.meta && tx.meta.logMessages) {
+//     tx.meta.logMessages.forEach((log) => {
+//       const regex = /Error: (.*)/gm;
+//       let m;
+//       while ((m = regex.exec(log)) !== null) {
+//         // This is necessary to avoid infinite loops with zero-width matches
+//         if (m.index === regex.lastIndex) {
+//           regex.lastIndex++;
+//         }
 
-        if (m.length > 1) {
-          errors.push(m[1]);
-        }
-      }
-    });
-  }
+//         if (m.length > 1) {
+//           errors.push(m[1]);
+//         }
+//       }
+//     });
+//   }
 
-  return errors;
-};
+//   return errors;
+// };
 
-export const sendTransaction = async (
-  connection: Connection,
-  wallet: WalletAdapter,
-  instructions: TransactionInstruction[],
-  signers: Account[],
-  awaitConfirmation = true
-) => {
-  if (!wallet?.publicKey) {
-    throw new Error('Wallet is not connected');
-  }
+// const sendTransaction = async (
+//   connection: Connection,
+//   wallet: WalletAdapter,
+//   instructions: TransactionInstruction[],
+//   signers: Account[],
+//   awaitConfirmation = true
+// ) => {
+//   if (!wallet?.publicKey) {
+//     throw new Error('Wallet is not connected');
+//   }
 
-  let transaction = new Transaction();
-  instructions.forEach((instruction) => transaction.add(instruction));
-  transaction.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
-  transaction.setSigners(
-    // fee payied by the wallet owner
-    wallet.publicKey,
-    ...signers.map((s) => s.publicKey)
-  );
-  if (signers.length > 0) {
-    transaction.partialSign(...signers);
-  }
-  transaction = await wallet.signTransaction(transaction);
-  const rawTransaction = transaction.serialize();
-  const options = {
-    skipPreflight: true,
-    commitment: 'singleGossip',
-  };
+//   let transaction = new Transaction();
+//   instructions.forEach((instruction) => transaction.add(instruction));
+//   transaction.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
+//   transaction.setSigners(
+//     // fee payied by the wallet owner
+//     wallet.publicKey,
+//     ...signers.map((s) => s.publicKey)
+//   );
+//   if (signers.length > 0) {
+//     transaction.partialSign(...signers);
+//   }
+//   transaction = await wallet.signTransaction(transaction);
+//   const rawTransaction = transaction.serialize();
+//   const options = {
+//     skipPreflight: true,
+//     commitment: 'singleGossip',
+//   };
 
-  const txid = await connection.sendRawTransaction(rawTransaction, options);
+//   const txid = await connection.sendRawTransaction(rawTransaction, options);
 
-  if (awaitConfirmation) {
-    const status = (await connection.confirmTransaction(txid, options && (options.commitment as any))).value;
+//   if (awaitConfirmation) {
+//     const status = (await connection.confirmTransaction(txid, options && (options.commitment as any))).value;
 
-    if (status?.err) {
-      const errors = await getErrorForTransaction(connection, txid);
-      notify({
-        message: 'Transaction failed...',
-        description: (
-          <>
-            {errors.map((err) => (
-              <div>{err}</div>
-            ))}
-            {/* <ExplorerLink address={txid} type="transaction" /> */}
-          </>
-        ),
-        type: 'error',
-      });
+//     if (status?.err) {
+//       const errors = await getErrorForTransaction(connection, txid);
+//       notify({
+//         message: 'Transaction failed...',
+//         description: (
+//           <>
+//             {errors.map((err) => (
+//               <div>{err}</div>
+//             ))}
+//             {/* <ExplorerLink address={txid} type="transaction" /> */}
+//           </>
+//         ),
+//         type: 'error',
+//       });
 
-      throw new Error(`Raw transaction ${txid} failed (${JSON.stringify(status)})`);
-    }
-  }
+//       throw new Error(`Raw transaction ${txid} failed (${JSON.stringify(status)})`);
+//     }
+//   }
 
-  return txid;
-};
+//   return txid;
+// };
