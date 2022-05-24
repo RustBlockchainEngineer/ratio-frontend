@@ -17,7 +17,7 @@ import {
   QUARRY_ADDRESSES,
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
-import { sendAllTransaction, sendTransaction } from '../web3';
+import { sendSignedTransaction, sendTransaction, signAllTransaction } from '../web3';
 
 import { TokenAmount } from '../safe-math';
 import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../ratio-pda';
@@ -87,12 +87,27 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
     tx2.add(ix5);
   }
 
-  const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
+  const [withdrawTx, harvestTx] = await signAllTransaction(connection, wallet, [tx1, tx2], []);
+  let success_harvest = false;
 
-  console.log('Saber withdraw tx', txHashs[0]);
-  // console.log('Saber harvest tx', txHashs[1]);
-
-  return txHashs[0];
+  console.log('Harvest before withdraw');
+  const txId = await sendSignedTransaction(connection, harvestTx);
+  try {
+    await connection.confirmTransaction(txId, 'confirmed');
+    console.log('Harvest is confirmed....', txId);
+    success_harvest = true;
+  } catch (e) {
+    const txInfo = await connection.getTransaction(txId);
+    if (txInfo) {
+      console.log('Harvest is confirmed ....', txInfo);
+      success_harvest = true;
+    }
+  }
+  if (success_harvest) {
+    const txId = await sendSignedTransaction(connection, withdrawTx);
+    console.log('Sending withdraw transaction..', txId);
+    return txId;
+  }
 }
 
 export async function harvest(connection: Connection, wallet: any, mintCollKey: PublicKey) {

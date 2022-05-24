@@ -74,6 +74,7 @@ export function RFStateProvider({ children = undefined as any }) {
     amount: number,
     txHash: string
   ) => {
+    if (!txHash) return;
     postToRatioApi(
       prepareTransactionData(action, mintCollat, affectedMint, amount, txHash, 'Waiting Confirmation ...'),
       `/transaction/${walletKey}/new`
@@ -314,7 +315,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateRFStateByMint = async (mint) => {
-    console.log('***** Updating state by mint*****');
+    console.log('----- Updating state by mint -----');
     await updateVaultStateByMint(globalState, oracleState, poolState[mint], overview, mint);
 
     const newGlobalState = await updateGlobalState();
@@ -322,11 +323,11 @@ export function RFStateProvider({ children = undefined as any }) {
     const newPoolState = await updatePoolStateByMint(newGlobalState, newOracleState, mint);
     const newOverview = await updateOracleState();
     await updateVaultStateByMint(newGlobalState, newOracleState, newPoolState[mint], newOverview, mint);
-    console.log('***** Updated state by mint*****');
+    console.log('***** Updated state by mint *****');
   };
 
   const updateRFStateOverall = async () => {
-    console.log('***** Updating all state *****');
+    console.log('----- Updating all state -----');
     const globalState = await updateGlobalState();
     const oracleState = await updateOracleState();
     const poolState = await updateAllPoolState(globalState, oracleState);
@@ -342,8 +343,6 @@ export function RFStateProvider({ children = undefined as any }) {
         console.log('Pending action is empty');
         return;
       }
-      console.log('Updating state', actionList);
-
       isStateLoading = true;
       let activeAction = actionList[actionList.length - 1];
       if (actionList.indexOf(UPDATE_ALL) !== -1) {
@@ -363,8 +362,6 @@ export function RFStateProvider({ children = undefined as any }) {
       }
       isStateLoading = false;
       setUpdateFinished((prev) => !prev);
-    } else {
-      console.log('Ignoring the signal ...... ');
     }
   };
 
@@ -383,7 +380,6 @@ export function RFStateProvider({ children = undefined as any }) {
 
   useEffect(() => {
     if (actionList.length) {
-      console.log('Pending actions exist', actionList);
       updateRFState();
     }
   }, [updateFinished]);
