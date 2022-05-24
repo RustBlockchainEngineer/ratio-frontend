@@ -91,14 +91,14 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
   let success_harvest = false;
 
   console.log('Harvest before withdraw');
-  const txId = await sendSignedTransaction(connection, harvestTx);
+  const txHarvestId = await sendSignedTransaction(connection, harvestTx);
   try {
-    await connection.confirmTransaction(txId, 'confirmed');
-    console.log('Harvest is confirmed....', txId);
+    await connection.confirmTransaction(txHarvestId, 'confirmed');
+    console.log('Harvest is confirmed....', txHarvestId);
     success_harvest = true;
   } catch (e) {
-    const txInfo = await connection.getTransaction(txId);
-    if (txInfo) {
+    const txInfo = await connection.getTransaction(txHarvestId);
+    if (txInfo && !txInfo.meta.err) {
       console.log('Harvest is confirmed ....', txInfo);
       success_harvest = true;
     }
