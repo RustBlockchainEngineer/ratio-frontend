@@ -35,6 +35,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { API_ENDPOINT } from '../../constants/constants';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import useFetch from 'react-fetch-hook';
+import TermsAndConditionModal from '../../components/TermsAndConditionModal';
 
 const Layer = () => {
   const theme = useContext(ThemeContext);
@@ -99,6 +100,7 @@ const Layer = () => {
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
+      <TermsAndConditionModal />
       <ToastContainer
         position="top-center"
         autoClose={1500}
