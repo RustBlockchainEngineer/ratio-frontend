@@ -38,7 +38,8 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
   const activeVaultCount = userOverview ? userOverview.activeVaults.toString() : '0';
   const totalMinted = Number(new TokenAmount(userOverview ? userOverview.totalDebt : 0, USDR_MINT_DECIMALS).fixed());
 
-  const totalLocked = Number(new TokenAmount(userOverview ? userOverview.tvlUsd : 0, USDR_MINT_DECIMALS).fixed());
+  // const totalLocked = Number(new TokenAmount(userOverview ? userOverview.tvlUsd : 0, USDR_MINT_DECIMALS).fixed());
+  const [totalLocked, setTotalLocked] = useState(0);
   const [activeVaultsData, setActiveVaultsData] = useState([]);
   const userVaultInfos = useAllVaultInfo();
 
@@ -51,11 +52,12 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
 
   const getActiveVaultInfo = async function (activeVaults: any[]) {
     const vaults = Object.values(activeVaults);
-
+    let tvlUSD = 0;
     const avdArr: any = [];
     for (const vault of vaults) {
       const { mint, debt }: any = vault;
       const pv = +new TokenAmount((vault as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
+      tvlUSD += pv;
       // const pv = price * Number(new TokenAmount(lockedAmount as string, mintInfo.decimals).fixed());
       const title = all_vaults?.find((vault: LPair) => vault.address_id === mint)?.symbol;
       const vaultValue: any = {
@@ -67,14 +69,16 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
       avdArr.push(vaultValue);
     }
     return {
+      tvlUSD,
       activeVaults: avdArr,
     };
   };
 
   React.useEffect(() => {
     if (userVaultInfos) {
-      getActiveVaultInfo(userVaultInfos).then((res) => {
-        setActiveVaultsData(res.activeVaults);
+      getActiveVaultInfo(userVaultInfos).then(({ activeVaults, tvlUSD }) => {
+        setActiveVaultsData(activeVaults);
+        setTotalLocked(tvlUSD);
       });
     }
   }, [userVaultInfos]);

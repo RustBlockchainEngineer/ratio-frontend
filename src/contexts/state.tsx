@@ -258,8 +258,8 @@ export function RFStateProvider({ children = undefined as any }) {
       const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
 
       const lockedColl = parseFloat(new TokenAmount(vaultInfo.totalColl.toString(), poolInfo.mintDecimals).fixed());
-
-      const debtLimit = poolInfo.oraclePrice * lockedColl * poolInfo.ratio;
+      const tvlUsd = poolInfo.oraclePrice * lockedColl;
+      const debtLimit = tvlUsd * poolInfo.ratio;
       const vaultDebtLimit = debtLimit - vaultInfo.debt.toNumber();
       const userDebtLimit = globalState.debtCeilingUser.toNumber() - overview.totalDebt.toNumber();
       const poolDebtLimit = poolInfo.debtCeiling.toNumber() - poolInfo.totalDebt.toNumber();
@@ -270,6 +270,7 @@ export function RFStateProvider({ children = undefined as any }) {
         ...vaultInfo,
         mint,
         reward,
+        tvlUsd,
         rewardUSD: new TokenAmount(oracleState[SBR_MINT] * reward, USDR_MINT_DECIMALS, false).fixed(),
         lockedAmount: vaultInfo.totalColl.toNumber(),
         debt: vaultInfo.debt.toNumber(),
