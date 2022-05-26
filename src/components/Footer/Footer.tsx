@@ -9,6 +9,8 @@ import mediumDark from '../../assets/images/medium-dark.svg';
 import whitepaperPDF from '../../assets/whitepaper.pdf';
 import privacypolicyPDF from '../../assets/privacy-policy.pdf';
 import termsPDF from '../../assets/terms.pdf';
+import ackee_logo from '../../assets/images/ackee_logo.svg';
+import kudelski_logo from '../../assets/images/kudelski_logo.png';
 
 type FooterProps = {
   darkMode: boolean;
@@ -18,7 +20,14 @@ const Footer = ({ darkMode }: FooterProps) => {
   return (
     <div className="footer">
       <div className="d-flex justify-content-between">
-        <img src={imageLogo} alt="imageLogo" />
+        <div>
+          <img src={imageLogo} alt="imageLogo" />
+          <h6 className="mt-4 mb-2">Audited by:</h6>
+          <div className="d-flex">
+            <img src={kudelski_logo} alt="kudelski_logo" style={{ width: 90 }} />
+            <img src={ackee_logo} alt="ackee_logo" style={{ width: 150, marginLeft: 15 }} />
+          </div>
+        </div>
         <div className="d-flex footer__social">
           <a target="_blank" href="https://t.me/ratiofinance" rel="noreferrer">
             <img src={darkMode ? telegramDark : telegram} alt="telegram" />
@@ -31,7 +40,7 @@ const Footer = ({ darkMode }: FooterProps) => {
           </a>
         </div>
       </div>
-      <div className="mt-4 d-md-flex justify-content-between">
+      <div className="mt-5 d-md-flex justify-content-between">
         <h6>
           Copyright © 2021. Ratio Protocol.
           <br /> All rights reserved.

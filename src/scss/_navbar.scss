@@ -59,6 +59,26 @@
     border-right: 1px solid var(--unnamed-color-f9fbfe);
   }
 
+  &__atrixItem {
+    text-align: left;
+    padding-left: 2rem;
+    border-top: 1px solid rgba(#394760, 0.1);
+    padding-top: 1rem;
+    &--logo {
+      width: 120px;
+      display: block;
+      padding-bottom: 0.3rem;
+    }
+    a {
+      color: var(--unnamed-color-727c81);
+      font-family: 'Poppins-Light';
+      font-size: 12px;
+      &:hover {
+        color: var(--unnamed-color-727c81);
+      }
+    }
+  }
+
   &__progressbar {
     padding-left: 2.5rem;
     padding-right: 1.25rem;

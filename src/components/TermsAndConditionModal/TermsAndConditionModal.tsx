@@ -1,13 +1,16 @@
 import React, { useState, useContext } from 'react';
 import { Modal } from 'react-bootstrap';
 import { ThemeContext } from '../../contexts/ThemeContext';
+import Button from '../../components/Button';
 // import { IoMdClose } from 'react-icons/io';
 import logo from '../../assets/images/logo-side.svg';
 import termsPDF from '../../assets/terms.pdf';
-const TermsAndConditionModal = () => {
-  const [show, setShow] = useState(true);
+const TermsAndConditionModal = ({ show, setShow }) => {
   const theme = useContext(ThemeContext);
   const { darkMode } = theme.state;
+
+  const [checked, setChecked] = useState(false);
+
   return (
     <div>
       <Modal
@@ -22,13 +25,13 @@ const TermsAndConditionModal = () => {
       >
         <Modal.Body>
           <div className="row no-gutters termsmodal">
-            <div className="col-4 termsmodal__left">
+            <div className="col-md-4 col-sm-12 termsmodal__left">
               <img src={logo} alt="logo" />
               <a target="_blank" href={termsPDF} rel="noreferrer">
                 Terms & Conditions
               </a>
             </div>
-            <div className="col-8 termsmodal__right">
+            <div className="col-md-8 col-sm-12 termsmodal__right">
               <h3>Terms of Service</h3>
               <h4>Accepting the terms</h4>
               <div className="termsmodal__right__contents">
@@ -47,11 +50,14 @@ const TermsAndConditionModal = () => {
                 quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
               </div>
               <div className="termsmodal__right__agreebox">
-                <label className="container">
-                  One
-                  <input type="checkbox" checked={true} />
+                <label className="checkcontainer">
+                  Agree to the Terms of Service
+                  <input type="checkbox" checked={checked} onChange={() => setChecked(!checked)} />
                   <span className="checkmark"></span>
                 </label>
+                <Button disabled={!checked} className="button--blue agreeBtn" onClick={setShow}>
+                  Agree
+                </Button>
               </div>
             </div>
           </div>

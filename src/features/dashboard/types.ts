@@ -9,6 +9,7 @@ import {
   SET_ACTIVE_VAULT,
   SET_INACTIVE_VAULT,
   SET_VIEW_TYPE,
+  SET_TERMS_CONDITIONS,
 } from './actionTypes';
 
 interface setCompareVaultsAction {
@@ -61,6 +62,11 @@ interface setViewType {
   payload: any;
 }
 
+interface setTermsConditions {
+  type: typeof SET_TERMS_CONDITIONS;
+  payload: any;
+}
+
 export interface SystemState {
   dashboard: {
     compare_vaults: false;
@@ -74,6 +80,7 @@ export interface SystemState {
     inactive_vaults: [];
     overview: any;
     view_type: string;
+    terms_conditions: boolean;
   };
 }
 
@@ -87,4 +94,5 @@ export type dashboardActionTypes =
   | setPlatformData
   | setActiveVaultsAction
   | setInactiveVaultsAction
-  | setViewType;
+  | setViewType
+  | setTermsConditions;
