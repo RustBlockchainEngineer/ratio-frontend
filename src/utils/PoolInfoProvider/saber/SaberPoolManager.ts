@@ -1,8 +1,8 @@
-import { LPair } from '../../types/VaultTypes';
-import { GenericPoolManager } from './GenericPoolManager';
+import { LPair } from '../../../types/VaultTypes';
+import { GenericPoolManager } from '../GenericPoolManager';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { calculateRewardByPlatform, PLATFORM_IDS } from '../ratio-lending';
-import { deposit, harvest, withdraw } from '../saber/saber-utils';
+import { calculateRewardByPlatform, PLATFORM_IDS } from '../../ratio-lending';
+import { deposit, harvest, withdraw } from './saber-utils';
 
 export class SaberPoolManager extends GenericPoolManager {
   async depositLP(

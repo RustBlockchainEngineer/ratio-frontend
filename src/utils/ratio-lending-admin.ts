@@ -18,7 +18,7 @@ import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
 // import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { sendTransaction } from './web3';
+import { sendTransaction } from './rf-web3';
 
 import { getGlobalStatePDA, getOraclePDA, getPoolPDA } from './ratio-pda';
 import { USDR_MINT_DECIMALS, USDR_MINT_KEY } from './ratio-lending';

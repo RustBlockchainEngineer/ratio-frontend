@@ -16,7 +16,7 @@ import {
   getFarmInfoByPlatform,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
-import { SABER_IOU_MINT_DECIMALS } from '../utils/saber/saber-utils';
+import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
 import { TokenAmount } from '../utils/safe-math';
 import { calculateCollateralPrice, getMint } from '../utils/utils';
 import { useConnection } from './connection';

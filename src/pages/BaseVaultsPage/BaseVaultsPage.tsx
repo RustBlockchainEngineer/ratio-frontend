@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useWallet } from '../../contexts/wallet';
-import { PairType } from '../../models/UInterface';
+import { PairType } from '../../types/VaultTypes';
 import { selectors, actionTypes } from '../../features/dashboard';
 
 import FilterPanel from '../../components/FilterPanel';

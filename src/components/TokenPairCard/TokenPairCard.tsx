@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { selectors } from '../../features/dashboard';
-import { TokenPairCardProps } from '../../models/UInterface';
+import { TokenPairCardProps } from '../../types/VaultTypes';
 import { formatUSD } from '../../utils/utils';
 
 import smallRatioIcon from '../../assets/images/smallRatio.svg';

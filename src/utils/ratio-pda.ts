@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { utils } from '@project-serum/anchor';
-import { RATIO_LENDING_PROGRAM_ID } from './ids';
+import { RATIO_LENDING_PROGRAM_ID } from '../constants/ids';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 const GLOBAL_STATE_SEED = 'GLOBAL_STATE_SEED';
