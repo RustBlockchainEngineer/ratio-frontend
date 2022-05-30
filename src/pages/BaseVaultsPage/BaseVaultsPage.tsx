@@ -23,6 +23,7 @@ import { useIsTotalUSDrLimitReached } from '../../hooks/useIsTotalUSDrLimitReach
 import { useIsTVLLimitReached } from '../../hooks/useIsTVLLimitReached';
 import { useIsUserUSDrLimitReached } from '../../hooks/useIsUserUSDrLimitReached';
 import { useAllPoolInfo, useAllVaultInfo, useUserOverview } from '../../contexts/state';
+import { getTokenIcon } from '../../utils/utils';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -98,7 +99,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                   ? getCoinPicSymbol(item.token_symbole)
                   : item.token_icon
               ),
-              icon: item.icon,
+              icon: getTokenIcon(item.symbol.toLowerCase()),
               title: item.symbol,
               platform: {
                 link: item.platform_site,

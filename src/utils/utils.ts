@@ -8,6 +8,11 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import * as serumCmn from '@project-serum/common';
 import * as anchor from '@project-serum/anchor';
 
+import usdt_usdc_icon from '../assets/images/tokens/usdt-usdc.jpg';
+import uxd_usdc_icon from '../assets/images/tokens/uxd-usdc.png';
+import usdh_usdc_icon from '../assets/images/tokens/usdh-usdc.png';
+import cusdt_cusdc_icon from '../assets/images/tokens/cusdt-cusdc.png';
+
 //type KnownTokenMap = Map<string, TokenInfo>;
 
 // const formatPriceNumber = new Intl.NumberFormat('en-US', {
@@ -274,4 +279,23 @@ export const getMint = async (connection: Connection, key: any) => {
 
 export const isWalletApproveError = (e: any) => {
   return e && (e.code === 4001 || e.code === -32603);
+};
+
+export const getTokenIcon = (tokenName) => {
+  let tokenIcon;
+  switch (tokenName) {
+    case 'usdt-usdc':
+      tokenIcon = usdt_usdc_icon;
+      break;
+    case 'uxd-usdc':
+      tokenIcon = uxd_usdc_icon;
+      break;
+    case 'usdh-usdc':
+      tokenIcon = usdh_usdc_icon;
+      break;
+    case 'cusdt-cusdc':
+      tokenIcon = cusdt_cusdc_icon;
+      break;
+  }
+  return tokenIcon;
 };
