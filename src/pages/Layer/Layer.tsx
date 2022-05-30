@@ -2,9 +2,10 @@
 import { useContext, useEffect, useState } from 'react';
 // import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+
 import { useWallet } from '../../contexts/wallet';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import MobileMenuTrigger from '../../components/MobileMenuTrigger';
@@ -21,6 +22,7 @@ import CompareVaults from '../CompareVaults';
 import FairdropPage from '../FairdropPage';
 
 import { actionTypes } from '../../features/wallet';
+import { selectors, actionTypes as dashboardActionType } from '../../features/dashboard';
 import logoside from '../../assets/images/logo-side.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 import telegram from '../../assets/images/telegram.svg';
@@ -35,6 +37,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { API_ENDPOINT } from '../../constants/constants';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import useFetch from 'react-fetch-hook';
+import TermsAndConditionModal from '../../components/TermsAndConditionModal';
 
 const Layer = () => {
   const theme = useContext(ThemeContext);
@@ -45,6 +48,8 @@ const Layer = () => {
   // const history = useHistory();
   const { connected, publicKey } = useWallet();
   const [enable, setEnable] = useState(false);
+  const terms_conditions = useSelector(selectors.getTermsConditions);
+  const [showTerms, setShowTerms] = useState(!terms_conditions);
   const {
     isLoading: authFetchLoading,
     data: userAuthorized,
@@ -81,6 +86,8 @@ const Layer = () => {
     };
   }, [userAuthorized, authFetchError, authFetchLoading, publicKey, location.pathname]);
 
+  useEffect(() => {}, []);
+
   const dispatch = useDispatch();
 
   const onClickWalletBtn = () => {
@@ -95,10 +102,16 @@ const Layer = () => {
     setCollapseFlag(!collapseFlag);
   };
 
+  const onClickAgree = () => {
+    setShowTerms(!showTerms);
+    dispatch({ type: dashboardActionType.SET_TERMS_CONDITIONS, payload: true });
+  };
+
   // console.log(authFetchLoading);
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
+      <TermsAndConditionModal show={showTerms} setShow={onClickAgree} />
       <ToastContainer
         position="top-center"
         autoClose={1500}

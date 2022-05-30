@@ -1,0 +1,158 @@
+.termsmodal {
+   
+    &__modal {
+        .modal-xl {
+            max-width: 800px !important;
+        }
+        .modal-body {
+            padding: 0px;
+            border-top-left-radius: 1rem;
+           
+        }
+    }
+    
+    &__left {
+        position: relative;
+        height: 500px;
+       
+        border-top-left-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        background-image: url('../assets/images/gradient.png');
+        background-repeat: no-repeat;
+        background-size: 100% 150%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        @include respond-to(md) {
+          height: 200px;
+          border-top-left-radius: 1rem;
+          border-bottom-left-radius: 0rem;
+          border-top-right-radius: 1rem;
+        }
+        a {
+            position: absolute;
+            bottom: 1rem;
+            font-family: 'Poppins-Regular';
+            font-size: 14px;
+            color: var(--unnamed-color-4c646f);
+            &:hover {
+                color: var(--unnamed-color-4c646f);
+            }
+        }
+    }
+    &__right {
+        h3 {
+            font-family: 'Poppins-Medium';
+            font-size: 1.5rem;
+            color: var(--unnamed-color-3c4760);
+            letter-spacing: -0.72px;
+            margin-top: 3rem;
+            margin-left: 2rem;
+            margin-bottom: 0.2rem;
+            @include respond-to(md) {
+              margin-top: 1rem;
+            }
+        }
+        h4 {
+            font-family: 'Poppins-Medium';
+            font-size: 1rem;
+            color: var(--unnamed-color-4c646f);
+            letter-spacing: -0.48px;
+            margin-left: 2rem;
+            margin-bottom: 2rem;
+        }
+        &__contents {
+            border-top: 1px solid var(--primary-border);
+            border-bottom: 1px solid var(--primary-border);
+            background-color: var(--unnamed-color-171A23);
+            height: 250px;
+            overflow-y: auto;
+            padding: 2rem;
+            font-size: 0.875rem;
+            color: var(--unnamed-color-4c646f);
+            letter-spacing: -0.14px;
+            font-family: 'Poppins-Light';
+            padding-right: 3rem;
+        }
+        &__agreebox {
+          padding-top: 2rem;
+          padding-left: 2rem;
+          padding-right: 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          @include respond-to(md) {
+            margin-bottom: 2rem;
+          }
+          .agreeBtn {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+          }
+          .checkcontainer {
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-top: 1px;
+            font-family: 'Poppins-Regular';
+            font-size: 0.75rem;
+            color: var(--unnamed-color-002332);
+          }
+          .checkcontainer input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+          }
+          
+          /* Create a custom checkbox */
+          .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 18px;
+            width: 18px;
+            border: 1px solid var(--primary-border);
+            border-radius: 4px;
+          }
+          
+          /* On mouse-over, add a grey background color */
+          .checkcontainer:hover input ~ .checkmark {
+            background-color: #eee;
+          }
+          
+          /* When the checkbox is checked, add a blue background */
+          .checkcontainer input:checked ~ .checkmark {
+            background-color: white;
+          }
+          
+          /* Create the checkmark/indicator (hidden when not checked) */
+          .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+          }
+          
+          /* Show the checkmark when checked */
+          .checkcontainer input:checked ~ .checkmark:after {
+            display: block;
+          }
+          
+          /* Style the checkmark/indicator */
+          .checkcontainer .checkmark:after {
+            left: 6px;
+            top: 2px;
+            width: 6px;
+            height: 10px;
+            border: solid var(--unnamed-color-07b127);
+            border-width: 0 2px 2px 0;
+            -webkit-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+          }
+              
+        }
+    }
+}

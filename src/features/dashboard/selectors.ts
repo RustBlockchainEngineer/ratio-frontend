@@ -1,3 +1,4 @@
+
 import { SystemState } from './types';
 
 export const getCompareVaultsStatus = (state: SystemState) => state.dashboard.compare_vaults;
@@ -19,3 +20,5 @@ export const getPlatformData = (state: SystemState) => state.dashboard.platform_
 export const getActiveVaults = (state: SystemState) => state.dashboard.active_vaults;
 
 export const getViewType = (state: SystemState) => state.dashboard.view_type;
+
+export const getTermsConditions = (state: SystemState) => state.dashboard.terms_conditions;
