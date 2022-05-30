@@ -1,6 +1,6 @@
 import { formatUSD } from '../../../utils/utils';
 
-export interface PriceCardInterface {
+interface PriceCardInterface {
   title?: string;
   titleIcon?: boolean;
   mainValue?: string;

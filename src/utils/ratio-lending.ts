@@ -12,9 +12,9 @@ import {
   Transaction,
 } from '@solana/web3.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
-import { sendTransaction } from './web3';
-import { RATIO_LENDING_PROGRAM_ID } from './ids';
-import { calculateSaberReward, getQuarryInfo } from './saber/saber-utils';
+import { sendTransaction } from './rf-web3';
+import { RATIO_LENDING_PROGRAM_ID } from '../constants/ids';
+import { calculateSaberReward, getQuarryInfo } from './PoolInfoProvider/saber/saber-utils';
 import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA, getUserStatePDA, getVaultPDA } from './ratio-pda';
 import { Program } from '@project-serum/anchor';
 export const COLL_RATIOS_DECIMALS = 8;
@@ -34,7 +34,7 @@ export const BORROW_ACTION = 'Borrow';
 export const PAYBACK_ACTION = 'Payback';
 export const HARVEST_ACTION = 'Harvest';
 
-export const HISTORY_TO_SHOW = 5;
+//const HISTORY_TO_SHOW = 5;
 export const USD_FAIR_PRICE = true;
 // default platform values
 export declare type PlatformType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;

@@ -1,18 +1,10 @@
-import { LPair } from '../../types/VaultTypes';
-import { GenericPoolManager } from './GenericPoolManager';
+import { LPair } from '../../../types/VaultTypes';
+import { GenericPoolManager } from '../GenericPoolManager';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { calculateRewardByPlatform, PLATFORM_IDS } from '../ratio-lending';
-import { deposit, harvest, withdraw } from '../saber/saber-utils';
+import { calculateRewardByPlatform, PLATFORM_IDS } from '../../ratio-lending';
+import { deposit, harvest, withdraw } from './saber-utils';
 
 export class SaberPoolManager extends GenericPoolManager {
-  getTVLbyVault(vault: LPair): number {
-    if (!this.poolInfoCache) {
-      return NaN;
-    }
-    const vaultInfo = this.poolInfoCache[vault.platform_symbol ?? vault.symbol];
-    return vaultInfo?.tvl as number;
-  }
-
   async depositLP(
     connection: Connection,
     wallet: any,
@@ -57,4 +49,24 @@ export class SaberPoolManager extends GenericPoolManager {
     }
     return 0;
   }
+  getTokenName() {
+    return 'SBR';
+  }
+
+  getLpLink = (value: string) => {
+    switch (value) {
+      case 'USDH-USDC':
+        return 'https://app.saber.so/pools/usdh/deposit';
+        break;
+      case 'UXD-USDC':
+        return 'https://app.saber.so/pools/uxd/deposit';
+        break;
+      case 'USDT-USDC':
+        return 'https://app.saber.so/pools/usdc_usdt/deposit';
+        break;
+
+      default:
+        break;
+    }
+  };
 }

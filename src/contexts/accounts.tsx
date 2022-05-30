@@ -1,13 +1,13 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { AccountInfo, ConfirmedSignatureInfo, ConfirmedTransaction, Connection, PublicKey } from '@solana/web3.js';
-import { AccountLayout, u64, MintInfo, MintLayout, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { AccountLayout, u64, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { useConnection } from './connection';
 import { useWallet } from './wallet';
 import { TokenAccount } from '../models';
-import { chunks } from '../utils/utils';
+
 import { EventEmitter } from '../utils/eventEmitter';
 import { useUserAccounts } from '../hooks/useUserAccounts';
-import { WRAPPED_SOL_MINT } from '../utils/ids';
+import { WRAPPED_SOL_MINT } from '../constants/ids';
 
 const AccountsContext = React.createContext<any>(null);
 
@@ -15,41 +15,41 @@ const pendingCalls = new Map<string, Promise<ParsedAccountBase>>();
 const genericCache = new Map<string, ParsedAccountBase>();
 const transactionCache = new Map<string, ParsedLocalTransaction | null>();
 
-export interface ParsedLocalTransaction {
+interface ParsedLocalTransaction {
   transactionType: number;
   signature: ConfirmedSignatureInfo;
   confirmedTx: ConfirmedTransaction | null;
 }
 
-export interface ParsedAccountBase {
+interface ParsedAccountBase {
   pubkey: PublicKey;
   account: AccountInfo<Buffer>;
   info: any; // TODO: change to unkown
 }
 
-export type AccountParser = (pubkey: PublicKey, data: AccountInfo<Buffer>) => ParsedAccountBase | undefined;
+type AccountParser = (pubkey: PublicKey, data: AccountInfo<Buffer>) => ParsedAccountBase | undefined;
 
-export interface ParsedAccount<T> extends ParsedAccountBase {
-  info: T;
-}
+// interface ParsedAccount<T> extends ParsedAccountBase {
+//   info: T;
+// }
 
-export const MintParser = (pubKey: PublicKey, info: AccountInfo<Buffer>) => {
-  const buffer = Buffer.from(info.data);
+// const MintParser = (pubKey: PublicKey, info: AccountInfo<Buffer>) => {
+//   const buffer = Buffer.from(info.data);
 
-  const data = deserializeMint(buffer);
+//   const data = deserializeMint(buffer);
 
-  const details = {
-    pubkey: pubKey,
-    account: {
-      ...info,
-    },
-    info: data,
-  } as ParsedAccountBase;
+//   const details = {
+//     pubkey: pubKey,
+//     account: {
+//       ...info,
+//     },
+//     info: data,
+//   } as ParsedAccountBase;
 
-  return details;
-};
+//   return details;
+// };
 
-export const TokenAccountParser = (pubKey: PublicKey, info: AccountInfo<Buffer>) => {
+const TokenAccountParser = (pubKey: PublicKey, info: AccountInfo<Buffer>) => {
   const buffer = Buffer.from(info.data);
   const data = deserializeAccount(buffer);
 
@@ -64,21 +64,21 @@ export const TokenAccountParser = (pubKey: PublicKey, info: AccountInfo<Buffer>)
   return details;
 };
 
-export const GenericAccountParser = (pubKey: PublicKey, info: AccountInfo<Buffer>) => {
-  const buffer = Buffer.from(info.data);
+// const GenericAccountParser = (pubKey: PublicKey, info: AccountInfo<Buffer>) => {
+//   const buffer = Buffer.from(info.data);
 
-  const details = {
-    pubkey: pubKey,
-    account: {
-      ...info,
-    },
-    info: buffer,
-  } as ParsedAccountBase;
+//   const details = {
+//     pubkey: pubKey,
+//     account: {
+//       ...info,
+//     },
+//     info: buffer,
+//   } as ParsedAccountBase;
 
-  return details;
-};
+//   return details;
+// };
 
-export const keyToAccountParser = new Map<string, AccountParser>();
+const keyToAccountParser = new Map<string, AccountParser>();
 
 export const cache = {
   emitter: new EventEmitter(),
@@ -389,56 +389,56 @@ export function AccountsProvider({ children = null as any }) {
   );
 }
 
-export function useNativeAccount() {
-  const context = useContext(AccountsContext);
-  return {
-    account: context.nativeAccount as AccountInfo<Buffer>,
-  };
-}
+// export function useNativeAccount() {
+//   const context = useContext(AccountsContext);
+//   return {
+//     account: context.nativeAccount as AccountInfo<Buffer>,
+//   };
+// }
 
-export const getMultipleAccounts = async (connection: any, keys: string[], commitment: string) => {
-  const result = await Promise.all(
-    chunks(keys, 99).map((chunk) => getMultipleAccountsCore(connection, chunk, commitment))
-  );
+// const getMultipleAccounts = async (connection: any, keys: string[], commitment: string) => {
+//   const result = await Promise.all(
+//     chunks(keys, 99).map((chunk) => getMultipleAccountsCore(connection, chunk, commitment))
+//   );
 
-  const array = result
-    .map(
-      (a) =>
-        a.array
-          .map((acc) => {
-            if (!acc) {
-              return undefined;
-            }
+//   const array = result
+//     .map(
+//       (a) =>
+//         a.array
+//           .map((acc) => {
+//             if (!acc) {
+//               return undefined;
+//             }
 
-            const { data, ...rest } = acc;
-            const obj = {
-              ...rest,
-              data: Buffer.from(data[0], 'base64'),
-            } as AccountInfo<Buffer>;
-            return obj;
-          })
-          .filter((_) => _) as AccountInfo<Buffer>[]
-    )
-    .flat();
-  return { keys, array };
-};
+//             const { data, ...rest } = acc;
+//             const obj = {
+//               ...rest,
+//               data: Buffer.from(data[0], 'base64'),
+//             } as AccountInfo<Buffer>;
+//             return obj;
+//           })
+//           .filter((_) => _) as AccountInfo<Buffer>[]
+//     )
+//     .flat();
+//   return { keys, array };
+// };
 
-const getMultipleAccountsCore = async (connection: any, keys: string[], commitment: string) => {
-  const args = connection._buildArgs([keys], commitment, 'base64');
+// const getMultipleAccountsCore = async (connection: any, keys: string[], commitment: string) => {
+//   const args = connection._buildArgs([keys], commitment, 'base64');
 
-  const unsafeRes = await connection._rpcRequest('getMultipleAccounts', args);
-  if (unsafeRes.error) {
-    throw new Error(`failed to get info about account ${unsafeRes.error.message}`);
-  }
+//   const unsafeRes = await connection._rpcRequest('getMultipleAccounts', args);
+//   if (unsafeRes.error) {
+//     throw new Error(`failed to get info about account ${unsafeRes.error.message}`);
+//   }
 
-  if (unsafeRes.result.value) {
-    const array = unsafeRes.result.value as AccountInfo<string[]>[];
-    return { keys, array };
-  }
+//   if (unsafeRes.result.value) {
+//     const array = unsafeRes.result.value as AccountInfo<string[]>[];
+//     return { keys, array };
+//   }
 
-  // TODO: fix
-  throw new Error();
-};
+//   // TODO: fix
+//   throw new Error();
+// };
 
 export const useAccountByMint = (mint: string) => {
   const { userAccounts } = useUserAccounts();
@@ -449,42 +449,42 @@ export const useAccountByMint = (mint: string) => {
   }
 };
 
-export function useAccount(pubKey?: PublicKey) {
-  const connection = useConnection();
-  const [account, setAccount] = useState<TokenAccount>();
+// export function useAccount(pubKey?: PublicKey) {
+//   const connection = useConnection();
+//   const [account, setAccount] = useState<TokenAccount>();
 
-  const key = pubKey?.toBase58();
-  useEffect(() => {
-    const query = async () => {
-      try {
-        if (!key) {
-          return;
-        }
+//   const key = pubKey?.toBase58();
+//   useEffect(() => {
+//     const query = async () => {
+//       try {
+//         if (!key) {
+//           return;
+//         }
 
-        const acc = await cache.query(connection, key, TokenAccountParser).catch((err) => console.log(err));
-        if (acc) {
-          setAccount(acc);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
+//         const acc = await cache.query(connection, key, TokenAccountParser).catch((err) => console.log(err));
+//         if (acc) {
+//           setAccount(acc);
+//         }
+//       } catch (err) {
+//         console.error(err);
+//       }
+//     };
 
-    query();
+//     query();
 
-    const dispose = cache.emitter.onCache((e) => {
-      const event = e;
-      if (event.id === key) {
-        query();
-      }
-    });
-    return () => {
-      dispose();
-    };
-  }, [connection, key]);
+//     const dispose = cache.emitter.onCache((e) => {
+//       const event = e;
+//       if (event.id === key) {
+//         query();
+//       }
+//     });
+//     return () => {
+//       dispose();
+//     };
+//   }, [connection, key]);
 
-  return account;
-}
+//   return account;
+// }
 
 // TODO: expose in spl package
 const deserializeAccount = (data: Buffer) => {
@@ -522,27 +522,27 @@ const deserializeAccount = (data: Buffer) => {
 };
 
 // TODO: expose in spl package
-const deserializeMint = (data: Buffer) => {
-  // if (data.length !== MintLayout.span) {
-  //   throw new Error("Not a valid Mint");
-  // }
+// const deserializeMint = (data: Buffer) => {
+//   // if (data.length !== MintLayout.span) {
+//   //   throw new Error("Not a valid Mint");
+//   // }
 
-  const mintInfo = MintLayout.decode(data);
+//   const mintInfo = MintLayout.decode(data);
 
-  if (mintInfo.mintAuthorityOption === 0) {
-    mintInfo.mintAuthority = null;
-  } else {
-    mintInfo.mintAuthority = new PublicKey(mintInfo.mintAuthority);
-  }
+//   if (mintInfo.mintAuthorityOption === 0) {
+//     mintInfo.mintAuthority = null;
+//   } else {
+//     mintInfo.mintAuthority = new PublicKey(mintInfo.mintAuthority);
+//   }
 
-  mintInfo.supply = u64.fromBuffer(mintInfo.supply);
-  mintInfo.isInitialized = mintInfo.isInitialized !== 0;
+//   mintInfo.supply = u64.fromBuffer(mintInfo.supply);
+//   mintInfo.isInitialized = mintInfo.isInitialized !== 0;
 
-  if (mintInfo.freezeAuthorityOption === 0) {
-    mintInfo.freezeAuthority = null;
-  } else {
-    mintInfo.freezeAuthority = new PublicKey(mintInfo.freezeAuthority);
-  }
+//   if (mintInfo.freezeAuthorityOption === 0) {
+//     mintInfo.freezeAuthority = null;
+//   } else {
+//     mintInfo.freezeAuthority = new PublicKey(mintInfo.freezeAuthority);
+//   }
 
-  return mintInfo as MintInfo;
-};
+//   return mintInfo as MintInfo;
+// };

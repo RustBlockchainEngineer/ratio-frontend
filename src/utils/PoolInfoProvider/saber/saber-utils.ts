@@ -7,7 +7,7 @@ import {
   distributeRewardTx,
   getProgramInstance,
   withdrawCollateralTx,
-} from '../ratio-lending';
+} from '../../ratio-lending';
 import { PublicKey, Transaction, Connection } from '@solana/web3.js';
 import {
   findMinerAddress,
@@ -17,12 +17,12 @@ import {
   QUARRY_ADDRESSES,
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
-import { sendSignedTransaction, sendTransaction, signAllTransaction } from '../web3';
+import { sendAllTransaction, sendTransaction } from '../../rf-web3';
 
-import { TokenAmount } from '../safe-math';
-import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../ratio-pda';
+import { TokenAmount } from '../../safe-math';
+import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../../ratio-pda';
 import { Saber, SABER_IOU_MINT, SBR_REWARDER, SBR_MINT_WRAPPER, SBR_ADDRESS } from '@saberhq/saber-periphery';
-import { QUARRY_INFO_LAYOUT } from '../layout';
+import { QUARRY_INFO_LAYOUT } from '../../layout';
 
 export const SABER_IOU_MINT_DECIMALS = 6;
 
@@ -87,27 +87,12 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
     tx2.add(ix5);
   }
 
-  const [withdrawTx, harvestTx] = await signAllTransaction(connection, wallet, [tx1, tx2], []);
-  let success_harvest = false;
+  const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
 
-  console.log('Harvest before withdraw');
-  const txHarvestId = await sendSignedTransaction(connection, harvestTx);
-  try {
-    await connection.confirmTransaction(txHarvestId, 'confirmed');
-    console.log('Harvest is confirmed....', txHarvestId);
-    success_harvest = true;
-  } catch (e) {
-    const txInfo = await connection.getTransaction(txHarvestId);
-    if (txInfo && !txInfo.meta.err) {
-      console.log('Harvest is confirmed ....', txInfo);
-      success_harvest = true;
-    }
-  }
-  if (success_harvest) {
-    const txId = await sendSignedTransaction(connection, withdrawTx);
-    console.log('Sending withdraw transaction..', txId);
-    return txId;
-  }
+  console.log('Saber withdraw tx', txHashs[0]);
+  // console.log('Saber harvest tx', txHashs[1]);
+
+  return txHashs[0];
 }
 
 export async function harvest(connection: Connection, wallet: any, mintCollKey: PublicKey) {
@@ -141,7 +126,7 @@ export const getQuarryInfo = async (connection: Connection, mintCollKey: PublicK
   return parsedData;
 };
 
-export const createSaberQuarryMinerIfneededTx = async (
+const createSaberQuarryMinerIfneededTx = async (
   connection: Connection,
   wallet: typeof anchor.Wallet,
   mintCollKey: PublicKey
@@ -265,7 +250,7 @@ const unstakeColalteralFromSaberTx = async (
   return transaction;
 };
 
-export const harvestRewardsFromSaberTx = async (
+const harvestRewardsFromSaberTx = async (
   connection: Connection,
   wallet: typeof anchor.Wallet,
   mintCollKey: PublicKey
@@ -318,7 +303,7 @@ export const harvestRewardsFromSaberTx = async (
   return txn;
 };
 
-export const redeemAllTokensTx = async (connection: Connection, wallet: typeof anchor.Wallet) => {
+const redeemAllTokensTx = async (connection: Connection, wallet: typeof anchor.Wallet) => {
   const program = getProgramInstance(connection, wallet);
   const sdk = Saber.load({
     provider: program.provider as any,

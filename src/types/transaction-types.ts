@@ -10,7 +10,7 @@ export interface WalletTXDetail {
   base_address_id: string;
   status: string;
 }
-export enum TRANSACTION_TYPE {
+enum TRANSACTION_TYPE {
   'Deposit',
   'Payback',
   'Reward',

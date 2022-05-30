@@ -4,8 +4,8 @@ import Slider from 'rc-slider';
 import raf from 'rc-util/lib/raf';
 import Tooltip from 'rc-tooltip';
 import type { SliderProps } from 'rc-slider';
-import 'rc-slider/assets/index.css';
-import 'rc-tooltip/assets/bootstrap.css';
+//import 'rc-slider/assets/index.css';
+//import 'rc-tooltip/assets/bootstrap.css';
 
 type AmountSliderProps = {
   onChangeValue: (value: any) => void;
@@ -57,13 +57,13 @@ const HandleTooltip = (props: {
   );
 };
 
-export const handleRender: SliderProps['handleRender'] = (node, props) => {
-  return (
-    <HandleTooltip value={props.value} visible={props.dragging}>
-      {node}
-    </HandleTooltip>
-  );
-};
+// const handleRender: SliderProps['handleRender'] = (node, props) => {
+//   return (
+//     <HandleTooltip value={props.value} visible={props.dragging}>
+//       {node}
+//     </HandleTooltip>
+//   );
+// };
 
 const TooltipSlider = ({
   tipFormatter,

@@ -16,7 +16,7 @@ import {
   getFarmInfoByPlatform,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
-import { SABER_IOU_MINT_DECIMALS } from '../utils/saber/saber-utils';
+import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
 import { TokenAmount } from '../utils/safe-math';
 import { calculateCollateralPrice, getMint } from '../utils/utils';
 import { useConnection } from './connection';
@@ -58,11 +58,10 @@ export function RFStateProvider({ children = undefined as any }) {
   const [globalState, setGlobalState] = useState<any>(null);
   const [oracleState, setOracleState] = useState<any>(null);
   const [poolState, setPoolState] = useState<any>(null);
-  const [overview, setOverview] = useState<any>(null);
   const [vaultState, setVaultState] = useState<any>(null);
+  const [overview, setOverview] = useState<any>(null);
 
   const [updateFinished, setUpdateFinished] = useState(false);
-
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
   const [walletUpdated, setWalletUpdated] = useState(false);
 
@@ -432,13 +431,13 @@ export function RFStateProvider({ children = undefined as any }) {
   );
 }
 
-export function useRFState() {
-  const context = React.useContext(RFStateContext);
-  if (!context) {
-    throw new Error('[useRFState] Hook not used under Vaults context provider');
-  }
-  return context;
-}
+// function useRFState() {
+//   const context = React.useContext(RFStateContext);
+//   if (!context) {
+//     throw new Error('[useRFState] Hook not used under Vaults context provider');
+//   }
+//   return context;
+// }
 
 export function useRFStateInfo() {
   const context = React.useContext(RFStateContext);
@@ -463,16 +462,16 @@ export function usePoolInfo(mint: string) {
 
   return context.poolState ? context.poolState[mint] : null;
 }
-export function useOracleInfo(mint: string) {
-  const context = React.useContext(RFStateContext);
+// function useOracleInfo(mint: string) {
+//   const context = React.useContext(RFStateContext);
 
-  return context.oracleState[mint];
-}
+//   return context.oracleState[mint];
+// }
 
-export function useAllOracleInfo() {
-  const context = React.useContext(RFStateContext);
-  return context.oracleState;
-}
+// function useAllOracleInfo() {
+//   const context = React.useContext(RFStateContext);
+//   return context.oracleState;
+// }
 
 export function useUserOverview() {
   const context = React.useContext(RFStateContext);

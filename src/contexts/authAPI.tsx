@@ -2,14 +2,14 @@ import React from 'react';
 import { API_ENDPOINT } from '../constants/constants';
 import { useWallet } from './wallet';
 
-export const AuthContextStatus = {
+const AuthContextStatus = {
   NotAsked: 'notAsked',
   Loading: 'loading',
   Finish: 'finish',
   Error: 'error',
 };
 
-export const AUTH_CONTEXT_DEFAULT_VALUE = {
+const AUTH_CONTEXT_DEFAULT_VALUE = {
   status: AuthContextStatus.NotAsked,
   accessToken: '',
   user: null,

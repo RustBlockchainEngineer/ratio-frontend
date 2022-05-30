@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import highRisk from '../../../assets/images/highrisk.svg';
 import smallRatio from '../../../assets/images/smallRatio.svg';
-import { ERiskLevel } from '../../../libs/helper';
+import { ERiskLevel } from '../../../types/VaultTypes';
 
 type RiskLevelProps = {
   level: ERiskLevel;

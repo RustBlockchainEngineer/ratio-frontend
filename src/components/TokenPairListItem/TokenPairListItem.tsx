@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
-import { TokenPairCardProps } from '../../models/UInterface';
+import { TokenPairCardProps } from '../../types/VaultTypes';
 
 import { formatUSD } from '../../utils/utils';
 import linkIcon from '../../assets/images/link.svg';
@@ -13,7 +13,8 @@ import { IoAlertCircleOutline } from 'react-icons/io5';
 
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { usePoolInfo } from '../../contexts/state';
-import { getSaberLpLink } from '../../libs/helper';
+
+import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 
 const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
@@ -23,6 +24,7 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
   const hasUserReachedDebtLimit = false;
   const poolInfo = usePoolInfo(data.mint);
+  const poolManager = useGetPoolManager(data.item);
 
   const showDashboard = () => {
     if (!connected) {
@@ -117,7 +119,7 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <a href={getSaberLpLink(data.title)} target="_blank" rel="noreferrer">
+            <a href={poolManager.getLpLink(data.title)} target="_blank" rel="noreferrer">
               <div className="d-inline-flex align-items-center mt-1 position-relative">
                 <img src={data.platform.icon} />
                 <p className="semiBold ml-1">{data.platform.name}</p>

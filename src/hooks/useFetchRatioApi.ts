@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
 import { API_ENDPOINT } from '../constants/constants';
 // import { useConnectionConfig } from '../contexts/connection';
 import { FormattedTX, WalletTXDetail } from '../types/transaction-types';
 // import { useFetchData } from './useFetchData';
 
-function makeRatioApiEndpointTxSignature(walletId: string, txSignature: string): string {
-  return `${API_ENDPOINT}/transaction/${walletId}/${txSignature}`;
-}
+// function makeRatioApiEndpointTxSignature(walletId: string, txSignature: string): string {
+//   return `${API_ENDPOINT}/transaction/${walletId}/${txSignature}`;
+// }
 
 export function makeRatioApiEndpointTxHistory(walletId: string, addressId: string): string {
   return `${API_ENDPOINT}/transaction/${walletId}/detail/${addressId}`;
@@ -45,40 +44,40 @@ export function formatTxHistory(transactions: WalletTXDetail[], cluster: string)
   return formattedTxs;
 }
 
-export function useFetchVaultTxRatioApi(walletId = '', txSignature: string, authToken: any) {
-  const [result, setResult] = useState<any>({ data: 'DATA NOT LOADED YET' });
-  const [error, setError] = useState<any>(null);
+// function useFetchVaultTxRatioApi(walletId = '', txSignature: string, authToken: any) {
+//   const [result, setResult] = useState<any>({ data: 'DATA NOT LOADED YET' });
+//   const [error, setError] = useState<any>(null);
 
-  useEffect(() => {
-    let cancelRequest = false;
-    async function fetchTxData() {
-      try {
-        const endpoint = makeRatioApiEndpointTxSignature(walletId, txSignature);
-        const res = await fetch(endpoint, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-access-token': JSON.stringify(authToken),
-          },
-          method: 'GET',
-        });
-        const result = await res.json();
-        if (cancelRequest) return;
-        setResult(result);
-      } catch (error) {
-        if (cancelRequest) return;
-        setError(cancelRequest);
-      }
-    }
+//   useEffect(() => {
+//     let cancelRequest = false;
+//     async function fetchTxData() {
+//       try {
+//         const endpoint = makeRatioApiEndpointTxSignature(walletId, txSignature);
+//         const res = await fetch(endpoint, {
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'x-access-token': JSON.stringify(authToken),
+//           },
+//           method: 'GET',
+//         });
+//         const result = await res.json();
+//         if (cancelRequest) return;
+//         setResult(result);
+//       } catch (error) {
+//         if (cancelRequest) return;
+//         setError(cancelRequest);
+//       }
+//     }
 
-    fetchTxData();
+//     fetchTxData();
 
-    return function cleanup() {
-      cancelRequest = true;
-    };
-  }, [authToken]);
+//     return function cleanup() {
+//       cancelRequest = true;
+//     };
+//   }, [authToken]);
 
-  return [result, error];
-}
+//   return [result, error];
+// }
 
 // export function useFetchVaultTxHistoryRatioApi(walletId = '', mintAddress: string, lastTen: boolean) {
 //   const {
