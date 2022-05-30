@@ -23,6 +23,7 @@ import { useIsTotalUSDrLimitReached } from '../../hooks/useIsTotalUSDrLimitReach
 import { useIsTVLLimitReached } from '../../hooks/useIsTVLLimitReached';
 import { useIsUserUSDrLimitReached } from '../../hooks/useIsUserUSDrLimitReached';
 import { useAllPoolInfo, useAllVaultInfo, useUserOverview } from '../../contexts/state';
+import { getTokenIcon } from '../../utils/utils';
 
 const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boolean; title: string }) => {
   const dispatch = useDispatch();
@@ -98,7 +99,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                   ? getCoinPicSymbol(item.token_symbole)
                   : item.token_icon
               ),
-              icon: item.icon,
+              icon: getTokenIcon(item.symbol.toLowerCase()),
               title: item.symbol,
               platform: {
                 link: item.platform_site,
@@ -198,14 +199,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 <th scope="col">Asset</th>
                 <th scope="col">APY</th>
                 <th scope="col">Collateralization Ratio</th>
-                <th scope="col">USDr Debt</th>
-                <th scope="col">USDr Available to Mint</th>
-                <th scope="col">Rewards Earned</th>
-                <th scope="col">Position Value</th>
                 <th scope="col">
                   <img src={smallRatioIcon} alt="lisklevel" className="allvaults__table-ratioIcon" />
                   Risk Rating
                 </th>
+                <th scope="col">USDr Debt</th>
+                <th scope="col">USDr Available to Mint</th>
+                <th scope="col">Rewards Earned</th>
+                <th scope="col">Position Value</th>
                 <th scope="col"></th>
               </tr>
             )}
