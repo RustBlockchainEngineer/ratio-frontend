@@ -186,6 +186,15 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
           </div>
         </td>
         <td>
+          <div className="d-flex justify-content-between align-items-start">
+            <div className="tokenpaircard__table__td">
+              <div className="d-flex">
+                <h6 className={classNames('ml-2', data.risk)}>{data.risk} </h6>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td>
           <div className="tokenpaircard__table__td">
             <h6 className="semiBold">{Number(totalDebt.toFixed(2))}</h6>
           </div>
@@ -205,15 +214,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
             <h6 className="semiBold">$ {positionValue.toFixed(2)}</h6>
           </div>
         </td>
-        <td>
-          <div className="d-flex justify-content-between align-items-start">
-            <div className="tokenpaircard__table__td">
-              <div className="d-flex">
-                <h6 className={classNames('ml-2', data.risk)}>{data.risk} </h6>
-              </div>
-            </div>
-          </div>
-        </td>
+
         <td>
           <div className="tokenpaircard__table__td">{renderModalButton()}</div>
         </td>

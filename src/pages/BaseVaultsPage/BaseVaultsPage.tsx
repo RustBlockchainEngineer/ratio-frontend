@@ -198,14 +198,14 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
                 <th scope="col">Asset</th>
                 <th scope="col">APY</th>
                 <th scope="col">Collateralization Ratio</th>
-                <th scope="col">USDr Debt</th>
-                <th scope="col">USDr Available to Mint</th>
-                <th scope="col">Rewards Earned</th>
-                <th scope="col">Position Value</th>
                 <th scope="col">
                   <img src={smallRatioIcon} alt="lisklevel" className="allvaults__table-ratioIcon" />
                   Risk Rating
                 </th>
+                <th scope="col">USDr Debt</th>
+                <th scope="col">USDr Available to Mint</th>
+                <th scope="col">Rewards Earned</th>
+                <th scope="col">Position Value</th>
                 <th scope="col"></th>
               </tr>
             )}
