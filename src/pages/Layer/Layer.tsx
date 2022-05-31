@@ -48,8 +48,8 @@ const Layer = () => {
   // const history = useHistory();
   const { connected, publicKey } = useWallet();
   const [enable, setEnable] = useState(false);
-  const terms_conditions = useSelector(selectors.getTermsConditions);
-  const [showTerms, setShowTerms] = useState(!terms_conditions);
+  // const terms_conditions = useSelector(selectors.getTermsConditions);
+  const [showTerms, setShowTerms] = useState(false);
   const {
     isLoading: authFetchLoading,
     data: userAuthorized,
