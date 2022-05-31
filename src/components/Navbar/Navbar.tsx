@@ -143,7 +143,11 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
         <div className="navbar-vertical__atrixItem">
           <img src={atrix_logo_black} alt="atrix_logo_black" className="navbar-vertical__atrixItem--logo" />
           <div>
-            <a target="_blank" href="#" rel="noreferrer">
+            <a
+              target="_blank"
+              href="https://app.atrix.finance/liquidity/7V7igBALu1xyu4ZkXfuS6LnfkZ1aA6DKBx55ouA6Jhbm/deposit"
+              rel="noreferrer"
+            >
               Stake USDr-USDC on Atrix
             </a>
             <img src={linkIcon} alt="linkIcon" className="ml-1" />

@@ -11,7 +11,6 @@ const ratioAPRCache: {
 } = {};
 
 export abstract class GenericPoolManager implements IPoolManagerStrategy {
-
   async getRatioAPYbyVault(vault: LPair): Promise<number> {
     let apr = 0;
     try {
