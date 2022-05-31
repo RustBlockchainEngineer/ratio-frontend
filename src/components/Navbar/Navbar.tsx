@@ -20,6 +20,7 @@ import { useVaultsContextProvider } from '../../contexts/vaults';
 import { useAllVaultInfo, useUserOverview } from '../../contexts/state';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import atrix_logo_black from '../../assets/images/atrix_logo_black.svg';
+import atrix_logo_white from '../../assets/images/atrix_logo_white.svg';
 import linkIcon from '../../assets/images/link.svg';
 
 type NavbarProps = {
@@ -141,7 +142,11 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
           onItemClick={onItemClick}
         /> */}
         <div className="navbar-vertical__atrixItem">
-          <img src={atrix_logo_black} alt="atrix_logo_black" className="navbar-vertical__atrixItem--logo" />
+          <img
+            src={darkMode ? atrix_logo_white : atrix_logo_black}
+            alt="atrix_logo"
+            className="navbar-vertical__atrixItem--logo"
+          />
           <div>
             <a
               target="_blank"
