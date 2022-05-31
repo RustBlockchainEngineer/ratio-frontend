@@ -64,6 +64,9 @@ export class SaberPoolManager extends GenericPoolManager {
       case 'USDT-USDC':
         return 'https://app.saber.so/pools/usdc_usdt/deposit';
         break;
+      case 'cUSDT-cUSDC':
+        return 'https://app.saber.so/pools/solend_usdc_usdt/deposit';
+        break;
 
       default:
         break;
