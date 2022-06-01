@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 import AmountSlider from '../AmountSlider';
 import { isWalletApproveError } from '../../../utils/utils';
 // import { postToRatioApi } from '../../../utils/ratioApi';
-import { useAppendUserAction } from '../../../contexts/state';
+import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
 
 const PaybackModal = ({ data }: any) => {
   const maxPaybackAmount = Math.min(data.usdrValue, data.debtValue);
@@ -34,6 +34,7 @@ const PaybackModal = ({ data }: any) => {
   const [amountValue, setAmountValue] = useState(0);
 
   const appendUserAction = useAppendUserAction();
+  const poolInfo = usePoolInfo(data?.mint);
 
   useEffect(() => {
     setDidMount(true);
@@ -62,7 +63,15 @@ const PaybackModal = ({ data }: any) => {
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, USDR_MINT_DECIMALS), new PublicKey(data.mint))
       .then((txHash: string) => {
         toast.success('Successfully Paid back!');
-        appendUserAction(wallet.publicKey.toString(), data.mint, USDR_MINT_KEY, PAYBACK_ACTION, -paybackAmount, txHash);
+        appendUserAction(
+          wallet.publicKey.toString(),
+          data.mint,
+          USDR_MINT_KEY,
+          PAYBACK_ACTION,
+          -paybackAmount,
+          txHash,
+          poolInfo.currentPrice
+        );
       })
       .catch((e) => {
         console.log(e);

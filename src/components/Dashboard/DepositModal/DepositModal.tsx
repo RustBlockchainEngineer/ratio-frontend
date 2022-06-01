@@ -16,6 +16,7 @@ import { LPair } from '../../../types/VaultTypes';
 import { TokenAmount } from '../../../utils/safe-math';
 import { DEPOSIT_ACTION, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
+// import { formatUSD } from '../../../utils/utils';
 
 const DepositModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -77,7 +78,15 @@ const DepositModal = ({ data }: any) => {
         depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         collAccount?.pubkey.toString() as string
       );
-      appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, DEPOSIT_ACTION, -depositAmount, txHash);
+      appendUserAction(
+        wallet.publicKey.toString(),
+        data.mint,
+        data.mint,
+        DEPOSIT_ACTION,
+        -depositAmount,
+        txHash,
+        poolInfo.currentPrice
+      );
 
       setDepositAmount(0);
       toast.success('Successfully Deposited!');

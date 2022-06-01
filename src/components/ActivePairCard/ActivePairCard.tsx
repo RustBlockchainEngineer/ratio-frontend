@@ -64,7 +64,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
       console.log('Harvesting...');
       const txHash = await poolManager?.harvestReward(connection, wallet, data.item);
-      appendUserAction(wallet.publicKey.toString(), data.mint, data.realUserRewardMint, HARVEST_ACTION, 0, txHash);
+      appendUserAction(wallet.publicKey.toString(), data.mint, data.realUserRewardMint, HARVEST_ACTION, 0, txHash, 0);
 
       toast.success('Successfully Harvested!');
     } catch (err) {

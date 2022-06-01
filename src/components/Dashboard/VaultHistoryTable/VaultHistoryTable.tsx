@@ -79,6 +79,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
               <th>No</th>
               <th>Date</th>
               <th>Type</th>
+              <th>Price</th>
               <th>Amount</th>
               <th className="w-50">Status</th>
               <th className="text-right">Tx Signature</th>
@@ -87,7 +88,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="text-center">
+                <td colSpan={7} className="text-center">
                   <LoadingSpinner />
                 </td>
               </tr>
@@ -98,6 +99,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
                     <td>{index + 1}</td>
                     <td className="w-50">{tx?.date}</td>
                     <td className="activity">{tx?.txType}</td>
+                    <td className="activity">{tx?.fair_price && tx?.fair_price}</td>
                     <td className="activity">{(Math.ceil(tx?.amount * 10000) / 10000).toFixed(4)}</td>
                     <td className="activity">{tx?.status}</td>
                     <td className="tx_hash text-right">
@@ -111,7 +113,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
               })
             ) : (
               <tr>
-                <td colSpan={5} className="text-center">
+                <td colSpan={7} className="text-center">
                   <h6>There&apos;s no transaction history</h6>
                 </td>
               </tr>
