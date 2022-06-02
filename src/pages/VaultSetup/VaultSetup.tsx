@@ -83,7 +83,7 @@ const VaultSetup = () => {
     }
   }, []);
 
-  if (isLoading)
+  if (isLoading || !poolInfo)
     return (
       <div className="col allvaults__loading">
         <div className="spinner-border text-info" role="status">
