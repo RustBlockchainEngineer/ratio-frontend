@@ -45,10 +45,6 @@ const WithdrawModal = ({ data }: any) => {
   const appendUserAction = useAppendUserAction();
 
   useEffect(() => {
-    console.log('withdraw modal data =', data);
-  });
-
-  useEffect(() => {
     if (wallet?.publicKey) {
       getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(data.mint)).then((res) => {
         setUserCollAccount(res);

@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { useAccountByMint } from '../../contexts/accounts';
 import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
-
+import { FetchingStatus } from '../../types/fetching-types';
 import { isWalletApproveError } from '../../utils/utils';
 import Button from '../Button';
 import CustomInput from '../CustomInput';
@@ -21,7 +21,7 @@ const VaultSetupContainer = ({ data }: any) => {
   const history = useHistory();
   const connection = useConnection();
   const { wallet, connected } = useWallet();
-  const { vaults } = useVaultsContextProvider();
+  const { status, vaults } = useVaultsContextProvider();
   const poolInfo = usePoolInfo(data?.mint);
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
   const poolManager = useGetPoolManager(vault);
@@ -92,6 +92,16 @@ const VaultSetupContainer = ({ data }: any) => {
     setIsDepositing(false);
   };
 
+  if (status === FetchingStatus.Loading || status === FetchingStatus.NotAsked) {
+    return (
+      <div className="col allvaults__loading">
+        <div className="spinner-border text-info" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="vaultsetupcontainer">
       <div className="p-4">
@@ -101,7 +111,7 @@ const VaultSetupContainer = ({ data }: any) => {
           </p>
           <a
             target="_blank"
-            href={poolManager.getLpLink(data.title)}
+            href={poolManager?.getLpLink(data.title)}
             rel="noreferrer"
             className="vaultsetupcontainer-getsaberlp"
           >

@@ -20,7 +20,7 @@ export class PoolManagerFactory {
     // this.providers[PoolProvider.MERCURIAL] = new MercurialPoolManager(_mercurialPools);
   }
   getProviderForVault(vault: LPair): IPoolManagerStrategy {
-    return PoolManagerFactory.providers[vault.platform_name];
+    return PoolManagerFactory.providers[vault?.platform_name];
   }
   static getPoolManager = () => {
     if (!PoolManagerFactory.instance) {

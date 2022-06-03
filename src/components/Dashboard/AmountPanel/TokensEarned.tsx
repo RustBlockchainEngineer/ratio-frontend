@@ -71,10 +71,10 @@ const TokensEarned = ({ data }: any) => {
             <td className="tokensearned__name">
               {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
               <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
-              {poolManager.getTokenName()}
+              {poolManager?.getTokenName()}
             </td>
             <td className="align-middle">
-              {vaultState ? vaultState.reward : 0} {poolManager.getTokenName()}
+              {vaultState ? vaultState.reward : 0} {poolManager?.getTokenName()}
             </td>
             <td className="align-middle">
               {!vaultState?.rewardUSD ? (

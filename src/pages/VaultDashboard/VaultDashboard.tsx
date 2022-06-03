@@ -153,6 +153,15 @@ const VaultDashboard = () => {
   // const isDefault = useMediaQuery({ minWidth: 1024 });
   const isDesktop = useMediaQuery({ minWidth: 1025 });
 
+  if (!poolInfo)
+    return (
+      <div className="col allvaults__loading">
+        <div className="spinner-border text-info" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+
   return (
     <>
       <TokenCapBanner mint={vault_mint as string} />
