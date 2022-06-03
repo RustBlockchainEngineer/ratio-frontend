@@ -48,8 +48,8 @@ const Layer = () => {
   // const history = useHistory();
   const { connected, publicKey } = useWallet();
   const [enable, setEnable] = useState(false);
-  // const terms_conditions = useSelector(selectors.getTermsConditions);
-  const [showTerms, setShowTerms] = useState(false);
+  const terms_conditions = useSelector(selectors.getTermsConditions);
+  const [showTerms, setShowTerms] = useState(terms_conditions);
   const {
     isLoading: authFetchLoading,
     data: userAuthorized,
@@ -111,7 +111,7 @@ const Layer = () => {
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
-      <TermsAndConditionModal show={showTerms} setShow={onClickAgree} />
+      <TermsAndConditionModal show={!showTerms} setShow={onClickAgree} />
       <ToastContainer
         position="top-center"
         autoClose={1500}
