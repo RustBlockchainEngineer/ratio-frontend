@@ -39,7 +39,8 @@ export function prepareTransactionData(
   affectedMint: string,
   amount: number,
   txHash: string,
-  status: TxStatus
+  status: TxStatus,
+  fair_price: number
 ) {
   return {
     tx_type: action,
@@ -48,6 +49,7 @@ export function prepareTransactionData(
     vault_address: collMint,
     status: status,
     amount: amount,
+    fair_price: fair_price,
   };
 }
 

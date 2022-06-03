@@ -102,7 +102,15 @@ const WithdrawModal = ({ data }: any) => {
         userCollAccount
       );
       if (txHash) {
-        appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, WIHTDRAW_ACTION, +withdrawAmount, txHash);
+        appendUserAction(
+          wallet.publicKey.toString(),
+          data.mint,
+          data.mint,
+          WIHTDRAW_ACTION,
+          +withdrawAmount,
+          txHash,
+          poolInfo.currentPrice
+        );
 
         setWithdrawAmount(0);
         toast.success('Successfully Withdrawn!');

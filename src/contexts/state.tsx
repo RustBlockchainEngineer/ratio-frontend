@@ -38,7 +38,8 @@ interface RFStateConfig {
     affectedMint: string,
     action: string,
     amount: number,
-    txid: string
+    txid: string,
+    fair_price: number
   ) => void;
 }
 
@@ -71,11 +72,12 @@ export function RFStateProvider({ children = undefined as any }) {
     affectedMint: string,
     action: string,
     amount: number,
-    txHash: string
+    txHash: string,
+    fair_price: number
   ) => {
     if (!txHash) return;
     postToRatioApi(
-      prepareTransactionData(action, mintCollat, affectedMint, amount, txHash, 'Waiting Confirmation ...'),
+      prepareTransactionData(action, mintCollat, affectedMint, amount, txHash, 'Waiting Confirmation ...', fair_price),
       `/transaction/${walletKey}/new`
     )
       .then(() => {})
@@ -96,7 +98,7 @@ export function RFStateProvider({ children = undefined as any }) {
         const newAmount = getBalanceChange(txInfo, walletKey, affectedMint);
         if (newAmount) {
           postToRatioApi(
-            prepareTransactionData(action, mintCollat, affectedMint, newAmount, txHash, newStatus),
+            prepareTransactionData(action, mintCollat, affectedMint, newAmount, txHash, newStatus, fair_price),
             `/transaction/${walletKey}/update`
           )
             .then(() => {})

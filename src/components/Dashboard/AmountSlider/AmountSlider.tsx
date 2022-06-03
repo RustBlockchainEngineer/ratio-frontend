@@ -4,8 +4,9 @@ import Slider from 'rc-slider';
 import raf from 'rc-util/lib/raf';
 import Tooltip from 'rc-tooltip';
 import type { SliderProps } from 'rc-slider';
-//import 'rc-slider/assets/index.css';
-//import 'rc-tooltip/assets/bootstrap.css';
+import './rc-slider.css';
+import './rc-tooltip.css';
+// import 'rc-tooltip/assets/bootstrap.css';
 
 type AmountSliderProps = {
   onChangeValue: (value: any) => void;

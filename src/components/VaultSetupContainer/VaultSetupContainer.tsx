@@ -72,7 +72,15 @@ const VaultSetupContainer = ({ data }: any) => {
         depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         collAccount?.pubkey.toString() as string
       );
-      appendUserAction(wallet.publicKey.toString(), data.mint, data.mint, DEPOSIT_ACTION, -depositAmount, txHash);
+      appendUserAction(
+        wallet.publicKey.toString(),
+        data.mint,
+        data.mint,
+        DEPOSIT_ACTION,
+        -depositAmount,
+        txHash,
+        poolInfo.currentPrice
+      );
       history.push(`/dashboard/vaultdashboard/${data.mint}`);
       setDepositAmount(0);
       toast.success('Successfully Deposited!');

@@ -9,6 +9,7 @@ export interface WalletTXDetail {
   conversion_rate: number;
   base_address_id: string;
   status: string;
+  fair_price: string;
 }
 enum TRANSACTION_TYPE {
   'Deposit',
@@ -27,4 +28,5 @@ export interface FormattedTX {
   status: string;
   txSignature: string;
   txExplorerUrl: string;
+  fair_price: string;
 }

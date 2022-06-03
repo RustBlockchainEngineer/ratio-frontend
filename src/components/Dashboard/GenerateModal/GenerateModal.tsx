@@ -11,7 +11,7 @@ import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { useAppendUserAction, useUserVaultInfo } from '../../../contexts/state';
+import { useAppendUserAction, useUserVaultInfo, usePoolInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 // import { postToRatioApi } from '../../../utils/ratioApi';
 
@@ -35,6 +35,7 @@ const GenerateModal = ({ data }: any) => {
   const [isMinting, setIsMinting] = useState(false);
   const [didMount, setDidMount] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
+  const poolInfo = usePoolInfo(data?.mint);
 
   const appendUserAction = useAppendUserAction();
 
@@ -72,7 +73,15 @@ const GenerateModal = ({ data }: any) => {
     borrowUSDr(connection, wallet, borrowAmount * 10 ** USDR_MINT_DECIMALS, new PublicKey(data.mint))
       .then((txHash: string) => {
         toast.success('Successfully minted USDr tokens!');
-        appendUserAction(wallet.publicKey.toString(), data.mint, USDR_MINT_KEY, BORROW_ACTION, +borrowAmount, txHash);
+        appendUserAction(
+          wallet.publicKey.toString(),
+          data.mint,
+          USDR_MINT_KEY,
+          BORROW_ACTION,
+          +borrowAmount,
+          txHash,
+          poolInfo.currentPrice
+        );
       })
       .catch((e) => {
         console.log(e);

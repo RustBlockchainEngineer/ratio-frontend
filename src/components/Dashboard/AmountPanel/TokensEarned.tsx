@@ -42,7 +42,8 @@ const TokensEarned = ({ data }: any) => {
         data.realUserRewardMint,
         HARVEST_ACTION,
         0,
-        txHash
+        txHash,
+        0
       );
 
       toast.success('Successfully Harvested!');
