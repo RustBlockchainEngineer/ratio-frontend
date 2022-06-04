@@ -11,7 +11,7 @@ import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { useAppendUserAction, useUserVaultInfo, usePoolInfo } from '../../../contexts/state';
+import { useAppendUserAction, useUserVaultInfo, usePoolInfo, useSubscribeTx } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 // import { postToRatioApi } from '../../../utils/ratioApi';
 
@@ -38,6 +38,7 @@ const GenerateModal = ({ data }: any) => {
   const poolInfo = usePoolInfo(data?.mint);
 
   const appendUserAction = useAppendUserAction();
+  const subscribeTx = useSubscribeTx();
 
   useEffect(() => {
     if (userState) {
@@ -72,7 +73,12 @@ const GenerateModal = ({ data }: any) => {
     setIsMinting(true);
     borrowUSDr(connection, wallet, borrowAmount * 10 ** USDR_MINT_DECIMALS, new PublicKey(data.mint))
       .then((txHash: string) => {
-        toast.success('Successfully minted USDr tokens!');
+        subscribeTx(
+          txHash,
+          () => toast.info('Mint Transaction Sent'),
+          () => toast.success('Mint Confirmed.'),
+          () => toast.error('Mint Transaction Failed')
+        );
         appendUserAction(
           wallet.publicKey.toString(),
           data.mint,
@@ -164,9 +170,6 @@ const GenerateModal = ({ data }: any) => {
               }}
               value={amountValue}
             />
-            <div style={{ color: '#07b127', fontSize: 12 }}>
-              There will be a 0.5% loan origination fee associated with this transaction.
-            </div>
             <Button
               disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount) || isMinting}
               className="button--blue bottomBtn"

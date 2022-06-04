@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 import AmountSlider from '../AmountSlider';
 import { isWalletApproveError } from '../../../utils/utils';
 // import { postToRatioApi } from '../../../utils/ratioApi';
-import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
+import { useAppendUserAction, usePoolInfo, useSubscribeTx } from '../../../contexts/state';
 
 const PaybackModal = ({ data }: any) => {
   const maxPaybackAmount = Math.min(data.usdrValue, data.debtValue);
@@ -34,6 +34,7 @@ const PaybackModal = ({ data }: any) => {
   const [amountValue, setAmountValue] = useState(0);
 
   const appendUserAction = useAppendUserAction();
+  const subscribeTx = useSubscribeTx();
   const poolInfo = usePoolInfo(data?.mint);
 
   useEffect(() => {
@@ -62,7 +63,12 @@ const PaybackModal = ({ data }: any) => {
 
     repayUSDr(connection, wallet, paybackAmount * Math.pow(10, USDR_MINT_DECIMALS), new PublicKey(data.mint))
       .then((txHash: string) => {
-        toast.success('Successfully Paid back!');
+        subscribeTx(
+          txHash,
+          () => toast.info('Repay Transaction Sent'),
+          () => toast.success('Repay Confirmed.'),
+          () => toast.error('Repay Transaction Failed')
+        );
         appendUserAction(
           wallet.publicKey.toString(),
           data.mint,
