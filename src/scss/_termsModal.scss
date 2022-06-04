@@ -41,6 +41,9 @@
         }
     }
     &__right {
+      background-color: var(--unnamed-color-171A23);
+      border-top-right-radius: 1rem;
+      border-bottom-right-radius: 1rem;
         h3 {
             font-family: 'Poppins-Medium';
             font-size: 1.5rem;
@@ -62,8 +65,8 @@
             margin-bottom: 2rem;
         }
         &__contents {
-            border-top: 1px solid var(--primary-border);
-            border-bottom: 1px solid var(--primary-border);
+            border-top: 1px solid rgba(#4c646f, 0.2);
+            border-bottom: 1px solid rgba(#4c646f, 0.2);
             background-color: var(--unnamed-color-171A23);
             height: 250px;
             overflow-y: auto;
@@ -99,6 +102,7 @@
             font-family: 'Poppins-Regular';
             font-size: 0.75rem;
             color: var(--unnamed-color-002332);
+            margin-bottom: 0px;
           }
           .checkcontainer input {
             position: absolute;
@@ -115,13 +119,14 @@
             left: 0;
             height: 18px;
             width: 18px;
-            border: 1px solid var(--primary-border);
+            border: 1px solid rgba(#4c646f, 0.2);
             border-radius: 4px;
+            background-color: white;
           }
           
           /* On mouse-over, add a grey background color */
           .checkcontainer:hover input ~ .checkmark {
-            background-color: #eee;
+            background-color: var(--unnamed-color-727c81);
           }
           
           /* When the checkbox is checked, add a blue background */
@@ -157,3 +162,4 @@
         }
     }
 }
+

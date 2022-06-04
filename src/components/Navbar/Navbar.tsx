@@ -141,12 +141,17 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
           navIndex="/dashboard/insta-buy-lp"
           onItemClick={onItemClick}
         /> */}
-        <div className="navbar-vertical__atrixItem">
-          <img
-            src={darkMode ? atrix_logo_white : atrix_logo_black}
-            alt="atrix_logo"
-            className="navbar-vertical__atrixItem--logo"
-          />
+        <div
+          className="navbar-vertical__atrixItem"
+          style={{ paddingLeft: collapseFlag ? `1rem` : '2rem', paddingRight: collapseFlag ? `0.5rem` : '0rem' }}
+        >
+          {!collapseFlag && (
+            <img
+              src={darkMode ? atrix_logo_white : atrix_logo_black}
+              alt="atrix_logo"
+              className="navbar-vertical__atrixItem--logo"
+            />
+          )}
           <div>
             <a
               target="_blank"
