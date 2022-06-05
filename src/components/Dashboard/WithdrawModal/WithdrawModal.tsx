@@ -101,9 +101,9 @@ const WithdrawModal = ({ data }: any) => {
       if (txHash) {
         subscribeTx(
           txHash,
-          () => toast.info('Harvest Transaction Sent'),
-          () => toast.success('Harvest Confirmed.'),
-          () => toast.error('Harvest Transaction Failed')
+          () => toast.info('Withdraw Transaction Sent'),
+          () => toast.success('Withdraw Confirmed.'),
+          () => toast.error('Withdraw Transaction Failed')
         );
 
         appendUserAction(
