@@ -15,8 +15,7 @@ import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { LPair } from '../../../types/VaultTypes';
 import { TokenAmount } from '../../../utils/safe-math';
 import { DEPOSIT_ACTION, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
-import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
-// import { formatUSD } from '../../../utils/utils';
+import { useAppendUserAction, usePoolInfo, useSubscribeTx } from '../../../contexts/state';
 
 const DepositModal = ({ data }: any) => {
   const theme = useContext(ThemeContext);
@@ -43,6 +42,7 @@ const DepositModal = ({ data }: any) => {
   const [amountValue, setAmountValue] = useState(0);
 
   const appendUserAction = useAppendUserAction();
+  const subscribeTx = useSubscribeTx();
 
   const depositAmountUSD = new TokenAmount(depositAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
@@ -78,6 +78,12 @@ const DepositModal = ({ data }: any) => {
         depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         collAccount?.pubkey.toString() as string
       );
+      subscribeTx(
+        txHash,
+        () => toast.info('Deposit Transaction Sent'),
+        () => toast.success('Deposit Confirmed.'),
+        () => toast.error('Deposit Transaction Failed')
+      );
       appendUserAction(
         wallet.publicKey.toString(),
         data.mint,
@@ -89,7 +95,6 @@ const DepositModal = ({ data }: any) => {
       );
 
       setDepositAmount(0);
-      toast.success('Successfully Deposited!');
     } catch (err) {
       console.error(err);
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');

@@ -12,7 +12,7 @@ import CustomInput from '../CustomInput';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../contexts/vaults';
 import { LPair } from '../../types/VaultTypes';
-import { useAppendUserAction, usePoolInfo } from '../../contexts/state';
+import { useAppendUserAction, usePoolInfo, useSubscribeTx } from '../../contexts/state';
 import WarningLimitBox from './WarningLimitBox';
 import { TokenAmount } from '../../utils/safe-math';
 import { DEPOSIT_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
@@ -39,6 +39,7 @@ const VaultSetupContainer = ({ data }: any) => {
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   const appendUserAction = useAppendUserAction();
+  const subscribeTx = useSubscribeTx();
 
   React.useEffect(() => {
     setDidMount(true);
@@ -72,6 +73,12 @@ const VaultSetupContainer = ({ data }: any) => {
         depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
         collAccount?.pubkey.toString() as string
       );
+      subscribeTx(
+        txHash,
+        () => toast.info('Deposit Transaction Sent'),
+        () => toast.success('Deposit Confirmed.'),
+        () => toast.error('Deposit Transaction Failed')
+      );
       appendUserAction(
         wallet.publicKey.toString(),
         data.mint,
@@ -83,7 +90,6 @@ const VaultSetupContainer = ({ data }: any) => {
       );
       history.push(`/dashboard/vaultdashboard/${data.mint}`);
       setDepositAmount(0);
-      toast.success('Successfully Deposited!');
     } catch (err) {
       console.error(err);
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');

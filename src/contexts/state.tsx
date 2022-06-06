@@ -41,6 +41,7 @@ interface RFStateConfig {
     txid: string,
     fair_price: number
   ) => void;
+  subscribeTx: (txHash: string, onTxSent?: any, onTxSuccess?: any, onTxFailed?: any) => void;
 }
 
 const RFStateContext = React.createContext<RFStateConfig>({
@@ -50,6 +51,7 @@ const RFStateContext = React.createContext<RFStateConfig>({
   vaultState: {},
   overview: {},
   appendUserAction: () => {},
+  subscribeTx: () => {},
 });
 
 export function RFStateProvider({ children = undefined as any }) {
@@ -66,6 +68,27 @@ export function RFStateProvider({ children = undefined as any }) {
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
   const [walletUpdated, setWalletUpdated] = useState(false);
 
+  const subscribeTx = async (txHash: string, onTxSent: any, onTxSuccess: any, onTxFailed: any) => {
+    if (txHash) {
+      onTxSent();
+      console.log('Sent tx: ', txHash);
+    } else {
+      onTxFailed();
+      return;
+    }
+    connection.onSignature(
+      txHash,
+      async function (signatureResult: SignatureResult) {
+        console.log('onProcessed');
+        if (!signatureResult.err) {
+          onTxSuccess();
+        } else {
+          onTxFailed();
+        }
+      },
+      'processed'
+    );
+  };
   const appendUserAction = async (
     walletKey: string,
     mintCollat: string,
@@ -426,6 +449,7 @@ export function RFStateProvider({ children = undefined as any }) {
         vaultState,
         overview,
         appendUserAction: appendUserAction,
+        subscribeTx,
       }}
     >
       {children}
@@ -498,4 +522,10 @@ export function useAppendUserAction() {
   const context = React.useContext(RFStateContext);
 
   return context.appendUserAction;
+}
+
+export function useSubscribeTx() {
+  const context = React.useContext(RFStateContext);
+
+  return context.subscribeTx;
 }

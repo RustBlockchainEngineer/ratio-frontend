@@ -13,7 +13,7 @@ import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
-import { useAppendUserAction, usePoolInfo } from '../../../contexts/state';
+import { useAppendUserAction, usePoolInfo, useSubscribeTx } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { TokenAmount } from '../../../utils/safe-math';
 import { USDR_MINT_DECIMALS, WIHTDRAW_ACTION } from '../../../utils/ratio-lending';
@@ -43,6 +43,7 @@ const WithdrawModal = ({ data }: any) => {
   const withdrawAmountUSD = new TokenAmount(withdrawAmount * data.tokenPrice, USDR_MINT_DECIMALS).fixed();
 
   const appendUserAction = useAppendUserAction();
+  const subscribeTx = useSubscribeTx();
 
   useEffect(() => {
     if (wallet?.publicKey) {
@@ -98,6 +99,13 @@ const WithdrawModal = ({ data }: any) => {
         userCollAccount
       );
       if (txHash) {
+        subscribeTx(
+          txHash,
+          () => toast.info('Withdraw Transaction Sent'),
+          () => toast.success('Withdraw Confirmed.'),
+          () => toast.error('Withdraw Transaction Failed')
+        );
+
         appendUserAction(
           wallet.publicKey.toString(),
           data.mint,
@@ -109,7 +117,6 @@ const WithdrawModal = ({ data }: any) => {
         );
 
         setWithdrawAmount(0);
-        toast.success('Successfully Withdrawn!');
       }
     } catch (err) {
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');

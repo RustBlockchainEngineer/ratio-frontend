@@ -18,7 +18,7 @@ import { TokenPairCardProps } from '../../types/VaultTypes';
 import linkIcon from '../../assets/images/link.svg';
 import { isWalletApproveError } from '../../utils/utils';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
-import { useAppendUserAction, usePoolInfo, useUserVaultInfo } from '../../contexts/state';
+import { useAppendUserAction, usePoolInfo, useUserVaultInfo, useSubscribeTx } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
@@ -37,6 +37,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const poolManager = useGetPoolManager(data.item);
 
+  const subscribeTx = useSubscribeTx();
   const appendUserAction = useAppendUserAction();
 
   const printTvl = () => {
@@ -64,9 +65,13 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
       console.log('Harvesting...');
       const txHash = await poolManager?.harvestReward(connection, wallet, data.item);
+      subscribeTx(
+        txHash,
+        () => toast.info('Harvest Transaction Sent'),
+        () => toast.success('Harvest Confirmed.'),
+        () => toast.error('Harvest Transaction Failed')
+      );
       appendUserAction(wallet.publicKey.toString(), data.mint, data.realUserRewardMint, HARVEST_ACTION, 0, txHash, 0);
-
-      toast.success('Successfully Harvested!');
     } catch (err) {
       console.error(err);
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
