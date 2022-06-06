@@ -79,7 +79,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
               <th>No</th>
               <th>Date</th>
               <th>Type</th>
-              <th>Price</th>
+              <th>LP price</th>
               <th>Amount</th>
               <th className="w-50">Status</th>
               <th className="text-right">Tx Signature</th>

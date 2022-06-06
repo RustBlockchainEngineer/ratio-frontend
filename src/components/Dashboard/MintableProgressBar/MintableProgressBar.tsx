@@ -11,7 +11,9 @@ const MintableProgressBar = ({ mint }: any) => {
   const limit = Number(new TokenAmount(poolInfo?.debtCeiling ?? 1, USDR_MINT_DECIMALS).fixed());
   const percentage = (currentValue * 100) / limit;
 
-  const warning = percentage >= 80;
+  const success = percentage <= 80;
+  const caution = percentage < 100 && percentage > 80;
+  const warning = percentage >= 100;
 
   return (
     <div className="mintableProgressbar">
@@ -19,7 +21,8 @@ const MintableProgressBar = ({ mint }: any) => {
         className={classNames(
           'mintableProgressbar__progressbar',
           { 'navbarprogressbar--warning': warning },
-          { 'navbarprogressbar--usdr': !warning }
+          { 'navbarprogressbar--caution': caution },
+          { 'navbarprogressbar--success': success }
         )}
         shouldDisplayCurrency={false}
         currentValue={currentValue}
