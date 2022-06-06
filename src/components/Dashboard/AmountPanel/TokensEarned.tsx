@@ -7,7 +7,7 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { useAppendUserAction, useUserVaultInfo } from '../../../contexts/state';
+import { useAppendUserAction, useUserVaultInfo, useSubscribeTx } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { HARVEST_ACTION } from '../../../utils/ratio-lending';
@@ -26,6 +26,7 @@ const TokensEarned = ({ data }: any) => {
   const [isHarvesting, setIsHarvesting] = useState(false);
 
   const appendUserAction = useAppendUserAction();
+  const subscribeTx = useSubscribeTx();
 
   const harvest = async () => {
     try {
@@ -36,6 +37,12 @@ const TokensEarned = ({ data }: any) => {
       console.log('Harvesting...');
       setIsHarvesting(true);
       const txHash = await poolManager?.harvestReward(connection, wallet, vault as LPair);
+      subscribeTx(
+        txHash,
+        () => toast.info('Harvest Transaction Sent'),
+        () => toast.success('Harvest Confirmed.'),
+        () => toast.error('Harvest Transaction Failed')
+      );
       appendUserAction(
         wallet.publicKey.toString(),
         data.mintAddress,
@@ -45,8 +52,6 @@ const TokensEarned = ({ data }: any) => {
         txHash,
         0
       );
-
-      toast.success('Successfully Harvested!');
     } catch (err) {
       console.error(err);
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
