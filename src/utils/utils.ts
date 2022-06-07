@@ -8,7 +8,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import * as serumCmn from '@project-serum/common';
 import * as anchor from '@project-serum/anchor';
 
-import usdt_usdc_icon from '../assets/images/tokens/usdt-usdc.jpg';
+import usdt_usdc_icon from '../assets/images/tokens/usdt-usdc.png';
 import uxd_usdc_icon from '../assets/images/tokens/uxd-usdc.png';
 import usdh_usdc_icon from '../assets/images/tokens/usdh-usdc.png';
 import cusdt_cusdc_icon from '../assets/images/tokens/cusdt-cusdc.png';
