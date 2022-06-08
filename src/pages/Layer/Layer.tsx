@@ -23,14 +23,14 @@ import FairdropPage from '../FairdropPage';
 
 import { actionTypes } from '../../features/wallet';
 import { selectors, actionTypes as dashboardActionType } from '../../features/dashboard';
-import logoside from '../../assets/images/logo-side.svg';
-import darkLogo from '../../assets/images/dark-logoside.svg';
-import telegram from '../../assets/images/telegram.svg';
-import twitter from '../../assets/images/twitter.svg';
-import medium from '../../assets/images/medium.svg';
-import telegramDark from '../../assets/images/telegram-dark.svg';
-import twitterDark from '../../assets/images/twitter-dark.svg';
-import mediumDark from '../../assets/images/medium-dark.svg';
+// import logoside from '../../assets/images/logo-side.svg';
+// import darkLogo from '../../assets/images/dark-logoside.svg';
+// import telegram from '../../assets/images/telegram.svg';
+// import twitter from '../../assets/images/twitter.svg';
+// import medium from '../../assets/images/medium.svg';
+// import telegramDark from '../../assets/images/telegram-dark.svg';
+// import twitterDark from '../../assets/images/twitter-dark.svg';
+// import mediumDark from '../../assets/images/medium-dark.svg';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -48,8 +48,8 @@ const Layer = () => {
   // const history = useHistory();
   const { connected, publicKey } = useWallet();
   const [enable, setEnable] = useState(false);
-  const terms_conditions = useSelector(selectors.getTermsConditions);
-  const [showTerms, setShowTerms] = useState(terms_conditions);
+  // const terms_conditions = useSelector(selectors.getTermsConditions);
+  const [showTerms, setShowTerms] = useState(false);
   const {
     isLoading: authFetchLoading,
     data: userAuthorized,
@@ -111,7 +111,7 @@ const Layer = () => {
 
   return (
     <div className="layer" data-theme={darkMode ? 'dark' : 'light'}>
-      <TermsAndConditionModal show={!showTerms} setShow={onClickAgree} />
+      <TermsAndConditionModal show={showTerms} setShow={onClickAgree} />
       <ToastContainer
         position="top-center"
         autoClose={1500}

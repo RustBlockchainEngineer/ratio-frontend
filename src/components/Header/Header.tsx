@@ -94,7 +94,11 @@ const Header = (headerProps: HeaderProps) => {
   const renderTotalUSDrDebt = () => {
     return enable && connected ? (
       <div className="header__connected header__debt">
-        <NavBarProgressBarTotalUSDr className="header__progressbar" shouldDisplayLabel={false} />
+        <NavBarProgressBarTotalUSDr
+          className="header__progressbar"
+          shouldDisplayLabel={false}
+          shouldDisplayCurrency={true}
+        />
       </div>
     ) : null;
   };

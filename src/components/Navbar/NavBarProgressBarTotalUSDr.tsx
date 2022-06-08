@@ -7,10 +7,11 @@ import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 interface NavBarProgressBarTotalUSDrProps {
   className: string;
   shouldDisplayLabel?: boolean;
+  shouldDisplayCurrency?: boolean;
 }
 
 export const NavBarProgressBarTotalUSDr = (data: NavBarProgressBarTotalUSDrProps) => {
-  const { className, shouldDisplayLabel = true } = data;
+  const { className, shouldDisplayLabel = true, shouldDisplayCurrency } = data;
 
   const globalState = useRFStateInfo();
   const currentValue = Number(new TokenAmount(globalState?.totalDebt ?? 0, USDR_MINT_DECIMALS).fixed());
@@ -32,7 +33,7 @@ export const NavBarProgressBarTotalUSDr = (data: NavBarProgressBarTotalUSDrProps
         { 'navbarprogressbar--success': success && !caution && !warning }
       )}
       label={label}
-      shouldDisplayCurrency={false}
+      shouldDisplayCurrency={shouldDisplayCurrency}
       currentValue={currentValue}
       percentage={percentage}
     />
