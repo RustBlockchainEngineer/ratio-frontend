@@ -39,6 +39,10 @@
 
   &__tvl {
     cursor: default !important;
+    color: #F48C57;
+    padding-top: 19px !important;
+    padding-bottom: 19px !important;
+    text-align: center;
     &::before {
       content: 'Total TVL Cap' !important;
     }
@@ -55,7 +59,7 @@
   &__connected {
     cursor: pointer;
     display: flex;
-    min-width: 180px;
+    // min-width: 180px;
     align-items: center;
     padding: 12px 22px;
     border: 1px solid var(--unnamed-color-f9fbfe);
@@ -111,7 +115,7 @@
   }
   .switchBtn {
     margin-right: 1rem;
-    margin-top: 6px;
+    margin-top: 12px;
     cursor: pointer;
     &__icon {
       width: 35px;
