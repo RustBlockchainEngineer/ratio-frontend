@@ -85,7 +85,7 @@
   "scripts": {
     "start": "CHOKIDAR_USEPOLLING=true react-scripts start",
     "start:win": "set CHOKIDAR_USEPOLLING=true && react-scripts start",
-    "build": "react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "clean-files": "rm -rf ./template/public ./template/src && rm -f ./template/.eslintignore ./template/.eslintrc ./template/.prettierrc ./template/README.md ./template/README_CRA.md ./template/tsconfig.json ./template/tsconfig.eslint.json",
