@@ -358,6 +358,10 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const globalStateKey = getGlobalStatePDA();
   const usdrMint = new PublicKey(USDR_MINT_KEY);
   const poolKey = getPoolPDA(mintCollat);
+
+  const stateInfo = await program.account.globalState.fetch(globalStateKey);
+  const treasuryKey = stateInfo.treasury;
+
   const poolData = await program.account.pool.fetch(poolKey);
 
   const oracleMintA = poolData.swapMintA;
@@ -369,6 +373,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const swapTokenB = poolData.swapTokenB;
 
   const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
+  const ataUSDrTreasury = getATAKey(treasuryKey, usdrMint);
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);
@@ -388,11 +393,24 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
     );
   }
 
+  if (!(await connection.getAccountInfo(ataUSDrTreasury))) {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        usdrMint,
+        ataUSDrTreasury,
+        treasuryKey,
+        wallet.publicKey
+      )
+    );
+  }
+
   const borrowInstruction = await program.instruction.borrowUsdr(new anchor.BN(amount), {
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,
-
+      treasury: treasuryKey,
       pool: poolKey,
       vault: vaultKey,
       userState: userStateKey,
@@ -405,6 +423,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
 
       mintUsdr: usdrMint,
       ataUsdr: ataUSDr,
+      ataUsdrTreasury: ataUSDrTreasury,
       ...DEFAULT_PROGRAMS,
     },
   });
