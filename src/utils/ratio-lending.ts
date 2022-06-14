@@ -457,7 +457,7 @@ export async function repayUSDr(connection: Connection, wallet: any, amount: num
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
   }
-  console.log(`User repaid ${amount / Math.pow(10, USDR_MINT_DECIMALS)} USD , transaction id = ${txHash}`);
+  console.log(`User repaid ${amount / Math.pow(10, USDR_MINT_DECIMALS)} USD , txId = ${txHash}`);
 
   return txHash;
 }
