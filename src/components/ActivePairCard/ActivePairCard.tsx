@@ -20,6 +20,7 @@ import { isWalletApproveError } from '../../utils/utils';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { useAppendUserAction, usePoolInfo, useUserVaultInfo, useSubscribeTx } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
+import { ProgressBarVaultUSDr } from '../Navbar/ProgressBarVaultUSDr';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
@@ -29,7 +30,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const vaultState = useUserVaultInfo(data.mint);
   const poolInfo = usePoolInfo(data.mint);
-  const totalDebt = +new TokenAmount((vaultState as any)?.debt ?? 0, USDR_MINT_DECIMALS).fixed();
+  // const totalDebt = +new TokenAmount((vaultState as any)?.debt ?? 0, USDR_MINT_DECIMALS).fixed();
   const positionValue = +new TokenAmount((vaultState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
   const mintableUSDr = +new TokenAmount((vaultState as any)?.mintableUSDr ?? 0, USDR_MINT_DECIMALS).fixed();
 
@@ -162,15 +163,16 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
               <div className="d-flex align-items-center">
                 <img src={smallRatioIcon} alt="smallRatio" />
-                <p className="mx-1">Risk Rating</p>
+                <p className="mx-1">Risk Rating:</p>
                 {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
               </div>
               <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
             </div>
-            <div className="mt-3 d-flex justify-content-between">
+            {/* <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Debt:</h6>
               <h6 className="semiBold">{Number(totalDebt.toFixed(2))}</h6>
-            </div>
+            </div> */}
+            <ProgressBarVaultUSDr mint={data.mint} className="activepaircard__usdrDebtbar" />
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Available to Mint:</h6>
               <h6 className="semiBold">{Number(mintableUSDr.toFixed(2)).toFixed(2)}</h6>
