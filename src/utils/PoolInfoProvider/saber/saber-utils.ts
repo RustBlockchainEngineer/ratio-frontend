@@ -23,6 +23,7 @@ import { TokenAmount } from '../../safe-math';
 import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../../ratio-pda';
 import { Saber, SABER_IOU_MINT, SBR_REWARDER, SBR_MINT_WRAPPER, SBR_ADDRESS } from '@saberhq/saber-periphery';
 import { QUARRY_INFO_LAYOUT } from '../../layout';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 export const SABER_IOU_MINT_DECIMALS = 6;
 
@@ -313,11 +314,35 @@ const redeemAllTokensTx = async (connection: Connection, wallet: typeof anchor.W
     iouMint: new PublicKey(SABER_IOU_MINT),
     redemptionMint: SBR_ADDRESS,
   });
-
+  const txn = new Transaction();
   const ataSaberIouVaultKey = getATAKey(wallet.publicKey, SABER_IOU_MINT);
   const ataSaberProtocolVaultKey = getATAKey(wallet.publicKey, SBR_ADDRESS);
 
-  const txn = new Transaction().add(
+  // if (!(await connection.getAccountInfo(ataSaberIouVaultKey))) {
+  //   txn.add(
+  //     Token.createAssociatedTokenAccountInstruction(
+  //       ASSOCIATED_TOKEN_PROGRAM_ID,
+  //       TOKEN_PROGRAM_ID,
+  //       new PublicKey(SABER_IOU_MINT),
+  //       ataSaberIouVaultKey,
+  //       wallet.publicKey,
+  //       wallet.publicKey
+  //     )
+  //   );
+  // }
+  if (!(await connection.getAccountInfo(ataSaberProtocolVaultKey))) {
+    txn.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(SBR_ADDRESS),
+        ataSaberProtocolVaultKey,
+        wallet.publicKey,
+        wallet.publicKey
+      )
+    );
+  }
+  txn.add(
     await redeemer.redeemAllTokensFromMintProxyIx({
       sourceAuthority: wallet.publicKey,
       iouSource: ataSaberIouVaultKey,
