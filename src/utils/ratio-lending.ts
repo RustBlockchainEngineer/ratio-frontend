@@ -16,9 +16,12 @@ import { sendTransaction } from './rf-web3';
 import { RATIO_LENDING_PROGRAM_ID } from '../constants/ids';
 import { calculateSaberReward, getQuarryInfo } from './PoolInfoProvider/saber/saber-utils';
 import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA, getUserStatePDA, getVaultPDA } from './ratio-pda';
-import { Program } from '@project-serum/anchor';
+import { BN, Program } from '@project-serum/anchor';
+import { TokenAmount } from './safe-math';
 export const COLL_RATIOS_DECIMALS = 8;
 export const COLL_RATIOS_ARR_SIZE = 10;
+
+export const RATIO_MINT_DECIMALS = 8;
 
 export const USDR_MINT_DECIMALS = 6;
 export const USDR_MINT_KEY = 'USDrbBQwQbQ2oWHUPfA8QBHcyVxKUq1xHyXsSLKdUq2';
@@ -305,7 +308,7 @@ export async function distributeRewardTx(connection: Connection, wallet: any, mi
   const ataVaultReward = getATAKey(vaultKey, poolInfo.mintReward);
 
   const ataUserReward = getATAKey(wallet.publicKey, poolInfo.mintReward);
-  const ataRatioReward = getATAKey(stateInfo.treasury, poolInfo.mintReward);
+  const ataTreasuryReward = getATAKey(stateInfo.treasury, poolInfo.mintReward);
 
   const transaction = new Transaction();
   if (!(await connection.getAccountInfo(ataUserReward))) {
@@ -320,13 +323,13 @@ export async function distributeRewardTx(connection: Connection, wallet: any, mi
       )
     );
   }
-  if (!(await connection.getAccountInfo(ataRatioReward))) {
+  if (!(await connection.getAccountInfo(ataTreasuryReward))) {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
         ASSOCIATED_TOKEN_PROGRAM_ID,
         TOKEN_PROGRAM_ID,
         new PublicKey(poolInfo.mintReward),
-        ataRatioReward,
+        ataTreasuryReward,
         stateInfo.treasury,
         wallet.publicKey
       )
@@ -341,7 +344,52 @@ export async function distributeRewardTx(connection: Connection, wallet: any, mi
       vault: vaultKey,
       ataRewardVault: ataVaultReward,
       ataRewardUser: ataUserReward,
-      ataRatioTreasury: ataRatioReward,
+      ataRatioTreasury: ataTreasuryReward,
+      ...DEFAULT_PROGRAMS,
+    },
+  });
+
+  transaction.add(ix);
+  return transaction;
+}
+
+export async function harvestRatioRewardTx(connection: Connection, wallet: any, mintColl: PublicKey) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
+
+  const program = getProgramInstance(connection, wallet);
+
+  const globalStateKey = getGlobalStatePDA();
+  const poolKey = getPoolPDA(mintColl);
+
+  const stateInfo = await program.account.globalState.fetch(globalStateKey);
+
+  const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
+
+  const ataPoolRatio = getATAKey(poolKey, stateInfo.ratioMint);
+  const ataUserRatio = getATAKey(wallet.publicKey, stateInfo.ratioMint);
+
+  const transaction = new Transaction();
+  if (!(await connection.getAccountInfo(ataUserRatio))) {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        stateInfo.ratioMint,
+        ataUserRatio,
+        wallet.publicKey,
+        wallet.publicKey
+      )
+    );
+  }
+
+  const ix = await program.instruction.harvestRatio({
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      pool: poolKey,
+      vault: vaultKey,
+      ratioVault: ataPoolRatio,
+      ataRewardUser: ataUserRatio,
       ...DEFAULT_PROGRAMS,
     },
   });
@@ -484,4 +532,36 @@ export async function getFarmInfoByPlatform(
   if (platformType === PLATFORM_IDS.SABER) {
     return await getQuarryInfo(connection, new PublicKey(mintCollKey));
   }
+}
+
+const ACC_PRECISION = new BN(100 * 1000 * 1000 * 1000);
+export function estimateRatioRewards(stateData: any, poolData: any, vaultData: any) {
+  const currentTimeStamp = Math.ceil(new Date().getTime() / 1000);
+
+  const duration = new BN(Math.max(currentTimeStamp - poolData.lastRewardTime, 0));
+
+  const reward_per_share =
+    poolData.lastRewardFundEnd > currentTimeStamp
+      ? stateData.tokenPerSecond.mul(duration).mul(ACC_PRECISION).div(poolData.totalColl)
+      : new BN(0);
+  const acc_reward_per_share = poolData.accRewardPerShare.add(reward_per_share);
+
+  const pending_amount = vaultData.totalColl
+    .mul(acc_reward_per_share)
+    .div(ACC_PRECISION)
+    .sub(vaultData.ratioRewardDebt);
+  const total_reward = vaultData.ratioRewardAmount.add(pending_amount);
+
+  return total_reward.toString();
+}
+
+export function estimateRATIOAPY(poolData: any, ratio_price: number) {
+  const annual_reward_amount =
+    Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * 365 * 24 * 3600;
+  const annual_reward_value = annual_reward_amount * ratio_price;
+  const coll_locked_amount = poolData.tvlUsd;
+
+  const apr = annual_reward_value / coll_locked_amount;
+  const apy = Number(((1 + apr / 365) ** 365 - 1) * 100);
+  return apy;
 }

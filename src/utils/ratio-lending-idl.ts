@@ -21,6 +21,11 @@ export type RatioLending = {
           isSigner: true;
         },
         {
+          name: 'ratioMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
@@ -400,17 +405,12 @@ export type RatioLending = {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-        },
-        {
-          name: 'rent';
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [];
     },
     {
-      name: 'borrowUsdr';
+      name: 'harvestRatio';
       accounts: [
         {
           name: 'authority';
@@ -433,12 +433,68 @@ export type RatioLending = {
           isSigner: false;
         },
         {
+          name: 'ratioVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ataRewardUser';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: 'borrowUsdr';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'globalState';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'treasury';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'userState';
           isMut: true;
           isSigner: false;
         },
         {
           name: 'ataUsdr';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ataUsdrTreasury';
           isMut: true;
           isSigner: false;
         },
@@ -565,11 +621,6 @@ export type RatioLending = {
           isSigner: false;
         },
         {
-          name: 'clock';
-          isMut: false;
-          isSigner: false;
-        },
-        {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
@@ -602,11 +653,6 @@ export type RatioLending = {
         },
         {
           name: 'mint';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'clock';
           isMut: false;
           isSigner: false;
         }
@@ -823,6 +869,27 @@ export type RatioLending = {
       ];
     },
     {
+      name: 'setBorrowFee';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'globalState';
+          isMut: true;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: 'feeNum';
+          type: 'u64';
+        }
+      ];
+    },
+    {
       name: 'toggleEmerState';
       accounts: [
         {
@@ -865,6 +932,27 @@ export type RatioLending = {
       args: [];
     },
     {
+      name: 'changeFundingWallet';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'globalState';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'fundingWallet';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
       name: 'changeAuthority';
       accounts: [
         {
@@ -882,6 +970,99 @@ export type RatioLending = {
         {
           name: 'newAuthority';
           type: 'publicKey';
+        }
+      ];
+    },
+    {
+      name: 'setRatioMint';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'globalState';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ratioVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ratioMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'associatedTokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: 'fundRatioToken';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'globalState';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ratioVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'userVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: 'amount';
+          type: 'u64';
+        },
+        {
+          name: 'duration';
+          type: {
+            option: 'i64';
+          };
         }
       ];
     },
@@ -1295,7 +1476,7 @@ export type RatioLending = {
             type: 'u64';
           },
           {
-            name: 'feeNum';
+            name: 'harvestFeeNumer';
             type: 'u64';
           },
           {
@@ -1309,9 +1490,21 @@ export type RatioLending = {
             };
           },
           {
+            name: 'ratioMint';
+            type: 'publicKey';
+          },
+          {
+            name: 'fundingWallet';
+            type: 'publicKey';
+          },
+          {
+            name: 'borrowFeeNumer';
+            type: 'u64';
+          },
+          {
             name: 'reserved';
             type: {
-              array: ['u64', 30];
+              array: ['u64', 21];
             };
           }
         ];
@@ -1425,9 +1618,33 @@ export type RatioLending = {
             type: 'u8';
           },
           {
+            name: 'tokenPerSecond';
+            type: 'u64';
+          },
+          {
+            name: 'accRewardPerShare';
+            type: 'u128';
+          },
+          {
+            name: 'lastRewardTime';
+            type: 'i64';
+          },
+          {
+            name: 'lastRewardFundStart';
+            type: 'i64';
+          },
+          {
+            name: 'lastRewardFundAmount';
+            type: 'u64';
+          },
+          {
+            name: 'lastRewardFundEnd';
+            type: 'i64';
+          },
+          {
             name: 'reserved';
             type: {
-              array: ['u64', 30];
+              array: ['u64', 23];
             };
           }
         ];
@@ -1521,9 +1738,17 @@ export type RatioLending = {
             type: 'u8';
           },
           {
+            name: 'ratioRewardAmount';
+            type: 'u128';
+          },
+          {
+            name: 'ratioRewardDebt';
+            type: 'u128';
+          },
+          {
             name: 'reserved';
             type: {
-              array: ['u64', 30];
+              array: ['u64', 26];
             };
           }
         ];
@@ -1656,6 +1881,11 @@ export type RatioLending = {
       code: 6021;
       name: 'PoolPaused';
       msg: 'The pool is paused by admin';
+    },
+    {
+      code: 6022;
+      name: 'InvalidFundingWallet';
+      msg: 'Invalid Funding Wallet';
     }
   ];
 };
@@ -1681,6 +1911,11 @@ export const IDL: RatioLending = {
           name: 'mintUsdr',
           isMut: true,
           isSigner: true,
+        },
+        {
+          name: 'ratioMint',
+          isMut: false,
+          isSigner: false,
         },
         {
           name: 'tokenProgram',
@@ -2063,16 +2298,11 @@ export const IDL: RatioLending = {
           isMut: false,
           isSigner: false,
         },
-        {
-          name: 'rent',
-          isMut: false,
-          isSigner: false,
-        },
       ],
       args: [],
     },
     {
-      name: 'borrowUsdr',
+      name: 'harvestRatio',
       accounts: [
         {
           name: 'authority',
@@ -2095,12 +2325,68 @@ export const IDL: RatioLending = {
           isSigner: false,
         },
         {
+          name: 'ratioVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ataRewardUser',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: 'borrowUsdr',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'globalState',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'treasury',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'userState',
           isMut: true,
           isSigner: false,
         },
         {
           name: 'ataUsdr',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ataUsdrTreasury',
           isMut: true,
           isSigner: false,
         },
@@ -2227,11 +2513,6 @@ export const IDL: RatioLending = {
           isSigner: false,
         },
         {
-          name: 'clock',
-          isMut: false,
-          isSigner: false,
-        },
-        {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
@@ -2264,11 +2545,6 @@ export const IDL: RatioLending = {
         },
         {
           name: 'mint',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'clock',
           isMut: false,
           isSigner: false,
         },
@@ -2485,6 +2761,27 @@ export const IDL: RatioLending = {
       ],
     },
     {
+      name: 'setBorrowFee',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'globalState',
+          isMut: true,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'feeNum',
+          type: 'u64',
+        },
+      ],
+    },
+    {
       name: 'toggleEmerState',
       accounts: [
         {
@@ -2527,6 +2824,27 @@ export const IDL: RatioLending = {
       args: [],
     },
     {
+      name: 'changeFundingWallet',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'globalState',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'fundingWallet',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
       name: 'changeAuthority',
       accounts: [
         {
@@ -2544,6 +2862,99 @@ export const IDL: RatioLending = {
         {
           name: 'newAuthority',
           type: 'publicKey',
+        },
+      ],
+    },
+    {
+      name: 'setRatioMint',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'globalState',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ratioVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ratioMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'associatedTokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: 'fundRatioToken',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'globalState',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ratioVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'userVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'amount',
+          type: 'u64',
+        },
+        {
+          name: 'duration',
+          type: {
+            option: 'i64',
+          },
         },
       ],
     },
@@ -2957,7 +3368,7 @@ export const IDL: RatioLending = {
             type: 'u64',
           },
           {
-            name: 'feeNum',
+            name: 'harvestFeeNumer',
             type: 'u64',
           },
           {
@@ -2971,9 +3382,21 @@ export const IDL: RatioLending = {
             },
           },
           {
+            name: 'ratioMint',
+            type: 'publicKey',
+          },
+          {
+            name: 'fundingWallet',
+            type: 'publicKey',
+          },
+          {
+            name: 'borrowFeeNumer',
+            type: 'u64',
+          },
+          {
             name: 'reserved',
             type: {
-              array: ['u64', 30],
+              array: ['u64', 21],
             },
           },
         ],
@@ -3087,9 +3510,33 @@ export const IDL: RatioLending = {
             type: 'u8',
           },
           {
+            name: 'tokenPerSecond',
+            type: 'u64',
+          },
+          {
+            name: 'accRewardPerShare',
+            type: 'u128',
+          },
+          {
+            name: 'lastRewardTime',
+            type: 'i64',
+          },
+          {
+            name: 'lastRewardFundStart',
+            type: 'i64',
+          },
+          {
+            name: 'lastRewardFundAmount',
+            type: 'u64',
+          },
+          {
+            name: 'lastRewardFundEnd',
+            type: 'i64',
+          },
+          {
             name: 'reserved',
             type: {
-              array: ['u64', 30],
+              array: ['u64', 23],
             },
           },
         ],
@@ -3183,9 +3630,17 @@ export const IDL: RatioLending = {
             type: 'u8',
           },
           {
+            name: 'ratioRewardAmount',
+            type: 'u128',
+          },
+          {
+            name: 'ratioRewardDebt',
+            type: 'u128',
+          },
+          {
             name: 'reserved',
             type: {
-              array: ['u64', 30],
+              array: ['u64', 26],
             },
           },
         ],
@@ -3318,6 +3773,11 @@ export const IDL: RatioLending = {
       code: 6021,
       name: 'PoolPaused',
       msg: 'The pool is paused by admin',
+    },
+    {
+      code: 6022,
+      name: 'InvalidFundingWallet',
+      msg: 'Invalid Funding Wallet',
     },
   ],
 };
