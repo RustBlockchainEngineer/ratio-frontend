@@ -535,30 +535,29 @@ export async function getFarmInfoByPlatform(
 }
 
 const ACC_PRECISION = new BN(100 * 1000 * 1000 * 1000);
-export function estimateRatioRewards(
-  stateData:any,
-  poolData:any,
-  vaultData:any,
-){
+export function estimateRatioRewards(stateData: any, poolData: any, vaultData: any) {
   const currentTimeStamp = Math.ceil(new Date().getTime() / 1000);
 
-  const duration = new BN(Math.max(currentTimeStamp - poolData.lastRewardTime, 0))
+  const duration = new BN(Math.max(currentTimeStamp - poolData.lastRewardTime, 0));
 
-  const reward_per_share = poolData.lastRewardFundEnd > currentTimeStamp ?
-                              stateData.tokenPerSecond.mul(duration).mul(ACC_PRECISION).div(poolData.totalColl) : new BN(0);
+  const reward_per_share =
+    poolData.lastRewardFundEnd > currentTimeStamp
+      ? stateData.tokenPerSecond.mul(duration).mul(ACC_PRECISION).div(poolData.totalColl)
+      : new BN(0);
   const acc_reward_per_share = poolData.accRewardPerShare.add(reward_per_share);
 
-  const pending_amount = vaultData.totalColl.mul( acc_reward_per_share).div(ACC_PRECISION).sub(vaultData.ratioRewardDebt);
+  const pending_amount = vaultData.totalColl
+    .mul(acc_reward_per_share)
+    .div(ACC_PRECISION)
+    .sub(vaultData.ratioRewardDebt);
   const total_reward = vaultData.ratioRewardAmount.add(pending_amount);
 
-  return total_reward.toString()
+  return total_reward.toString();
 }
 
-export function estimateRATIOAPY(
-  poolData:any,
-  ratio_price: number,
-){
-  const annual_reward_amount = Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * 365 * 24 * 3600;
+export function estimateRATIOAPY(poolData: any, ratio_price: number) {
+  const annual_reward_amount =
+    Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * 365 * 24 * 3600;
   const annual_reward_value = annual_reward_amount * ratio_price;
   const coll_locked_amount = poolData.tvlUsd;
 
@@ -566,4 +565,3 @@ export function estimateRATIOAPY(
   const apy = Number(((1 + apr / 365) ** 365 - 1) * 100);
   return apy;
 }
-
