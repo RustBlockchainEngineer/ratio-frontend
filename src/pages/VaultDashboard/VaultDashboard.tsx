@@ -284,7 +284,7 @@ const VaultDashboard = () => {
         <div className="col col-xxl-8">
           {
             <div className="vaultdashboard__bodyleft row pt-0 my-5">
-              <VaultHistoryTable mintAddress={vault_mint} />
+              <VaultHistoryTable mintAddress={vault_mint} marketPrice={poolInfo.currentPrice} />
             </div>
           }
         </div>
