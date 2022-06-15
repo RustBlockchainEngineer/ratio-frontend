@@ -13,6 +13,7 @@ import {
   COLL_RATIOS_DECIMALS,
   COLL_RATIOS_ARR_SIZE,
   USDR_MINT_KEYPAIR,
+  RATIO_MINT_KEY,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
@@ -86,6 +87,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
           authority: wallet.publicKey,
           globalState: globalStateKey,
           mintUsdr: USDR_MINT_KEY,
+          ratioMint: RATIO_MINT_KEY,
           ...DEFAULT_PROGRAMS,
         },
         signers: [Keypair.fromSecretKey(new Uint8Array(USDR_MINT_KEYPAIR))],
