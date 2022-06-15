@@ -6,10 +6,15 @@ import {
   depositCollateralTx,
   distributeRewardTx,
   getProgramInstance,
-  harvestRatioRewardTx,
+  // harvestRatioRewardTx,
   withdrawCollateralTx,
 } from '../../ratio-lending';
-import { PublicKey, Transaction, Connection, SignatureResult } from '@solana/web3.js';
+import {
+  PublicKey,
+  Transaction,
+  Connection,
+  // SignatureResult
+} from '@solana/web3.js';
 import {
   findMinerAddress,
   findMinterAddress,
@@ -18,7 +23,11 @@ import {
   QUARRY_ADDRESSES,
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
-import { sendSignedTransaction, sendTransaction, signAllTransaction } from '../../rf-web3';
+import {
+  //sendSignedTransaction,
+  sendTransaction,
+  //signAllTransaction
+} from '../../rf-web3';
 
 import { TokenAmount } from '../../safe-math';
 import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../../ratio-pda';
@@ -73,25 +82,28 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
   if (ix2) {
     tx1.add(ix2);
   }
-  const tx2 = (await harvest(connection, wallet, mintCollKey, true)) as Transaction;
+  const txHash = await sendTransaction(connection, wallet, tx1);
 
-  // const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
+  return txHash;
+  // const tx2 = (await harvest(connection, wallet, mintCollKey, true)) as Transaction;
 
-  const signedTxs = await signAllTransaction(connection, wallet, [tx1, tx2]);
-  const withdrawTxId = await sendSignedTransaction(connection, signedTxs[0]);
+  // // const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
 
-  connection.onSignature(
-    withdrawTxId,
-    async function (signatureResult: SignatureResult) {
-      if (!signatureResult.err) {
-        const harvestTxId = await sendSignedTransaction(connection, signedTxs[1]);
-        console.log('Harvesting ...', harvestTxId);
-      }
-    },
-    'processed'
-  );
+  // const signedTxs = await signAllTransaction(connection, wallet, [tx1, tx2]);
+  // const withdrawTxId = await sendSignedTransaction(connection, signedTxs[0]);
 
-  return withdrawTxId;
+  // connection.onSignature(
+  //   withdrawTxId,
+  //   async function (signatureResult: SignatureResult) {
+  //     if (!signatureResult.err) {
+  //       const harvestTxId = await sendSignedTransaction(connection, signedTxs[1]);
+  //       console.log('Harvesting ...', harvestTxId);
+  //     }
+  //   },
+  //   'processed'
+  // );
+
+  // return withdrawTxId;
 }
 
 export async function harvest(connection: Connection, wallet: any, mintCollKey: PublicKey, needTx = false) {
@@ -112,10 +124,10 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
   if (tx3) {
     transaction.add(tx3);
   }
-  const tx4 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
-  if (tx4) {
-    transaction.add(tx4);
-  }
+  // const tx4 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
+  // if (tx4) {
+  //   transaction.add(tx4);
+  // }
   if (!needTx) {
     const txHash = await sendTransaction(connection, wallet, transaction);
 
