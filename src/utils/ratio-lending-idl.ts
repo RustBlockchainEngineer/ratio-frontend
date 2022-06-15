@@ -21,22 +21,12 @@ export type RatioLending = {
           isSigner: true;
         },
         {
-          name: 'ratioVault';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'ratioMint';
           isMut: false;
           isSigner: false;
         },
         {
           name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'associatedTokenProgram';
           isMut: false;
           isSigner: false;
         },
@@ -942,6 +932,27 @@ export type RatioLending = {
       args: [];
     },
     {
+      name: 'changeFundingWallet';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'globalState';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'fundingWallet';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
       name: 'changeAuthority';
       accounts: [
         {
@@ -1483,13 +1494,17 @@ export type RatioLending = {
             type: 'publicKey';
           },
           {
+            name: 'fundingWallet';
+            type: 'publicKey';
+          },
+          {
             name: 'borrowFeeNumer';
             type: 'u64';
           },
           {
             name: 'reserved';
             type: {
-              array: ['u64', 25];
+              array: ['u64', 21];
             };
           }
         ];
@@ -1866,6 +1881,11 @@ export type RatioLending = {
       code: 6021;
       name: 'PoolPaused';
       msg: 'The pool is paused by admin';
+    },
+    {
+      code: 6022;
+      name: 'InvalidFundingWallet';
+      msg: 'Invalid Funding Wallet';
     }
   ];
 };
@@ -1893,22 +1913,12 @@ export const IDL: RatioLending = {
           isSigner: true,
         },
         {
-          name: 'ratioVault',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'ratioMint',
           isMut: false,
           isSigner: false,
         },
         {
           name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'associatedTokenProgram',
           isMut: false,
           isSigner: false,
         },
@@ -2814,6 +2824,27 @@ export const IDL: RatioLending = {
       args: [],
     },
     {
+      name: 'changeFundingWallet',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'globalState',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'fundingWallet',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
       name: 'changeAuthority',
       accounts: [
         {
@@ -3355,13 +3386,17 @@ export const IDL: RatioLending = {
             type: 'publicKey',
           },
           {
+            name: 'fundingWallet',
+            type: 'publicKey',
+          },
+          {
             name: 'borrowFeeNumer',
             type: 'u64',
           },
           {
             name: 'reserved',
             type: {
-              array: ['u64', 25],
+              array: ['u64', 21],
             },
           },
         ],
@@ -3738,6 +3773,11 @@ export const IDL: RatioLending = {
       code: 6021,
       name: 'PoolPaused',
       msg: 'The pool is paused by admin',
+    },
+    {
+      code: 6022,
+      name: 'InvalidFundingWallet',
+      msg: 'Invalid Funding Wallet',
     },
   ],
 };
