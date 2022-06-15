@@ -71,7 +71,16 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
         () => toast.success('Harvest Confirmed.'),
         () => toast.error('Harvest Transaction Failed')
       );
-      appendUserAction(wallet.publicKey.toString(), data.mint, data.realUserRewardMint, HARVEST_ACTION, 0, txHash, 0);
+      appendUserAction(
+        wallet.publicKey.toString(),
+        data.mint,
+        data.realUserRewardMint,
+        HARVEST_ACTION,
+        0,
+        txHash,
+        0,
+        0
+      );
     } catch (err) {
       console.error(err);
       if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');

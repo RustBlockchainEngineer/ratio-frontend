@@ -86,7 +86,8 @@ const GenerateModal = ({ data }: any) => {
           BORROW_ACTION,
           +borrowAmount,
           txHash,
-          poolInfo.currentPrice
+          poolInfo.fairPrice,
+          poolInfo.marketPrice
         );
       })
       .catch((e) => {
