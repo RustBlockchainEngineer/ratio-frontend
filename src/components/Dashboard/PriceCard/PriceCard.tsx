@@ -34,7 +34,7 @@ const PriceCard = ({ price, tokenName, risk }: PriceCardProps) => {
               <label>Current {tokenName} LP </label>
               <label>
                 {/* <a href="https://app.gitbook.com/o/6gq6zK9zYcsbHkTov1Uy/s/b7FwVyumWzCgj0UwzhQP/our-business/how-does-ratios-collateralization-work"> */}
-                &nbsp;Price
+                &nbsp;Market Price
                 {/* </a> */}
               </label>
               <p>{formatUSD.format(+price?.currentPrice ?? 0)}</p>
