@@ -613,8 +613,32 @@ export async function setHarvestFee(
   return true;
 }
 // eslint-disable-next-line
-export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setBorrowFee yet not implemented');
+export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, feeNum: number) {
+  const program = await getProgramInstance(connection, wallet);
+  const globalStateKey = getGlobalStatePDA();
+  const globalState = await getGlobalState(connection, wallet);
+
+  const feeDeno = globalState.feeDeno.toNumber();
+  const feeNumNew = (feeNum / 100) * feeDeno;
+  console.log(`Set Borrow fees ${feeNumNew} / ${feeDeno}`);
+  try {
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setBorrowFee(new BN(feeNumNew), {
+      accounts: {
+        authority: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
+    console.log(tx);
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
+  return true;
 }
 // eslint-disable-next-line
 export async function setPaybackFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
