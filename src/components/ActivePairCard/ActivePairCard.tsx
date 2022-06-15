@@ -20,7 +20,6 @@ import { isWalletApproveError } from '../../utils/utils';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { useAppendUserAction, usePoolInfo, useUserVaultInfo, useSubscribeTx } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
-import { ProgressBarVaultUSDr } from '../Navbar/ProgressBarVaultUSDr';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
@@ -30,7 +29,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const vaultState = useUserVaultInfo(data.mint);
   const poolInfo = usePoolInfo(data.mint);
-  // const totalDebt = +new TokenAmount((vaultState as any)?.debt ?? 0, USDR_MINT_DECIMALS).fixed();
+  const totalDebt = +new TokenAmount((vaultState as any)?.debt ?? 0, USDR_MINT_DECIMALS).fixed();
   const positionValue = +new TokenAmount((vaultState as any)?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed();
   const mintableUSDr = +new TokenAmount((vaultState as any)?.mintableUSDr ?? 0, USDR_MINT_DECIMALS).fixed();
 
@@ -168,11 +167,10 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
               </div>
               <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
             </div>
-            {/* <div className="mt-3 d-flex justify-content-between">
+            <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Debt:</h6>
               <h6 className="semiBold">{Number(totalDebt.toFixed(2))}</h6>
-            </div> */}
-            <ProgressBarVaultUSDr mint={data.mint} className="activepaircard__usdrDebtbar" />
+            </div>
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Available to Mint:</h6>
               <h6 className="semiBold">{Number(mintableUSDr.toFixed(2)).toFixed(2)}</h6>
