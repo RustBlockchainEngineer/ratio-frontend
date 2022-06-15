@@ -40,7 +40,8 @@ export function prepareTransactionData(
   amount: number,
   txHash: string,
   status: TxStatus,
-  fair_price: number
+  fair_price: number,
+  market_price: number
 ) {
   return {
     tx_type: action,
@@ -50,6 +51,7 @@ export function prepareTransactionData(
     status: status,
     amount: amount,
     fair_price: fair_price,
+    market_price: market_price,
   };
 }
 

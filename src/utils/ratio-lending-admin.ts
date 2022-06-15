@@ -13,6 +13,7 @@ import {
   COLL_RATIOS_DECIMALS,
   COLL_RATIOS_ARR_SIZE,
   USDR_MINT_KEYPAIR,
+  RATIO_MINT_KEY,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
@@ -86,6 +87,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
           authority: wallet.publicKey,
           globalState: globalStateKey,
           mintUsdr: USDR_MINT_KEY,
+          ratioMint: RATIO_MINT_KEY,
           ...DEFAULT_PROGRAMS,
         },
         signers: [Keypair.fromSecretKey(new Uint8Array(USDR_MINT_KEYPAIR))],
@@ -150,42 +152,42 @@ export async function getPriceOracle(
 
   return oracle;
 }
-// async function reportPriceOracle(
-//   connection,
-//   wallet,
+export async function reportPriceOracle(
+  connection,
+  wallet,
 
-//   mint: PublicKey,
-//   newPrice: number
-// ) {
-//   const program = getProgramInstance(connection, wallet);
+  mint: PublicKey,
+  newPrice: number
+) {
+  const program = getProgramInstance(connection, wallet);
 
-//   const globalStateKey = getGlobalStatePDA();
-//   const oracleKey = getOraclePDA(mint);
+  const globalStateKey = getGlobalStatePDA();
+  const oracleKey = getOraclePDA(mint);
 
-//   const tx = program.transaction.reportPriceToOracle(
-//     // price of token
-//     new BN(newPrice * USDR_MINT_DECIMALS),
-//     {
-//       accounts: {
-//         authority: wallet.publicKey,
-//         globalState: globalStateKey,
-//         oracle: oracleKey,
-//         mint: mint,
-//         ...DEFAULT_PROGRAMS,
-//       },
-//     }
-//   );
+  const tx = program.transaction.reportPriceToOracle(
+    // price of token
+    new BN(newPrice * USDR_MINT_DECIMALS),
+    {
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+        oracle: oracleKey,
+        mint: mint,
+        ...DEFAULT_PROGRAMS,
+      },
+    }
+  );
 
-//   const txHash = await sendTransaction(connection, wallet, tx);
-//   await connection.confirmTransaction(txHash);
-//   if (txHash?.value?.err) {
-//     console.error('ERROR ON TX ', txHash.value.err);
-//     throw txHash.value.err;
-//   }
-//   console.log('Updated price of Oracle account  tx = ', txHash);
+  const txHash = await sendTransaction(connection, wallet, tx);
+  await connection.confirmTransaction(txHash);
+  if (txHash?.value?.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
+  console.log('Updated price of Oracle account  tx = ', txHash);
 
-//   return txHash;
-// }
+  return txHash;
+}
 
 // createPool
 export async function createPool(
@@ -611,8 +613,32 @@ export async function setHarvestFee(
   return true;
 }
 // eslint-disable-next-line
-export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setBorrowFee yet not implemented');
+export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, feeNum: number) {
+  const program = await getProgramInstance(connection, wallet);
+  const globalStateKey = getGlobalStatePDA();
+  const globalState = await getGlobalState(connection, wallet);
+
+  const feeDeno = globalState.feeDeno.toNumber();
+  const feeNumNew = (feeNum / 100) * feeDeno;
+  console.log(`Set Borrow fees ${feeNumNew} / ${feeDeno}`);
+  try {
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setBorrowFee(new BN(feeNumNew), {
+      accounts: {
+        authority: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
+    console.log(tx);
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
+  return true;
 }
 // eslint-disable-next-line
 export async function setPaybackFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {

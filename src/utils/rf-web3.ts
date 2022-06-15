@@ -18,7 +18,7 @@ async function signTransaction(
 }
 
 // transaction
-async function signAllTransaction(
+export async function signAllTransaction(
   connection: Connection,
   wallet: any,
   transactions: Transaction[],
@@ -78,7 +78,7 @@ export async function sendAllTransaction(
   return txIds;
 }
 
-async function sendSignedTransaction(connection: Connection, signedTransaction: Transaction): Promise<string> {
+export async function sendSignedTransaction(connection: Connection, signedTransaction: Transaction): Promise<string> {
   const rawTransaction = signedTransaction.serialize();
 
   const txid: TransactionSignature = await connection.sendRawTransaction(rawTransaction, {

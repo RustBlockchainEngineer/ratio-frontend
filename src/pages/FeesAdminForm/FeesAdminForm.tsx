@@ -120,7 +120,8 @@ export default function FeesAdminForm() {
       setData((prev) => {
         return {
           ...prev,
-          harvest_fee: (globalState.feeNum.toNumber() / globalState.feeDeno.toNumber()) * 100,
+          harvest_fee: (globalState.harvestFeeNumer.toNumber() / globalState.feeDeno.toNumber()) * 100,
+          borrow_fee: (globalState.borrowFeeNumer.toNumber() / globalState.feeDeno.toNumber()) * 100,
         };
       });
     }
@@ -181,13 +182,7 @@ export default function FeesAdminForm() {
       <h5 className="mt-3">Modify Fees Values(%):</h5>
       <Form validated={validated} onSubmit={handleSubmit}>
         <Row className="mb-3">
-          <AdminFormInput
-            yetNotImplemented={true}
-            handleChange={handleChange}
-            label="Borrow"
-            name="borrow_fee"
-            value={data?.borrow_fee}
-          />
+          <AdminFormInput handleChange={handleChange} label="Borrow" name="borrow_fee" value={data?.borrow_fee} />
           <AdminFormInput
             yetNotImplemented={true}
             handleChange={handleChange}

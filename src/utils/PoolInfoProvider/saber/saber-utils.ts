@@ -6,9 +6,10 @@ import {
   depositCollateralTx,
   distributeRewardTx,
   getProgramInstance,
+  harvestRatioRewardTx,
   withdrawCollateralTx,
 } from '../../ratio-lending';
-import { PublicKey, Transaction, Connection } from '@solana/web3.js';
+import { PublicKey, Transaction, Connection, SignatureResult } from '@solana/web3.js';
 import {
   findMinerAddress,
   findMinterAddress,
@@ -17,12 +18,13 @@ import {
   QUARRY_ADDRESSES,
 } from '@quarryprotocol/quarry-sdk';
 import { Token as SToken } from '@saberhq/token-utils';
-import { sendAllTransaction, sendTransaction } from '../../rf-web3';
+import { sendSignedTransaction, sendTransaction, signAllTransaction } from '../../rf-web3';
 
 import { TokenAmount } from '../../safe-math';
 import { getATAKey, getGlobalStatePDA, getPoolPDA, getVaultPDA } from '../../ratio-pda';
 import { Saber, SABER_IOU_MINT, SBR_REWARDER, SBR_MINT_WRAPPER, SBR_ADDRESS } from '@saberhq/saber-periphery';
 import { QUARRY_INFO_LAYOUT } from '../../layout';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 export const SABER_IOU_MINT_DECIMALS = 6;
 
@@ -71,31 +73,28 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
   if (ix2) {
     tx1.add(ix2);
   }
-  const tx2 = new Transaction();
-  const ix3 = await harvestRewardsFromSaberTx(connection, wallet, mintCollKey);
-  if (ix3) {
-    tx2.add(ix3);
-  }
+  const tx2 = (await harvest(connection, wallet, mintCollKey, true)) as Transaction;
 
-  const ix4 = await distributeRewardTx(connection, wallet, mintCollKey);
-  if (ix4) {
-    tx2.add(ix4);
-  }
+  // const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
 
-  const ix5 = await redeemAllTokensTx(connection, wallet);
-  if (ix5) {
-    tx2.add(ix5);
-  }
+  const signedTxs = await signAllTransaction(connection, wallet, [tx1, tx2]);
+  const withdrawTxId = await sendSignedTransaction(connection, signedTxs[0]);
 
-  const txHashs = await sendAllTransaction(connection, wallet, [tx1]);
+  connection.onSignature(
+    withdrawTxId,
+    async function (signatureResult: SignatureResult) {
+      if (!signatureResult.err) {
+        const harvestTxId = await sendSignedTransaction(connection, signedTxs[1]);
+        console.log('Harvesting ...', harvestTxId);
+      }
+    },
+    'processed'
+  );
 
-  console.log('Saber withdraw tx', txHashs[0]);
-  // console.log('Saber harvest tx', txHashs[1]);
-
-  return txHashs[0];
+  return withdrawTxId;
 }
 
-export async function harvest(connection: Connection, wallet: any, mintCollKey: PublicKey) {
+export async function harvest(connection: Connection, wallet: any, mintCollKey: PublicKey, needTx = false) {
   console.log('Harvest from Saber');
 
   const transaction = new Transaction();
@@ -113,10 +112,16 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
   if (tx3) {
     transaction.add(tx3);
   }
+  const tx4 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
+  if (tx4) {
+    transaction.add(tx4);
+  }
+  if (!needTx) {
+    const txHash = await sendTransaction(connection, wallet, transaction);
 
-  const txHash = await sendTransaction(connection, wallet, transaction);
-
-  return txHash;
+    return txHash;
+  }
+  return transaction;
 }
 
 export const getQuarryInfo = async (connection: Connection, mintCollKey: PublicKey) => {
@@ -313,11 +318,35 @@ const redeemAllTokensTx = async (connection: Connection, wallet: typeof anchor.W
     iouMint: new PublicKey(SABER_IOU_MINT),
     redemptionMint: SBR_ADDRESS,
   });
-
+  const txn = new Transaction();
   const ataSaberIouVaultKey = getATAKey(wallet.publicKey, SABER_IOU_MINT);
   const ataSaberProtocolVaultKey = getATAKey(wallet.publicKey, SBR_ADDRESS);
 
-  const txn = new Transaction().add(
+  // if (!(await connection.getAccountInfo(ataSaberIouVaultKey))) {
+  //   txn.add(
+  //     Token.createAssociatedTokenAccountInstruction(
+  //       ASSOCIATED_TOKEN_PROGRAM_ID,
+  //       TOKEN_PROGRAM_ID,
+  //       new PublicKey(SABER_IOU_MINT),
+  //       ataSaberIouVaultKey,
+  //       wallet.publicKey,
+  //       wallet.publicKey
+  //     )
+  //   );
+  // }
+  if (!(await connection.getAccountInfo(ataSaberProtocolVaultKey))) {
+    txn.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(SBR_ADDRESS),
+        ataSaberProtocolVaultKey,
+        wallet.publicKey,
+        wallet.publicKey
+      )
+    );
+  }
+  txn.add(
     await redeemer.redeemAllTokensFromMintProxyIx({
       sourceAuthority: wallet.publicKey,
       iouSource: ataSaberIouVaultKey,

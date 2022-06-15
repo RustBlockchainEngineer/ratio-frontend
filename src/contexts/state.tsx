@@ -11,7 +11,7 @@ import {
   getVaultState,
   COLL_RATIOS_DECIMALS,
   getAllLendingPool,
-  USD_FAIR_PRICE,
+  // USD_FAIR_PRICE,
   getLendingPoolByMint,
   getFarmInfoByPlatform,
 } from '../utils/ratio-lending';
@@ -39,7 +39,8 @@ interface RFStateConfig {
     action: string,
     amount: number,
     txid: string,
-    fair_price: number
+    fair_price: number,
+    market_price: number
   ) => void;
   subscribeTx: (txHash: string, onTxSent?: any, onTxSuccess?: any, onTxFailed?: any) => void;
 }
@@ -96,11 +97,21 @@ export function RFStateProvider({ children = undefined as any }) {
     action: string,
     amount: number,
     txHash: string,
-    fair_price: number
+    fair_price: number,
+    market_price: number
   ) => {
     if (!txHash) return;
     postToRatioApi(
-      prepareTransactionData(action, mintCollat, affectedMint, amount, txHash, 'Waiting Confirmation ...', fair_price),
+      prepareTransactionData(
+        action,
+        mintCollat,
+        affectedMint,
+        amount,
+        txHash,
+        'Waiting Confirmation ...',
+        fair_price,
+        market_price
+      ),
       `/transaction/${walletKey}/new`
     )
       .then(() => {})
@@ -121,7 +132,16 @@ export function RFStateProvider({ children = undefined as any }) {
         const newAmount = getBalanceChange(txInfo, walletKey, affectedMint);
         if (newAmount) {
           postToRatioApi(
-            prepareTransactionData(action, mintCollat, affectedMint, newAmount, txHash, newStatus, fair_price),
+            prepareTransactionData(
+              action,
+              mintCollat,
+              affectedMint,
+              newAmount,
+              txHash,
+              newStatus,
+              fair_price,
+              market_price
+            ),
             `/transaction/${walletKey}/update`
           )
             .then(() => {})
@@ -201,7 +221,8 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo.realUserRewardMint =
         poolInfo.mintReward.toString() === SABER_IOU_MINT.toString() ? SBR_MINT : poolInfo.mintReward.toString();
 
-      const activePrice = USD_FAIR_PRICE ? fairPrice : virtualPrice;
+      // const activePrice = USD_FAIR_PRICE ? fairPrice : virtualPrice;
+      const activePrice = virtualPrice;
 
       poolInfo['fairPrice'] = fairPrice;
       poolInfo['virtualPrice'] = virtualPrice;

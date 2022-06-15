@@ -76,7 +76,8 @@ const PaybackModal = ({ data }: any) => {
           PAYBACK_ACTION,
           -paybackAmount,
           txHash,
-          poolInfo.currentPrice
+          poolInfo.fairPrice,
+          poolInfo.marketPrice
         );
       })
       .catch((e) => {
