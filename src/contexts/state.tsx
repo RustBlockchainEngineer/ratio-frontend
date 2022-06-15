@@ -11,7 +11,7 @@ import {
   getVaultState,
   COLL_RATIOS_DECIMALS,
   getAllLendingPool,
-  USD_FAIR_PRICE,
+  // USD_FAIR_PRICE,
   getLendingPoolByMint,
   getFarmInfoByPlatform,
 } from '../utils/ratio-lending';
@@ -201,7 +201,8 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo.realUserRewardMint =
         poolInfo.mintReward.toString() === SABER_IOU_MINT.toString() ? SBR_MINT : poolInfo.mintReward.toString();
 
-      const activePrice = USD_FAIR_PRICE ? fairPrice : virtualPrice;
+      // const activePrice = USD_FAIR_PRICE ? fairPrice : virtualPrice;
+      const activePrice = virtualPrice;
 
       poolInfo['fairPrice'] = fairPrice;
       poolInfo['virtualPrice'] = virtualPrice;
