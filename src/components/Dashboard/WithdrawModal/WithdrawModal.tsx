@@ -113,7 +113,8 @@ const WithdrawModal = ({ data }: any) => {
           WIHTDRAW_ACTION,
           +withdrawAmount,
           txHash,
-          poolInfo.currentPrice
+          poolInfo.fairPrice,
+          poolInfo.marketPrice
         );
 
         setWithdrawAmount(0);

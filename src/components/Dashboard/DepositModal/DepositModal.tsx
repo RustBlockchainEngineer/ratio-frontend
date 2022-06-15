@@ -91,7 +91,8 @@ const DepositModal = ({ data }: any) => {
         DEPOSIT_ACTION,
         -depositAmount,
         txHash,
-        poolInfo.currentPrice
+        poolInfo.fairPrice,
+        poolInfo.marketPrice
       );
 
       setDepositAmount(0);
