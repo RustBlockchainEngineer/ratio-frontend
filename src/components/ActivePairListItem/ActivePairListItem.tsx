@@ -190,29 +190,31 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         <td>
           <div className="tokenpaircard__table__td d-flex">
             <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
-            <OverlayTrigger
-              placement="top"
-              delay={{ show: 100, hide: 100 }}
-              overlay={
-                <Tooltip id="tooltip">
-                  <div className="tokenpaircard__overlaytooltip">
-                    <p>
-                      <strong>APR</strong> is made up of:
-                    </p>
-                    <div className="mb-1">
-                      <img src={USDrIcon} alt="USDrIcon" /> Ratio APR: 45%
+            {data.ratioAPY !== 0 && (
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 100, hide: 100 }}
+                overlay={
+                  <Tooltip id="tooltip">
+                    <div className="tokenpaircard__overlaytooltip">
+                      <p>
+                        <strong>APY</strong> is made up of:
+                      </p>
+                      <div className="mb-1">
+                        <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                      </div>
+                      <div>
+                        <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
+                      </div>
                     </div>
-                    <div>
-                      <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: 80%
-                    </div>
-                  </div>
-                </Tooltip>
-              }
-            >
-              <div className="tokenpaircard__overlaytrigger">
-                <img src={infoIcon} alt="infoIcon" />
-              </div>
-            </OverlayTrigger>
+                  </Tooltip>
+                }
+              >
+                <div className="tokenpaircard__overlaytrigger">
+                  <img src={infoIcon} alt="infoIcon" />
+                </div>
+              </OverlayTrigger>
+            )}
           </div>
         </td>
         <td>

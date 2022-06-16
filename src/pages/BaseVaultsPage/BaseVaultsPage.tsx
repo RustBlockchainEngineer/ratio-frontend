@@ -83,11 +83,13 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
           const poolData = {
             tvl: 0,
             apr: 0,
+            ratioAPY: 0,
             realUserRewardMint: '',
           };
           if (poolInfos && poolInfos[mint]) {
             poolData.tvl = poolInfos[mint].farmTVL;
             poolData.apr = poolInfos[mint].farmAPY;
+            poolData.ratioAPY = poolInfos[mint].ratioAPY;
             poolData.realUserRewardMint = poolInfos[mint].realUserRewardMint;
           }
           if (showOnlyActive === false || isVaultActive) {
