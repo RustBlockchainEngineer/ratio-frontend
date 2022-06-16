@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useWallet } from '../../contexts/wallet';
 import Button from '../Button';
 import { TokenPairCardProps } from '../../types/VaultTypes';
@@ -16,6 +16,9 @@ import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { useUserVaultInfo, usePoolInfo, useAppendUserAction } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
+
+import infoIcon from '../../assets/images/risklevel.svg';
+import USDrIcon from '../../assets/images/USDr.svg';
 
 const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
@@ -95,7 +98,16 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
 
       console.log('Harvesting...');
       const txHash = await PoolManagerFactory?.harvestReward(connection, wallet, data.item);
-      appendUserAction(wallet.publicKey.toString(), data.mint, data.realUserRewardMint, HARVEST_ACTION, 0, txHash, 0);
+      appendUserAction(
+        wallet.publicKey.toString(),
+        data.mint,
+        data.realUserRewardMint,
+        HARVEST_ACTION,
+        0,
+        txHash,
+        0,
+        0
+      );
 
       toast.success('Successfully Harvested!');
     } catch (err) {
@@ -176,8 +188,33 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
           )}
         </td>
         <td>
-          <div className="tokenpaircard__table__td">
+          <div className="tokenpaircard__table__td d-flex">
             <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
+            {data.ratioAPY !== 0 && (
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 100, hide: 100 }}
+                overlay={
+                  <Tooltip id="tooltip">
+                    <div className="tokenpaircard__overlaytooltip">
+                      <p>
+                        <strong>APY</strong> is made up of:
+                      </p>
+                      <div className="mb-1">
+                        <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                      </div>
+                      <div>
+                        <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
+                      </div>
+                    </div>
+                  </Tooltip>
+                }
+              >
+                <div className="tokenpaircard__overlaytrigger">
+                  <img src={infoIcon} alt="infoIcon" />
+                </div>
+              </OverlayTrigger>
+            )}
           </div>
         </td>
         <td>

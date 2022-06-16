@@ -8,6 +8,8 @@ import { useRFStateInfo } from '../../contexts/state';
 import { useWallet } from '../../contexts/wallet';
 import { EmergencyState } from '../../types/admin-types';
 import {
+  changeFundingWallet,
+  changeRatioMint,
   changeSuperOwner,
   changeTreasury,
   setEmergencyState as setEmergencyStateOnContract,
@@ -37,12 +39,82 @@ export default function AdminTasksForm() {
     [originalTreasuryWallet, treasuryWallet]
   );
 
+  const originalfundingWallet = globalState
+    ? globalState.fundingWallet
+      ? globalState.fundingWallet.toString()
+      : ''
+    : '';
+  const [fundingWallet, setfundingWallet] = useState<string>(originalfundingWallet);
+  const [fundingWalletFormValidated, setfundingWalletFormValidated] = useState(false);
+  const fundingWalletChanged = useMemo(
+    () => originalfundingWallet !== fundingWallet,
+    [originalfundingWallet, fundingWallet]
+  );
+  const originalratioMint = globalState ? (globalState.ratioMint ? globalState.ratioMint.toString() : '') : '';
+  const [ratioMint, setRatioMint] = useState<string>(originalratioMint);
+  const [ratioMintFormValidated, setratioMintFormValidated] = useState(false);
+  const ratioMintChanged = useMemo(() => originalratioMint !== ratioMint, [originalratioMint, ratioMint]);
+
   const handleSuperOwnerInputChange = (event: any) => {
     setSuperOwner(event.target.value);
   };
 
   const handleTreasuryWalletInputChange = (event: any) => {
     setTreasuryWallet(event.target.value);
+  };
+  const handleRatioMintInputChange = (event: any) => {
+    setRatioMint(event.target.value);
+  };
+  const handlefundingWalletInputChange = (event: any) => {
+    setfundingWallet(event.target.value);
+  };
+  const handleChangefundingWalletSubmit = async (evt: any) => {
+    evt.preventDefault();
+    if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
+    const form = evt.currentTarget;
+    if (form.checkValidity() === false) {
+      evt.stopPropagation();
+      return;
+    }
+    if (!fundingWalletChanged || !fundingWallet) {
+      return;
+    }
+    setfundingWalletFormValidated(true);
+    try {
+      await changeFundingWallet(connection, wallet, new PublicKey(fundingWallet));
+      toast.info('Funding wallet has been set successfully');
+    } catch (error: unknown) {
+      toast.error('There was an error when setting funding wallet');
+      throw error;
+    }
+    return;
+  };
+  const handleChangeRatioMintSubmit = async (evt: any) => {
+    evt.preventDefault();
+    if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }
+    const form = evt.currentTarget;
+    if (form.checkValidity() === false) {
+      evt.stopPropagation();
+      return;
+    }
+    if (!ratioMintChanged || !ratioMint) {
+      return;
+    }
+    setratioMintFormValidated(true);
+    try {
+      await changeRatioMint(connection, wallet, new PublicKey(ratioMint));
+      toast.info('Ratio Mint has been set successfully');
+    } catch (error: unknown) {
+      toast.error('There was an error when setting funding wallet');
+      throw error;
+    }
+    return;
   };
 
   const handleToggleEmergencyStateClick = async (evt: any) => {
@@ -148,6 +220,41 @@ export default function AdminTasksForm() {
               {treasuryWalletChanged && (
                 <Button disabled={!treasuryWalletChanged} variant="primary" type="submit">
                   Change treasury wallet
+                </Button>
+              )}
+            </InputGroup>
+          </Form.Group>
+        </Row>
+      </Form>
+      <Form validated={ratioMintFormValidated} onSubmit={handleChangeRatioMintSubmit}>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="8" controlId="ratioMint">
+            <Form.Label>Ratio Mint</Form.Label>
+            <InputGroup hasValidation>
+              <Form.Control name="ratioMint" required value={ratioMint} onChange={handleRatioMintInputChange} />
+              {ratioMintChanged && (
+                <Button disabled={!ratioMintChanged} variant="primary" type="submit">
+                  Set Ratio Mint
+                </Button>
+              )}
+            </InputGroup>
+          </Form.Group>
+        </Row>
+      </Form>
+      <Form validated={fundingWalletFormValidated} onSubmit={handleChangefundingWalletSubmit}>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="8" controlId="fundingWallet">
+            <Form.Label>Funding Wallet</Form.Label>
+            <InputGroup hasValidation>
+              <Form.Control
+                name="fundingWallet"
+                required
+                value={fundingWallet}
+                onChange={handlefundingWalletInputChange}
+              />
+              {fundingWalletChanged && (
+                <Button disabled={!fundingWalletChanged} variant="primary" type="submit">
+                  Set Funding Wallet
                 </Button>
               )}
             </InputGroup>

@@ -40,6 +40,7 @@ export function formatTxHistory(transactions: WalletTXDetail[], cluster: string)
       txExplorerUrl: makeSolanaExplorerLink(tx?.transaction_id, cluster),
       amount: parseFloat(tx?.amount),
       fair_price: tx?.fair_price,
+      market_price: tx?.market_price,
     };
   });
   return formattedTxs;
