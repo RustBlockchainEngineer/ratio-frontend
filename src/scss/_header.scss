@@ -18,7 +18,7 @@
   }
 
   &__progressbar {
-    width: 9.375rem;
+    width: 100%;
     @include respond-to(lg) {
       width: 100%;
     }
@@ -40,8 +40,8 @@
   &__tvl {
     cursor: default !important;
     color: #07B127;
-    padding-top: 19px !important;
-    padding-bottom: 19px !important;
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
     text-align: center;
     &::before {
       content: 'Total TVL Cap' !important;
