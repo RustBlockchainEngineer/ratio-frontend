@@ -299,3 +299,30 @@ export const getTokenIcon = (tokenName) => {
   }
   return tokenIcon;
 };
+export const getDateTimeStr = (num: number) => {
+  if (num === 0) {
+    return '';
+  }
+  const date = new Date(num * 1000);
+  return (
+    date.getHours() +
+    ':' +
+    date.getMinutes() +
+    ':' +
+    date.getSeconds() +
+    ' ' +
+    date.getDate() +
+    '/' +
+    (date.getMonth() + 1) +
+    '/' +
+    date.getFullYear()
+  );
+};
+
+export const getDateStr = (num: number) => {
+  if (num === 0) {
+    return '';
+  }
+  const date = new Date(num * 1000);
+  return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+};
