@@ -554,14 +554,14 @@ export async function getFarmInfoByPlatform(
 }
 
 const ACC_PRECISION = new BN(100 * 1000 * 1000 * 1000);
-export function estimateRatioRewards(stateData: any, poolData: any, vaultData: any) {
+export function estimateRatioRewards(poolData: any, vaultData: any) {
   const currentTimeStamp = Math.ceil(new Date().getTime() / 1000);
 
   const duration = new BN(Math.max(currentTimeStamp - poolData.lastRewardTime, 0));
 
   const reward_per_share =
     poolData.lastRewardFundEnd > currentTimeStamp
-      ? stateData.tokenPerSecond.mul(duration).mul(ACC_PRECISION).div(poolData.totalColl)
+      ? poolData.tokenPerSecond.mul(duration).mul(ACC_PRECISION).div(poolData.totalColl)
       : new BN(0);
   const acc_reward_per_share = poolData.accRewardPerShare.add(reward_per_share);
 
