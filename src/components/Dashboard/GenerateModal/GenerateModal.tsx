@@ -171,6 +171,9 @@ const GenerateModal = ({ data }: any) => {
               }}
               value={amountValue}
             />
+            <div style={{ color: '#07b127', fontSize: 12 }}>
+              There will be a 0.5% loan origination fee associated with this transaction.
+            </div>
             <Button
               disabled={borrowAmount <= 0 || buttonDisabled || isNaN(borrowAmount) || isMinting}
               className="button--blue bottomBtn"
