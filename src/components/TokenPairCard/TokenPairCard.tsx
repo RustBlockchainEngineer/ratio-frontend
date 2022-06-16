@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-// import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 
 import { useWallet } from '../../contexts/wallet';
@@ -17,11 +17,12 @@ import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { usePoolInfo } from '../../contexts/state';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
+import USDrIcon from '../../assets/images/USDr.svg';
+import infoIcon from '../../assets/images/risklevel.svg';
 
 const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const { data, onCompareVault } = tokenPairCardProps;
   const history = useHistory();
-
   const compare_vaults_status = useSelector(selectors.getCompareVaultsStatus);
   const { connected } = useWallet();
 
@@ -114,7 +115,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
           </div>
           <div className="tokenpaircard__aprBox">
             <div className="d-flex justify-content-between align-items-center">
-              <h6>Platform</h6>
+              <h6>Platform:</h6>
               <a href={poolManager.getLpLink(data.title)} target="_blank" rel="noreferrer">
                 <div className="d-flex align-items-center mt-1 position-relative">
                   <img src={data.platform.icon} />
@@ -124,8 +125,36 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
               </a>
             </div>
             <div className="d-flex justify-content-between align-items-center mt-2">
-              <h6>APY</h6>
-              <h6 className="semiBold">{printApy()}</h6>
+              <h6>APY:</h6>
+
+              <div className="d-flex">
+                <h6 className="semiBold">{printApy()}</h6>
+                {data.ratioAPY !== 0 && (
+                  <OverlayTrigger
+                    placement="top"
+                    delay={{ show: 100, hide: 100 }}
+                    overlay={
+                      <Tooltip id="tooltip">
+                        <div className="activepaircard__overlaytooltip">
+                          <p>
+                            <strong>APY</strong> is made up of:
+                          </p>
+                          <div className="mb-1">
+                            <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                          </div>
+                          <div>
+                            <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {printApy()}
+                          </div>
+                        </div>
+                      </Tooltip>
+                    }
+                  >
+                    <div className="activepaircard__overlaytrigger">
+                      <img src={infoIcon} alt="infoIcon" />
+                    </div>
+                  </OverlayTrigger>
+                )}
+              </div>
             </div>
             <div className="mt-2 d-flex justify-content-between">
               <h6>Collateralization Ratio:</h6>
@@ -134,7 +163,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
             <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
               <div className="d-flex align-items-center">
                 <img src={smallRatioIcon} alt="smallRatio" />
-                <p className="mx-1">Risk Rating</p>
+                <p className="mx-1">Risk Rating:</p>
                 {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
               </div>
               <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>

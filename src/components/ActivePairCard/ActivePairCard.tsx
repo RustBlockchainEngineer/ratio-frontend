@@ -20,6 +20,8 @@ import { isWalletApproveError } from '../../utils/utils';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { useAppendUserAction, usePoolInfo, useUserVaultInfo, useSubscribeTx } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
+import USDrIcon from '../../assets/images/USDr.svg';
+import infoIcon from '../../assets/images/risklevel.svg';
 
 const ActivePairCard = ({ data }: TokenPairCardProps) => {
   const history = useHistory();
@@ -162,7 +164,34 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             </div>
             <div className="mt-2 d-flex justify-content-between">
               <h6>APY:</h6>
-              <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
+              <div className="d-flex align-items-start">
+                <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
+                {data.ratioAPY !== 0 && (
+                  <OverlayTrigger
+                    placement="top"
+                    delay={{ show: 100, hide: 100 }}
+                    overlay={
+                      <Tooltip id="tooltip">
+                        <div className="activepaircard__overlaytooltip">
+                          <p>
+                            <strong>APY</strong> is made up of:
+                          </p>
+                          <div className="mb-1">
+                            <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                          </div>
+                          <div>
+                            <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
+                          </div>
+                        </div>
+                      </Tooltip>
+                    }
+                  >
+                    <div className="activepaircard__overlaytrigger">
+                      <img src={infoIcon} alt="infoIcon" />
+                    </div>
+                  </OverlayTrigger>
+                )}
+              </div>
             </div>
             <div className="mt-2 d-flex justify-content-between">
               <h6>Collateralization Ratio:</h6>
@@ -171,7 +200,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
               <div className="d-flex align-items-center">
                 <img src={smallRatioIcon} alt="smallRatio" />
-                <p className="mx-1">Risk Rating</p>
+                <p className="mx-1">Risk Rating:</p>
                 {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
               </div>
               <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
