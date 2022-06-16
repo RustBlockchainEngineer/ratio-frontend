@@ -8,7 +8,7 @@ import { formatTxHistory, makeRatioApiEndpointTxHistory } from '../../../hooks/u
 import { FormattedTX } from '../../../types/transaction-types';
 import { useUserOverview } from '../../../contexts/state';
 
-const VaultHistoryTable = (mintAddress: any) => {
+const VaultHistoryTable = ({ mintAddress }: any) => {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toString();
 
