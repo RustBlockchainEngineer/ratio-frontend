@@ -1,6 +1,36 @@
 .activepaircard {
   border: 1px solid rgba(var(--secondary-border), 0.2);
   border-radius: 8px;
+  &__overlaytrigger {
+    img {
+      width: 15px;
+      margin-top: -8px;
+      margin-left: 6px;
+      cursor: pointer;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+  &__overlaytooltip {
+    p {
+      font-family: 'Poppins-Regular';
+      font-size: 12px;
+      padding-bottom: 5px;
+      strong {
+        font-family: 'Poppins-SemiBold';
+      }
+    }
+    & > div {
+      font-family: 'Poppins-Regular';
+      font-size: 12px;
+    }
+    img {
+      width: 1.1rem;
+      margin-right: 5px;
+      margin-top: -2px;
+    }
+  }
   .lp-button {
     font-family: 'Poppins-Medium';
     font-size: 15px;
@@ -147,7 +177,6 @@
     }
   }
   &__usdrDebtbar {
-    
     .navbarprogressbar__header > div:first-child {
       p {
         font-size: 1rem;

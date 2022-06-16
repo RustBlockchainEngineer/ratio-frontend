@@ -1,4 +1,4 @@
-import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction } from '@solana/web3.js';
 import { WalletAdapter } from '../contexts/wallet';
 import * as anchor from '@project-serum/anchor';
 import {
@@ -13,6 +13,8 @@ import {
   COLL_RATIOS_DECIMALS,
   COLL_RATIOS_ARR_SIZE,
   USDR_MINT_KEYPAIR,
+  RATIO_MINT_KEY,
+  RATIO_MINT_DECIMALS,
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
@@ -20,8 +22,9 @@ import BN from 'bn.js';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './rf-web3';
 
-import { getGlobalStatePDA, getOraclePDA, getPoolPDA } from './ratio-pda';
+import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA } from './ratio-pda';
 import { USDR_MINT_DECIMALS, USDR_MINT_KEY } from './ratio-lending';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 export async function setEmergencyState(
   connection: Connection,
@@ -86,6 +89,7 @@ export async function createGlobalState(connection: Connection, wallet: any) {
           authority: wallet.publicKey,
           globalState: globalStateKey,
           mintUsdr: USDR_MINT_KEY,
+          ratioMint: RATIO_MINT_KEY,
           ...DEFAULT_PROGRAMS,
         },
         signers: [Keypair.fromSecretKey(new Uint8Array(USDR_MINT_KEYPAIR))],
@@ -150,42 +154,42 @@ export async function getPriceOracle(
 
   return oracle;
 }
-// async function reportPriceOracle(
-//   connection,
-//   wallet,
+export async function reportPriceOracle(
+  connection,
+  wallet,
 
-//   mint: PublicKey,
-//   newPrice: number
-// ) {
-//   const program = getProgramInstance(connection, wallet);
+  mint: PublicKey,
+  newPrice: number
+) {
+  const program = getProgramInstance(connection, wallet);
 
-//   const globalStateKey = getGlobalStatePDA();
-//   const oracleKey = getOraclePDA(mint);
+  const globalStateKey = getGlobalStatePDA();
+  const oracleKey = getOraclePDA(mint);
 
-//   const tx = program.transaction.reportPriceToOracle(
-//     // price of token
-//     new BN(newPrice * USDR_MINT_DECIMALS),
-//     {
-//       accounts: {
-//         authority: wallet.publicKey,
-//         globalState: globalStateKey,
-//         oracle: oracleKey,
-//         mint: mint,
-//         ...DEFAULT_PROGRAMS,
-//       },
-//     }
-//   );
+  const tx = program.transaction.reportPriceToOracle(
+    // price of token
+    new BN(newPrice * USDR_MINT_DECIMALS),
+    {
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+        oracle: oracleKey,
+        mint: mint,
+        ...DEFAULT_PROGRAMS,
+      },
+    }
+  );
 
-//   const txHash = await sendTransaction(connection, wallet, tx);
-//   await connection.confirmTransaction(txHash);
-//   if (txHash?.value?.err) {
-//     console.error('ERROR ON TX ', txHash.value.err);
-//     throw txHash.value.err;
-//   }
-//   console.log('Updated price of Oracle account  tx = ', txHash);
+  const txHash = await sendTransaction(connection, wallet, tx);
+  await connection.confirmTransaction(txHash);
+  if (txHash?.value?.err) {
+    console.error('ERROR ON TX ', txHash.value.err);
+    throw txHash.value.err;
+  }
+  console.log('Updated price of Oracle account  tx = ', txHash);
 
-//   return txHash;
-// }
+  return txHash;
+}
 
 // createPool
 export async function createPool(
@@ -611,8 +615,32 @@ export async function setHarvestFee(
   return true;
 }
 // eslint-disable-next-line
-export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
-  console.error('setBorrowFee yet not implemented');
+export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, feeNum: number) {
+  const program = await getProgramInstance(connection, wallet);
+  const globalStateKey = getGlobalStatePDA();
+  const globalState = await getGlobalState(connection, wallet);
+
+  const feeDeno = globalState.feeDeno.toNumber();
+  const feeNumNew = (feeNum / 100) * feeDeno;
+  console.log(`Set Borrow fees ${feeNumNew} / ${feeDeno}`);
+  try {
+    const transaction = new Transaction();
+    const signers: Keypair[] = [];
+    const ix = await program.instruction.setBorrowFee(new BN(feeNumNew), {
+      accounts: {
+        authority: wallet?.publicKey,
+        globalState: globalStateKey,
+      },
+    });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction, signers);
+    console.log(tx);
+  } catch (error) {
+    console.log('ERROR');
+    console.log(error);
+    throw error;
+  }
+  return true;
 }
 // eslint-disable-next-line
 export async function setPaybackFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
@@ -661,4 +689,97 @@ export async function changeTreasury(connection: Connection, wallet: any, newTre
     console.error('Error while setting the treasury wallet', e);
     throw e;
   }
+}
+
+export async function fundRatioRewards(
+  connection: Connection,
+  wallet: any,
+  poolKey: PublicKey,
+  ratioAmount: number,
+  duration: number
+) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+  const globalStateKey = await getGlobalStatePDA();
+  const ratioVault = getATAKey(globalStateKey, RATIO_MINT_KEY);
+  const ataRatioReward = getATAKey(wallet.publicKey, RATIO_MINT_KEY);
+  const transaction = new Transaction();
+  const signers: Keypair[] = [];
+  const ix = program.instruction.fundRatioToken(
+    new anchor.BN(Math.round(ratioAmount * 10 ** RATIO_MINT_DECIMALS)),
+    new anchor.BN(duration * 24 * 3600),
+    {
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+        pool: poolKey,
+        ratioVault,
+        userVault: ataRatioReward,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      },
+    }
+  );
+  transaction.add(ix);
+  const tx = await sendTransaction(connection, wallet, transaction, signers);
+  const txResult = await connection.confirmTransaction(tx);
+  if (txResult.value.err) {
+    throw txResult.value.err;
+  }
+  console.log('tx id->', tx);
+  return 'Funding RATIO rewards transaction id = ' + tx;
+}
+
+export async function changeFundingWallet(connection: Connection, wallet: any, fundingWallet: PublicKey) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+  const globalStateKey = await getGlobalStatePDA();
+  const transaction = new Transaction();
+  const signers: Keypair[] = [];
+  const ix = await program.instruction.changeFundingWallet({
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      fundingWallet,
+    },
+  });
+  transaction.add(ix);
+  const tx = await sendTransaction(connection, wallet, transaction, signers);
+  const txResult = await connection.confirmTransaction(tx);
+  if (txResult.value.err) {
+    throw txResult.value.err;
+  }
+  console.log('tx id->', tx);
+  return 'Changing funding wallet transaction id = ' + tx;
+}
+export async function changeRatioMint(
+  connection: Connection,
+  wallet: any,
+  ratioMint: PublicKey = new PublicKey(RATIO_MINT_KEY)
+) {
+  if (!wallet.publicKey) throw new WalletNotConnectedError();
+  const program = getProgramInstance(connection, wallet);
+  const globalStateKey = await getGlobalStatePDA();
+  const ratioVault = getATAKey(globalStateKey, RATIO_MINT_KEY);
+  const transaction = new Transaction();
+  const signers: Keypair[] = [];
+  const ix = await program.instruction.setRatioMint({
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      ratioVault,
+      ratioMint,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
+      rent: SYSVAR_RENT_PUBKEY,
+    },
+  });
+  transaction.add(ix);
+  const tx = await sendTransaction(connection, wallet, transaction, signers);
+  const txResult = await connection.confirmTransaction(tx);
+  if (txResult.value.err) {
+    throw txResult.value.err;
+  }
+  console.log('tx id->', tx);
+  return 'Changing ratio mint transaction id = ' + tx;
 }

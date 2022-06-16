@@ -4,12 +4,13 @@ import { IoMdClose } from 'react-icons/io';
 import VaultEditionForm from '../VaultEditionForm';
 import AdminFormInput from '../../../components/AdminFormInput';
 import { useEffect, useState } from 'react';
-import { getPool, setPoolDebtCeiling } from '../../../utils/ratio-lending-admin';
+import { fundRatioRewards, getPool, setPoolDebtCeiling } from '../../../utils/ratio-lending-admin';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
-import { USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
+import { RATIO_MINT_DECIMALS, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
 import { toast } from 'react-toastify';
+import { getDateStr } from '../../../utils/utils';
 interface VaultEditionModalProps {
   show: boolean;
   close: () => void;
@@ -20,6 +21,10 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
   const connection = useConnection();
   const { wallet } = useWallet();
   const [poolDebtCeilingValue, setPoolDebtCeilingValue] = useState(0);
+  const [ratioRewardsDuration, setRatioRewardsDuration] = useState(0);
+  const [lastRewardFundStart, setLastRewardFundStart] = useState('');
+  const [lastRewardFundEnd, setLastRewardFundEnd] = useState('');
+  const [ratioRewardsAmount, setRatioRewardsAmount] = useState(0);
   const vaultValues: LPEditionData = {
     address_id: vault?.address_id ?? '',
     vault_address_id: vault?.vault_address_id ?? null,
@@ -50,12 +55,28 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
       getPool(connection, wallet, new PublicKey(vault.vault_address_id)).then((poolData) => {
         const debtCeiling = poolData.debtCeiling.toNumber() / 10 ** USDR_MINT_DECIMALS;
         setPoolDebtCeilingValue(debtCeiling);
+        const lastRewardFundStart = poolData.lastRewardFundStart.toNumber();
+        const lastRewardFundEnd = poolData.lastRewardFundEnd.toNumber();
+        const lastRewardFundAmount = poolData.lastRewardFundAmount.toNumber();
+        const days = Math.round((lastRewardFundEnd - lastRewardFundStart) / (3600 * 24));
+        setRatioRewardsDuration(days);
+        setLastRewardFundStart(getDateStr(lastRewardFundStart));
+        setLastRewardFundEnd(getDateStr(lastRewardFundEnd));
+        setRatioRewardsAmount(Math.round(lastRewardFundAmount / 10 ** RATIO_MINT_DECIMALS));
       });
     }
   }, [vault]);
   const handlePoolDebtCelilingChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value: any = event.target.value ?? 0;
     setPoolDebtCeilingValue(value);
+  };
+  const handleRatioRewardsAmount = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value: any = event.target.value ?? 0;
+    setRatioRewardsAmount(value);
+  };
+  const handleRatioRewardsDuration = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value: any = event.target.value ?? 0;
+    setRatioRewardsDuration(value);
   };
   const savePoolDebtCeiling = async () => {
     try {
@@ -67,6 +88,24 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
       }
     } catch (e) {
       toast.error('Setting PoolDebtCeiling has been failed!');
+    }
+  };
+  const fundRewards = async () => {
+    try {
+      if (vaultValues.address_id && ratioRewardsAmount > 0 && ratioRewardsDuration > 0) {
+        await fundRatioRewards(
+          connection,
+          wallet,
+          new PublicKey(vaultValues.address_id),
+          ratioRewardsAmount,
+          ratioRewardsDuration
+        );
+        toast.success('has been funded successfully!');
+      } else {
+        toast.error('input amount and duration!');
+      }
+    } catch (e) {
+      toast.error('Funding Ratio rewards has been failed!');
     }
   };
   return (
@@ -94,6 +133,24 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
             value={poolDebtCeilingValue}
           />
           <Button onClick={savePoolDebtCeiling}>Set Debt Ceiling</Button>
+        </div>
+        <div className="dashboardModal__modal__body">
+          <AdminFormInput
+            handleChange={handleRatioRewardsAmount}
+            label="RATIO Rewards amount"
+            name="ratioRewardsAmount"
+            value={ratioRewardsAmount}
+          />
+          <h5>
+            {lastRewardFundStart} - {lastRewardFundEnd}
+          </h5>
+          <AdminFormInput
+            handleChange={handleRatioRewardsDuration}
+            label="RATIO Rewards duration (days)"
+            name="ratioRewardsDuration"
+            value={ratioRewardsDuration}
+          />
+          <Button onClick={fundRewards}>Fund RATIO rewards</Button>
         </div>
       </Modal.Body>
     </Modal>

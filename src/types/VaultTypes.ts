@@ -20,6 +20,7 @@ export type PairType = {
   risk: string;
   riskLevel: number;
   apr: number;
+  ratioAPY: number;
   details: string;
   riskPercentage: number;
   item: LPair;

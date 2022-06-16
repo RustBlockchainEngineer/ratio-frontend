@@ -12,10 +12,13 @@ import SwitchButton from '../SwitchButton';
 import { shortenAddress } from '../../utils/utils';
 import { useLocalStorageState } from '../../utils/utils';
 import { useWallet } from '../../contexts/wallet';
-import { NavBarProgressBarTVL } from '../Navbar/NavBarProgressBarTVL';
+// import { NavBarProgressBarTVL } from '../Navbar/NavBarProgressBarTVL';
 import { NavBarProgressBarTotalUSDr } from '../Navbar/NavBarProgressBarTotalUSDr';
 import { walletSelectors } from '../../features/wallet';
 import GuideModal from '../GuideModal';
+import { useRFStateInfo } from '../../contexts/state';
+import { TokenAmount } from '../../utils/safe-math';
+import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 type HeaderProps = {
   onClickWalletBtn: () => void;
@@ -38,6 +41,9 @@ const Header = (headerProps: HeaderProps) => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const [autoConnect, setAutoConnect] = useLocalStorageState('autoConnect');
   const [providerUrl, setProviderUrl] = useLocalStorageState('walletProvider');
+
+  const globalState = useRFStateInfo();
+  const currentTVL = Number(new TokenAmount(globalState?.tvlUsd ?? 0, USDR_MINT_DECIMALS).fixed());
 
   useEffect(() => {
     if (connected) {
@@ -86,7 +92,8 @@ const Header = (headerProps: HeaderProps) => {
   const renderTotalTVLCap = () => {
     return enable && connected ? (
       <div className="header__connected header__tvl">
-        <NavBarProgressBarTVL className="header__progressbar" shouldDisplayLabel={false} />
+        {currentTVL.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+        {/* <NavBarProgressBarTVL className="header__progressbar" shouldDisplayLabel={false} /> */}
       </div>
     ) : null;
   };
@@ -129,7 +136,7 @@ const Header = (headerProps: HeaderProps) => {
           </div>
         </>
       )}
-      {isTabletOrMobile && (
+      {(isTabletOrMobile || isMobile) && (
         <>
           <div className="d-flex justify-content-end align-items-center w-100">
             <div className="d-flex justify-content-end col ">
@@ -150,27 +157,8 @@ const Header = (headerProps: HeaderProps) => {
               {renderWalletConnection()}
             </div>
           </div>
-          <div className="col-md-6 mt-4 pl-4 ">{renderTotalUSDrDebt()}</div>
-          <div className="col-md-6 mt-4">{renderTotalTVLCap()}</div>
-        </>
-      )}
-      {isMobile && (
-        <>
-          <div className="d-flex justify-content-end col-lg-auto">
-            <SwitchButton />
-            {/* <NetworkSelector /> */}
-            {renderWalletConnection()}
-          </div>
-          <div className="d-flex justify-content-end col mt-3 ">
-            {connected && enable && <GuideModal />}
-            {connected && network.value === 'devnet' && enable && (
-              <Button disabled={!connected} className="button--blue walletBtn" onClick={() => history.push('/faucet')}>
-                Faucet
-              </Button>
-            )}
-          </div>
-          <div className="col-md-6 mt-4 ">{renderTotalUSDrDebt()}</div>
-          <div className="col-md-6 mt-4">{renderTotalTVLCap()}</div>
+          <div className="col mt-4 pl-4 ">{renderTotalUSDrDebt()}</div>
+          <div className="col-auto mt-4">{renderTotalTVLCap()}</div>
         </>
       )}
     </div>

@@ -2,19 +2,21 @@ import React from 'react';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-import { useWallet } from '../../contexts/wallet';
-import Button from '../Button';
 import { TokenPairCardProps } from '../../types/VaultTypes';
-
 import { formatUSD } from '../../utils/utils';
-import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
+import { usePoolInfo } from '../../contexts/state';
+import { useWallet } from '../../contexts/wallet';
+import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { usePoolInfo } from '../../contexts/state';
+import Button from '../Button';
 
-import { useGetPoolManager } from '../../hooks/useGetPoolManager';
+import linkIcon from '../../assets/images/link.svg';
+import infoIcon from '../../assets/images/risklevel.svg';
+import USDrIcon from '../../assets/images/USDr.svg';
 
 const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const { data } = tokenPairCardProps;
@@ -108,8 +110,33 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
           </div>
         </td>
         <td>
-          <div className="tokenpaircard__table__td">
+          <div className="tokenpaircard__table__td d-flex">
             <h6 className="semiBold">{Number(data?.apr).toFixed(2)}%</h6>
+            {data.ratioAPY !== 0 && (
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 100, hide: 100 }}
+                overlay={
+                  <Tooltip id="tooltip">
+                    <div className="tokenpaircard__overlaytooltip">
+                      <p>
+                        <strong>APY</strong> is made up of:
+                      </p>
+                      <div className="mb-1">
+                        <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                      </div>
+                      <div>
+                        <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
+                      </div>
+                    </div>
+                  </Tooltip>
+                }
+              >
+                <div className="tokenpaircard__overlaytrigger">
+                  <img src={infoIcon} alt="infoIcon" />
+                </div>
+              </OverlayTrigger>
+            )}
           </div>
         </td>
         <td>
