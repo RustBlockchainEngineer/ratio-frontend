@@ -8,7 +8,7 @@ import { formatTxHistory, makeRatioApiEndpointTxHistory } from '../../../hooks/u
 import { FormattedTX } from '../../../types/transaction-types';
 import { useUserOverview } from '../../../contexts/state';
 
-const VaultHistoryTable = ({ mintAddress }: any) => {
+const VaultHistoryTable = (mintAddress: any) => {
   const { publicKey } = useWallet();
   const wallet = publicKey?.toString();
 
@@ -99,7 +99,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
                     <td>{index + 1}</td>
                     <td className="w-50">{tx?.date}</td>
                     <td className="activity">{tx?.txType}</td>
-                    <td className="activity">{tx?.fair_price && tx?.fair_price}</td>
+                    <td className="activity">{tx?.market_price}</td>
                     <td className="activity">{(Math.ceil(tx?.amount * 10000) / 10000).toFixed(4)}</td>
                     <td className="activity">{tx?.status}</td>
                     <td className="tx_hash text-right">
