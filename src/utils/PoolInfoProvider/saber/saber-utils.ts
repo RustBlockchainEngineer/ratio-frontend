@@ -6,7 +6,7 @@ import {
   depositCollateralTx,
   distributeRewardTx,
   getProgramInstance,
-  // harvestRatioRewardTx,
+  harvestRatioRewardTx,
   withdrawCollateralTx,
 } from '../../ratio-lending';
 import {
@@ -82,6 +82,11 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
   if (ix2) {
     tx1.add(ix2);
   }
+  const ix3 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
+  if (ix3) {
+    tx1.add(ix3);
+  }
+
   const txHash = await sendTransaction(connection, wallet, tx1);
 
   return txHash;
