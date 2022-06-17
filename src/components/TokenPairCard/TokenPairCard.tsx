@@ -87,7 +87,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   };
 
   const printApy = () => {
-    if (isNaN(data?.apr) || data?.apr === 0) {
+    if (isNaN(data?.apr)) {
       return <LoadingSpinner className="spinner-border-sm text-info" />;
     }
     return Number(data?.apr).toFixed(2) + '%';
