@@ -369,10 +369,10 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
 
   const ataGlobalRatio = getATAKey(globalStateKey, stateInfo.ratioMint);
   const ataUserRatio = getATAKey(wallet.publicKey, stateInfo.ratioMint);
-  
+
   const transaction = new Transaction();
   // we need to check if the ratio token is funded to the pool
-  if ((await connection.getAccountInfo(ataGlobalRatio))) {
+  if (await connection.getAccountInfo(ataGlobalRatio)) {
     if (!(await connection.getAccountInfo(ataUserRatio))) {
       transaction.add(
         Token.createAssociatedTokenAccountInstruction(
@@ -399,7 +399,7 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
 
     transaction.add(ix);
   } else {
-    console.log('No fund to harvest Ratio!!!!')
+    console.log('No fund to harvest Ratio!!!!');
   }
   return transaction;
 }
