@@ -371,36 +371,32 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
   const ataUserRatio = getATAKey(wallet.publicKey, stateInfo.ratioMint);
 
   const transaction = new Transaction();
-  // we need to check if the ratio token is funded to the pool
-  if (await connection.getAccountInfo(ataGlobalRatio)) {
-    if (!(await connection.getAccountInfo(ataUserRatio))) {
-      transaction.add(
-        Token.createAssociatedTokenAccountInstruction(
-          ASSOCIATED_TOKEN_PROGRAM_ID,
-          TOKEN_PROGRAM_ID,
-          stateInfo.ratioMint,
-          ataUserRatio,
-          wallet.publicKey,
-          wallet.publicKey
-        )
-      );
-    }
-    const ix = await program.instruction.harvestRatio({
-      accounts: {
-        authority: wallet.publicKey,
-        globalState: globalStateKey,
-        pool: poolKey,
-        vault: vaultKey,
-        ratioVault: ataGlobalRatio,
-        ataRewardUser: ataUserRatio,
-        ...DEFAULT_PROGRAMS,
-      },
-    });
 
-    transaction.add(ix);
-  } else {
-    console.log('No fund to harvest Ratio!!!!');
+  if (!(await connection.getAccountInfo(ataUserRatio))) {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        stateInfo.ratioMint,
+        ataUserRatio,
+        wallet.publicKey,
+        wallet.publicKey
+      )
+    );
   }
+  const ix = await program.instruction.harvestRatio({
+    accounts: {
+      authority: wallet.publicKey,
+      globalState: globalStateKey,
+      pool: poolKey,
+      vault: vaultKey,
+      ratioVault: ataGlobalRatio,
+      ataRewardUser: ataUserRatio,
+      ...DEFAULT_PROGRAMS,
+    },
+  });
+
+  transaction.add(ix);
   return transaction;
 }
 
