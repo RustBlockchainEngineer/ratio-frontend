@@ -580,9 +580,9 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const annual_reward_amount =
     Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * 365 * 24 * 3600;
   const annual_reward_value = annual_reward_amount * ratio_price;
-  const coll_locked_amount = poolData.tvlUsd;
+  const tvl = +new TokenAmount(poolData.tvlUsd.toString(), USDR_MINT_DECIMALS, true).fixed();
 
-  const apr = annual_reward_value / coll_locked_amount;
+  const apr = annual_reward_value / tvl;
   const apy = Number(((1 + apr / 365) ** 365 - 1) * 100);
   return apy;
 }
