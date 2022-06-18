@@ -21,7 +21,7 @@ import { TokenAmount } from './safe-math';
 export const COLL_RATIOS_DECIMALS = 8;
 export const COLL_RATIOS_ARR_SIZE = 10;
 
-export const RATIO_MINT_DECIMALS = 8;
+export const RATIO_MINT_DECIMALS = 6;
 export const RATIO_MINT_KEY = 'ratioMVg27rSZbSvBopUvsdrGUzeALUfFma61mpxc8J';
 export const USDR_MINT_DECIMALS = 6;
 export const USDR_MINT_KEY = 'USDrbBQwQbQ2oWHUPfA8QBHcyVxKUq1xHyXsSLKdUq2';
@@ -369,7 +369,7 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
 
   const ataGlobalRatio = getATAKey(globalStateKey, stateInfo.ratioMint);
   const ataUserRatio = getATAKey(wallet.publicKey, stateInfo.ratioMint);
-
+  console.log(ataGlobalRatio.toString());
   const transaction = new Transaction();
 
   if (!(await connection.getAccountInfo(ataUserRatio))) {
