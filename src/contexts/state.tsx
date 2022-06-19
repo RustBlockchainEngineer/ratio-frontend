@@ -328,6 +328,7 @@ export function RFStateProvider({ children = undefined as any }) {
         mintableUSDr: new TokenAmount(mintableUSDr, USDR_MINT_DECIMALS).toWei().toNumber(),
         isReachedDebt: mintableUSDr <= 0 && vaultInfo.debt.toNumber() > 0,
         poolInfo,
+        ratioReward,
       };
     }
     return null;
@@ -345,7 +346,6 @@ export function RFStateProvider({ children = undefined as any }) {
         }
       }
     }
-
     setVaultState(vaultInfos);
     return vaultInfos;
   };
@@ -360,7 +360,6 @@ export function RFStateProvider({ children = undefined as any }) {
         };
       }
     }
-
     setVaultState(vaultInfos);
     return vaultInfos;
   };

@@ -85,6 +85,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             apr: 0,
             ratioAPY: 0,
             realUserRewardMint: '',
+            // ratioReward: userVaultInfos[mint] && userVaultInfos[mint].ratioReward,
           };
           if (poolInfos && poolInfos[mint]) {
             poolData.tvl = poolInfos[mint].farmTVL;
