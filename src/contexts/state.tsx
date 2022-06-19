@@ -16,6 +16,7 @@ import {
   getFarmInfoByPlatform,
   estimateRATIOAPY,
   estimateRatioRewards,
+  RATIO_MINT_DECIMALS,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
 import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
@@ -248,7 +249,6 @@ export function RFStateProvider({ children = undefined as any }) {
           poolInfo['farmTVL']) *
         100;
       poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, 0.8132);
-      console.log('RATIO APY', poolInfo.mintCollat.toString(), poolInfo['ratioAPY']);
     }
     return poolInfo;
   };
@@ -314,8 +314,8 @@ export function RFStateProvider({ children = undefined as any }) {
       const poolDebtLimit = poolInfo.debtCeiling.toNumber() - poolInfo.totalDebt.toNumber();
       const globalDebtLimit = globalState.debtCeilingGlobal.toNumber() - globalState.totalDebt.toNumber();
       const mintableUSDr = Math.max(0, Math.min(vaultDebtLimit, userDebtLimit, poolDebtLimit, globalDebtLimit));
-      const ratioReward = estimateRatioRewards(poolInfo, vaultInfo);
-      console.log('RATIO Reward', poolInfo.mintCollat.toString(), ratioReward);
+      const ratioReward = new TokenAmount(estimateRatioRewards(poolInfo, vaultInfo), RATIO_MINT_DECIMALS, true).fixed();
+
       return {
         ...vaultInfo,
         mint,
