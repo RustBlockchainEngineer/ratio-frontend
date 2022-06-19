@@ -369,7 +369,6 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
 
   const ataGlobalRatio = getATAKey(globalStateKey, stateInfo.ratioMint);
   const ataUserRatio = getATAKey(wallet.publicKey, stateInfo.ratioMint);
-  console.log(ataGlobalRatio.toString());
   const transaction = new Transaction();
 
   if (!(await connection.getAccountInfo(ataUserRatio))) {
@@ -423,7 +422,9 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const swapTokenB = poolData.swapTokenB;
 
   const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
+  console.log('ataUSDr===>', ataUSDr);
   const ataUSDrTreasury = getATAKey(treasuryKey, usdrMint);
+  console.log('ataUSDrTreasury===>', ataUSDrTreasury);
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);

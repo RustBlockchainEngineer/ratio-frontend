@@ -27,6 +27,7 @@ export default function VaultsTable() {
   const poolInfos = useAllPoolInfo();
   const connection = useConnection();
   const wallet = useWallet();
+
   const handleRemoveVault = async (address_id: string) => {
     disabledRemoves.set(address_id, true);
     if (await confirm('Are you sure?')) {

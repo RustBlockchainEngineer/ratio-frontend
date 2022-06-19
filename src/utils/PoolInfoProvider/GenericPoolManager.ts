@@ -21,7 +21,7 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
       } else {
         const response = await fetch(url);
         const data: LPairAPRLast = await response.json();
-
+        console.log(data);
         // We cache the data
         ratioAPRCache[url] = data;
         apr = data?.apr ?? 0;
