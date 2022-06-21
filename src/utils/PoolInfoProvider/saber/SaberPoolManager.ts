@@ -2,7 +2,7 @@ import { LPair } from '../../../types/VaultTypes';
 import { GenericPoolManager } from '../GenericPoolManager';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { calculateRewardByPlatform, PLATFORM_IDS } from '../../ratio-lending';
-import { deposit, harvest, harvestRatio, withdraw } from './saber-utils';
+import { deposit, harvest, withdraw } from './saber-utils';
 
 export class SaberPoolManager extends GenericPoolManager {
   async depositLP(
@@ -31,12 +31,6 @@ export class SaberPoolManager extends GenericPoolManager {
 
   async harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
     const txHash = await harvest(connection, wallet, new PublicKey(vault.address_id));
-    // this.postTransactionToApi(txHash as string, vault.address_id, 'harvest', wallet?.publicKey, 'confirmed');
-    return txHash;
-  }
-
-  async harvestRatioReward(connection: Connection, wallet: any, vault: LPair): Promise<string> {
-    const txHash = await harvestRatio(connection, wallet, new PublicKey(vault.address_id));
     // this.postTransactionToApi(txHash as string, vault.address_id, 'harvest', wallet?.publicKey, 'confirmed');
     return txHash;
   }
