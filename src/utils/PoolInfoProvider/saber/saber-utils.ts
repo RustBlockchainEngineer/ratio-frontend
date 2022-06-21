@@ -82,10 +82,10 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
   if (ix2) {
     tx1.add(ix2);
   }
-  const ix3 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
-  if (ix3) {
-    tx1.add(ix3);
-  }
+  // const ix3 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
+  // if (ix3) {
+  //   tx1.add(ix3);
+  // }
 
   const txHash = await sendTransaction(connection, wallet, tx1);
 
@@ -133,6 +133,23 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
   // if (tx4) {
   //   transaction.add(tx4);
   // }
+  if (!needTx) {
+    const txHash = await sendTransaction(connection, wallet, transaction);
+
+    return txHash;
+  }
+  return transaction;
+}
+
+export async function harvestRatio(connection: Connection, wallet: any, mintCollKey: PublicKey, needTx = false) {
+  console.log('Harvest from Ratio');
+
+  const transaction = new Transaction();
+
+  const tx1 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
+  if (tx1) {
+    transaction.add(tx1);
+  }
   if (!needTx) {
     const txHash = await sendTransaction(connection, wallet, transaction);
 

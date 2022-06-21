@@ -10,6 +10,8 @@ export interface IPoolManagerStrategy {
 
   harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string>;
 
+  harvestRatioReward(connection: Connection, wallet: any, vault: LPair): Promise<string>;
+
   getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number>;
 
   getTokenName(): string;
