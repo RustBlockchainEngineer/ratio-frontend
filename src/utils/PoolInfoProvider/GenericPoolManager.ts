@@ -55,6 +55,8 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
 
   abstract harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string>;
 
+  abstract harvestRatioReward(connection: Connection, wallet: any, vault: LPair): Promise<string>;
+
   abstract getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number>;
 
   async postTransactionToApi(

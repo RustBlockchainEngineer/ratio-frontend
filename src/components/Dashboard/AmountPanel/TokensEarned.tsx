@@ -25,6 +25,7 @@ const TokensEarned = ({ data }: any) => {
   const vaultState = useUserVaultInfo(data.mintAddress);
 
   const [isHarvesting, setIsHarvesting] = useState(false);
+  const [isHarvestingRatio, setIsHarvestingRatio] = useState(false);
 
   const appendUserAction = useAppendUserAction();
   const subscribeTx = useSubscribeTx();
@@ -62,6 +63,39 @@ const TokensEarned = ({ data }: any) => {
     setIsHarvesting(false);
   };
 
+  const harvestRatio = async () => {
+    try {
+      if (!poolManager || !poolManager?.harvestRatioReward) {
+        throw new Error('Pool manager factory not initialized');
+      }
+
+      console.log('Harvesting Ratio...');
+      setIsHarvestingRatio(true);
+      const txHash = await poolManager?.harvestRatioReward(connection, wallet, vault as LPair);
+      subscribeTx(
+        txHash,
+        () => toast.info('Harvest Ratio Transaction Sent'),
+        () => toast.success('Harvest Ratio Confirmed.'),
+        () => toast.error('Harvest Ratio Transaction Failed')
+      );
+      appendUserAction(
+        wallet.publicKey.toString(),
+        data.mintAddress,
+        data.realUserRewardMint,
+        HARVEST_ACTION,
+        0,
+        txHash,
+        0,
+        0
+      );
+    } catch (err) {
+      console.error(err);
+      if (isWalletApproveError(err)) toast.warn('Wallet is not approved!');
+      else toast.error('Transaction Error!');
+    }
+    setIsHarvestingRatio(false);
+  };
+
   return (
     <div className="tokensearned">
       <h4>Tokens Earned</h4>
@@ -71,14 +105,17 @@ const TokensEarned = ({ data }: any) => {
             <th>Name</th>
             <th>Rewards</th>
             <th>USD</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="tokensearned__name">
+            <td>
               {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
-              <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
-              {poolManager?.getTokenName()}
+              <div className="tokensearned__name">
+                <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
+                {poolManager?.getTokenName()}
+              </div>
             </td>
             <td className="align-middle">
               {vaultState ? vaultState.reward : 0} {poolManager?.getTokenName()}
@@ -90,6 +127,11 @@ const TokensEarned = ({ data }: any) => {
                 `$  ${vaultState?.rewardUSD}`
               )}
             </td>
+            <td>
+              <Button className="button--blue generate btn-block" onClick={harvest} disabled={isHarvesting}>
+                Harvest
+              </Button>
+            </td>
           </tr>
           <tr>
             <td className="tokensearned__name">
@@ -97,14 +139,23 @@ const TokensEarned = ({ data }: any) => {
             </td>
             <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} RATIO</td>
             <td className="align-middle"></td>
+            <td>
+              <Button
+                className="button--blue generate btn-block px-2"
+                onClick={harvestRatio}
+                disabled={isHarvestingRatio}
+              >
+                Harvest
+              </Button>
+            </td>
           </tr>
         </tbody>
       </Table>
-      <div className="px-4">
+      {/* <div className="px-4">
         <Button className="button--blue generate btn-block" onClick={harvest} disabled={isHarvesting}>
           Harvest
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };
