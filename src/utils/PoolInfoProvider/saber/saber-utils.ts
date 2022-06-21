@@ -398,9 +398,9 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
       const expectedWagesEarned = (
         await payroll.calculateRewardsEarned(
           currentTimeStamp,
-          miner?.balance as anchor.BN,
-          miner?.rewardsPerTokenPaid as anchor.BN,
-          miner?.rewardsEarned as anchor.BN
+          miner.balance,
+          miner.rewardsPerTokenPaid,
+          miner.rewardsEarned
         )
       ).toNumber();
       return parseFloat(new TokenAmount(expectedWagesEarned, SABER_IOU_MINT_DECIMALS).fixed());
