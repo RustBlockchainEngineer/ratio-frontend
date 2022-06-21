@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { NavBarProgressBar, ProgressBarLabelType } from './NavBarProgressBar';
-import { useRFStateInfo } from '../../contexts/state';
+// import { useRFStateInfo } from '../../contexts/state';
 import { TokenAmount } from '../../utils/safe-math';
 import { USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import { usePoolInfo } from '../../contexts/state';
@@ -15,11 +15,12 @@ interface ProgressBarVaultUSDrProps {
 export const ProgressBarVaultUSDr = (data: ProgressBarVaultUSDrProps) => {
   const { className, shouldDisplayLabel = true, shouldDisplayCurrency } = data;
 
-  const globalState = useRFStateInfo();
+  // const globalState = useRFStateInfo();
   // const vaultState = useUserVaultInfo(data.mint);
   const poolInfo = usePoolInfo(data.mint);
+  console.log(poolInfo);
   const currentValue = +new TokenAmount((poolInfo as any)?.totalDebt ?? 0, USDR_MINT_DECIMALS).fixed();
-  const limit = Number(new TokenAmount(globalState?.debtCeilingGlobal ?? 1, USDR_MINT_DECIMALS).fixed());
+  const limit = Number(new TokenAmount(poolInfo?.debtCeiling ?? 1, USDR_MINT_DECIMALS).fixed());
   const percentage = (currentValue * 100) / limit;
   const success = percentage <= 80;
   const caution = percentage < 100 && percentage > 80;
