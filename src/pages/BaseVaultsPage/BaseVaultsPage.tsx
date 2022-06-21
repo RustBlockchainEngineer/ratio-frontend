@@ -176,7 +176,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       return (
         <div className="row">
           {factorial.map((item: any) => {
-            if (!(poolInfos[item.mint] && poolInfos[item.mint].isPaused > 0)) {
+            if (!(!poolInfos || (poolInfos[item.mint] && poolInfos[item.mint].isPaused > 0))) {
               if (showOnlyActive === false)
                 return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
               else return <ActivePairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
