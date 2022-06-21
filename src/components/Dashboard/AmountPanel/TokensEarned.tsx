@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { useAppendUserAction, useUserVaultInfo, useSubscribeTx } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
-import { HARVEST_ACTION } from '../../../utils/ratio-lending';
+import { harvestRatioReward, HARVEST_ACTION } from '../../../utils/ratio-lending';
 import RatioIcon from '../../../assets/images/USDr.svg';
 
 const TokensEarned = ({ data }: any) => {
@@ -65,13 +65,9 @@ const TokensEarned = ({ data }: any) => {
 
   const harvestRatio = async () => {
     try {
-      if (!poolManager || !poolManager?.harvestRatioReward) {
-        throw new Error('Pool manager factory not initialized');
-      }
-
       console.log('Harvesting Ratio...');
       setIsHarvestingRatio(true);
-      const txHash = await poolManager?.harvestRatioReward(connection, wallet, vault as LPair);
+      const txHash = await harvestRatioReward(connection, wallet, vault.address_id);
       subscribeTx(
         txHash,
         () => toast.info('Harvest Ratio Transaction Sent'),
