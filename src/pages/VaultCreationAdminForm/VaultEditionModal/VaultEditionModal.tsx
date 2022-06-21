@@ -96,7 +96,7 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
         await fundRatioRewards(
           connection,
           wallet,
-          new PublicKey(vaultValues.address_id),
+          new PublicKey(vaultValues.vault_address_id),
           ratioRewardsAmount,
           ratioRewardsDuration
         );

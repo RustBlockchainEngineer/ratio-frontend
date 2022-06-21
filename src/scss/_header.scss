@@ -43,8 +43,9 @@
     padding-top: 16px !important;
     padding-bottom: 16px !important;
     text-align: center;
+    font-family: 'Poppins-Medium';
     &::before {
-      content: 'Total TVL Cap' !important;
+      content: 'Total TVL' !important;
     }
   }
 

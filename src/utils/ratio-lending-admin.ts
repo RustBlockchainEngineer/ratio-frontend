@@ -18,7 +18,6 @@ import {
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
-// import { createSaberTokenVault } from './saber/saber-utils';
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './rf-web3';
 

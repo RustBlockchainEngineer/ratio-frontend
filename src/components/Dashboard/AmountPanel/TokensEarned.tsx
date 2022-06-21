@@ -11,6 +11,7 @@ import { useAppendUserAction, useUserVaultInfo, useSubscribeTx } from '../../../
 import { isWalletApproveError } from '../../../utils/utils';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { HARVEST_ACTION } from '../../../utils/ratio-lending';
+import RatioIcon from '../../../assets/images/USDr.svg';
 
 const TokensEarned = ({ data }: any) => {
   const { vaults } = useVaultsContextProvider();
@@ -89,6 +90,13 @@ const TokensEarned = ({ data }: any) => {
                 `$  ${vaultState?.rewardUSD}`
               )}
             </td>
+          </tr>
+          <tr>
+            <td className="tokensearned__name">
+              <img src={RatioIcon} alt="RatioIcon" className="tokensearned__icon" /> RATIO
+            </td>
+            <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} RATIO</td>
+            <td className="align-middle"></td>
           </tr>
         </tbody>
       </Table>

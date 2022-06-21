@@ -85,6 +85,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             apr: 0,
             ratioAPY: 0,
             realUserRewardMint: '',
+            // ratioReward: userVaultInfos[mint] && userVaultInfos[mint].ratioReward,
           };
           if (poolInfos && poolInfos[mint]) {
             poolData.tvl = poolInfos[mint].farmTVL;
@@ -159,11 +160,15 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       }
     };
 
-    if (!connected) {
+    // if (!connected) {
+    //   return <h5 className="mt-5 ml-3 allvaults__emptyText">Please connect your wallet</h5>;
+    // }
+
+    if (vtype === 'grid' && showOnlyActive && !connected) {
       return <h5 className="mt-5 ml-3 allvaults__emptyText">Please connect your wallet</h5>;
     }
 
-    if (vtype === 'grid' && factorial.length === 0) {
+    if (vtype === 'grid' && factorial.length === 0 && connected) {
       return <h5 className="mt-5 ml-3 allvaults__emptyText">There are no active vaults to display</h5>;
     }
 
@@ -171,7 +176,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
       return (
         <div className="row">
           {factorial.map((item: any) => {
-            if (!(poolInfos[item.mint] && poolInfos[item.mint].isPaused > 0)) {
+            if (!(!poolInfos || (poolInfos[item.mint] && poolInfos[item.mint].isPaused > 0))) {
               if (showOnlyActive === false)
                 return <TokenPairCard data={item} key={item.id} onCompareVault={onCompareVault} />;
               else return <ActivePairCard data={item} key={item.id} onCompareVault={onCompareVault} />;

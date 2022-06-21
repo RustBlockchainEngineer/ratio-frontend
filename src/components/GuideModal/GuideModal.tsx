@@ -15,7 +15,7 @@ const GuideModal = () => {
   return (
     <div className="guidemodal">
       <Button disabled={!connected} className="button--blue guidemodal__button" onClick={onClickGuideBtn}>
-        Guide
+        Read the Docs
       </Button>
 
       <Modal

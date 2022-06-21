@@ -21,7 +21,7 @@ import { TokenAmount } from './safe-math';
 export const COLL_RATIOS_DECIMALS = 8;
 export const COLL_RATIOS_ARR_SIZE = 10;
 
-export const RATIO_MINT_DECIMALS = 8;
+export const RATIO_MINT_DECIMALS = 6;
 export const RATIO_MINT_KEY = 'ratioMVg27rSZbSvBopUvsdrGUzeALUfFma61mpxc8J';
 export const USDR_MINT_DECIMALS = 6;
 export const USDR_MINT_KEY = 'USDrbBQwQbQ2oWHUPfA8QBHcyVxKUq1xHyXsSLKdUq2';
@@ -356,6 +356,8 @@ export async function distributeRewardTx(connection: Connection, wallet: any, mi
 export async function harvestRatioRewardTx(connection: Connection, wallet: any, mintColl: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
+  console.log('Harvesting ratio token');
+
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -365,10 +367,10 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintColl);
 
-  const ataPoolRatio = getATAKey(poolKey, stateInfo.ratioMint);
+  const ataGlobalRatio = getATAKey(globalStateKey, stateInfo.ratioMint);
   const ataUserRatio = getATAKey(wallet.publicKey, stateInfo.ratioMint);
-
   const transaction = new Transaction();
+
   if (!(await connection.getAccountInfo(ataUserRatio))) {
     transaction.add(
       Token.createAssociatedTokenAccountInstruction(
@@ -381,14 +383,13 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
       )
     );
   }
-
   const ix = await program.instruction.harvestRatio({
     accounts: {
       authority: wallet.publicKey,
       globalState: globalStateKey,
       pool: poolKey,
       vault: vaultKey,
-      ratioVault: ataPoolRatio,
+      ratioVault: ataGlobalRatio,
       ataRewardUser: ataUserRatio,
       ...DEFAULT_PROGRAMS,
     },
@@ -421,7 +422,9 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const swapTokenB = poolData.swapTokenB;
 
   const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
+  console.log('ataUSDr===>', ataUSDr);
   const ataUSDrTreasury = getATAKey(treasuryKey, usdrMint);
+  console.log('ataUSDrTreasury===>', ataUSDrTreasury);
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);
@@ -578,9 +581,9 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const annual_reward_amount =
     Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * 365 * 24 * 3600;
   const annual_reward_value = annual_reward_amount * ratio_price;
-  const coll_locked_amount = poolData.tvlUsd;
+  const tvl = +new TokenAmount(poolData.tvlUsd.toString(), USDR_MINT_DECIMALS, true).fixed();
 
-  const apr = annual_reward_value / coll_locked_amount;
+  const apr = annual_reward_value / tvl;
   const apy = Number(((1 + apr / 365) ** 365 - 1) * 100);
   return apy;
 }
