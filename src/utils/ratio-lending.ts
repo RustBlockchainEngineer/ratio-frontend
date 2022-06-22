@@ -369,6 +369,7 @@ export async function harvestRatioReward(connection: Connection, wallet: any, mi
 
   const ataGlobalRatio = getATAKey(globalStateKey, stateInfo.ratioMint);
   const ataUserRatio = getATAKey(wallet.publicKey, stateInfo.ratioMint);
+  const ataRatioTreasury = getATAKey(stateInfo.treasury, stateInfo.ratioMint);
   const transaction = new Transaction();
 
   if (!(await connection.getAccountInfo(ataUserRatio))) {
@@ -383,6 +384,19 @@ export async function harvestRatioReward(connection: Connection, wallet: any, mi
       )
     );
   }
+  if (!(await connection.getAccountInfo(ataRatioTreasury))) {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(stateInfo.ratioMint),
+        ataRatioTreasury,
+        stateInfo.treasury,
+        wallet.publicKey
+      )
+    );
+  }
+
   const ix = await program.instruction.harvestRatio({
     accounts: {
       authority: wallet.publicKey,
@@ -391,6 +405,7 @@ export async function harvestRatioReward(connection: Connection, wallet: any, mi
       vault: vaultKey,
       ratioVault: ataGlobalRatio,
       ataRewardUser: ataUserRatio,
+      ataRatioTreasury: ataRatioTreasury,
       ...DEFAULT_PROGRAMS,
     },
   });
