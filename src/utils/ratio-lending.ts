@@ -353,7 +353,12 @@ export async function distributeRewardTx(connection: Connection, wallet: any, mi
   return transaction;
 }
 
-export async function harvestRatioReward(connection: Connection, wallet: any, mintColl: PublicKey | string, needTx = false) {
+export async function harvestRatioReward(
+  connection: Connection,
+  wallet: any,
+  mintColl: PublicKey | string,
+  needTx = false
+) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   console.log('Harvesting ratio token');
@@ -420,7 +425,7 @@ export async function harvestRatioReward(connection: Connection, wallet: any, mi
       console.error('ERROR ON TX ', txHash.value.err);
       throw txHash.value.err;
     }
-  
+
     return txHash.toString();
   }
 }
