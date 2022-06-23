@@ -21,7 +21,7 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
       } else {
         const response = await fetch(url);
         const data: LPairAPRLast = await response.json();
-
+        console.log(data);
         // We cache the data
         ratioAPRCache[url] = data;
         apr = data?.apr ?? 0;
@@ -42,7 +42,6 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
     wallet: any,
     vault: LPair,
     amount: number,
-    tokenAccount: string
   ): Promise<string>;
 
   abstract withdrawLP(
@@ -50,7 +49,6 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
     wallet: any,
     vault: LPair,
     amount: number,
-    tokenAccount: string
   ): Promise<string>;
 
   abstract harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string>;

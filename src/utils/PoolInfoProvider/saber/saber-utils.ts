@@ -6,7 +6,6 @@ import {
   depositCollateralTx,
   distributeRewardTx,
   getProgramInstance,
-  harvestRatioRewardTx,
   withdrawCollateralTx,
 } from '../../ratio-lending';
 import {
@@ -42,7 +41,6 @@ export async function deposit(
   wallet: any,
 
   mintCollKey: PublicKey,
-  userTokenATA: string | PublicKey,
 
   amount: number
 ): Promise<string> {
@@ -50,7 +48,7 @@ export async function deposit(
 
   const transaction = new Transaction();
 
-  const tx1: any = await depositCollateralTx(connection, wallet, amount, mintCollKey, new PublicKey(userTokenATA));
+  const tx1: any = await depositCollateralTx(connection, wallet, amount, mintCollKey);
   transaction.add(tx1);
 
   const tx2 = await createSaberQuarryMinerIfneededTx(connection, wallet, mintCollKey);
@@ -82,11 +80,6 @@ export async function withdraw(connection: Connection, wallet: any, mintCollKey:
   if (ix2) {
     tx1.add(ix2);
   }
-  const ix3 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
-  if (ix3) {
-    tx1.add(ix3);
-  }
-
   const txHash = await sendTransaction(connection, wallet, tx1);
 
   return txHash;
@@ -129,10 +122,6 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
   if (tx3) {
     transaction.add(tx3);
   }
-  // const tx4 = await harvestRatioRewardTx(connection, wallet, mintCollKey);
-  // if (tx4) {
-  //   transaction.add(tx4);
-  // }
   if (!needTx) {
     const txHash = await sendTransaction(connection, wallet, transaction);
 
@@ -144,7 +133,7 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
 export const getQuarryInfo = async (connection: Connection, mintCollKey: PublicKey) => {
   const [quarryKey] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
   const quarryInfo = await connection.getAccountInfo(quarryKey);
-  const parsedData = QUARRY_INFO_LAYOUT.decode(quarryInfo.data);
+  const parsedData = QUARRY_INFO_LAYOUT.decode(quarryInfo?.data);
   return parsedData;
 };
 
@@ -398,9 +387,9 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
       const expectedWagesEarned = (
         await payroll.calculateRewardsEarned(
           currentTimeStamp,
-          miner?.balance as anchor.BN,
-          miner?.rewardsPerTokenPaid as anchor.BN,
-          miner?.rewardsEarned as anchor.BN
+          miner.balance,
+          miner.rewardsPerTokenPaid,
+          miner.rewardsEarned
         )
       ).toNumber();
       return parseFloat(new TokenAmount(expectedWagesEarned, SABER_IOU_MINT_DECIMALS).fixed());

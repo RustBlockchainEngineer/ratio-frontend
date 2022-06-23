@@ -195,7 +195,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
             </div>
             <div className="mt-2 d-flex justify-content-between">
               <h6>Collateralization Ratio:</h6>
-              <h6 className="semiBold">{(100 / poolInfo.ratio).toFixed(2)}%</h6>
+              <h6 className="semiBold">{(100 / poolInfo?.ratio).toFixed(2)}%</h6>
             </div>
             <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
               <div className="d-flex align-items-center">

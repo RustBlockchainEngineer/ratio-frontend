@@ -21,7 +21,7 @@ import { TokenAmount } from './safe-math';
 export const COLL_RATIOS_DECIMALS = 8;
 export const COLL_RATIOS_ARR_SIZE = 10;
 
-export const RATIO_MINT_DECIMALS = 8;
+export const RATIO_MINT_DECIMALS = 6;
 export const RATIO_MINT_KEY = 'ratioMVg27rSZbSvBopUvsdrGUzeALUfFma61mpxc8J';
 export const USDR_MINT_DECIMALS = 6;
 export const USDR_MINT_KEY = 'USDrbBQwQbQ2oWHUPfA8QBHcyVxKUq1xHyXsSLKdUq2';
@@ -78,15 +78,21 @@ export function getProgramInstance(connection: Connection, wallet: any) {
   return program;
 }
 
-export async function getGlobalState(connection: Connection, wallet: any) {
-  const program = getProgramInstance(connection, wallet);
+export async function getGlobalState(connection: Connection) {
+  const program = getProgramInstance(connection, null);
   const globalStateKey = getGlobalStatePDA();
   return await program.account.globalState.fetchNullable(globalStateKey);
 }
 
-export async function getAllOracleState(connection: Connection, wallet: any) {
-  const program = getProgramInstance(connection, wallet);
+export async function getAllOracleState(connection: Connection) {
+  const program = getProgramInstance(connection, null);
   return await program.account.oracle.all();
+}
+
+export async function getUserCount(connection: Connection) {
+  const program = getProgramInstance(connection, null);
+  const users = await program.account.userState.all();
+  return users.length;
 }
 
 export async function getUserState(connection: Connection, wallet: any) {
@@ -125,7 +131,6 @@ export async function depositCollateralTx(
   wallet: any,
   amount: number,
   mintCollat: PublicKey,
-  userTokenATA: PublicKey
 ) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
@@ -150,6 +155,7 @@ export async function depositCollateralTx(
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);
 
+  const userTokenATA = getATAKey(wallet.publicKey, mintCollat);
   const vaultATAKey = getATAKey(vaultKey, mintCollat);
 
   const transaction = new Transaction();
@@ -353,7 +359,12 @@ export async function distributeRewardTx(connection: Connection, wallet: any, mi
   return transaction;
 }
 
-export async function harvestRatioRewardTx(connection: Connection, wallet: any, mintColl: PublicKey) {
+export async function harvestRatioReward(
+  connection: Connection,
+  wallet: any,
+  mintColl: PublicKey | string,
+  needTx = false
+) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   console.log('Harvesting ratio token');
@@ -369,7 +380,7 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
 
   const ataGlobalRatio = getATAKey(globalStateKey, stateInfo.ratioMint);
   const ataUserRatio = getATAKey(wallet.publicKey, stateInfo.ratioMint);
-
+  const ataRatioTreasury = getATAKey(stateInfo.treasury, stateInfo.ratioMint);
   const transaction = new Transaction();
 
   if (!(await connection.getAccountInfo(ataUserRatio))) {
@@ -384,6 +395,19 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
       )
     );
   }
+  if (!(await connection.getAccountInfo(ataRatioTreasury))) {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(stateInfo.ratioMint),
+        ataRatioTreasury,
+        stateInfo.treasury,
+        wallet.publicKey
+      )
+    );
+  }
+
   const ix = await program.instruction.harvestRatio({
     accounts: {
       authority: wallet.publicKey,
@@ -392,12 +416,24 @@ export async function harvestRatioRewardTx(connection: Connection, wallet: any, 
       vault: vaultKey,
       ratioVault: ataGlobalRatio,
       ataRewardUser: ataUserRatio,
+      ataRatioTreasury: ataRatioTreasury,
       ...DEFAULT_PROGRAMS,
     },
   });
 
   transaction.add(ix);
-  return transaction;
+  if (needTx) {
+    return transaction;
+  } else {
+    const txHash = await sendTransaction(connection, wallet, transaction);
+
+    if (txHash?.value?.err) {
+      console.error('ERROR ON TX ', txHash.value.err);
+      throw txHash.value.err;
+    }
+
+    return txHash.toString();
+  }
 }
 
 export async function borrowUSDr(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
@@ -580,9 +616,9 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const annual_reward_amount =
     Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * 365 * 24 * 3600;
   const annual_reward_value = annual_reward_amount * ratio_price;
-  const coll_locked_amount = poolData.tvlUsd;
+  const tvl = +new TokenAmount(poolData.tvlUsd.toString(), USDR_MINT_DECIMALS, true).fixed();
 
-  const apr = annual_reward_value / coll_locked_amount;
+  const apr = annual_reward_value / tvl;
   const apy = Number(((1 + apr / 365) ** 365 - 1) * 100);
   return apy;
 }

@@ -1,7 +1,7 @@
 import { SABER_IOU_MINT, SBR_MINT } from '@saberhq/saber-periphery';
 import { SignatureResult } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
-import { API_ENDPOINT, REFRESH_TIME_INTERVAL } from '../constants';
+import { API_ENDPOINT, REFRESH_TIME_INTERVAL, REWARD_TIME_INTERVAL } from '../constants';
 import {
   USDR_MINT_DECIMALS,
   calculateRewardByPlatform,
@@ -15,6 +15,8 @@ import {
   getLendingPoolByMint,
   getFarmInfoByPlatform,
   estimateRATIOAPY,
+  estimateRatioRewards,
+  RATIO_MINT_DECIMALS,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
 import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
@@ -22,6 +24,7 @@ import { TokenAmount } from '../utils/safe-math';
 import { calculateCollateralPrice, getMint } from '../utils/utils';
 import { useConnection } from './connection';
 import { useWallet } from './wallet';
+import { BN } from '@project-serum/anchor';
 
 const mintList = [];
 let actionList = [];
@@ -68,6 +71,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const [updateFinished, setUpdateFinished] = useState(false);
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
+  const [toogleUpdateReward, setToogleUpdateReward] = useState(false);
   const [walletUpdated, setWalletUpdated] = useState(false);
 
   const subscribeTx = async (txHash: string, onTxSent: any, onTxSuccess: any, onTxFailed: any) => {
@@ -157,7 +161,7 @@ export function RFStateProvider({ children = undefined as any }) {
     mintList.push(mintCollat);
   };
   const updateGlobalState = async () => {
-    const state = await getGlobalState(connection, wallet);
+    const state = await getGlobalState(connection);
     let info = globalState ?? {};
     if (state) {
       info = {
@@ -175,7 +179,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOracleState = async () => {
-    const oracles = await getAllOracleState(connection, wallet);
+    const oracles = await getAllOracleState(connection);
     const oracleInfos: any = oracleState ?? {};
     oracles.forEach((item) => {
       const oracle = item.account;
@@ -224,7 +228,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
       // const activePrice = USD_FAIR_PRICE ? fairPrice : virtualPrice;
       const activePrice = virtualPrice;
-
+      poolInfo['tvlUsd'] = activePrice * +new TokenAmount(poolInfo.totalColl.toString(), mintInfo.decimals).fixed();
       poolInfo['fairPrice'] = fairPrice;
       poolInfo['virtualPrice'] = virtualPrice;
 
@@ -248,7 +252,6 @@ export function RFStateProvider({ children = undefined as any }) {
         100;
       poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, 0.8132);
     }
-    console.log(poolInfo);
     return poolInfo;
   };
 
@@ -268,6 +271,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateAllPoolState = async (globalState, oracleState) => {
+    let newGlobalTVL = new BN(0);
     const poolInfos: any = poolState ?? {};
     try {
       const allPools = await getAllLendingPool(connection);
@@ -278,11 +282,16 @@ export function RFStateProvider({ children = undefined as any }) {
         const poolInfo = await getPoolInfo(globalState, oracleState, pool);
         if (poolInfo) {
           poolInfos[mint] = poolInfo;
+          newGlobalTVL = newGlobalTVL.add(new BN(poolInfo.tvlUsd));
         }
       }
     } catch (e) {
       console.log(e);
     }
+    setGlobalState({
+      ...globalState,
+      tvlUsd: newGlobalTVL,
+    });
     setPoolState(poolInfos);
     return poolInfos;
   };
@@ -313,6 +322,7 @@ export function RFStateProvider({ children = undefined as any }) {
       const poolDebtLimit = poolInfo.debtCeiling.toNumber() - poolInfo.totalDebt.toNumber();
       const globalDebtLimit = globalState.debtCeilingGlobal.toNumber() - globalState.totalDebt.toNumber();
       const mintableUSDr = Math.max(0, Math.min(vaultDebtLimit, userDebtLimit, poolDebtLimit, globalDebtLimit));
+      const ratioReward = new TokenAmount(estimateRatioRewards(poolInfo, vaultInfo), RATIO_MINT_DECIMALS, true).fixed();
 
       return {
         ...vaultInfo,
@@ -326,16 +336,39 @@ export function RFStateProvider({ children = undefined as any }) {
         mintableUSDr: new TokenAmount(mintableUSDr, USDR_MINT_DECIMALS).toWei().toNumber(),
         isReachedDebt: mintableUSDr <= 0 && vaultInfo.debt.toNumber() > 0,
         poolInfo,
+        ratioReward,
       };
     }
     return null;
   };
 
-  const updateAllVaultState = async (globalState, oracelState, poolState, overview) => {
+  const getVaultRewardByMint = async (globalState, oracleState, poolInfo, overview, vaultInfo, mint: string) => {
+    if (
+      globalState.debtCeilingUser &&
+      globalState.debtCeilingGlobal &&
+      globalState.totalDebt &&
+      overview.totalDebt &&
+      poolInfo &&
+      vaultInfo
+    ) {
+      const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
+      const ratioReward = new TokenAmount(estimateRatioRewards(poolInfo, vaultInfo), RATIO_MINT_DECIMALS, true).fixed();
+
+      return {
+        ...vaultInfo,
+        reward,
+        rewardUSD: new TokenAmount(oracleState[SBR_MINT] * reward, USDR_MINT_DECIMALS, false).fixed(),
+        ratioReward,
+      };
+    }
+    return null;
+  };
+
+  const updateAllVaultState = async (globalState, oracleState, poolState, overview) => {
     const vaultInfos: any = vaultState ?? {};
     if (overview) {
       for (const mint of Object.keys(poolState)) {
-        const vaultInfo = await getVaultStateByMint(globalState, oracelState, poolState[mint], overview, mint);
+        const vaultInfo = await getVaultStateByMint(globalState, oracleState, poolState[mint], overview, mint);
         if (vaultInfo) {
           vaultInfos[mint] = {
             ...vaultInfo,
@@ -343,7 +376,27 @@ export function RFStateProvider({ children = undefined as any }) {
         }
       }
     }
+    setVaultState(vaultInfos);
+    return vaultInfos;
+  };
 
+  const updateRewardDisplay = async () => {
+    const vaultInfos: any = vaultState ?? {};
+    for (const mint of Object.keys(vaultInfos)) {
+      const vaultInfo = await getVaultRewardByMint(
+        globalState,
+        oracleState,
+        poolState[mint],
+        overview,
+        vaultInfos[mint],
+        mint
+      );
+      if (vaultInfo) {
+        vaultInfos[mint] = {
+          ...vaultInfo,
+        };
+      }
+    }
     setVaultState(vaultInfos);
     return vaultInfos;
   };
@@ -358,7 +411,6 @@ export function RFStateProvider({ children = undefined as any }) {
         };
       }
     }
-
     setVaultState(vaultInfos);
     return vaultInfos;
   };
@@ -417,7 +469,13 @@ export function RFStateProvider({ children = undefined as any }) {
   useEffect(() => {
     setInterval(() => {
       setToogleUpdateState((prev) => !prev);
-    }, 1000 * REFRESH_TIME_INTERVAL);
+    }, REFRESH_TIME_INTERVAL);
+  }, []);
+
+  useEffect(() => {
+    setInterval(() => {
+      setToogleUpdateReward((prev) => !prev);
+    }, REWARD_TIME_INTERVAL);
   }, []);
 
   useEffect(() => {
@@ -426,6 +484,11 @@ export function RFStateProvider({ children = undefined as any }) {
     updateRFState();
     return () => {};
   }, [toogleUpdateState]);
+
+  useEffect(() => {
+    updateRewardDisplay();
+    return () => {};
+  }, [toogleUpdateReward]);
 
   useEffect(() => {
     if (actionList.length) {

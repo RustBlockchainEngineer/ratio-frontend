@@ -141,7 +141,7 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         </td>
         <td>
           <div className="tokenpaircard__table__td">
-            <h6 className="semiBold">{(100 / poolInfo.ratio).toFixed(2)}%</h6>
+            <h6 className="semiBold">{(100 / poolInfo?.ratio).toFixed(2)}%</h6>
           </div>
         </td>
         <td>
