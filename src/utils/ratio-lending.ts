@@ -78,15 +78,21 @@ export function getProgramInstance(connection: Connection, wallet: any) {
   return program;
 }
 
-export async function getGlobalState(connection: Connection, wallet: any) {
-  const program = getProgramInstance(connection, wallet);
+export async function getGlobalState(connection: Connection) {
+  const program = getProgramInstance(connection, null);
   const globalStateKey = getGlobalStatePDA();
   return await program.account.globalState.fetchNullable(globalStateKey);
 }
 
-export async function getAllOracleState(connection: Connection, wallet: any) {
-  const program = getProgramInstance(connection, wallet);
+export async function getAllOracleState(connection: Connection) {
+  const program = getProgramInstance(connection, null);
   return await program.account.oracle.all();
+}
+
+export async function getUserCount(connection: Connection) {
+  const program = getProgramInstance(connection, null);
+  const users = await program.account.userState.all();
+  return users.length;
 }
 
 export async function getUserState(connection: Connection, wallet: any) {
@@ -125,7 +131,6 @@ export async function depositCollateralTx(
   wallet: any,
   amount: number,
   mintCollat: PublicKey,
-  userTokenATA: PublicKey
 ) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
@@ -150,6 +155,7 @@ export async function depositCollateralTx(
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);
 
+  const userTokenATA = getATAKey(wallet.publicKey, mintCollat);
   const vaultATAKey = getATAKey(vaultKey, mintCollat);
 
   const transaction = new Transaction();
@@ -453,9 +459,7 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
   const swapTokenB = poolData.swapTokenB;
 
   const ataUSDr = getATAKey(wallet.publicKey, usdrMint);
-  console.log('ataUSDr===>', ataUSDr);
   const ataUSDrTreasury = getATAKey(treasuryKey, usdrMint);
-  console.log('ataUSDrTreasury===>', ataUSDrTreasury);
 
   const vaultKey = getVaultPDA(wallet.publicKey, mintCollat);
   const userStateKey = getUserStatePDA(wallet.publicKey);

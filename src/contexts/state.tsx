@@ -24,6 +24,7 @@ import { TokenAmount } from '../utils/safe-math';
 import { calculateCollateralPrice, getMint } from '../utils/utils';
 import { useConnection } from './connection';
 import { useWallet } from './wallet';
+import { BN } from '@project-serum/anchor';
 
 const mintList = [];
 let actionList = [];
@@ -164,7 +165,7 @@ export function RFStateProvider({ children = undefined as any }) {
     mintList.push(mintCollat);
   };
   const updateGlobalState = async () => {
-    const state = await getGlobalState(connection, wallet);
+    const state = await getGlobalState(connection);
     let info = globalState ?? {};
     if (state) {
       info = {
@@ -182,7 +183,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateOracleState = async () => {
-    const oracles = await getAllOracleState(connection, wallet);
+    const oracles = await getAllOracleState(connection);
     const oracleInfos: any = oracleState ?? {};
     oracles.forEach((item) => {
       const oracle = item.account;
@@ -231,7 +232,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
       // const activePrice = USD_FAIR_PRICE ? fairPrice : virtualPrice;
       const activePrice = virtualPrice;
-
+      poolInfo['tvlUsd'] = activePrice * +new TokenAmount(poolInfo.totalColl.toString(), mintInfo.decimals).fixed();
       poolInfo['fairPrice'] = fairPrice;
       poolInfo['virtualPrice'] = virtualPrice;
 
@@ -274,6 +275,7 @@ export function RFStateProvider({ children = undefined as any }) {
   };
 
   const updateAllPoolState = async (globalState, oracleState) => {
+    let newGlobalTVL = new BN(0);
     const poolInfos: any = poolState ?? {};
     try {
       const allPools = await getAllLendingPool(connection);
@@ -284,11 +286,16 @@ export function RFStateProvider({ children = undefined as any }) {
         const poolInfo = await getPoolInfo(globalState, oracleState, pool);
         if (poolInfo) {
           poolInfos[mint] = poolInfo;
+          newGlobalTVL = newGlobalTVL.add(new BN(poolInfo.tvlUsd));
         }
       }
     } catch (e) {
       console.log(e);
     }
+    setGlobalState({
+      ...globalState,
+      tvlUsd: newGlobalTVL,
+    });
     setPoolState(poolInfos);
     return poolInfos;
   };

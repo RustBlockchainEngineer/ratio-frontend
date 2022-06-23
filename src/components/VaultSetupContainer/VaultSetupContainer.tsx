@@ -70,8 +70,7 @@ const VaultSetupContainer = ({ data }: any) => {
         connection,
         wallet,
         vault as LPair,
-        depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
-        collAccount?.pubkey.toString() as string
+        depositAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0)
       );
       subscribeTx(
         txHash,
