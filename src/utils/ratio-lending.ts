@@ -126,12 +126,7 @@ export async function getAllLendingPool(connection: Connection): Promise<any[]> 
   return await program.account.pool.all();
 }
 
-export async function depositCollateralTx(
-  connection: Connection,
-  wallet: any,
-  amount: number,
-  mintCollat: PublicKey,
-) {
+export async function depositCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
