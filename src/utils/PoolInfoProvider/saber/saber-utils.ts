@@ -41,7 +41,6 @@ export async function deposit(
   wallet: any,
 
   mintCollKey: PublicKey,
-  userTokenATA: string | PublicKey,
 
   amount: number
 ): Promise<string> {
@@ -49,7 +48,7 @@ export async function deposit(
 
   const transaction = new Transaction();
 
-  const tx1: any = await depositCollateralTx(connection, wallet, amount, mintCollKey, new PublicKey(userTokenATA));
+  const tx1: any = await depositCollateralTx(connection, wallet, amount, mintCollKey);
   transaction.add(tx1);
 
   const tx2 = await createSaberQuarryMinerIfneededTx(connection, wallet, mintCollKey);
@@ -134,7 +133,7 @@ export async function harvest(connection: Connection, wallet: any, mintCollKey: 
 export const getQuarryInfo = async (connection: Connection, mintCollKey: PublicKey) => {
   const [quarryKey] = await findQuarryAddress(SBR_REWARDER, mintCollKey, QUARRY_ADDRESSES.Mine);
   const quarryInfo = await connection.getAccountInfo(quarryKey);
-  const parsedData = QUARRY_INFO_LAYOUT.decode(quarryInfo.data);
+  const parsedData = QUARRY_INFO_LAYOUT.decode(quarryInfo?.data);
   return parsedData;
 };
 

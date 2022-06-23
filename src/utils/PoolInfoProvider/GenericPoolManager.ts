@@ -42,7 +42,6 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
     wallet: any,
     vault: LPair,
     amount: number,
-    tokenAccount: string
   ): Promise<string>;
 
   abstract withdrawLP(
@@ -50,7 +49,6 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
     wallet: any,
     vault: LPair,
     amount: number,
-    tokenAccount: string
   ): Promise<string>;
 
   abstract harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string>;

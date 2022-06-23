@@ -443,6 +443,11 @@ export type RatioLending = {
           isSigner: false;
         },
         {
+          name: 'ataRatioTreasury';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
@@ -2331,6 +2336,11 @@ export const IDL: RatioLending = {
         },
         {
           name: 'ataRewardUser',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ataRatioTreasury',
           isMut: true,
           isSigner: false,
         },
