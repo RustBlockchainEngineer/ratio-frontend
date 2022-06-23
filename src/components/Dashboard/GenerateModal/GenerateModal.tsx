@@ -47,7 +47,7 @@ const GenerateModal = ({ data }: any) => {
   const appendUserAction = useAppendUserAction();
   const subscribeTx = useSubscribeTx();
 
-  const borrow_fee = (globalState.borrowFeeNumer.toNumber() / globalState.feeDeno.toNumber()) * 100;
+  const borrow_fee = globalState.borrowFeeNumer.toNumber() / globalState.feeDeno.toNumber();
 
   useEffect(() => {
     if (userState) {
@@ -97,7 +97,7 @@ const GenerateModal = ({ data }: any) => {
           txHash,
           poolInfo.fairPrice,
           poolInfo.marketPrice,
-          borrow_fee
+          borrowAmount * borrow_fee
         );
       })
       .catch((e) => {
