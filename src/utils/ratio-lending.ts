@@ -36,6 +36,7 @@ export const WIHTDRAW_ACTION = 'Withdraw';
 export const BORROW_ACTION = 'Borrow';
 export const PAYBACK_ACTION = 'Payback';
 export const HARVEST_ACTION = 'Harvest';
+export const RATIO_TOKEN_PRICE = 0.8132;
 
 //const HISTORY_TO_SHOW = 5;
 export const USD_FAIR_PRICE = true;
@@ -126,12 +127,7 @@ export async function getAllLendingPool(connection: Connection): Promise<any[]> 
   return await program.account.pool.all();
 }
 
-export async function depositCollateralTx(
-  connection: Connection,
-  wallet: any,
-  amount: number,
-  mintCollat: PublicKey,
-) {
+export async function depositCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -594,7 +590,6 @@ export async function getFarmInfoByPlatform(
 const ACC_PRECISION = new BN(100 * 1000 * 1000 * 1000);
 export function estimateRatioRewards(poolData: any, vaultData: any) {
   const currentTimeStamp = Math.ceil(new Date().getTime() / 1000);
-
   const duration = new BN(Math.max(currentTimeStamp - poolData.lastRewardTime, 0));
 
   const reward_per_share =
@@ -612,13 +607,30 @@ export function estimateRatioRewards(poolData: any, vaultData: any) {
   return total_reward.toString();
 }
 
+const ONE_YEAR_IN_SEC = 365 * 24 * 3600;
+
 export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const annual_reward_amount =
-    Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * 365 * 24 * 3600;
+    Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * ONE_YEAR_IN_SEC;
   const annual_reward_value = annual_reward_amount * ratio_price;
   const tvl = +new TokenAmount(poolData.tvlUsd.toString(), USDR_MINT_DECIMALS, true).fixed();
 
   const apr = annual_reward_value / tvl;
-  const apy = Number(((1 + apr / 365) ** 365 - 1) * 100);
+  const apy = ((1 + apr / 365) ** 365 - 1) * 100;
   return apy;
+}
+
+export function calculateFundAmount(tvl, apy, duration) {
+  const apr = (Math.pow(apy / 100 + 1, 1 / 365) - 1) * 365;
+  const tpd = (apr * tvl) / RATIO_TOKEN_PRICE / 365;
+  const amount = tpd * duration;
+  return Math.ceil(amount * 1000000) / 1000000;
+}
+
+export function calculateAPY(tvl, amount, duration) {
+  const tpd = (amount * RATIO_TOKEN_PRICE) / duration;
+  const annual_reward_value = tpd * 365;
+  const apr = annual_reward_value / tvl;
+  const apy = ((1 + apr / 365) ** 365 - 1) * 100;
+  return Math.ceil(apy * 100) / 100;
 }
