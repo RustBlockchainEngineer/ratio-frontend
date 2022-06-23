@@ -215,7 +215,7 @@ const WithdrawModal = ({ data }: any) => {
             >
               Withdraw Assets
             </Button>
-            <h6 className="text-center">Withdrawing also claims your rewards</h6>
+            <h6 className="text-center">Please harvest your rewards before you withdraw</h6>
           </div>
         </Modal.Body>
       </Modal>
