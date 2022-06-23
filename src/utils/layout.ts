@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { struct, u8, u16 } from 'buffer-layout';
-import { publicKey, u64, u128 } from '@project-serum/borsh';
+import { publicKey, u64, u128, struct, u8, u16 } from '@project-serum/borsh';
 
 export const QUARRY_INFO_LAYOUT = struct([
   u64('descriminator'),

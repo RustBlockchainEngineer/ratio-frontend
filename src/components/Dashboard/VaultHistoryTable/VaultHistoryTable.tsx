@@ -79,8 +79,8 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
               <th>No</th>
               <th>Date</th>
               <th>Type</th>
-              <th>LP price</th>
-              <th>Amount</th>
+              {/* <th>LP price</th>
+              <th>Amount</th> */}
               <th className="w-50">Status</th>
               <th className="text-right">Tx Signature</th>
             </tr>
@@ -99,8 +99,8 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
                     <td>{index + 1}</td>
                     <td className="w-50">{tx?.date}</td>
                     <td className="activity">{tx?.txType}</td>
-                    <td className="activity">{tx?.market_price}</td>
-                    <td className="activity">{(Math.ceil(tx?.amount * 10000) / 10000).toFixed(4)}</td>
+                    {/* <td className="activity">{tx?.market_price}</td>
+                    <td className="activity">{(Math.ceil(tx?.amount * 10000) / 10000).toFixed(4)}</td> */}
                     <td className="activity">{tx?.status}</td>
                     <td className="tx_hash text-right">
                       <a className="d-flex" target="_blank" rel="noreferrer" href={tx?.txExplorerUrl}>
