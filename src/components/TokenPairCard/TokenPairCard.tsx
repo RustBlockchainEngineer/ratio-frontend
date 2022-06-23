@@ -128,7 +128,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
               <h6>APY:</h6>
 
               <div className="d-flex">
-                <h6 className="semiBold">{printApy()}</h6>
+                <h6 className="semiBold">{Number(data?.apr + data?.ratioAPY).toFixed(2)}%</h6>
                 {data.ratioAPY !== 0 && (
                   <OverlayTrigger
                     placement="top"
