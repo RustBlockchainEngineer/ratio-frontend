@@ -252,6 +252,8 @@ export function RFStateProvider({ children = undefined as any }) {
           poolInfo['farmTVL']) *
         100;
       poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, RATIO_TOKEN_PRICE);
+
+      poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];
     }
     return poolInfo;
   };
