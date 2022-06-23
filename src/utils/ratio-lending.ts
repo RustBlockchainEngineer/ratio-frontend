@@ -127,12 +127,7 @@ export async function getAllLendingPool(connection: Connection): Promise<any[]> 
   return await program.account.pool.all();
 }
 
-export async function depositCollateralTx(
-  connection: Connection,
-  wallet: any,
-  amount: number,
-  mintCollat: PublicKey,
-) {
+export async function depositCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
@@ -626,14 +621,14 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
 }
 
 export function calculateFundAmount(tvl, apy, duration) {
-  const apr = (Math.pow((apy / 100) + 1, 1/365)  - 1) * 365;
-  const tpd = (apr * tvl /  RATIO_TOKEN_PRICE) / 365;
-  const amount = tpd * duration
+  const apr = (Math.pow(apy / 100 + 1, 1 / 365) - 1) * 365;
+  const tpd = (apr * tvl) / RATIO_TOKEN_PRICE / 365;
+  const amount = tpd * duration;
   return Math.ceil(amount * 1000000) / 1000000;
 }
 
 export function calculateAPY(tvl, amount, duration) {
-  const tpd = amount * RATIO_TOKEN_PRICE / duration;
+  const tpd = (amount * RATIO_TOKEN_PRICE) / duration;
   const annual_reward_value = tpd * 365;
   const apr = annual_reward_value / tvl;
   const apy = ((1 + apr / 365) ** 365 - 1) * 100;
