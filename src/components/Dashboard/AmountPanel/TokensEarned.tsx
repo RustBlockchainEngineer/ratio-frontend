@@ -53,6 +53,7 @@ const TokensEarned = ({ data }: any) => {
         0,
         txHash,
         0,
+        0,
         0
       );
     } catch (err) {
@@ -81,6 +82,7 @@ const TokensEarned = ({ data }: any) => {
         HARVEST_ACTION,
         0,
         txHash,
+        0,
         0,
         0
       );

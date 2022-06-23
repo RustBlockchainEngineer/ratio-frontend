@@ -81,6 +81,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
         0,
         txHash,
         0,
+        0,
         0
       );
     } catch (err) {

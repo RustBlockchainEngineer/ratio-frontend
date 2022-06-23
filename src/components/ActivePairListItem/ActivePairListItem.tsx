@@ -106,6 +106,7 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         0,
         txHash,
         0,
+        0,
         0
       );
 

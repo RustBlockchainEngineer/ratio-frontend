@@ -11,7 +11,13 @@ import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import { useAppendUserAction, useUserVaultInfo, usePoolInfo, useSubscribeTx } from '../../../contexts/state';
+import {
+  useAppendUserAction,
+  useUserVaultInfo,
+  usePoolInfo,
+  useSubscribeTx,
+  useRFStateInfo,
+} from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 // import { postToRatioApi } from '../../../utils/ratioApi';
 
@@ -36,9 +42,12 @@ const GenerateModal = ({ data }: any) => {
   const [didMount, setDidMount] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
   const poolInfo = usePoolInfo(data?.mint);
+  const globalState = useRFStateInfo();
 
   const appendUserAction = useAppendUserAction();
   const subscribeTx = useSubscribeTx();
+
+  const borrow_fee = (globalState.borrowFeeNumer.toNumber() / globalState.feeDeno.toNumber()) * 100;
 
   useEffect(() => {
     if (userState) {
@@ -87,7 +96,8 @@ const GenerateModal = ({ data }: any) => {
           +borrowAmount,
           txHash,
           poolInfo.fairPrice,
-          poolInfo.marketPrice
+          poolInfo.marketPrice,
+          borrow_fee
         );
       })
       .catch((e) => {
