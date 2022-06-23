@@ -17,6 +17,7 @@ import {
   estimateRATIOAPY,
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
+  RATIO_TOKEN_PRICE,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
 import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
@@ -250,7 +251,7 @@ export function RFStateProvider({ children = undefined as any }) {
           new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
           poolInfo['farmTVL']) *
         100;
-      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, 0.8132);
+      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, RATIO_TOKEN_PRICE);
     }
     return poolInfo;
   };
