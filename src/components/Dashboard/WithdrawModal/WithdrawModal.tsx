@@ -95,8 +95,7 @@ const WithdrawModal = ({ data }: any) => {
         connection,
         wallet,
         vault as LPair,
-        withdrawAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0),
-        userCollAccount
+        withdrawAmount * Math.pow(10, poolInfo?.mintDecimals ?? 0)
       );
       if (txHash) {
         subscribeTx(

@@ -1,5 +1,4 @@
 import { Connection, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction } from '@solana/web3.js';
-import { WalletAdapter } from '../contexts/wallet';
 import * as anchor from '@project-serum/anchor';
 import {
   getGlobalState,
@@ -25,11 +24,7 @@ import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA } from './ratio-
 import { USDR_MINT_DECIMALS, USDR_MINT_KEY } from './ratio-lending';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
-export async function setEmergencyState(
-  connection: Connection,
-  wallet: WalletAdapter | undefined,
-  newState: EmergencyState
-) {
+export async function setEmergencyState(connection: Connection, wallet: any, newState: EmergencyState) {
   await toggleEmergencyState(connection, wallet, newState as number);
 }
 
@@ -102,8 +97,8 @@ export async function createGlobalState(connection: Connection, wallet: any) {
 }
 
 export async function createPriceOracle(
-  connection,
-  wallet,
+  connection: Connection,
+  wallet: any,
 
   mint: PublicKey,
   initPrice = 1
@@ -140,8 +135,8 @@ export async function createPriceOracle(
 }
 
 export async function getPriceOracle(
-  connection,
-  wallet,
+  connection: Connection,
+  wallet: any,
 
   mint: PublicKey
 ) {
@@ -154,8 +149,8 @@ export async function getPriceOracle(
   return oracle;
 }
 export async function reportPriceOracle(
-  connection,
-  wallet,
+  connection: Connection,
+  wallet: any,
 
   mint: PublicKey,
   newPrice: number
@@ -167,7 +162,7 @@ export async function reportPriceOracle(
 
   const tx = program.transaction.reportPriceToOracle(
     // price of token
-    new BN(newPrice * USDR_MINT_DECIMALS),
+    new BN(newPrice * 10 ** USDR_MINT_DECIMALS),
     {
       accounts: {
         authority: wallet.publicKey,
@@ -180,7 +175,7 @@ export async function reportPriceOracle(
   );
 
   const txHash = await sendTransaction(connection, wallet, tx);
-  await connection.confirmTransaction(txHash);
+  // await connection.confirmTransaction(txHash);
   if (txHash?.value?.err) {
     console.error('ERROR ON TX ', txHash.value.err);
     throw txHash.value.err;
@@ -376,7 +371,7 @@ export async function getAllPools(connection: Connection, wallet: any) {
   return all;
 }
 
-export async function changeSuperOwner(connection: Connection, wallet: WalletAdapter | undefined, newOwner: PublicKey) {
+export async function changeSuperOwner(connection: Connection, wallet: any, newOwner: PublicKey) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
@@ -403,11 +398,7 @@ export async function changeSuperOwner(connection: Connection, wallet: WalletAda
   }
 }
 
-export async function setGlobalTvlLimit(
-  connection: Connection,
-  wallet: WalletAdapter | undefined,
-  newTvlLimit: number
-) {
+export async function setGlobalTvlLimit(connection: Connection, wallet: any, newTvlLimit: number) {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
@@ -436,7 +427,7 @@ export async function setGlobalTvlLimit(
 
 export async function setGlobalDebtCeiling(
   connection: Connection,
-  wallet: WalletAdapter | undefined,
+  wallet: any,
   newDebtCeiling: number
 ): Promise<boolean> {
   if (!wallet?.publicKey) throw new WalletNotConnectedError();
@@ -550,7 +541,7 @@ export async function setCollateralRatio(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   connection: Connection,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  wallet: WalletAdapter | undefined,
+  wallet: any,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   values: CollateralizationRatios
 ): Promise<boolean> {
@@ -582,16 +573,12 @@ export async function setCollateralRatio(
   }
 }
 
-export async function setHarvestFee(
-  connection: Connection,
-  wallet: WalletAdapter | undefined,
-  feeNum: number
-): Promise<boolean> {
+export async function setHarvestFee(connection: Connection, wallet: any, feeNum: number): Promise<boolean> {
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = getGlobalStatePDA();
-  const globalState = await getGlobalState(connection, wallet);
+  const globalState = await getGlobalState(connection);
 
-  const feeDeno = globalState.feeDeno.toNumber();
+  const feeDeno = globalState?.feeDeno.toNumber() ?? 0;
   const feeNumNew = (feeNum / 100) * feeDeno;
   console.log(`Set Harvest fees ${feeNumNew} / ${feeDeno}`);
   try {
@@ -614,12 +601,12 @@ export async function setHarvestFee(
   return true;
 }
 // eslint-disable-next-line
-export async function setBorrowFee(connection: Connection, wallet: WalletAdapter | undefined, feeNum: number) {
+export async function setBorrowFee(connection: Connection, wallet: any, feeNum: number) {
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = getGlobalStatePDA();
-  const globalState = await getGlobalState(connection, wallet);
+  const globalState = await getGlobalState(connection);
 
-  const feeDeno = globalState.feeDeno.toNumber();
+  const feeDeno = globalState?.feeDeno.toNumber() ?? 0;
   const feeNumNew = (feeNum / 100) * feeDeno;
   console.log(`Set Borrow fees ${feeNumNew} / ${feeDeno}`);
   try {
@@ -642,23 +629,23 @@ export async function setBorrowFee(connection: Connection, wallet: WalletAdapter
   return true;
 }
 // eslint-disable-next-line
-export async function setPaybackFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
+export async function setPaybackFee(connection: Connection, wallet: any, value: number) {
   console.error('setPaybackFee yet not implemented');
 }
 // eslint-disable-next-line
-export async function setStakeFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
+export async function setStakeFee(connection: Connection, wallet: any, value: number) {
   console.error('setStakeFee yet not implemented');
 }
 // eslint-disable-next-line
-export async function setSwapFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
+export async function setSwapFee(connection: Connection, wallet: any, value: number) {
   console.error('setSwapFee yet not implemented');
 }
 // eslint-disable-next-line
-export async function setWithdrawFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
+export async function setWithdrawFee(connection: Connection, wallet: any, value: number) {
   console.error('setWithdrawFee yet not implemented');
 }
 // eslint-disable-next-line
-export async function setDepositFee(connection: Connection, wallet: WalletAdapter | undefined, value: number) {
+export async function setDepositFee(connection: Connection, wallet: any, value: number) {
   console.error('setDepositFee yet not implemented');
 }
 
