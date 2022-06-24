@@ -46,7 +46,10 @@ const VaultDashboard = () => {
 
   const [depositValue, setDepositValue] = useState(0);
   const [withdrawValue, setWithdrawValue] = useState(0);
-  const generateValue = +new TokenAmount((userVaultInfo as any)?.mintableUSDr ?? 0, USDR_MINT_DECIMALS).fixed();
+  const generateValue = Math.max(
+    +new TokenAmount((userVaultInfo as any)?.mintableUSDr - 100 ?? 0, USDR_MINT_DECIMALS).fixed(),
+    0
+  ).toFixed(USDR_MINT_DECIMALS);
   const [debtValue, setDebtValue] = useState(0);
 
   const [activeVaults, setActiveVaults] = useState<any>();

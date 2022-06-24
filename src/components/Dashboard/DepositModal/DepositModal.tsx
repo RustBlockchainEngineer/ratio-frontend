@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import { toast } from 'react-toastify';
-import { useAccountByMint } from '../../../contexts/accounts';
 import { ThemeContext } from '../../../contexts/ThemeContext';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
@@ -23,14 +22,13 @@ const DepositModal = ({ data }: any) => {
   const [show, setShow] = useState(false);
 
   const connection = useConnection();
-  const { wallet, connected } = useWallet();
+  const { wallet } = useWallet();
   const poolInfo = usePoolInfo(data?.mint);
 
   const { vaults } = useVaultsContextProvider();
   const vault = useMemo(() => vaults.find((vault) => vault.address_id === (data.mint as string)), [vaults]);
   const PoolManagerFactory = useGetPoolManager(vault);
 
-  const collAccount = useAccountByMint(data.mint);
   const [depositAmount, setDepositAmount] = useState<any>();
 
   const [didMount, setDidMount] = useState(false);
@@ -64,12 +62,6 @@ const DepositModal = ({ data }: any) => {
         setInvalidStr('Insufficient funds to deposit!');
         return;
       }
-      if (!(collAccount && connected)) {
-        setDepositStatus(true);
-        setInvalidStr('Invalid  User Collateral account to deposit!');
-        return;
-      }
-
       setIsDepositing(true);
       const txHash = await PoolManagerFactory?.depositLP(
         connection,

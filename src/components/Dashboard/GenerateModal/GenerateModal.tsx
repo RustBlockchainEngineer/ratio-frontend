@@ -64,7 +64,7 @@ const GenerateModal = ({ data }: any) => {
 
   const borrow = async () => {
     console.log('borrowAmount', borrowAmount);
-    if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue - 0.1)) {
+    if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
       setMintStatus(true);
       setInvalidStr('Amount is invalid to generate USDr!');
       return;
@@ -103,7 +103,7 @@ const GenerateModal = ({ data }: any) => {
 
   return (
     <div className="dashboardModal">
-      <Button className="button--blue fillBtn" onClick={() => setShow(!show)}>
+      <Button className="button--blue fillBtn" onClick={() => setShow(!show)} disabled={data.usdrValue <= 0}>
         Mint
       </Button>
       <Modal
@@ -139,7 +139,7 @@ const GenerateModal = ({ data }: any) => {
             </div>
             <h4>Mint USDr</h4>
             <h5>
-              Mint up to <strong>{data.usdrValue - 0.1} USDr</strong>
+              Mint up to <strong>{data.usdrValue} USDr</strong>
             </h5>
           </div>
         </Modal.Header>
@@ -149,22 +149,22 @@ const GenerateModal = ({ data }: any) => {
             <CustomInput
               appendStr="Max"
               initValue={0}
-              appendValueStr={'' + (data.usdrValue - 0.1)}
+              appendValueStr={'' + data.usdrValue}
               tokenStr={`USDr`}
               onTextChange={(value: any) => {
-                setAmountValue((value / (data.usdrValue - 0.1)) * 100);
+                setAmountValue((value / data.usdrValue) * 100);
                 setBorrowAmount(value);
                 setMintStatus(false);
                 setButtonDisabled(false);
               }}
-              maxValue={data.usdrValue - 0.1}
+              maxValue={data.usdrValue}
               valid={mintStatus}
               invalidStr={invalidStr}
               value={borrowAmount}
             />
             <AmountSlider
               onChangeValue={(value) => {
-                setBorrowAmount(Number((data.usdrValue - 0.1) * (value / 100)).toFixed(2));
+                setBorrowAmount(Number(data.usdrValue * (value / 100)).toFixed(2));
                 setAmountValue(value);
                 setMintStatus(false);
                 setButtonDisabled(false);
