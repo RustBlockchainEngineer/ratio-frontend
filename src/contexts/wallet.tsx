@@ -1,4 +1,4 @@
-import type { PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 
 import { useDispatch } from 'react-redux';
 import { actionTypes } from '../features/wallet';
