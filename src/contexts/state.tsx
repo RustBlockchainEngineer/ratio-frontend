@@ -173,6 +173,7 @@ export function RFStateProvider({ children = undefined as any }) {
             new TokenAmount(state.debtCeilingGlobal.toNumber() - state.totalDebt.toNumber(), USDR_MINT_DECIMALS).fixed()
           )
         ),
+        harvestRate: state.feeDeno.sub(state.harvestFeeNumer).toNumber() / state.feeDeno.toNumber(),
       };
     }
     setGlobalState(info);
@@ -315,8 +316,6 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo &&
       vaultInfo
     ) {
-      const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
-
       const lockedColl = parseFloat(new TokenAmount(vaultInfo.totalColl.toString(), poolInfo.mintDecimals).fixed());
       const tvlUsd = poolInfo.oraclePrice * lockedColl;
       const debtLimit = tvlUsd * poolInfo.ratio;
@@ -325,7 +324,16 @@ export function RFStateProvider({ children = undefined as any }) {
       const poolDebtLimit = poolInfo.debtCeiling.toNumber() - poolInfo.totalDebt.toNumber();
       const globalDebtLimit = globalState.debtCeilingGlobal.toNumber() - globalState.totalDebt.toNumber();
       const mintableUSDr = Math.max(0, Math.min(vaultDebtLimit, userDebtLimit, poolDebtLimit, globalDebtLimit));
-      const ratioReward = new TokenAmount(estimateRatioRewards(poolInfo, vaultInfo), RATIO_MINT_DECIMALS, true).fixed();
+
+      const rewardWithoutFee = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
+      const reward = +(rewardWithoutFee * globalState.harvestRate).toFixed(USDR_MINT_DECIMALS);
+
+      const ratioRewardWithoutFee = new TokenAmount(
+        estimateRatioRewards(poolInfo, vaultInfo),
+        RATIO_MINT_DECIMALS,
+        true
+      ).fixed();
+      const ratioReward = +(+ratioRewardWithoutFee * globalState.harvestRate).toFixed(USDR_MINT_DECIMALS);
 
       return {
         ...vaultInfo,
@@ -354,8 +362,15 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo &&
       vaultInfo
     ) {
-      const reward = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
-      const ratioReward = new TokenAmount(estimateRatioRewards(poolInfo, vaultInfo), RATIO_MINT_DECIMALS, true).fixed();
+      const rewardWithoutFee = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
+      const reward = +(rewardWithoutFee * globalState.harvestRate).toFixed(USDR_MINT_DECIMALS);
+
+      const ratioRewardWithoutFee = new TokenAmount(
+        estimateRatioRewards(poolInfo, vaultInfo),
+        RATIO_MINT_DECIMALS,
+        true
+      ).fixed();
+      const ratioReward = +(+ratioRewardWithoutFee * globalState.harvestRate).toFixed(USDR_MINT_DECIMALS);
 
       return {
         ...vaultInfo,
