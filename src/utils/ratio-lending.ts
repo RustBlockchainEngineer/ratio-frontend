@@ -570,7 +570,7 @@ export async function calculateRewardByPlatform(
     reward = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
   }
 
-  return parseFloat(reward.toFixed(USDR_MINT_DECIMALS));
+  return reward;
 }
 
 export async function getFarmInfoByPlatform(
