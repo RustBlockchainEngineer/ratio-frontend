@@ -4,13 +4,19 @@ import { IoMdClose } from 'react-icons/io';
 import VaultEditionForm from '../VaultEditionForm';
 import AdminFormInput from '../../../components/AdminFormInput';
 import { useEffect, useState } from 'react';
-import { fundRatioRewards, getPool, setPoolDebtCeiling } from '../../../utils/ratio-lending-admin';
+import { fundRatioRewards, setPoolDebtCeiling } from '../../../utils/ratio-lending-admin';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
-import { RATIO_MINT_DECIMALS, USDR_MINT_DECIMALS } from '../../../utils/ratio-lending';
+import {
+  calculateAPY,
+  calculateFundAmount,
+  RATIO_MINT_DECIMALS,
+  USDR_MINT_DECIMALS,
+} from '../../../utils/ratio-lending';
 import { toast } from 'react-toastify';
 import { getDateStr } from '../../../utils/utils';
+import { usePoolInfo } from '../../../contexts/state';
 interface VaultEditionModalProps {
   show: boolean;
   close: () => void;
@@ -20,11 +26,18 @@ interface VaultEditionModalProps {
 export default function VaultEditionModal({ show, close, vault }: VaultEditionModalProps) {
   const connection = useConnection();
   const { wallet } = useWallet();
+
+  const poolInfo = usePoolInfo(vault?.address_id);
+
   const [poolDebtCeilingValue, setPoolDebtCeilingValue] = useState(0);
   const [ratioRewardsDuration, setRatioRewardsDuration] = useState(0);
   const [lastRewardFundStart, setLastRewardFundStart] = useState('');
   const [lastRewardFundEnd, setLastRewardFundEnd] = useState('');
   const [ratioRewardsAmount, setRatioRewardsAmount] = useState(0);
+  const [ratioRewardAPY, setRatioRewardAPY] = useState(0);
+  const [expectedTVL, setExpectedTVL] = useState(2000000);
+  const [cvtApy2Amount, setCvtApy2Amount] = useState(false);
+
   const vaultValues: LPEditionData = {
     address_id: vault?.address_id ?? '',
     vault_address_id: vault?.vault_address_id ?? null,
@@ -51,32 +64,53 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
     token_reserve_b: vault?.token_reserve_b,
   };
   useEffect(() => {
-    if (vault && vault.vault_address_id) {
-      getPool(connection, wallet, new PublicKey(vault.vault_address_id)).then((poolData) => {
-        const debtCeiling = poolData.debtCeiling.toNumber() / 10 ** USDR_MINT_DECIMALS;
-        setPoolDebtCeilingValue(debtCeiling);
-        const lastRewardFundStart = poolData.lastRewardFundStart.toNumber();
-        const lastRewardFundEnd = poolData.lastRewardFundEnd.toNumber();
-        const lastRewardFundAmount = poolData.lastRewardFundAmount.toNumber();
-        const days = Math.round((lastRewardFundEnd - lastRewardFundStart) / (3600 * 24));
-        setRatioRewardsDuration(days);
-        setLastRewardFundStart(getDateStr(lastRewardFundStart));
-        setLastRewardFundEnd(getDateStr(lastRewardFundEnd));
-        setRatioRewardsAmount(Math.round(lastRewardFundAmount / 10 ** RATIO_MINT_DECIMALS));
-      });
+    if (poolInfo) {
+      const debtCeiling = poolInfo.debtCeiling.toNumber() / 10 ** USDR_MINT_DECIMALS;
+      setPoolDebtCeilingValue(debtCeiling);
+      const lastRewardFundStart = poolInfo.lastRewardFundStart.toNumber();
+      const lastRewardFundEnd = poolInfo.lastRewardFundEnd.toNumber();
+      const lastRewardFundAmount = poolInfo.lastRewardFundAmount.toNumber();
+      const days = Math.round((lastRewardFundEnd - lastRewardFundStart) / (3600 * 24));
+      setRatioRewardsDuration(days);
+      setLastRewardFundStart(getDateStr(lastRewardFundStart));
+      setLastRewardFundEnd(getDateStr(lastRewardFundEnd));
+      setRatioRewardsAmount(Math.round(lastRewardFundAmount / 10 ** RATIO_MINT_DECIMALS));
     }
   }, [vault]);
+
+  useEffect(() => {
+    if (cvtApy2Amount) {
+      const amount = calculateFundAmount(expectedTVL, ratioRewardAPY, ratioRewardsDuration);
+      setRatioRewardsAmount(amount);
+    } else {
+      const apy = calculateAPY(expectedTVL, ratioRewardsAmount, ratioRewardsDuration);
+      setRatioRewardAPY(apy);
+    }
+  }, [cvtApy2Amount, expectedTVL, ratioRewardsDuration, ratioRewardAPY, ratioRewardsAmount]);
+
   const handlePoolDebtCelilingChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value: any = event.target.value ?? 0;
     setPoolDebtCeilingValue(value);
   };
-  const handleRatioRewardsAmount = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleRatioRewardAmount = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value: any = event.target.value ?? 0;
     setRatioRewardsAmount(value);
+  };
+  const handleRatioRewardAPY = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value: any = event.target.value ?? 0;
+    console.log(value);
+    setRatioRewardAPY(value);
+  };
+  const handleExpectedTVL = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value: any = event.target.value ?? 0;
+    setExpectedTVL(value);
   };
   const handleRatioRewardsDuration = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value: any = event.target.value ?? 0;
     setRatioRewardsDuration(value);
+  };
+  const handleAPY2Amount = () => {
+    setCvtApy2Amount((prev) => !prev);
   };
   const savePoolDebtCeiling = async () => {
     try {
@@ -136,20 +170,53 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
         </div>
         <div className="dashboardModal__modal__body">
           <AdminFormInput
-            handleChange={handleRatioRewardsAmount}
-            label="RATIO Rewards amount"
-            name="ratioRewardsAmount"
-            value={ratioRewardsAmount}
+            handleChange={handleExpectedTVL}
+            label="Expected TVL($)"
+            name="expectedTVL"
+            value={expectedTVL}
           />
-          <h5>
-            {lastRewardFundStart} - {lastRewardFundEnd}
-          </h5>
           <AdminFormInput
             handleChange={handleRatioRewardsDuration}
             label="RATIO Rewards duration (days)"
             name="ratioRewardsDuration"
             value={ratioRewardsDuration}
           />
+          <h5>
+            {lastRewardFundStart} - {lastRewardFundEnd}
+          </h5>
+          <Button onClick={handleAPY2Amount}>
+            {cvtApy2Amount ? <>Convert APY to Amount</> : <>Convert Amount to APY</>}
+          </Button>
+          {cvtApy2Amount ? (
+            <AdminFormInput
+              handleChange={handleRatioRewardAPY}
+              label="APY(%)"
+              name="ratioRewardAPY"
+              value={ratioRewardAPY}
+            />
+          ) : (
+            <AdminFormInput
+              handleChange={handleRatioRewardAmount}
+              label="RATIO Rewards amount"
+              name="ratioRewardsAmount"
+              value={ratioRewardsAmount}
+            />
+          )}
+          {cvtApy2Amount ? (
+            <AdminFormInput
+              handleChange={handleRatioRewardAmount}
+              label="RATIO Rewards amount"
+              name="ratioRewardsAmount"
+              value={ratioRewardsAmount}
+            />
+          ) : (
+            <AdminFormInput
+              handleChange={handleRatioRewardAPY}
+              label="APY(%)"
+              name="ratioRewardAPY"
+              value={ratioRewardAPY}
+            />
+          )}
           <Button onClick={fundRewards}>Fund RATIO rewards</Button>
         </div>
       </Modal.Body>
