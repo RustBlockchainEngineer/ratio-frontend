@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { Modal } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
@@ -6,14 +5,13 @@ import { toast } from 'react-toastify';
 import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { ThemeContext } from '../../../contexts/ThemeContext';
-import { getOneFilteredTokenAccountsByOwner } from '../../../utils/rf-web3';
 import Button from '../../Button';
 import CustomInput from '../../CustomInput';
 import AmountSlider from '../AmountSlider';
 import { useGetPoolManager } from '../../../hooks/useGetPoolManager';
 import { useVaultsContextProvider } from '../../../contexts/vaults';
 import { LPair } from '../../../types/VaultTypes';
-import { useAppendUserAction, usePoolInfo, useSubscribeTx } from '../../../contexts/state';
+import { useAppendUserAction, usePoolInfo, useSubscribeTx, useUserVaultInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import { TokenAmount } from '../../../utils/safe-math';
 import { USDR_MINT_DECIMALS, WIHTDRAW_ACTION } from '../../../utils/ratio-lending';
@@ -24,9 +22,9 @@ const WithdrawModal = ({ data }: any) => {
   const [show, setShow] = useState(false);
 
   const connection = useConnection();
-  const { wallet, connected } = useWallet();
-  const [userCollAccount, setUserCollAccount] = useState('');
+  const { wallet } = useWallet();
   const poolInfo = usePoolInfo(data?.mint);
+  const vaultInfo = useUserVaultInfo(data?.mint);
 
   const [withdrawAmount, setWithdrawAmount] = useState<any>();
   const [withdrawStatus, setWithdrawStatus] = useState(false);
@@ -45,17 +43,6 @@ const WithdrawModal = ({ data }: any) => {
   const appendUserAction = useAppendUserAction();
   const subscribeTx = useSubscribeTx();
 
-  useEffect(() => {
-    if (wallet?.publicKey) {
-      getOneFilteredTokenAccountsByOwner(connection, wallet?.publicKey, new PublicKey(data.mint)).then((res) => {
-        setUserCollAccount(res);
-      });
-    }
-    return () => {
-      return setUserCollAccount('');
-    };
-  }, [connected]);
-
   const [didMount, setDidMount] = useState(false);
   useEffect(() => {
     setDidMount(true);
@@ -64,11 +51,18 @@ const WithdrawModal = ({ data }: any) => {
   }, []);
 
   useEffect(() => {
-    // if debt is not zero, user can withdraw up to its risk level
-    const totalUsdr = data.debtValue + data.ableToMint;
-    if (totalUsdr) setMaxWithdrawalAmount(Math.floor(((data.value * data.ableToMint) / totalUsdr) * 100) / 100);
-    else setMaxWithdrawalAmount(0);
-  }, [data]);
+    if (vaultInfo) {
+      const realMintable = vaultInfo.debtLimit - vaultInfo.debt;
+      setMaxWithdrawalAmount(
+        Math.max(
+          +((data.value * realMintable) / vaultInfo.debtLimit - 10 / 10 ** poolInfo.mintDecimals).toFixed(
+            poolInfo.mintDecimals
+          ),
+          0
+        )
+      );
+    } else setMaxWithdrawalAmount(0);
+  }, [vaultInfo]);
 
   if (!didMount) {
     return null;
@@ -80,12 +74,6 @@ const WithdrawModal = ({ data }: any) => {
       if (!(withdrawAmount && data.value >= withdrawAmount)) {
         setWithdrawStatus(true);
         setInvalidStr('Insufficient funds to withdraw!');
-        return;
-      }
-
-      if (!(userCollAccount !== '')) {
-        setWithdrawStatus(true);
-        setInvalidStr('Invalid  User Collateral account to withdraw!');
         return;
       }
 

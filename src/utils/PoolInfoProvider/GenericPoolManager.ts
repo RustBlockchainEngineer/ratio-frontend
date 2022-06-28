@@ -37,19 +37,9 @@ export abstract class GenericPoolManager implements IPoolManagerStrategy {
   abstract getTokenName();
   abstract getLpLink(value: string);
 
-  abstract depositLP(
-    connection: Connection,
-    wallet: any,
-    vault: LPair,
-    amount: number,
-  ): Promise<string>;
+  abstract depositLP(connection: Connection, wallet: any, vault: LPair, amount: number): Promise<string>;
 
-  abstract withdrawLP(
-    connection: Connection,
-    wallet: any,
-    vault: LPair,
-    amount: number,
-  ): Promise<string>;
+  abstract withdrawLP(connection: Connection, wallet: any, vault: LPair, amount: number): Promise<string>;
 
   abstract harvestReward(connection: Connection, wallet: any, vault: LPair): Promise<string>;
 
