@@ -7,7 +7,7 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { LPair } from '../../../types/VaultTypes';
 import { toast } from 'react-toastify';
-import { useAppendUserAction, useUserVaultInfo, useSubscribeTx } from '../../../contexts/state';
+import { useAppendUserAction, useUserVaultInfo, useSubscribeTx, useRFStateInfo } from '../../../contexts/state';
 import { isWalletApproveError } from '../../../utils/utils';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { harvestRatioReward, HARVEST_ACTION } from '../../../utils/ratio-lending';
@@ -29,6 +29,9 @@ const TokensEarned = ({ data }: any) => {
 
   const appendUserAction = useAppendUserAction();
   const subscribeTx = useSubscribeTx();
+  const globalState = useRFStateInfo();
+
+  const harvest_reward_fee = globalState.harvestFeeNumer.toNumber() / globalState.feeDeno.toNumber();
 
   const harvest = async () => {
     try {
@@ -54,7 +57,7 @@ const TokensEarned = ({ data }: any) => {
         txHash,
         0,
         0,
-        0
+        harvest_reward_fee
       );
     } catch (err) {
       console.error(err);
@@ -112,7 +115,7 @@ const TokensEarned = ({ data }: any) => {
               {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
               <div className="tokensearned__name">
                 <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
-                {poolManager?.getTokenName()}
+                <span>{poolManager?.getTokenName()}</span>
               </div>
             </td>
             <td className="align-middle">
@@ -126,20 +129,24 @@ const TokensEarned = ({ data }: any) => {
               )}
             </td>
             <td>
-              <Button className="button--blue generate btn-block" onClick={harvest} disabled={isHarvesting}>
+              <Button
+                className="button--blue tokensearned__harvestBtn btn-block"
+                onClick={harvest}
+                disabled={isHarvesting}
+              >
                 Harvest
               </Button>
             </td>
           </tr>
           <tr>
-            <td className="tokensearned__name">
+            <td className="tokensearned__name" style={{ gap: 12 }}>
               <img src={RatioIcon} alt="RatioIcon" className="tokensearned__icon" /> RATIO
             </td>
             <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} RATIO</td>
             <td className="align-middle"></td>
             <td>
               <Button
-                className="button--blue generate btn-block px-2"
+                className="button--blue tokensearned__harvestBtn btn-block px-2"
                 onClick={harvestRatio}
                 disabled={isHarvestingRatio}
               >
