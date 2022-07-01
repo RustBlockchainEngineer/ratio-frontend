@@ -677,6 +677,34 @@ export async function changeTreasury(connection: Connection, wallet: any, newTre
   }
 }
 
+export async function changeOracleReporter(connection: Connection, wallet: any, newReporter: PublicKey) {
+  if (!wallet?.publicKey) throw new WalletNotConnectedError();
+
+  try {
+    const program = getProgramInstance(connection, wallet);
+    const globalStateKey = await getGlobalStatePDA();
+    const transaction = new Transaction();
+    const ix = await program.instruction.changeOracleReporter({
+      accounts: {
+        authority: wallet.publicKey,
+        globalState: globalStateKey,
+        oracleReporter: newReporter,
+      },
+    });
+    transaction.add(ix);
+    const tx = await sendTransaction(connection, wallet, transaction);
+    console.log('tx id->', tx);
+    const txResult = await connection.confirmTransaction(tx);
+    if (txResult?.value?.err) {
+      throw txResult.value.err;
+    }
+    return 'Set Oracle Reporter to' + newReporter.toBase58() + ', transaction id = ' + tx;
+  } catch (e) {
+    console.error('Error while setting the Oracle Reporter', e);
+    throw e;
+  }
+}
+
 export async function fundRatioRewards(
   connection: Connection,
   wallet: any,

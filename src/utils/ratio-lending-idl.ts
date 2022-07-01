@@ -979,6 +979,27 @@ export type RatioLending = {
       ];
     },
     {
+      name: 'changeOracleReporter';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'globalState';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'oracleReporter';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
       name: 'setRatioMint';
       accounts: [
         {
@@ -2874,6 +2895,27 @@ export const IDL: RatioLending = {
           type: 'publicKey',
         },
       ],
+    },
+    {
+      name: 'changeOracleReporter',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'globalState',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'oracleReporter',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
     },
     {
       name: 'setRatioMint',

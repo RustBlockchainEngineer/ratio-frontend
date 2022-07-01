@@ -13,6 +13,7 @@ import {
   changeSuperOwner,
   changeTreasury,
   setEmergencyState as setEmergencyStateOnContract,
+  changeOracleReporter,
 } from '../../utils/ratio-lending-admin';
 import AdminFormLayout from '../AdminFormLayout';
 
@@ -55,10 +56,21 @@ export default function AdminTasksForm() {
   const [ratioMintFormValidated, setratioMintFormValidated] = useState(false);
   const ratioMintChanged = useMemo(() => originalratioMint !== ratioMint, [originalratioMint, ratioMint]);
 
+  const [oracleReporterFormValidated, setOracleReporterFormValidated] = useState(false);
+  const originalOracleReporter = globalState
+    ? globalState.oracleReporter
+      ? globalState.oracleReporter.toString()
+      : ''
+    : '';
+  const [oracleReporter, setOracleReporter] = useState<string>(originalOracleReporter);
+  const oracleReporterChanged = useMemo(
+    () => originalOracleReporter !== oracleReporter,
+    [originalOracleReporter, oracleReporter]
+  );
+
   const handleSuperOwnerInputChange = (event: any) => {
     setSuperOwner(event.target.value);
   };
-
   const handleTreasuryWalletInputChange = (event: any) => {
     setTreasuryWallet(event.target.value);
   };
@@ -68,6 +80,10 @@ export default function AdminTasksForm() {
   const handlefundingWalletInputChange = (event: any) => {
     setfundingWallet(event.target.value);
   };
+  const handleOracleReporterInputChange = (event: any) => {
+    setOracleReporter(event.target.value);
+  };
+
   const handleChangefundingWalletSubmit = async (evt: any) => {
     evt.preventDefault();
     if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
@@ -188,6 +204,32 @@ export default function AdminTasksForm() {
     }
     return;
   };
+
+  const handleChangeOracleReporterSubmit = async (evt: any) => {
+    evt.preventDefault();
+    /*if (wallet?.publicKey?.toBase58() !== originalSuperOwner) {
+      toast.error('Connected user is not the contract authority');
+      return;
+    }*/
+    const form = evt.currentTarget;
+    if (form.checkValidity() === false) {
+      evt.stopPropagation();
+      return;
+    }
+    if (!oracleReporterChanged || !oracleReporter) {
+      return;
+    }
+    setOracleReporterFormValidated(true);
+    try {
+      await changeOracleReporter(connection, wallet, new PublicKey(oracleReporter));
+      toast.info('Treasury wallet changed successfully');
+    } catch (error: unknown) {
+      toast.error('There was an error when changing the treasury wallet');
+      throw error;
+    }
+    return;
+  };
+
   return (
     <AdminFormLayout>
       <h5 className="mt-3">Current admin actions:</h5>
@@ -220,6 +262,26 @@ export default function AdminTasksForm() {
               {treasuryWalletChanged && (
                 <Button disabled={!treasuryWalletChanged} variant="primary" type="submit">
                   Change treasury wallet
+                </Button>
+              )}
+            </InputGroup>
+          </Form.Group>
+        </Row>
+      </Form>
+      <Form validated={oracleReporterFormValidated} onSubmit={handleChangeOracleReporterSubmit}>
+        <Row className="mb-3">
+          <Form.Group as={Col} md="8" controlId="oracleReporter">
+            <Form.Label>Oracle Reporter</Form.Label>
+            <InputGroup hasValidation>
+              <Form.Control
+                name="oracleReporter"
+                required
+                value={oracleReporter}
+                onChange={handleOracleReporterInputChange}
+              />
+              {oracleReporterChanged && (
+                <Button disabled={!oracleReporterChanged} variant="primary" type="submit">
+                  Change Oracle Reporter
                 </Button>
               )}
             </InputGroup>
