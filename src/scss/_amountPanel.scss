@@ -43,11 +43,13 @@
     font-size: 14px;
     color: var(--unnamed-color-3c4760);
     word-break: keep-all;
+    padding: 0.5rem;
+    padding-left: 0.5rem !important;
+    vertical-align: middle;
   }
   table td,
   .table th {
     border-top: 0px;
-    padding-left: 1rem;
     // padding-right: 1.5rem;
   }
   .table {

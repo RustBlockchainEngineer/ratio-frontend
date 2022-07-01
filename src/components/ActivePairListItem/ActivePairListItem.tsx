@@ -14,7 +14,7 @@ import linkIcon from '../../assets/images/link.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
-import { useUserVaultInfo, usePoolInfo, useAppendUserAction } from '../../contexts/state';
+import { useUserVaultInfo, usePoolInfo, useAppendUserAction, useRFStateInfo } from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 
 import infoIcon from '../../assets/images/risklevel.svg';
@@ -48,6 +48,9 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
   const PoolManagerFactory = useGetPoolManager(data.item);
 
   const appendUserAction = useAppendUserAction();
+  const globalState = useRFStateInfo();
+
+  const harvest_reward_fee = globalState.harvestFeeNumer.toNumber() / globalState.feeDeno.toNumber();
 
   useEffect(() => {
     // replace this boolean value with a function to determine wether user limit reached
@@ -106,7 +109,8 @@ const ActivePairListItem = (tokenPairCardProps: TokenPairCardProps) => {
         0,
         txHash,
         0,
-        0
+        0,
+        harvest_reward_fee
       );
 
       toast.success('Successfully Harvested!');
