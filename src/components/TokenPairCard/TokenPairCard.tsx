@@ -17,6 +17,7 @@ import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
 import { usePoolInfo } from '../../contexts/state';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
+import { ProgressBarVaultUSDr } from '../Navbar/ProgressBarVaultUSDr';
 import USDrIcon from '../../assets/images/USDr.svg';
 import infoIcon from '../../assets/images/risklevel.svg';
 
@@ -168,6 +169,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
               </div>
               <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
             </div>
+            <ProgressBarVaultUSDr mint={data.mint} className="activepaircard__usdrDebtbar" />
             {/* <div>
               <h5>Platform:</h5>
               <a href={data.platform.link} target="_blank" rel="noreferrer">

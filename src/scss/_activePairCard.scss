@@ -176,5 +176,19 @@
       font-family: 'Poppins-Regular';
     }
   }
-  
+  &__usdrDebtbar {
+    .navbarprogressbar__header > div:first-child {
+      p {
+        font-size: 1rem;
+        color: var(--unnamed-color-3c4760);
+        margin-bottom: 0px;
+        font-family: 'Poppins-Medium';
+      }
+    }
+    .detailBox {
+      p {
+        font-size: 1rem;
+      }
+    }
+  }
 }
