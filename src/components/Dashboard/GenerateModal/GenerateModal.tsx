@@ -72,15 +72,15 @@ const GenerateModal = ({ data }: any) => {
   }
 
   const borrow = async () => {
-    console.log('borrowAmount', borrowAmount);
-    if (!(borrowAmount > 0 && borrowAmount <= data.usdrValue)) {
+    console.log('borrowAmount', +borrowAmount);
+    if (!(+borrowAmount > 0 && +borrowAmount <= data.usdrValue)) {
       setMintStatus(true);
       setInvalidStr('Amount is invalid to generate USDr!');
       return;
     }
 
     setIsMinting(true);
-    borrowUSDr(connection, wallet, borrowAmount * 10 ** USDR_MINT_DECIMALS, new PublicKey(data.mint))
+    borrowUSDr(connection, wallet, +borrowAmount * 10 ** USDR_MINT_DECIMALS, new PublicKey(data.mint))
       .then((txHash: string) => {
         subscribeTx(
           txHash,
