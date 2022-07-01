@@ -45,7 +45,8 @@ interface RFStateConfig {
     amount: number,
     txid: string,
     fair_price: number,
-    market_price: number
+    market_price: number,
+    fee: number
   ) => void;
   subscribeTx: (txHash: string, onTxSent?: any, onTxSuccess?: any, onTxFailed?: any) => void;
 }
@@ -104,7 +105,8 @@ export function RFStateProvider({ children = undefined as any }) {
     amount: number,
     txHash: string,
     fair_price: number,
-    market_price: number
+    market_price: number,
+    fee: number
   ) => {
     if (!txHash) return;
     postToRatioApi(
@@ -116,7 +118,8 @@ export function RFStateProvider({ children = undefined as any }) {
         txHash,
         'Waiting Confirmation ...',
         fair_price,
-        market_price
+        market_price,
+        fee
       ),
       `/transaction/${walletKey}/new`
     )
@@ -146,7 +149,8 @@ export function RFStateProvider({ children = undefined as any }) {
               txHash,
               newStatus,
               fair_price,
-              market_price
+              market_price,
+              fee
             ),
             `/transaction/${walletKey}/update`
           )

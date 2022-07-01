@@ -18,7 +18,13 @@ import { TokenPairCardProps } from '../../types/VaultTypes';
 import linkIcon from '../../assets/images/link.svg';
 import { isWalletApproveError } from '../../utils/utils';
 import smallRatioIcon from '../../assets/images/smallRatio.svg';
-import { useAppendUserAction, usePoolInfo, useUserVaultInfo, useSubscribeTx } from '../../contexts/state';
+import {
+  useAppendUserAction,
+  usePoolInfo,
+  useUserVaultInfo,
+  useSubscribeTx,
+  useRFStateInfo,
+} from '../../contexts/state';
 import { HARVEST_ACTION, USDR_MINT_DECIMALS } from '../../utils/ratio-lending';
 import USDrIcon from '../../assets/images/USDr.svg';
 import infoIcon from '../../assets/images/risklevel.svg';
@@ -41,6 +47,9 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
 
   const subscribeTx = useSubscribeTx();
   const appendUserAction = useAppendUserAction();
+  const globalState = useRFStateInfo();
+
+  const harvest_reward_fee = globalState.harvestFeeNumer.toNumber() / globalState.feeDeno.toNumber();
 
   const printTvl = () => {
     if (isNaN(data.tvl)) {
@@ -81,7 +90,8 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
         0,
         txHash,
         0,
-        0
+        0,
+        harvest_reward_fee
       );
     } catch (err) {
       console.error(err);

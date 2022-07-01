@@ -15,7 +15,7 @@ import {
   USDR_MINT_DECIMALS,
 } from '../../../utils/ratio-lending';
 import { toast } from 'react-toastify';
-import { getDateStr } from '../../../utils/utils';
+import { formatUSD, getDateStr } from '../../../utils/utils';
 import { usePoolInfo } from '../../../contexts/state';
 interface VaultEditionModalProps {
   show: boolean;
@@ -35,7 +35,7 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
   const [lastRewardFundEnd, setLastRewardFundEnd] = useState('');
   const [ratioRewardsAmount, setRatioRewardsAmount] = useState(0);
   const [ratioRewardAPY, setRatioRewardAPY] = useState(0);
-  const [expectedTVL, setExpectedTVL] = useState(2000000);
+  const usdrAmountMinted = poolInfo ? poolInfo.totalDebt.toNumber() / 10 ** USDR_MINT_DECIMALS : 0;
   const [cvtApy2Amount, setCvtApy2Amount] = useState(false);
 
   const vaultValues: LPEditionData = {
@@ -80,13 +80,13 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
 
   useEffect(() => {
     if (cvtApy2Amount) {
-      const amount = calculateFundAmount(expectedTVL, ratioRewardAPY, ratioRewardsDuration);
+      const amount = calculateFundAmount(usdrAmountMinted, ratioRewardAPY, ratioRewardsDuration);
       setRatioRewardsAmount(amount);
     } else {
-      const apy = calculateAPY(expectedTVL, ratioRewardsAmount, ratioRewardsDuration);
+      const apy = calculateAPY(usdrAmountMinted, ratioRewardsAmount, ratioRewardsDuration);
       setRatioRewardAPY(apy);
     }
-  }, [cvtApy2Amount, expectedTVL, ratioRewardsDuration, ratioRewardAPY, ratioRewardsAmount]);
+  }, [cvtApy2Amount, usdrAmountMinted, ratioRewardsDuration, ratioRewardAPY, ratioRewardsAmount]);
 
   const handlePoolDebtCelilingChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value: any = event.target.value ?? 0;
@@ -100,10 +100,6 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
     const value: any = event.target.value ?? 0;
     console.log(value);
     setRatioRewardAPY(value);
-  };
-  const handleExpectedTVL = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value: any = event.target.value ?? 0;
-    setExpectedTVL(value);
   };
   const handleRatioRewardsDuration = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value: any = event.target.value ?? 0;
@@ -150,11 +146,12 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
       dialogClassName="w-100 mw-100"
       centered
       className="dashboardModal__modal"
+      data-theme="light"
     >
       <Modal.Header>
         <div className="dashboardModal__modal__header">
           <IoMdClose size={32} className="dashboardModal__modal__header-close" onClick={() => close()} />
-          <h5>Edit vault</h5>
+          <h5>Edit {vault?.symbol} Lending Pool</h5>
         </div>
       </Modal.Header>
       <Modal.Body>
@@ -169,12 +166,7 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
           <Button onClick={savePoolDebtCeiling}>Set Debt Ceiling</Button>
         </div>
         <div className="dashboardModal__modal__body">
-          <AdminFormInput
-            handleChange={handleExpectedTVL}
-            label="Expected TVL($)"
-            name="expectedTVL"
-            value={expectedTVL}
-          />
+          <h5>RATIO Emission Rate Calculator: {formatUSD.format(usdrAmountMinted)} USDr minted</h5>
           <AdminFormInput
             handleChange={handleRatioRewardsDuration}
             label="RATIO Rewards duration (days)"
@@ -184,9 +176,6 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
           <h5>
             {lastRewardFundStart} - {lastRewardFundEnd}
           </h5>
-          <Button onClick={handleAPY2Amount}>
-            {cvtApy2Amount ? <>Convert APY to Amount</> : <>Convert Amount to APY</>}
-          </Button>
           {cvtApy2Amount ? (
             <AdminFormInput
               handleChange={handleRatioRewardAPY}
@@ -202,6 +191,16 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
               value={ratioRewardsAmount}
             />
           )}
+          <Button onClick={handleAPY2Amount}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="inherit">
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M3.13797 7.80436L4.99989 9.66692H0.333008V5.00004L2.19557 6.86196L8.33301 0.723877L9.27613 1.667L3.13797 7.80436ZM13.6668 4.33316V9.00004L11.8042 7.13812L5.66677 13.2762L4.72365 12.3331L10.8617 6.19564L8.99981 4.33308L13.6668 4.33316Z"
+                fill="inherit"
+              ></path>
+            </svg>
+          </Button>
           {cvtApy2Amount ? (
             <AdminFormInput
               handleChange={handleRatioRewardAmount}

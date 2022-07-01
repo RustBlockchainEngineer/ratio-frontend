@@ -13,7 +13,7 @@ type NavBarProgressBarProps = {
 
 export enum ProgressBarLabelType {
   TVL = 'TVL Cap',
-  USDr = 'My USDr Debt',
+  USDr = 'USDr Debt',
   None = '',
   VaultMint = 'Vault mintable USDr',
   VaultDebt = 'Minted USDR',

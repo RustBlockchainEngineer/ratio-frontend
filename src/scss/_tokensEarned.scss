@@ -3,9 +3,13 @@
     &__name {
         display: flex;
         align-items: center;
+        // justify-content: center;
         flex-wrap: wrap;
-        gap: 12px;
         padding-bottom: 0px;
+        font-family: 'Poppins-Medium';
+        span {
+            margin-left: 0.5rem;
+        }
     }
 
 
@@ -14,4 +18,11 @@
         display: block;
     }
 
+    &__harvestBtn {
+        padding-top: 0.4rem;
+        padding-bottom: 0.3rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-family: 'Poppins-Medium';
+    }
 }
