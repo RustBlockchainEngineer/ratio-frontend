@@ -590,17 +590,16 @@ export function estimateRatioRewards(poolData: any, vaultData: any) {
 
   const reward_per_share =
     poolData.lastRewardFundEnd > currentTimeStamp
-      ? poolData.tokenPerSecond.mul(duration).mul(ACC_PRECISION).div(poolData.totalColl)
+      ? poolData.tokenPerSecond.mul(duration).mul(ACC_PRECISION).div(poolData.totalDebt)
       : new BN(0);
   const acc_reward_per_share = poolData.accRewardPerShare.add(reward_per_share);
-
-  const pending_amount = vaultData.totalColl
+  const pending_amount = new BN(vaultData.debt.toString())
     .mul(acc_reward_per_share)
     .div(ACC_PRECISION)
     .sub(vaultData.ratioRewardDebt);
   const total_reward = vaultData.ratioRewardAmount.add(pending_amount);
 
-  return total_reward.toString();
+  return Math.max(+total_reward.toString(), 0);
 }
 
 const ONE_YEAR_IN_SEC = 365 * 24 * 3600;
@@ -609,24 +608,24 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const annual_reward_amount =
     Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * ONE_YEAR_IN_SEC;
   const annual_reward_value = annual_reward_amount * ratio_price;
-  const tvl = +new TokenAmount(poolData.tvlUsd.toString(), USDR_MINT_DECIMALS, true).fixed();
+  const usdrMinted = +new TokenAmount(poolData.totalDebt.toString(), USDR_MINT_DECIMALS, true).fixed();
 
-  const apr = annual_reward_value / tvl;
+  const apr = annual_reward_value / usdrMinted;
   const apy = ((1 + apr / 365) ** 365 - 1) * 100;
   return apy;
 }
 
-export function calculateFundAmount(tvl, apy, duration) {
+export function calculateFundAmount(mintAmount, apy, duration) {
   const apr = (Math.pow(apy / 100 + 1, 1 / 365) - 1) * 365;
-  const tpd = (apr * tvl) / RATIO_TOKEN_PRICE / 365;
+  const tpd = (apr * mintAmount) / RATIO_TOKEN_PRICE / 365;
   const amount = tpd * duration;
   return Math.ceil(amount * 1000000) / 1000000;
 }
 
-export function calculateAPY(tvl, amount, duration) {
+export function calculateAPY(mintAmount, amount, duration) {
   const tpd = (amount * RATIO_TOKEN_PRICE) / duration;
   const annual_reward_value = tpd * 365;
-  const apr = annual_reward_value / tvl;
+  const apr = annual_reward_value / mintAmount;
   const apy = ((1 + apr / 365) ** 365 - 1) * 100;
   return Math.ceil(apy * 100) / 100;
 }
