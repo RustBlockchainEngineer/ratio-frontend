@@ -615,14 +615,14 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   return apy;
 }
 
-export function calculateFundAmount(mintAmount, apy, duration) {
+export function calculateFundAmount(mintAmount: number, apy: number, duration: number) {
   const apr = (Math.pow(apy / 100 + 1, 1 / 365) - 1) * 365;
   const tpd = (apr * mintAmount) / RATIO_TOKEN_PRICE / 365;
   const amount = tpd * duration;
   return Math.ceil(amount * 1000000) / 1000000;
 }
 
-export function calculateAPY(mintAmount, amount, duration) {
+export function calculateAPY(mintAmount: number, amount: number, duration: number) {
   const tpd = (amount * RATIO_TOKEN_PRICE) / duration;
   const annual_reward_value = tpd * 365;
   const apr = annual_reward_value / mintAmount;
