@@ -1,6 +1,5 @@
 import { Account, clusterApiUrl, Connection, ConnectionConfig as Web3ConnectionConfig } from '@solana/web3.js';
 import React, { useContext, useEffect, useMemo } from 'react';
-import { ENV as ChainID } from '@solana/spl-token-registry';
 
 import { useLocalStorageState } from '../utils/utils';
 import { cache } from './accounts';
@@ -11,22 +10,18 @@ const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
     endpoint: 'https://solana--mainnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
-    chainID: ChainID.MainnetBeta,
   },
   {
     name: 'testnet' as ENV,
     endpoint: clusterApiUrl('testnet'),
-    chainID: ChainID.Testnet,
   },
   {
     name: 'devnet' as ENV,
     endpoint: 'https://solana--devnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
-    chainID: ChainID.Devnet,
   },
   {
     name: 'localnet' as ENV,
     endpoint: 'http://127.0.0.1:8899',
-    chainID: ChainID.Devnet,
   },
 ];
 

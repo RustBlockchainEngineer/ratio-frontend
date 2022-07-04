@@ -11,7 +11,6 @@ import {
   SYSVAR_RENT_PUBKEY,
   Transaction,
 } from '@solana/web3.js';
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './rf-web3';
 import { RATIO_LENDING_PROGRAM_ID } from '../constants/ids';
 import { calculateSaberReward, getQuarryInfo } from './PoolInfoProvider/saber/saber-utils';
@@ -61,7 +60,6 @@ export const POOL_DEBT_CEILING = 1500_000_000;
 
 // This command makes an Lottery
 export function getProgramInstance(connection: Connection, wallet: any) {
-  // if (!wallet.publicKey) throw new WalletNotConnectedError();
 
   const provider = new anchor.Provider(connection, wallet, anchor.Provider.defaultOptions());
   // Read the generated IDL.
@@ -124,7 +122,6 @@ export async function getAllLendingPool(connection: Connection): Promise<any[]> 
 }
 
 export async function depositCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
 
@@ -229,7 +226,6 @@ export async function depositCollateralTx(connection: Connection, wallet: any, a
 }
 
 export async function withdrawCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
 
@@ -292,7 +288,6 @@ export async function withdrawCollateralTx(connection: Connection, wallet: any, 
 }
 
 export async function distributeRewardTx(connection: Connection, wallet: any, mintColl: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
 
   const program = getProgramInstance(connection, wallet);
 
@@ -357,8 +352,6 @@ export async function harvestRatioReward(
   mintColl: PublicKey | string,
   needTx = false
 ) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   console.log('Harvesting ratio token');
 
   const program = getProgramInstance(connection, wallet);
@@ -429,8 +422,6 @@ export async function harvestRatioReward(
 }
 
 export async function borrowUSDr(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -520,8 +511,6 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
 }
 
 export async function repayUSDr(connection: Connection, wallet: any, amount: number, mintColl: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
