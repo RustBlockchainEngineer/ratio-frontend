@@ -60,7 +60,6 @@ export const POOL_DEBT_CEILING = 1500_000_000;
 
 // This command makes an Lottery
 export function getProgramInstance(connection: Connection, wallet: any) {
-
   const provider = new anchor.Provider(connection, wallet, anchor.Provider.defaultOptions());
   // Read the generated IDL.
 
@@ -122,7 +121,6 @@ export async function getAllLendingPool(connection: Connection): Promise<any[]> 
 }
 
 export async function depositCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -226,7 +224,6 @@ export async function depositCollateralTx(connection: Connection, wallet: any, a
 }
 
 export async function withdrawCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -288,7 +285,6 @@ export async function withdrawCollateralTx(connection: Connection, wallet: any, 
 }
 
 export async function distributeRewardTx(connection: Connection, wallet: any, mintColl: PublicKey) {
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();

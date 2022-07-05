@@ -5,7 +5,7 @@ import { useAuthContextProvider } from '../../contexts/authAPI';
 import Unauthorized from '../../pages/Unauthorized';
 import Forbidden from '../../pages/Forbidden';
 
-const ProtectedRoute = ({ role, component, ...rest }: any) => {
+const ProtectedRoute = ({ roles, component, ...rest }: any) => {
   const { connected } = useWallet();
   const { user } = useAuthContextProvider();
 
@@ -14,7 +14,7 @@ const ProtectedRoute = ({ role, component, ...rest }: any) => {
       {...rest}
       render={(props) => {
         if (connected) {
-          if (user && (user as any).role === role) {
+          if (user && roles.indexOf((user as any).role) > -1) {
             return createElement(component, props);
           } else {
             return <Forbidden />;
