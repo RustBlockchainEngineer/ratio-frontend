@@ -31,7 +31,7 @@ export const WIHTDRAW_ACTION = 'Withdraw';
 export const BORROW_ACTION = 'Borrow';
 export const PAYBACK_ACTION = 'Payback';
 export const HARVEST_ACTION = 'Harvest';
-export const RATIO_TOKEN_PRICE = 0.8132;
+export const RATIO_TOKEN_PRICE = 0.734518;
 
 //const HISTORY_TO_SHOW = 5;
 export const USD_FAIR_PRICE = true;

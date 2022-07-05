@@ -18,6 +18,7 @@ import {
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
   RATIO_TOKEN_PRICE,
+  RATIO_MINT_KEY,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
 import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
@@ -193,8 +194,11 @@ export function RFStateProvider({ children = undefined as any }) {
       oracleInfos[oracleMint] = oracle;
     });
 
-    const response = await fetch(`${API_ENDPOINT}/coingecko/saberprice`);
-    oracleInfos[SBR_MINT] = await response.json();
+    const sbrPrice = await (await fetch(`${API_ENDPOINT}/coingecko/SBR`)).json();
+    oracleInfos[SBR_MINT] = sbrPrice;
+
+    const ratioPrice = await (await fetch(`${API_ENDPOINT}/coingecko/RATIO`)).json();
+    oracleInfos[RATIO_MINT_KEY] = ratioPrice.error ? RATIO_TOKEN_PRICE : ratioPrice;
 
     setOracleState(oracleInfos);
 
@@ -256,7 +260,7 @@ export function RFStateProvider({ children = undefined as any }) {
           new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
           poolInfo['farmTVL']) *
         100;
-      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, RATIO_TOKEN_PRICE);
+      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
 
       poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];
     }
