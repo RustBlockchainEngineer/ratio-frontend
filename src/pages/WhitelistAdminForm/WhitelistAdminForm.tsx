@@ -131,6 +131,7 @@ export default function WhitelistAdminForm() {
                   -Select option-
                 </option>
                 <option value={Roles.ADMIN}>Admin</option>
+                <option value={Roles.DEVELOPER}>Developer</option>
                 <option value={Roles.USER}>User</option>
               </Form.Control>
             </InputGroup>
