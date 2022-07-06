@@ -12,11 +12,12 @@ import {
   calculateAPY,
   calculateFundAmount,
   RATIO_MINT_DECIMALS,
+  RATIO_MINT_KEY,
   USDR_MINT_DECIMALS,
 } from '../../../utils/ratio-lending';
 import { toast } from 'react-toastify';
 import { formatUSD, getDateStr } from '../../../utils/utils';
-import { usePoolInfo } from '../../../contexts/state';
+import { useOracleInfo, usePoolInfo } from '../../../contexts/state';
 interface VaultEditionModalProps {
   show: boolean;
   close: () => void;
@@ -28,6 +29,7 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
   const { wallet } = useWallet();
 
   const poolInfo = usePoolInfo(vault?.address_id);
+  const ratioPrice = useOracleInfo(RATIO_MINT_KEY);
 
   const [poolDebtCeilingValue, setPoolDebtCeilingValue] = useState(0);
   const [ratioRewardsDuration, setRatioRewardsDuration] = useState(0);
@@ -80,10 +82,10 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
 
   useEffect(() => {
     if (cvtApy2Amount) {
-      const amount = calculateFundAmount(usdrAmountMinted, ratioRewardAPY, ratioRewardsDuration);
+      const amount = calculateFundAmount(usdrAmountMinted, ratioRewardAPY, ratioRewardsDuration, ratioPrice);
       setRatioRewardsAmount(amount);
     } else {
-      const apy = calculateAPY(usdrAmountMinted, ratioRewardsAmount, ratioRewardsDuration);
+      const apy = calculateAPY(usdrAmountMinted, ratioRewardsAmount, ratioRewardsDuration, ratioPrice);
       setRatioRewardAPY(apy);
     }
   }, [cvtApy2Amount, usdrAmountMinted, ratioRewardsDuration, ratioRewardAPY, ratioRewardsAmount]);

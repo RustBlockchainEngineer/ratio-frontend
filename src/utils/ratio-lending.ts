@@ -11,7 +11,6 @@ import {
   SYSVAR_RENT_PUBKEY,
   Transaction,
 } from '@solana/web3.js';
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './rf-web3';
 import { RATIO_LENDING_PROGRAM_ID } from '../constants/ids';
 import { calculateSaberReward, getQuarryInfo } from './PoolInfoProvider/saber/saber-utils';
@@ -32,7 +31,6 @@ export const WIHTDRAW_ACTION = 'Withdraw';
 export const BORROW_ACTION = 'Borrow';
 export const PAYBACK_ACTION = 'Payback';
 export const HARVEST_ACTION = 'Harvest';
-export const RATIO_TOKEN_PRICE = 0.8132;
 
 //const HISTORY_TO_SHOW = 5;
 export const USD_FAIR_PRICE = true;
@@ -61,8 +59,6 @@ export const POOL_DEBT_CEILING = 1500_000_000;
 
 // This command makes an Lottery
 export function getProgramInstance(connection: Connection, wallet: any) {
-  // if (!wallet.publicKey) throw new WalletNotConnectedError();
-
   const provider = new anchor.Provider(connection, wallet, anchor.Provider.defaultOptions());
   // Read the generated IDL.
 
@@ -124,8 +120,6 @@ export async function getAllLendingPool(connection: Connection): Promise<any[]> 
 }
 
 export async function depositCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -229,8 +223,6 @@ export async function depositCollateralTx(connection: Connection, wallet: any, a
 }
 
 export async function withdrawCollateralTx(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -292,8 +284,6 @@ export async function withdrawCollateralTx(connection: Connection, wallet: any, 
 }
 
 export async function distributeRewardTx(connection: Connection, wallet: any, mintColl: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -357,8 +347,6 @@ export async function harvestRatioReward(
   mintColl: PublicKey | string,
   needTx = false
 ) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   console.log('Harvesting ratio token');
 
   const program = getProgramInstance(connection, wallet);
@@ -429,8 +417,6 @@ export async function harvestRatioReward(
 }
 
 export async function borrowUSDr(connection: Connection, wallet: any, amount: number, mintCollat: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -520,8 +506,6 @@ export async function borrowUSDr(connection: Connection, wallet: any, amount: nu
 }
 
 export async function repayUSDr(connection: Connection, wallet: any, amount: number, mintColl: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   const program = getProgramInstance(connection, wallet);
 
   const globalStateKey = getGlobalStatePDA();
@@ -615,15 +599,15 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   return apy;
 }
 
-export function calculateFundAmount(mintAmount, apy, duration) {
+export function calculateFundAmount(mintAmount: number, apy: number, duration: number, ratioPrice: number) {
   const apr = (Math.pow(apy / 100 + 1, 1 / 365) - 1) * 365;
-  const tpd = (apr * mintAmount) / RATIO_TOKEN_PRICE / 365;
+  const tpd = (apr * mintAmount) / ratioPrice / 365;
   const amount = tpd * duration;
   return Math.ceil(amount * 1000000) / 1000000;
 }
 
-export function calculateAPY(mintAmount, amount, duration) {
-  const tpd = (amount * RATIO_TOKEN_PRICE) / duration;
+export function calculateAPY(mintAmount: number, amount: number, duration: number, ratioPrice: number) {
+  const tpd = (amount * ratioPrice) / duration;
   const annual_reward_value = tpd * 365;
   const apr = annual_reward_value / mintAmount;
   const apy = ((1 + apr / 365) ** 365 - 1) * 100;

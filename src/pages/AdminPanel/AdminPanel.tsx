@@ -16,14 +16,44 @@ const AdminPanel = () => {
     <APIAuthContextProvider>
       <div className="adminpanel">
         <Switch>
-          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/fees" component={FeesAdminForm} exact />
-          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/whitelist" component={WhitelistAdminForm} exact />
-          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/vaults" component={VaultCreationAdminForm} exact />
-          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/globalparams" component={GlobalParamsAdminForm} exact />
-          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/tasks" component={AdminTasksForm} exact />
-          <ProtectedRoute role={Roles.ADMIN} path="/adminpanel/tokens" component={TokensAdminForm} exact />
           <ProtectedRoute
-            role={Roles.ADMIN}
+            roles={[Roles.ADMIN, Roles.DEVELOPER]}
+            path="/adminpanel/fees"
+            component={FeesAdminForm}
+            exact
+          />
+          <ProtectedRoute
+            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            path="/adminpanel/whitelist"
+            component={WhitelistAdminForm}
+            exact
+          />
+          <ProtectedRoute
+            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            path="/adminpanel/vaults"
+            component={VaultCreationAdminForm}
+            exact
+          />
+          <ProtectedRoute
+            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            path="/adminpanel/globalparams"
+            component={GlobalParamsAdminForm}
+            exact
+          />
+          <ProtectedRoute
+            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            path="/adminpanel/tasks"
+            component={AdminTasksForm}
+            exact
+          />
+          <ProtectedRoute
+            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            path="/adminpanel/tokens"
+            component={TokensAdminForm}
+            exact
+          />
+          <ProtectedRoute
+            roles={(Roles.ADMIN, Roles.DEVELOPER)}
             path="/adminpanel/collateralizationratios"
             component={CollRatiosAdminForm}
             exact

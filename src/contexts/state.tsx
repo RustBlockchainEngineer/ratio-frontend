@@ -17,7 +17,7 @@ import {
   estimateRATIOAPY,
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
-  RATIO_TOKEN_PRICE,
+  RATIO_MINT_KEY,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
 import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
@@ -191,10 +191,12 @@ export function RFStateProvider({ children = undefined as any }) {
       const oracle = item.account;
       const oracleMint = oracle.mint.toString();
       oracleInfos[oracleMint] = oracle;
+      console.log(oracleMint, oracle.price.toNumber());
     });
 
-    const response = await fetch(`${API_ENDPOINT}/coingecko/saberprice`);
-    oracleInfos[SBR_MINT] = await response.json();
+    oracleInfos[SBR_MINT] = await (await fetch(`${API_ENDPOINT}/coingecko/SBR`)).json();
+
+    oracleInfos[RATIO_MINT_KEY] = await (await fetch(`${API_ENDPOINT}/coingecko/RATIO`)).json();
 
     setOracleState(oracleInfos);
 
@@ -256,7 +258,7 @@ export function RFStateProvider({ children = undefined as any }) {
           new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
           poolInfo['farmTVL']) *
         100;
-      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, RATIO_TOKEN_PRICE);
+      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
 
       poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];
     }
@@ -597,16 +599,16 @@ export function usePoolInfo(mint: string) {
 
   return context.poolState ? context.poolState[mint] : null;
 }
-// function useOracleInfo(mint: string) {
-//   const context = React.useContext(RFStateContext);
+export function useOracleInfo(mint: string) {
+  const context = React.useContext(RFStateContext);
 
-//   return context.oracleState[mint];
-// }
+  return context.oracleState[mint];
+}
 
-// function useAllOracleInfo() {
-//   const context = React.useContext(RFStateContext);
-//   return context.oracleState;
-// }
+export function useAllOracleInfo() {
+  const context = React.useContext(RFStateContext);
+  return context.oracleState;
+}
 
 export function useUserOverview() {
   const context = React.useContext(RFStateContext);
