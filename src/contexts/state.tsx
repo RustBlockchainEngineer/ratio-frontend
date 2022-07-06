@@ -37,6 +37,7 @@ interface RFStateConfig {
   poolState: any;
   vaultState: any;
   overview: any;
+  loadingState: boolean;
   appendUserAction: (
     walletKey: string,
     mintCollat: string,
@@ -59,6 +60,7 @@ const RFStateContext = React.createContext<RFStateConfig>({
   overview: {},
   appendUserAction: () => {},
   subscribeTx: () => {},
+  loadingState: false,
 });
 
 export function RFStateProvider({ children = undefined as any }) {
@@ -70,6 +72,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const [poolState, setPoolState] = useState<any>(null);
   const [vaultState, setVaultState] = useState<any>(null);
   const [overview, setOverview] = useState<any>(null);
+  const [loadingState, setLoadingState] = useState<boolean>(false);
 
   const [updateFinished, setUpdateFinished] = useState(false);
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
@@ -451,12 +454,13 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateRFStateOverall = async () => {
     console.log('----- Updating all state -----');
+    setLoadingState(true);
     const globalState = await updateGlobalState();
     const oracleState = await updateOracleState();
     const poolState = await updateAllPoolState(globalState, oracleState);
     const overview = await updateOverview();
     await updateAllVaultState(globalState, oracleState, poolState, overview);
-
+    setLoadingState(false);
     console.log('***** Updated all state *****');
   };
 
@@ -557,6 +561,7 @@ export function RFStateProvider({ children = undefined as any }) {
         poolState,
         vaultState,
         overview,
+        loadingState,
         appendUserAction: appendUserAction,
         subscribeTx,
       }}
@@ -607,6 +612,12 @@ export function usePoolInfo(mint: string) {
 //   const context = React.useContext(RFStateContext);
 //   return context.oracleState;
 // }
+
+export function useLoadingState() {
+  const context = React.useContext(RFStateContext);
+
+  return context.loadingState;
+}
 
 export function useUserOverview() {
   const context = React.useContext(RFStateContext);

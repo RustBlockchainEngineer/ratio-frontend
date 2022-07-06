@@ -31,7 +31,6 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
       });
       if (response.ok) {
         const rawTransactions = await response.json();
-        console.log(rawTransactions);
         const d: any = rawTransactions.sort(function (a: any, b: any) {
           const c: any = new Date(a.created_on);
           const d: any = new Date(b.created_on);
