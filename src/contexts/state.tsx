@@ -17,7 +17,6 @@ import {
   estimateRATIOAPY,
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
-  RATIO_TOKEN_PRICE,
   RATIO_MINT_KEY,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
@@ -192,13 +191,12 @@ export function RFStateProvider({ children = undefined as any }) {
       const oracle = item.account;
       const oracleMint = oracle.mint.toString();
       oracleInfos[oracleMint] = oracle;
+      console.log(oracleMint, oracle.price.toNumber());
     });
 
-    const sbrPrice = await (await fetch(`${API_ENDPOINT}/coingecko/SBR`)).json();
-    oracleInfos[SBR_MINT] = sbrPrice;
+    oracleInfos[SBR_MINT] = await (await fetch(`${API_ENDPOINT}/coingecko/SBR`)).json();
 
-    const ratioPrice = await (await fetch(`${API_ENDPOINT}/coingecko/RATIO`)).json();
-    oracleInfos[RATIO_MINT_KEY] = ratioPrice.error ? RATIO_TOKEN_PRICE : ratioPrice;
+    oracleInfos[RATIO_MINT_KEY] = await (await fetch(`${API_ENDPOINT}/coingecko/RATIO`)).json();
 
     setOracleState(oracleInfos);
 
@@ -601,16 +599,16 @@ export function usePoolInfo(mint: string) {
 
   return context.poolState ? context.poolState[mint] : null;
 }
-// function useOracleInfo(mint: string) {
-//   const context = React.useContext(RFStateContext);
+export function useOracleInfo(mint: string) {
+  const context = React.useContext(RFStateContext);
 
-//   return context.oracleState[mint];
-// }
+  return context.oracleState[mint];
+}
 
-// function useAllOracleInfo() {
-//   const context = React.useContext(RFStateContext);
-//   return context.oracleState;
-// }
+export function useAllOracleInfo() {
+  const context = React.useContext(RFStateContext);
+  return context.oracleState;
+}
 
 export function useUserOverview() {
   const context = React.useContext(RFStateContext);
