@@ -41,6 +41,7 @@ export default function PriceSourceAdditionModal({ show, sources, close, onAdd }
       aria-labelledby="contained-modal-title-vcenter"
       centered
       className="dashboardModal__modal"
+      data-theme="light"
     >
       <Modal.Header>
         <div className="dashboardModal__modal__header">

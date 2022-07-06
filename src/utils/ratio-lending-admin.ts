@@ -17,7 +17,6 @@ import {
 } from './ratio-lending';
 import { CollateralizationRatios, EmergencyState } from '../types/admin-types';
 import BN from 'bn.js';
-import { WalletNotConnectedError } from '@solana/wallet-adapter-base';
 import { sendTransaction } from './rf-web3';
 
 import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA } from './ratio-pda';
@@ -30,7 +29,6 @@ export async function setEmergencyState(connection: Connection, wallet: any, new
 
 async function toggleEmergencyState(connection: Connection, wallet: any, paused: number) {
   try {
-    if (!wallet.publicKey) throw new WalletNotConnectedError();
     const program = getProgramInstance(connection, wallet);
     const globalStateKey = await getGlobalStatePDA();
     const transaction = new Transaction();
@@ -63,7 +61,6 @@ async function toggleEmergencyState(connection: Connection, wallet: any, paused:
 
 // createGlobalState
 export async function createGlobalState(connection: Connection, wallet: any) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = getGlobalStatePDA();
   console.log('globalStateKey', globalStateKey.toBase58());
@@ -199,7 +196,6 @@ export async function createPool(
   swapTokenA: string | PublicKey,
   swapTokenB: string | PublicKey
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
 
   const poolKey = getPoolPDA(mintCollKey);
@@ -283,7 +279,6 @@ export async function updatePool(
   swapTokenA: string | PublicKey,
   swapTokenB: string | PublicKey
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
 
   const poolKey = getPoolPDA(mintCollKey);
@@ -355,7 +350,6 @@ export async function updatePool(
 
 // getPool
 export async function getPool(connection: Connection, wallet: any, poolKey: PublicKey) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
 
   const pool = await program.account.pool.fetchNullable(poolKey);
@@ -364,7 +358,6 @@ export async function getPool(connection: Connection, wallet: any, poolKey: Publ
 
 // getPool
 export async function getAllPools(connection: Connection, wallet: any) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
 
   const all = await program.account.pool.all();
@@ -372,7 +365,6 @@ export async function getAllPools(connection: Connection, wallet: any) {
 }
 
 export async function changeSuperOwner(connection: Connection, wallet: any, newOwner: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
   try {
@@ -399,7 +391,6 @@ export async function changeSuperOwner(connection: Connection, wallet: any, newO
 }
 
 export async function setGlobalTvlLimit(connection: Connection, wallet: any, newTvlLimit: number) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
   try {
@@ -430,7 +421,6 @@ export async function setGlobalDebtCeiling(
   wallet: any,
   newDebtCeiling: number
 ): Promise<boolean> {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
   const program = await getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
 
@@ -467,7 +457,6 @@ export async function setPoolDebtCeiling(
   vaultDebtCeiling: number,
   mintCollKey: PublicKey
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
   const poolKey = await getPoolPDA(mintCollKey);
@@ -491,7 +480,6 @@ export async function setPoolDebtCeiling(
 }
 
 export async function setPoolPaused(connection: Connection, wallet: any, poolKey: PublicKey, value: number) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   console.log('wallet', wallet);
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = getGlobalStatePDA();
@@ -512,7 +500,6 @@ export async function setPoolPaused(connection: Connection, wallet: any, poolKey
 }
 
 export async function setUserDebtCeiling(connection: Connection, wallet: any, newDebtCeiling: number) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   try {
     const program = getProgramInstance(connection, wallet);
     const globalStateKey = await getGlobalStatePDA();
@@ -650,8 +637,6 @@ export async function setDepositFee(connection: Connection, wallet: any, value: 
 }
 
 export async function changeTreasury(connection: Connection, wallet: any, newTreasury: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   try {
     const program = getProgramInstance(connection, wallet);
     const globalStateKey = await getGlobalStatePDA();
@@ -678,8 +663,6 @@ export async function changeTreasury(connection: Connection, wallet: any, newTre
 }
 
 export async function changeOracleReporter(connection: Connection, wallet: any, newReporter: PublicKey) {
-  if (!wallet?.publicKey) throw new WalletNotConnectedError();
-
   try {
     const program = getProgramInstance(connection, wallet);
     const globalStateKey = await getGlobalStatePDA();
@@ -712,7 +695,6 @@ export async function fundRatioRewards(
   ratioAmount: number,
   duration: number
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
   const ratioVault = getATAKey(globalStateKey, RATIO_MINT_KEY);
@@ -744,7 +726,6 @@ export async function fundRatioRewards(
 }
 
 export async function changeFundingWallet(connection: Connection, wallet: any, fundingWallet: PublicKey) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
   const transaction = new Transaction();
@@ -770,7 +751,6 @@ export async function changeRatioMint(
   wallet: any,
   ratioMint: PublicKey = new PublicKey(RATIO_MINT_KEY)
 ) {
-  if (!wallet.publicKey) throw new WalletNotConnectedError();
   const program = getProgramInstance(connection, wallet);
   const globalStateKey = await getGlobalStatePDA();
   const ratioVault = getATAKey(globalStateKey, RATIO_MINT_KEY);

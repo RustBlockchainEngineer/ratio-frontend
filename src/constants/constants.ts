@@ -5,6 +5,7 @@ export const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || 'http://localh
 export enum Roles {
   ADMIN = 'ADMIN',
   USER = 'USER',
+  DEVELOPER = 'DEVELOPER',
 }
 
 export const DEFAULT_NETWORK = process.env.REACT_APP_DEFAULT_NETWORK || 'mainnet';
