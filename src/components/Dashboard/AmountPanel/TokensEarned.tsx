@@ -143,7 +143,13 @@ const TokensEarned = ({ data }: any) => {
               <img src={RatioIcon} alt="RatioIcon" className="tokensearned__icon" /> RATIO
             </td>
             <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} RATIO</td>
-            <td className="align-middle"></td>
+            <td className="align-middle">
+              {!vaultState?.ratioRewardUSD ? (
+                <LoadingSpinner className="spinner-border-sm text-info" />
+              ) : (
+                `$  ${vaultState?.ratioRewardUSD}`
+              )}
+            </td>
             <td>
               <Button
                 className="button--blue tokensearned__harvestBtn btn-block px-2"
