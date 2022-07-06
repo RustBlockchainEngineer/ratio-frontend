@@ -31,7 +31,6 @@ export const WIHTDRAW_ACTION = 'Withdraw';
 export const BORROW_ACTION = 'Borrow';
 export const PAYBACK_ACTION = 'Payback';
 export const HARVEST_ACTION = 'Harvest';
-export const RATIO_TOKEN_PRICE = 0.734518;
 
 //const HISTORY_TO_SHOW = 5;
 export const USD_FAIR_PRICE = true;
@@ -600,15 +599,15 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   return apy;
 }
 
-export function calculateFundAmount(mintAmount: number, apy: number, duration: number) {
+export function calculateFundAmount(mintAmount: number, apy: number, duration: number, ratioPrice: number) {
   const apr = (Math.pow(apy / 100 + 1, 1 / 365) - 1) * 365;
-  const tpd = (apr * mintAmount) / RATIO_TOKEN_PRICE / 365;
+  const tpd = (apr * mintAmount) / ratioPrice / 365;
   const amount = tpd * duration;
   return Math.ceil(amount * 1000000) / 1000000;
 }
 
-export function calculateAPY(mintAmount: number, amount: number, duration: number) {
-  const tpd = (amount * RATIO_TOKEN_PRICE) / duration;
+export function calculateAPY(mintAmount: number, amount: number, duration: number, ratioPrice: number) {
+  const tpd = (amount * ratioPrice) / duration;
   const annual_reward_value = tpd * 365;
   const apr = annual_reward_value / mintAmount;
   const apy = ((1 + apr / 365) ** 365 - 1) * 100;
