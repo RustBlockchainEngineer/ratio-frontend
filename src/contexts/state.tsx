@@ -357,6 +357,7 @@ export function RFStateProvider({ children = undefined as any }) {
         isReachedDebt: mintableUSDr <= 0 && vaultInfo.debt.toNumber() > 0,
         poolInfo,
         ratioReward,
+        ratioRewardUSD: (ratioReward * oracleState[RATIO_MINT_KEY]).toFixed(USDR_MINT_DECIMALS),
       };
     }
     return null;
