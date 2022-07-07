@@ -87,7 +87,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
         data.mint,
         data.realUserRewardMint,
         HARVEST_ACTION,
-        0,
+        vaultState ? vaultState.reward : 0,
         txHash,
         0,
         0,

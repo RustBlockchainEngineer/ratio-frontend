@@ -53,7 +53,7 @@ const TokensEarned = ({ data }: any) => {
         data.mintAddress,
         data.realUserRewardMint,
         HARVEST_ACTION,
-        0,
+        vaultState ? vaultState.reward : 0,
         txHash,
         0,
         0,
@@ -78,12 +78,13 @@ const TokensEarned = ({ data }: any) => {
         () => toast.success('Harvest Ratio Confirmed.'),
         () => toast.error('Harvest Ratio Transaction Failed')
       );
+      console.log('Amount to Harvest ' + vaultState.ratioReward);
       appendUserAction(
         wallet.publicKey.toString(),
         data.mintAddress,
-        data.realUserRewardMint,
+        'ratioMVg27rSZbSvBopUvsdrGUzeALUfFma61mpxc8J',
         HARVEST_ACTION,
-        0,
+        vaultState ? vaultState.ratioReward : 0,
         txHash,
         0,
         0,
