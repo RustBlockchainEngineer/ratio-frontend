@@ -21,7 +21,7 @@ import { sendTransaction } from './rf-web3';
 
 import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA } from './ratio-pda';
 import { USDR_MINT_DECIMALS, USDR_MINT_KEY } from './ratio-lending';
-import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 export async function setEmergencyState(connection: Connection, wallet: any, newState: EmergencyState) {
   await toggleEmergencyState(connection, wallet, newState as number);
@@ -190,11 +190,7 @@ export async function createPool(
   riskLevel: number,
   platformType: PlatformType,
 
-  mintReward: string | PublicKey,
-  oracleMintA: string | PublicKey,
-  oracleMintB: string | PublicKey,
-  swapTokenA: string | PublicKey,
-  swapTokenB: string | PublicKey
+  mintReward: string | PublicKey | undefined
 ) {
   const program = getProgramInstance(connection, wallet);
 
@@ -203,11 +199,11 @@ export async function createPool(
   const globalStateKey = getGlobalStatePDA();
 
   const transaction = new Transaction();
-  const oracleAKey = getOraclePDA(oracleMintA);
-  const oracleBKey = getOraclePDA(oracleMintB);
-
+  const oracleKey = getOraclePDA(mintCollKey);
+  const tmpATACollReserve = getATAKey(globalStateKey, mintCollKey);
+  const rewardMintKey = mintReward ? mintReward : mintCollKey;
   try {
-    await program.account.oracle.fetch(oracleAKey);
+    await program.account.oracle.fetch(oracleKey);
   } catch {
     transaction.add(
       program.instruction.createOracle(
@@ -217,8 +213,8 @@ export async function createPool(
           accounts: {
             authority: wallet.publicKey,
             globalState: globalStateKey,
-            oracle: oracleAKey,
-            mint: oracleMintA, // the mint account that represents the token this oracle reports for
+            oracle: oracleKey,
+            mint: mintCollKey, // the mint account that represents the token this oracle reports for
             // system accts
             ...DEFAULT_PROGRAMS,
           },
@@ -227,26 +223,19 @@ export async function createPool(
     );
   }
 
-  try {
-    await program.account.oracle.fetch(oracleBKey);
-  } catch {
+  if (!(await connection.getAccountInfo(tmpATACollReserve))) {
     transaction.add(
-      program.instruction.createOracle(
-        // price of token
-        new BN(10 ** USDR_MINT_DECIMALS),
-        {
-          accounts: {
-            authority: wallet.publicKey,
-            globalState: globalStateKey,
-            oracle: oracleBKey,
-            mint: oracleMintB, // the mint account that represents the token this oracle reports for
-            // system accts
-            ...DEFAULT_PROGRAMS,
-          },
-        }
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(mintCollKey),
+        tmpATACollReserve,
+        globalStateKey,
+        wallet.publicKey
       )
     );
   }
+
   transaction.add(
     program.instruction.createPool(riskLevel, new BN(POOL_DEBT_CEILING), platformType, {
       accounts: {
@@ -254,9 +243,9 @@ export async function createPool(
         pool: poolKey,
         globalState: globalStateKey,
         mintCollat: mintCollKey,
-        swapTokenA,
-        swapTokenB,
-        mintReward,
+        swapTokenA: tmpATACollReserve,
+        swapTokenB: tmpATACollReserve,
+        mintReward: rewardMintKey,
         ...DEFAULT_PROGRAMS,
       },
     })
@@ -273,11 +262,7 @@ export async function updatePool(
   riskLevel: number,
   platformType: PlatformType,
 
-  mintReward: string | PublicKey,
-  oracleMintA: string | PublicKey,
-  oracleMintB: string | PublicKey,
-  swapTokenA: string | PublicKey,
-  swapTokenB: string | PublicKey
+  mintReward: string | PublicKey
 ) {
   const program = getProgramInstance(connection, wallet);
 
@@ -286,11 +271,11 @@ export async function updatePool(
   const globalStateKey = getGlobalStatePDA();
 
   const transaction = new Transaction();
-  const oracleAKey = getOraclePDA(oracleMintA);
-  const oracleBKey = getOraclePDA(oracleMintB);
-
+  const oracleKey = getOraclePDA(mintCollKey);
+  const tmpATACollReserve = getATAKey(globalStateKey, mintCollKey);
+  const rewardMintKey = mintReward ? mintReward : mintCollKey;
   try {
-    await program.account.oracle.fetch(oracleAKey);
+    await program.account.oracle.fetch(oracleKey);
   } catch {
     transaction.add(
       program.instruction.createOracle(
@@ -300,45 +285,37 @@ export async function updatePool(
           accounts: {
             authority: wallet.publicKey,
             globalState: globalStateKey,
-            oracle: oracleAKey,
-            mint: oracleMintA, // the mint account that represents the token this oracle reports for
+            oracle: oracleKey,
+            mint: mintCollKey, // the mint account that represents the token this oracle reports for
             // system accts
             ...DEFAULT_PROGRAMS,
           },
         }
+      )
+    );
+  }
+  if (!(await connection.getAccountInfo(tmpATACollReserve))) {
+    transaction.add(
+      Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        new PublicKey(mintCollKey),
+        tmpATACollReserve,
+        globalStateKey,
+        wallet.publicKey
       )
     );
   }
 
-  try {
-    await program.account.oracle.fetch(oracleBKey);
-  } catch {
-    transaction.add(
-      program.instruction.createOracle(
-        // price of token
-        new BN(10 ** USDR_MINT_DECIMALS),
-        {
-          accounts: {
-            authority: wallet.publicKey,
-            globalState: globalStateKey,
-            oracle: oracleBKey,
-            mint: oracleMintB, // the mint account that represents the token this oracle reports for
-            // system accts
-            ...DEFAULT_PROGRAMS,
-          },
-        }
-      )
-    );
-  }
   transaction.add(
     program.instruction.updatePool(riskLevel, platformType, {
       accounts: {
         authority: wallet.publicKey,
         pool: poolKey,
         globalState: globalStateKey,
-        swapTokenA,
-        swapTokenB,
-        mintReward,
+        swapTokenA: tmpATACollReserve,
+        swapTokenB: tmpATACollReserve,
+        mintReward: rewardMintKey,
         ...DEFAULT_PROGRAMS,
       },
     })

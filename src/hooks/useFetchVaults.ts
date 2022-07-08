@@ -55,16 +55,17 @@ export const useFetchVaults = (wallet_address: any) => {
           // if (!wallet_address) return;
           const response = await fetch(url);
           let data: LPair[] = [];
-
+          console.log();
           if (response.ok) {
             data = await response.json();
-            console.log(data);
-            data = data.map((item) => {
-              return {
-                ...item,
-                vault_address_id: getPoolPDA(item.address_id).toString(),
-              };
-            });
+            data = data
+              .map((item) => {
+                return {
+                  ...item,
+                  vault_address_id: getPoolPDA(item.address_id).toString(),
+                };
+              })
+              .filter((item) => item.platform_name === 'SABER' || window.location.hostname !== 'app.ratio.finance');
 
             cache.current = data;
           } else {
