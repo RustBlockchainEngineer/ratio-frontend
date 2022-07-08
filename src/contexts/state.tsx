@@ -191,7 +191,6 @@ export function RFStateProvider({ children = undefined as any }) {
       const oracle = item.account;
       const oracleMint = oracle.mint.toString();
       oracleInfos[oracleMint] = oracle;
-      console.log(oracleMint, oracle.price.toNumber());
     });
 
     oracleInfos[SBR_MINT] = await (await fetch(`${API_ENDPOINT}/coingecko/SBR`)).json();
@@ -354,6 +353,7 @@ export function RFStateProvider({ children = undefined as any }) {
         isReachedDebt: mintableUSDr <= 0 && vaultInfo.debt.toNumber() > 0,
         poolInfo,
         ratioReward,
+        ratioRewardUSD: (ratioReward * oracleState[RATIO_MINT_KEY]).toFixed(USDR_MINT_DECIMALS),
       };
     }
     return null;

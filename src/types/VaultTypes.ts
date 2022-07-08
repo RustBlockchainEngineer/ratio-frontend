@@ -91,6 +91,7 @@ export enum PoolProvider {
   'RAYDIUM' = 'RAYDIUM',
   'SABER' = 'SABER',
   'MERCURIAL' = 'MERCURIAL',
+  'SWIM' = 'SWIM',
 }
 
 export interface Token {
