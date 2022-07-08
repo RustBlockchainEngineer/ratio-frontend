@@ -41,7 +41,7 @@ export const PLATFORM_IDS = {
   ORCA: 1,
   SABER: 2,
   MERCURIAL: 3,
-  UNKNOWN: 4,
+  SWIM: 4,
 };
 
 export const DEFAULT_PROGRAMS = {
