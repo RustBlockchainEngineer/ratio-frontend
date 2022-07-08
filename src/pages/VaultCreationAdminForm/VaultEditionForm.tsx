@@ -62,18 +62,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     if (await getLendingPoolByMint(connection, data?.address_id)) {
       toast.info(`Updating Pool ${data?.address_id}`);
       try {
-        await updatePool(
-          connection,
-          wallet,
-          data?.address_id,
-          riskRatingValue,
-          platformID,
-          data.reward_mint,
-          data.token_mint_a,
-          data.token_mint_b,
-          data.token_reserve_a,
-          data.token_reserve_b
-        );
+        await updatePool(connection, wallet, data?.address_id, riskRatingValue, platformID, data.reward_mint);
       } catch {
         toast.error('There was an error when updating the token vault program');
       }
@@ -86,11 +75,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
           data?.address_id,
           riskRatingValue,
           platformID,
-          data.reward_mint,
-          data.token_mint_a,
-          data.token_mint_b,
-          data.token_reserve_a,
-          data.token_reserve_b
+          data.reward_mint
         );
         if (!result) {
           toast.error('There was an error when creating the token vault program');
