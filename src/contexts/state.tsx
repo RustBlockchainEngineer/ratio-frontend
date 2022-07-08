@@ -18,6 +18,7 @@ import {
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
   RATIO_MINT_KEY,
+  PLATFORM_IDS,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
 import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
@@ -247,16 +248,18 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
-
-      poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
-      poolInfo['farmTVL'] =
-        +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() *
-        +new TokenAmount(poolInfo['farmInfo'].totalTokensDeposited, mintInfo.decimals).fixed();
-      poolInfo['farmAPY'] =
-        ((oracleState[SBR_MINT] *
-          new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
-          poolInfo['farmTVL']) *
-        100;
+      console.log(poolInfo.mintCollat.toString(), poolInfo.platformType);
+      if (poolInfo.platformType === PLATFORM_IDS.SABER) {
+        poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
+        poolInfo['farmTVL'] =
+          +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() *
+          +new TokenAmount(poolInfo['farmInfo'].totalTokensDeposited, mintInfo.decimals).fixed();
+        poolInfo['farmAPY'] =
+          ((oracleState[SBR_MINT] *
+            new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
+            poolInfo['farmTVL']) *
+          100;
+      }
       poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
 
       poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];

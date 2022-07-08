@@ -16,7 +16,7 @@ import { createPool, updatePool } from '../../utils/ratio-lending-admin';
 import { getLendingPoolByMint, PLATFORM_IDS } from '../../utils/ratio-lending';
 import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
 import { getPoolPDA } from '../../utils/ratio-pda';
-import { useRFStateInfo } from '../../contexts/state';
+// import { useRFStateInfo } from '../../contexts/state';
 
 interface VaultEditionFormProps {
   values: LPEditionData;
@@ -24,8 +24,8 @@ interface VaultEditionFormProps {
 }
 
 export default function VaultEditionForm({ values, onSave = () => {} }: VaultEditionFormProps) {
-  const globalState = useRFStateInfo();
-  const superOwner = globalState ? globalState.authority.toString() : '';
+  // const globalState = useRFStateInfo();
+  // const superOwner = globalState ? globalState.authority.toString() : '';
 
   const [validated, setValidated] = useState(false);
   const [data, setData] = useState<LPEditionData>(values);
@@ -48,10 +48,10 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
   };
 
   const getOrCreateTokenVault = async (connection: Connection, data: LPEditionData): Promise<PublicKey | undefined> => {
-    if (wallet?.publicKey?.toBase58()?.toLowerCase() !== superOwner?.toLowerCase()) {
-      toast.error("Can't create vault, connected user is not the contract authority");
-      return;
-    }
+    // if (wallet?.publicKey?.toBase58()?.toLowerCase() !== superOwner?.toLowerCase()) {
+    //   toast.error("Can't create vault, connected user is not the contract authority");
+    //   return;
+    // }
     const riskRatingValue: number = RISK_RATING[data?.risk_rating as unknown as keyof typeof RISK_RATING];
     const platformName: string | undefined = platforms?.find((item) => item.id === data.platform_id)?.name;
     if (!platformName) {
