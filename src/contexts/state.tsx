@@ -425,6 +425,7 @@ export function RFStateProvider({ children = undefined as any }) {
         };
       }
     }
+    console.log(vaultInfos);
     setVaultState(vaultInfos);
     return vaultInfos;
   };
@@ -515,9 +516,12 @@ export function RFStateProvider({ children = undefined as any }) {
   }, [toogleUpdateState]);
 
   useEffect(() => {
-    updateRewardDisplay();
+    if (!loadingState) {
+      updateRewardDisplay();
+    }
+
     return () => {};
-  }, [toogleUpdateReward]);
+  }, [toogleUpdateReward, loadingState]);
 
   useEffect(() => {
     if (actionList.length) {
