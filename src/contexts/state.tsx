@@ -18,6 +18,7 @@ import {
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
   RATIO_MINT_KEY,
+  PLATFORM_IDS,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
 import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
@@ -194,7 +195,6 @@ export function RFStateProvider({ children = undefined as any }) {
       const oracle = item.account;
       const oracleMint = oracle.mint.toString();
       oracleInfos[oracleMint] = oracle;
-      console.log(oracleMint, oracle.price.toNumber());
     });
 
     oracleInfos[SBR_MINT] = await (await fetch(`${API_ENDPOINT}/coingecko/SBR`)).json();
@@ -226,13 +226,19 @@ export function RFStateProvider({ children = undefined as any }) {
       );
       const ratio = globalState.collPerRisklv[poolInfo?.riskLevel].toNumber() / 10 ** COLL_RATIOS_DECIMALS;
 
-      const { fairPrice, virtualPrice } = calculateCollateralPrice(
-        lpSupply,
-        tokenAmountA,
-        oracleInfoA.price.toNumber(),
-        tokenAmountB,
-        oracleInfoB.price.toNumber()
-      );
+      const { fairPrice, virtualPrice } =
+        poolInfo.swapMintA.toString() === poolInfo.mintCollat.toString()
+          ? {
+              fairPrice: oracleInfoA.price.toNumber(),
+              virtualPrice: oracleInfoA.price.toNumber(),
+            }
+          : calculateCollateralPrice(
+              lpSupply,
+              tokenAmountA,
+              oracleInfoA.price.toNumber(),
+              tokenAmountB,
+              oracleInfoB.price.toNumber()
+            );
 
       poolInfo.realUserRewardMint =
         poolInfo.mintReward.toString() === SABER_IOU_MINT.toString() ? SBR_MINT : poolInfo.mintReward.toString();
@@ -251,16 +257,21 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
-
-      poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
-      poolInfo['farmTVL'] =
-        +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() *
-        +new TokenAmount(poolInfo['farmInfo'].totalTokensDeposited, mintInfo.decimals).fixed();
-      poolInfo['farmAPY'] =
-        ((oracleState[SBR_MINT] *
-          new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
-          poolInfo['farmTVL']) *
-        100;
+      if (poolInfo.platformType === PLATFORM_IDS.SABER) {
+        poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
+        poolInfo['farmTVL'] =
+          +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() *
+          +new TokenAmount(poolInfo['farmInfo'].totalTokensDeposited, mintInfo.decimals).fixed();
+        poolInfo['farmAPY'] =
+          ((oracleState[SBR_MINT] *
+            new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
+            poolInfo['farmTVL']) *
+          100;
+      } else if (poolInfo.platformType === PLATFORM_IDS.SWIM) {
+        poolInfo['farmInfo'] = null;
+        poolInfo['farmTVL'] = +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() * lpSupply;
+        poolInfo['farmAPY'] = '0.0';
+      }
       poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
 
       poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];

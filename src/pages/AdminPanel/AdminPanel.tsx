@@ -23,37 +23,37 @@ const AdminPanel = () => {
             exact
           />
           <ProtectedRoute
-            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            roles={[Roles.ADMIN, Roles.DEVELOPER]}
             path="/adminpanel/whitelist"
             component={WhitelistAdminForm}
             exact
           />
           <ProtectedRoute
-            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            roles={[Roles.ADMIN, Roles.DEVELOPER]}
             path="/adminpanel/vaults"
             component={VaultCreationAdminForm}
             exact
           />
           <ProtectedRoute
-            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            roles={[Roles.ADMIN, Roles.DEVELOPER]}
             path="/adminpanel/globalparams"
             component={GlobalParamsAdminForm}
             exact
           />
           <ProtectedRoute
-            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            roles={[Roles.ADMIN, Roles.DEVELOPER]}
             path="/adminpanel/tasks"
             component={AdminTasksForm}
             exact
           />
           <ProtectedRoute
-            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            roles={[Roles.ADMIN, Roles.DEVELOPER]}
             path="/adminpanel/tokens"
             component={TokensAdminForm}
             exact
           />
           <ProtectedRoute
-            roles={(Roles.ADMIN, Roles.DEVELOPER)}
+            roles={[Roles.ADMIN, Roles.DEVELOPER]}
             path="/adminpanel/collateralizationratios"
             component={CollRatiosAdminForm}
             exact
