@@ -223,13 +223,19 @@ export function RFStateProvider({ children = undefined as any }) {
       );
       const ratio = globalState.collPerRisklv[poolInfo?.riskLevel].toNumber() / 10 ** COLL_RATIOS_DECIMALS;
 
-      const { fairPrice, virtualPrice } = calculateCollateralPrice(
-        lpSupply,
-        tokenAmountA,
-        oracleInfoA.price.toNumber(),
-        tokenAmountB,
-        oracleInfoB.price.toNumber()
-      );
+      const { fairPrice, virtualPrice } =
+        poolInfo.swapMintA.toString() === poolInfo.mintCollat.toString()
+          ? {
+              fairPrice: oracleInfoA.price.toNumber(),
+              virtualPrice: oracleInfoA.price.toNumber(),
+            }
+          : calculateCollateralPrice(
+              lpSupply,
+              tokenAmountA,
+              oracleInfoA.price.toNumber(),
+              tokenAmountB,
+              oracleInfoB.price.toNumber()
+            );
 
       poolInfo.realUserRewardMint =
         poolInfo.mintReward.toString() === SABER_IOU_MINT.toString() ? SBR_MINT : poolInfo.mintReward.toString();
@@ -248,7 +254,6 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
-      console.log(poolInfo.mintCollat.toString(), poolInfo.platformType);
       if (poolInfo.platformType === PLATFORM_IDS.SABER) {
         poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
         poolInfo['farmTVL'] =
@@ -259,6 +264,10 @@ export function RFStateProvider({ children = undefined as any }) {
             new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
             poolInfo['farmTVL']) *
           100;
+      } else if (poolInfo.platformType === PLATFORM_IDS.SWIM) {
+        poolInfo['farmInfo'] = null;
+        poolInfo['farmTVL'] = +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() * lpSupply;
+        poolInfo['farmAPY'] = '0.0';
       }
       poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
 
