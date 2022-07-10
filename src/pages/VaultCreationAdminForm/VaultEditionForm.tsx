@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Connection, PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 import { Form, Row, Button } from 'react-bootstrap';
@@ -11,12 +12,14 @@ import { useWallet } from '../../contexts/wallet';
 import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
 
 import { FetchingStatus } from '../../types/fetching-types';
-import { LPAssetCreationData, LPEditionData, RISK_RATING } from '../../types/VaultTypes';
+import { LPEditionData, RISK_RATING } from '../../types/VaultTypes';
 import { createPool, updatePool } from '../../utils/ratio-lending-admin';
 import { getLendingPoolByMint, PLATFORM_IDS } from '../../utils/ratio-lending';
-import LPAssetAdditionModal from './LPAssetAdditionModal/LPAssetAdditionModal';
 import { getPoolPDA } from '../../utils/ratio-pda';
 import { useRFStateInfo } from '../../contexts/state';
+import TokenAccountSelector from './TokenAccountSelector';
+import { TokenCreation } from '../../types/admin-types';
+import { useFetchData } from '../../hooks/useFetchData';
 
 interface VaultEditionFormProps {
   values: LPEditionData;
@@ -26,27 +29,25 @@ interface VaultEditionFormProps {
 export default function VaultEditionForm({ values, onSave = () => {} }: VaultEditionFormProps) {
   const globalState = useRFStateInfo();
   const superOwner = globalState ? globalState.authority.toString() : '';
+  const { data: tokens } = useFetchData<TokenCreation[]>('/tokens');
 
   const [validated, setValidated] = useState(false);
   const [data, setData] = useState<LPEditionData>(values);
-
   const { accessToken } = useAuthContextProvider();
   const { data: platforms, status: platformFetchStatus, error: platformFetchError } = useFetchPlatforms();
   const { forceUpdate } = useVaultsContextProvider();
-  const [showModal, setShowModal] = useState(false);
   const connection = useConnection();
   const { wallet } = useWallet();
   const resetValues = () => {
     setData(values);
     setValidated(false);
   };
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setData((values) => ({
       ...values,
       [event.target.name]: event.target.value ?? 0,
     }));
   };
-
   const getOrCreateTokenVault = async (connection: Connection, data: LPEditionData): Promise<PublicKey | undefined> => {
     if (wallet?.publicKey?.toBase58()?.toLowerCase() !== superOwner?.toLowerCase()) {
       toast.error("Can't create vault, connected user is not the contract authority");
@@ -122,13 +123,24 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     toast.info('LPair saved successfully');
     onSave();
   };
-  const handleAddTokenAsset = async (asset: LPAssetCreationData) => {
-    const assets = data.lpasset;
-    assets.push(asset);
-    setData((values) => ({
-      ...values,
-      lpasset: assets,
-    }));
+  const handleUpdateTokenAsset = async (mint, account, assetIndex) => {
+    setData((values) => {
+      const newData = { ...values };
+      if (assetIndex === -1) {
+        newData.assets.push({
+          mint,
+          account,
+        });
+      } else if (mint === '') {
+        newData.assets.splice(assetIndex, 1);
+      } else {
+        newData.assets[assetIndex] = {
+          mint,
+          account,
+        };
+      }
+      return newData;
+    });
   };
   useEffect(() => {
     if (platformFetchStatus === FetchingStatus.Error) {
@@ -147,7 +159,6 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
           />
           <AdminFormInput handleChange={handleChange} label="Token Symbol" name="symbol" value={data?.symbol} />
           <AdminFormInput handleChange={handleChange} label="Icon url" required={true} name="icon" value={data?.icon} />
-
           <AdminFormInput
             handleChange={handleChange}
             label="Deposit Page url"
@@ -156,31 +167,23 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
             value={data?.page_url}
           />
 
-          <AdminFormInput
-            handleChange={handleChange}
-            label="Token A Address"
-            name="token_mint_a"
-            value={data?.token_mint_a}
+          <TokenAccountSelector
+            tokens={tokens}
+            data={{ tokenAccount: '', tokenMint: '', index: -1 }}
+            isFirst={true}
+            isNew={true}
+            onUpdate={handleUpdateTokenAsset}
           />
-
-          <AdminFormInput
-            handleChange={handleChange}
-            label="Token B Address"
-            name="token_mint_b"
-            value={data?.token_mint_b}
-          />
-          <AdminFormInput
-            handleChange={handleChange}
-            label="Token A Reserves"
-            name="token_reserve_a"
-            value={data?.token_reserve_a}
-          />
-          <AdminFormInput
-            handleChange={handleChange}
-            label="Token B Reserves"
-            name="token_reserve_b"
-            value={data?.token_reserve_b}
-          />
+          {data?.assets.map((asset, index) => (
+            <TokenAccountSelector
+              key={asset.account}
+              tokens={tokens}
+              data={{ tokenAccount: asset.account, tokenMint: asset.mint, index }}
+              isFirst={false}
+              isNew={false}
+              onUpdate={handleUpdateTokenAsset}
+            />
+          ))}
           <AdminFormInput
             handleChange={handleChange}
             label="Reward Mint"
@@ -230,44 +233,10 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
               ))}
           </AdminFormInput>
         </Row>
-        {/* <Row>
-          <Button variant="info" className="float-end" type="button" onClick={() => setShowModal(true)}>
-            Add token to vault
-          </Button>
-          <Table className="mt-3" striped bordered hover size="sm">
-            <thead>
-              <tr>
-                <th>Token</th>
-                <th>Pool size</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.lpasset?.length === 0 && (
-                <tr>
-                  <td colSpan={2} className="text-center">
-                    The vault has no tokens added
-                  </td>
-                </tr>
-              )}
-              {data?.lpasset?.length > 0 &&
-                data.lpasset.map((item) => (
-                  <tr key={item.token_address_id}>
-                    <td key={item.token_address_id}>{item.token_address_id}</td>
-                    <td key={item.token_pool_size}>{item.token_pool_size}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </Table>
-        </Row> */}
         <Button variant="primary" type="submit">
           Save
         </Button>
       </Form>
-      <LPAssetAdditionModal
-        show={showModal}
-        close={() => setShowModal(false)}
-        onAdd={handleAddTokenAsset}
-      ></LPAssetAdditionModal>
     </>
   );
 }

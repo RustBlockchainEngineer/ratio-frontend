@@ -59,11 +59,20 @@ export default function VaultsTable() {
     const extendedInfo: any = { ...item };
     if (onChainPoolInfo) {
       extendedInfo.reward_mint = onChainPoolInfo.mintReward.toString();
-      extendedInfo.token_mint_a = onChainPoolInfo.swapMintA.toString();
-      extendedInfo.token_mint_b = onChainPoolInfo.swapMintB.toString();
-      extendedInfo.token_reserve_a = onChainPoolInfo.swapTokenA.toString();
-      extendedInfo.token_reserve_b = onChainPoolInfo.swapTokenB.toString();
+      if (onChainPoolInfo.swapMintA.toString() !== item.address_id) {
+        extendedInfo.assets = [
+          {
+            mint: onChainPoolInfo.swapMintA.toString(),
+            account: onChainPoolInfo.swapTokenA.toString(),
+          },
+          {
+            mint: onChainPoolInfo.swapMintB.toString(),
+            account: onChainPoolInfo.swapTokenB.toString(),
+          },
+        ];
+      }
     }
+    extendedInfo.assets = extendedInfo.assets ?? [];
     setCurrentEdit(extendedInfo);
   };
   const setPoolPause = async (poolKey: string, value: number) => {

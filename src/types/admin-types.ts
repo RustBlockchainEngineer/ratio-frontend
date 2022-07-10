@@ -20,3 +20,19 @@ export enum EmergencyState {
   PAUSED = 1,
   UNKNOWN = -1,
 }
+
+export interface PlatformId {
+  id: string;
+}
+export interface TokenSource {
+  source: string;
+  token_id: string;
+}
+
+export interface TokenCreation {
+  address_id: string;
+  symbol: string;
+  icon: string;
+  platforms: PlatformId[];
+  token_ids: TokenSource[];
+}

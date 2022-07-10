@@ -614,7 +614,7 @@ export function usePoolInfo(mint: string) {
 export function useOracleInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
-  return context.oracleState[mint];
+  return context.oracleState ? context.oracleState[mint] : null;
 }
 
 export function useAllOracleInfo() {

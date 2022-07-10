@@ -52,18 +52,8 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
     collateralization_ratio: vault?.collateralization_ratio ?? null,
     liquidation_ratio: vault?.liquidation_ratio ?? null,
     risk_rating: vault?.risk_rating,
-    lpasset:
-      vault?.lpasset?.map((x) => {
-        return {
-          token_address_id: x.token_address_id,
-          token_pool_size: x.token_pool_size,
-        };
-      }) ?? [],
     reward_mint: vault?.reward_mint,
-    token_mint_a: vault?.token_mint_a,
-    token_mint_b: vault?.token_mint_b,
-    token_reserve_a: vault?.token_reserve_a,
-    token_reserve_b: vault?.token_reserve_b,
+    assets: vault?.assets,
   };
   useEffect(() => {
     if (poolInfo) {
