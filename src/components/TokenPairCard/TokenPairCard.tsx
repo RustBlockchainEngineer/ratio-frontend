@@ -15,7 +15,7 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { usePoolInfo } from '../../contexts/state';
+import { useLoadingState, usePoolInfo } from '../../contexts/state';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { ProgressBarVaultUSDr } from '../Navbar/ProgressBarVaultUSDr';
 import USDrIcon from '../../assets/images/USDr.svg';
@@ -32,8 +32,16 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const hasUserReachedDebtLimit = false;
   const poolInfo = usePoolInfo(data.mint);
   const poolManager = useGetPoolManager(data.item);
+  const loadingState = useLoadingState();
 
   const renderModalButton = (status: boolean) => {
+    if (loadingState) {
+      return (
+        <Button disabled className="button button--blue tokenpaircard__generate mt-2">
+          <LoadingSpinner className="spinner-border-sm text-dark" />
+        </Button>
+      );
+    }
     return (
       <div className="col">
         <div className="d-flex">
@@ -112,7 +120,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
                 <p>TVL {printTvl()}</p>
               </div>
             </div>
-            {data.activeStatus && <div className="tokenpaircard__header--activeSticker">● Active</div>}
+            {!loadingState && data.activeStatus && <div className="tokenpaircard__header--activeSticker">● Active</div>}
           </div>
           <div className="tokenpaircard__aprBox">
             <div className="d-flex justify-content-between align-items-center">
