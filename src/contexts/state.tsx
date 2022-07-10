@@ -18,6 +18,7 @@ import {
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
   RATIO_MINT_KEY,
+  PLATFORM_IDS,
 } from '../utils/ratio-lending';
 import { getBalanceChange, postToRatioApi, prepareTransactionData, TxStatus } from '../utils/ratioApi';
 import { SABER_IOU_MINT_DECIMALS } from '../utils/PoolInfoProvider/saber/saber-utils';
@@ -37,6 +38,7 @@ interface RFStateConfig {
   poolState: any;
   vaultState: any;
   overview: any;
+  loadingState: boolean;
   appendUserAction: (
     walletKey: string,
     mintCollat: string,
@@ -59,6 +61,7 @@ const RFStateContext = React.createContext<RFStateConfig>({
   overview: {},
   appendUserAction: () => {},
   subscribeTx: () => {},
+  loadingState: false,
 });
 
 export function RFStateProvider({ children = undefined as any }) {
@@ -70,6 +73,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const [poolState, setPoolState] = useState<any>(null);
   const [vaultState, setVaultState] = useState<any>(null);
   const [overview, setOverview] = useState<any>(null);
+  const [loadingState, setLoadingState] = useState<boolean>(false);
 
   const [updateFinished, setUpdateFinished] = useState(false);
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
@@ -222,13 +226,19 @@ export function RFStateProvider({ children = undefined as any }) {
       );
       const ratio = globalState.collPerRisklv[poolInfo?.riskLevel].toNumber() / 10 ** COLL_RATIOS_DECIMALS;
 
-      const { fairPrice, virtualPrice } = calculateCollateralPrice(
-        lpSupply,
-        tokenAmountA,
-        oracleInfoA.price.toNumber(),
-        tokenAmountB,
-        oracleInfoB.price.toNumber()
-      );
+      const { fairPrice, virtualPrice } =
+        poolInfo.swapMintA.toString() === poolInfo.mintCollat.toString()
+          ? {
+              fairPrice: oracleInfoA.price.toNumber(),
+              virtualPrice: oracleInfoA.price.toNumber(),
+            }
+          : calculateCollateralPrice(
+              lpSupply,
+              tokenAmountA,
+              oracleInfoA.price.toNumber(),
+              tokenAmountB,
+              oracleInfoB.price.toNumber()
+            );
 
       poolInfo.realUserRewardMint =
         poolInfo.mintReward.toString() === SABER_IOU_MINT.toString() ? SBR_MINT : poolInfo.mintReward.toString();
@@ -247,16 +257,21 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo['tokenAmountB'] = tokenAmountB;
       poolInfo['mintDecimals'] = mintInfo.decimals;
       poolInfo['mintSupply'] = mintInfo.supply;
-
-      poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
-      poolInfo['farmTVL'] =
-        +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() *
-        +new TokenAmount(poolInfo['farmInfo'].totalTokensDeposited, mintInfo.decimals).fixed();
-      poolInfo['farmAPY'] =
-        ((oracleState[SBR_MINT] *
-          new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
-          poolInfo['farmTVL']) *
-        100;
+      if (poolInfo.platformType === PLATFORM_IDS.SABER) {
+        poolInfo['farmInfo'] = await getFarmInfoByPlatform(connection, poolInfo.mintCollat, poolInfo.platformType);
+        poolInfo['farmTVL'] =
+          +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() *
+          +new TokenAmount(poolInfo['farmInfo'].totalTokensDeposited, mintInfo.decimals).fixed();
+        poolInfo['farmAPY'] =
+          ((oracleState[SBR_MINT] *
+            new TokenAmount(poolInfo['farmInfo'].annualRewardsRate, SABER_IOU_MINT_DECIMALS).toEther().toNumber()) /
+            poolInfo['farmTVL']) *
+          100;
+      } else if (poolInfo.platformType === PLATFORM_IDS.SWIM) {
+        poolInfo['farmInfo'] = null;
+        poolInfo['farmTVL'] = +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() * lpSupply;
+        poolInfo['farmAPY'] = '0.0';
+      }
       poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
 
       poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];
@@ -453,12 +468,13 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateRFStateOverall = async () => {
     console.log('----- Updating all state -----');
+    setLoadingState(true);
     const globalState = await updateGlobalState();
     const oracleState = await updateOracleState();
     const poolState = await updateAllPoolState(globalState, oracleState);
     const overview = await updateOverview();
     await updateAllVaultState(globalState, oracleState, poolState, overview);
-
+    setLoadingState(false);
     console.log('***** Updated all state *****');
   };
 
@@ -559,6 +575,7 @@ export function RFStateProvider({ children = undefined as any }) {
         poolState,
         vaultState,
         overview,
+        loadingState,
         appendUserAction: appendUserAction,
         subscribeTx,
       }}
@@ -608,6 +625,12 @@ export function useOracleInfo(mint: string) {
 export function useAllOracleInfo() {
   const context = React.useContext(RFStateContext);
   return context.oracleState;
+}
+
+export function useLoadingState() {
+  const context = React.useContext(RFStateContext);
+
+  return context.loadingState;
 }
 
 export function useUserOverview() {

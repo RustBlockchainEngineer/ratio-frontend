@@ -41,7 +41,7 @@ export const PLATFORM_IDS = {
   ORCA: 1,
   SABER: 2,
   MERCURIAL: 3,
-  UNKNOWN: 4,
+  SWIM: 4,
 };
 
 export const DEFAULT_PROGRAMS = {
@@ -180,22 +180,23 @@ export async function depositCollateralTx(connection: Connection, wallet: any, a
       },
     });
     transaction.add(tx);
-    console.log('creating reward vault');
-
-    const ataRewardVaultKey = getATAKey(vaultKey, mintReward);
-    const ix = await program.instruction.createRewardVault({
-      accounts: {
-        authority: wallet.publicKey,
-        pool: poolKey,
-        vault: vaultKey,
-
-        ataRewardVault: ataRewardVaultKey,
-        mintReward: mintReward,
-
-        ...DEFAULT_PROGRAMS,
-      },
-    });
-    transaction.add(ix);
+    if (mintReward.toString() !== mintCollat.toString()){
+      console.log('creating reward vault');
+      const ataRewardVaultKey = getATAKey(vaultKey, mintReward);
+      const ix = await program.instruction.createRewardVault({
+        accounts: {
+          authority: wallet.publicKey,
+          pool: poolKey,
+          vault: vaultKey,
+  
+          ataRewardVault: ataRewardVaultKey,
+          mintReward: mintReward,
+  
+          ...DEFAULT_PROGRAMS,
+        },
+      });
+      transaction.add(ix); 
+    }
   }
   console.log('depositing collateral to ratio');
 
@@ -564,6 +565,8 @@ export async function getFarmInfoByPlatform(
 ) {
   if (platformType === PLATFORM_IDS.SABER) {
     return await getQuarryInfo(connection, new PublicKey(mintCollKey));
+  } else {
+    return null;
   }
 }
 
@@ -594,7 +597,7 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const annual_reward_value = annual_reward_amount * ratio_price;
   const usdrMinted = +new TokenAmount(poolData.totalDebt.toString(), USDR_MINT_DECIMALS, true).fixed();
 
-  const apr = annual_reward_value / usdrMinted;
+  const apr = annual_reward_value === 0 ? 0 : annual_reward_value / usdrMinted;
   const apy = ((1 + apr / 365) ** 365 - 1) * 100;
   return apy;
 }

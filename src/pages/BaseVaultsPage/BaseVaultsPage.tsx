@@ -143,7 +143,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }, [connected, filter_data, sort_data, view_data, platform_data, vaults, userVaultInfos, poolInfos]);
 
   const showContent = (vtype: string) => {
-    if (!userVaultInfos) {
+    if (!poolInfos) {
       return (
         <div className="d-flex justify-content-center mt-5">
           <LoadingSpinner className="spinner-border-lg text-primary" />
