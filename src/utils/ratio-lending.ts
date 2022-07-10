@@ -180,7 +180,7 @@ export async function depositCollateralTx(connection: Connection, wallet: any, a
       },
     });
     transaction.add(tx);
-    if (mintReward.toString() !== mintCollat.toString()){
+    if (mintReward.toString() !== mintCollat.toString()) {
       console.log('creating reward vault');
       const ataRewardVaultKey = getATAKey(vaultKey, mintReward);
       const ix = await program.instruction.createRewardVault({
@@ -188,14 +188,14 @@ export async function depositCollateralTx(connection: Connection, wallet: any, a
           authority: wallet.publicKey,
           pool: poolKey,
           vault: vaultKey,
-  
+
           ataRewardVault: ataRewardVaultKey,
           mintReward: mintReward,
-  
+
           ...DEFAULT_PROGRAMS,
         },
       });
-      transaction.add(ix); 
+      transaction.add(ix);
     }
   }
   console.log('depositing collateral to ratio');
