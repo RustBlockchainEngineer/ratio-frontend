@@ -436,7 +436,6 @@ export function RFStateProvider({ children = undefined as any }) {
         };
       }
     }
-    console.log(vaultInfos);
     setVaultState(vaultInfos);
     return vaultInfos;
   };
@@ -457,6 +456,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateRFStateByMint = async (mint) => {
     console.log('----- Updating state by mint -----');
+    setLoadingState(true);
     await updateVaultStateByMint(globalState, oracleState, poolState[mint], overview, mint);
 
     const newGlobalState = await updateGlobalState();
@@ -464,6 +464,7 @@ export function RFStateProvider({ children = undefined as any }) {
     const newPoolState = await updatePoolStateByMint(newGlobalState, newOracleState, mint);
     const newOverview = await updateOracleState();
     await updateVaultStateByMint(newGlobalState, newOracleState, newPoolState[mint], newOverview, mint);
+    setLoadingState(false);
     console.log('***** Updated state by mint *****');
   };
 

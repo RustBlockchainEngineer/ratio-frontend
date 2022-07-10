@@ -113,7 +113,6 @@ const VaultDashboard = () => {
 
   useEffect(() => {
     if (userVaultInfo && poolInfo) {
-      console.log('asdf');
       const tmpWithdrawValue = new TokenAmount((userVaultInfo as any).totalColl, poolInfo?.mintDecimals).fixed();
       setWithdrawValue(Number(tmpWithdrawValue));
     }
