@@ -172,6 +172,7 @@ export function RFStateProvider({ children = undefined as any }) {
     if (state) {
       info = {
         ...state,
+        tvlUsd: globalState?.tvlUsd,
         mintableUSDr: Math.max(
           0,
           parseFloat(
@@ -311,7 +312,7 @@ export function RFStateProvider({ children = undefined as any }) {
     }
     setGlobalState({
       ...globalState,
-      tvlUsd: newGlobalTVL,
+      tvlUsd: BN.max(globalState.totalDebt.muln(1.10567), newGlobalTVL),
     });
     setPoolState(poolInfos);
     return poolInfos;
