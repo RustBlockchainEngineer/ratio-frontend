@@ -808,6 +808,32 @@ export type RatioLending = {
       ];
     },
     {
+      name: 'setPoolFarmId';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'globalState';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: 'farmId';
+          type: 'publicKey';
+        }
+      ];
+    },
+    {
       name: 'updatePool';
       accounts: [
         {
@@ -1218,6 +1244,337 @@ export type RatioLending = {
           type: 'u8';
         }
       ];
+    },
+    {
+      name: 'createRaydiumLedger';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'raydiumProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakePool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakerInfo';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: 'stakeCollateralToRaydium';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'raydiumProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakePool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'poolAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakerInfo';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ataCollatVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultLpToken';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'destRewardTokenA';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultRewardTokenA';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'destRewardTokenB';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultRewardTokenB';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clock';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: 'amtToStake';
+          type: {
+            option: 'u64';
+          };
+        }
+      ];
+    },
+    {
+      name: 'unstakeCollateralFromRaydium';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'raydiumProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakePool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'poolAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakerInfo';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ataCollatVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultLpToken';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'destRewardTokenA';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultRewardTokenA';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'destRewardTokenB';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultRewardTokenB';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clock';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: 'amount';
+          type: 'u64';
+        }
+      ];
+    },
+    {
+      name: 'harvestRewardsFromRaydium';
+      accounts: [
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'raydiumProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakePool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'poolAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakerInfo';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ataCollatVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultLpToken';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'destRewardTokenA';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultRewardTokenA';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'destRewardTokenB';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vaultRewardTokenB';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clock';
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
     },
     {
       name: 'stakeCollateralToSaber';
@@ -1788,7 +2145,13 @@ export type RatioLending = {
         kind: 'enum';
         variants: [
           {
+            name: 'Raydium';
+          },
+          {
             name: 'Saber';
+          },
+          {
+            name: 'Swim';
           },
           {
             name: 'Unknown';
@@ -1910,6 +2273,16 @@ export type RatioLending = {
     },
     {
       code: 6022;
+      name: 'InvalidFarmId';
+      msg: 'Wrong farm id';
+    },
+    {
+      code: 6023;
+      name: 'LedgerNotCreated';
+      msg: 'Create Raydium Ledger first';
+    },
+    {
+      code: 6024;
       name: 'InvalidFundingWallet';
       msg: 'Invalid Funding Wallet';
     }
@@ -2726,6 +3099,32 @@ export const IDL: RatioLending = {
       ],
     },
     {
+      name: 'setPoolFarmId',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'globalState',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'farmId',
+          type: 'publicKey',
+        },
+      ],
+    },
+    {
       name: 'updatePool',
       accounts: [
         {
@@ -3136,6 +3535,337 @@ export const IDL: RatioLending = {
           type: 'u8',
         },
       ],
+    },
+    {
+      name: 'createRaydiumLedger',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'raydiumProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakePool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakerInfo',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: 'stakeCollateralToRaydium',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'raydiumProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakePool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'poolAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakerInfo',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ataCollatVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultLpToken',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'destRewardTokenA',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultRewardTokenA',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'destRewardTokenB',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultRewardTokenB',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clock',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'amtToStake',
+          type: {
+            option: 'u64',
+          },
+        },
+      ],
+    },
+    {
+      name: 'unstakeCollateralFromRaydium',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'raydiumProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakePool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'poolAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakerInfo',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ataCollatVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultLpToken',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'destRewardTokenA',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultRewardTokenA',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'destRewardTokenB',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultRewardTokenB',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clock',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'amount',
+          type: 'u64',
+        },
+      ],
+    },
+    {
+      name: 'harvestRewardsFromRaydium',
+      accounts: [
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'raydiumProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakePool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'poolAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakerInfo',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ataCollatVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultLpToken',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'destRewardTokenA',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultRewardTokenA',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'destRewardTokenB',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vaultRewardTokenB',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clock',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
     },
     {
       name: 'stakeCollateralToSaber',
@@ -3706,7 +4436,13 @@ export const IDL: RatioLending = {
         kind: 'enum',
         variants: [
           {
+            name: 'Raydium',
+          },
+          {
             name: 'Saber',
+          },
+          {
+            name: 'Swim',
           },
           {
             name: 'Unknown',
@@ -3828,6 +4564,16 @@ export const IDL: RatioLending = {
     },
     {
       code: 6022,
+      name: 'InvalidFarmId',
+      msg: 'Wrong farm id',
+    },
+    {
+      code: 6023,
+      name: 'LedgerNotCreated',
+      msg: 'Create Raydium Ledger first',
+    },
+    {
+      code: 6024,
       name: 'InvalidFundingWallet',
       msg: 'Invalid Funding Wallet',
     },
