@@ -593,7 +593,7 @@ const ONE_YEAR_IN_SEC = 365 * 24 * 3600;
 
 export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const currentTimeStamp = Math.ceil(new Date().getTime() / 1000);
-  if(poolData.lastRewardFundEnd.toNumber() < currentTimeStamp){
+  if (poolData.lastRewardFundEnd.toNumber() < currentTimeStamp) {
     return 0;
   }
   const annual_reward_amount =
