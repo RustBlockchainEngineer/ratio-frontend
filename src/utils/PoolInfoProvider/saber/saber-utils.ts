@@ -397,7 +397,7 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
       return 0;
     }
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     return 0;
   }
 }

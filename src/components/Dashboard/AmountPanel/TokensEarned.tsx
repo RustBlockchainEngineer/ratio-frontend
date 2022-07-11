@@ -116,7 +116,7 @@ const TokensEarned = ({ data }: any) => {
               {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
               <div className="tokensearned__name">
                 <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
-                <span>{poolManager?.getTokenName()}</span>
+                {/* <span>{poolManager?.getTokenName()}</span> */}
               </div>
             </td>
             <td className="align-middle">
@@ -141,7 +141,7 @@ const TokensEarned = ({ data }: any) => {
           </tr>
           <tr>
             <td className="tokensearned__name" style={{ gap: 12 }}>
-              <img src={RatioIcon} alt="RatioIcon" className="tokensearned__icon" /> RATIO
+              <img src={RatioIcon} alt="RatioIcon" className="tokensearned__icon" />
             </td>
             <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} RATIO</td>
             <td className="align-middle">
