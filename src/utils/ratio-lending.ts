@@ -576,7 +576,7 @@ export function estimateRatioRewards(poolData: any, vaultData: any) {
   const duration = new BN(Math.max(currentTimeStamp - poolData.lastRewardTime, 0));
 
   const reward_per_share =
-    poolData.lastRewardFundEnd > currentTimeStamp
+    poolData.lastRewardFundEnd.toNumber() > currentTimeStamp
       ? poolData.tokenPerSecond.mul(duration).mul(ACC_PRECISION).div(poolData.totalDebt)
       : new BN(0);
   const acc_reward_per_share = poolData.accRewardPerShare.add(reward_per_share);
@@ -592,8 +592,12 @@ export function estimateRatioRewards(poolData: any, vaultData: any) {
 const ONE_YEAR_IN_SEC = 365 * 24 * 3600;
 
 export function estimateRATIOAPY(poolData: any, ratio_price: number) {
+  const currentTimeStamp = Math.ceil(new Date().getTime() / 1000);
+  if(poolData.lastRewardFundEnd.toNumber() < currentTimeStamp){
+    return 0;
+  }
   const annual_reward_amount =
-    Number(new TokenAmount(poolData.tokenPerSecond, RATIO_MINT_DECIMALS).fixed()) * ONE_YEAR_IN_SEC;
+    Number(new TokenAmount(poolData.tokenPerSecond.toString(), RATIO_MINT_DECIMALS).fixed()) * ONE_YEAR_IN_SEC;
   const annual_reward_value = annual_reward_amount * ratio_price;
   const usdrMinted = +new TokenAmount(poolData.totalDebt.toString(), USDR_MINT_DECIMALS, true).fixed();
 
