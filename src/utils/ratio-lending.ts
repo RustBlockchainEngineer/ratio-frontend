@@ -592,6 +592,23 @@ export function estimateRatioRewards(poolData: any, vaultData: any) {
 const ONE_YEAR_IN_SEC = 365 * 24 * 3600;
 
 export function estimateRATIOAPY(poolData: any, ratio_price: number) {
+  const apr = estimateRATIOAPR(poolData, ratio_price);
+  const apy = ((1 + apr / 365) ** 365 - 1);
+  return apy;
+}
+
+export function calculateFundAmountFromAPY(mintAmount: number, apy: number, duration: number, ratioPrice: number) {
+  const apr = (Math.pow(apy / 100 + 1, 1 / 365) - 1) * 365;
+  return calculateFundAmountFromAPR(mintAmount, apr, duration, ratioPrice);
+}
+
+export function calculateAPYFromFundAmount(mintAmount: number, amount: number, duration: number, ratioPrice: number) {
+  const apr = calculateAPRFromFundAmount(mintAmount, amount, duration, ratioPrice);
+  const apy = ((1 + apr / 100 / 365) ** 365 - 1);
+  return apy;
+}
+
+export function estimateRATIOAPR(poolData: any, ratio_price: number) {
   const currentTimeStamp = Math.ceil(new Date().getTime() / 1000);
   if (poolData.lastRewardFundEnd.toNumber() < currentTimeStamp) {
     return 0;
@@ -602,21 +619,19 @@ export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const usdrMinted = +new TokenAmount(poolData.totalDebt.toString(), USDR_MINT_DECIMALS, true).fixed();
 
   const apr = annual_reward_value === 0 ? 0 : annual_reward_value / usdrMinted;
-  const apy = ((1 + apr / 365) ** 365 - 1) * 100;
-  return apy;
+  return apr;
 }
 
-export function calculateFundAmount(mintAmount: number, apy: number, duration: number, ratioPrice: number) {
-  const apr = (Math.pow(apy / 100 + 1, 1 / 365) - 1) * 365;
+export function calculateFundAmountFromAPR(mintAmount: number, apr: number, duration: number, ratioPrice: number) {
   const tpd = (apr * mintAmount) / ratioPrice / 365;
   const amount = tpd * duration;
   return Math.ceil(amount * 1000000) / 1000000;
 }
 
-export function calculateAPY(mintAmount: number, amount: number, duration: number, ratioPrice: number) {
+export function calculateAPRFromFundAmount(mintAmount: number, amount: number, duration: number, ratioPrice: number) {
   const tpd = (amount * ratioPrice) / duration;
   const annual_reward_value = tpd * 365;
   const apr = annual_reward_value / mintAmount;
-  const apy = ((1 + apr / 365) ** 365 - 1) * 100;
-  return Math.ceil(apy * 100) / 100;
+  return apr;
 }
+

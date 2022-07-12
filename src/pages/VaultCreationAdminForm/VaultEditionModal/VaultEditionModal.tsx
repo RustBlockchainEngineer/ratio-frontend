@@ -9,8 +9,8 @@ import { useConnection } from '../../../contexts/connection';
 import { useWallet } from '../../../contexts/wallet';
 import { PublicKey } from '@solana/web3.js';
 import {
-  calculateAPY,
-  calculateFundAmount,
+  calculateAPRFromFundAmount,
+  calculateFundAmountFromAPR,
   RATIO_MINT_DECIMALS,
   RATIO_MINT_KEY,
   USDR_MINT_DECIMALS,
@@ -36,7 +36,7 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
   const [lastRewardFundStart, setLastRewardFundStart] = useState('');
   const [lastRewardFundEnd, setLastRewardFundEnd] = useState('');
   const [ratioRewardsAmount, setRatioRewardsAmount] = useState(0);
-  const [ratioRewardAPY, setRatioRewardAPY] = useState(0);
+  const [ratioRewardAPR, setRatioRewardAPY] = useState(0);
   const usdrAmountMinted = poolInfo ? poolInfo.totalDebt.toNumber() / 10 ** USDR_MINT_DECIMALS : 0;
   const [cvtApy2Amount, setCvtApy2Amount] = useState(false);
 
@@ -82,13 +82,18 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
 
   useEffect(() => {
     if (cvtApy2Amount) {
-      const amount = calculateFundAmount(usdrAmountMinted, ratioRewardAPY, ratioRewardsDuration, ratioPrice);
+      const amount = calculateFundAmountFromAPR(
+        usdrAmountMinted,
+        ratioRewardAPR / 100,
+        ratioRewardsDuration,
+        ratioPrice
+      );
       setRatioRewardsAmount(amount);
     } else {
-      const apy = calculateAPY(usdrAmountMinted, ratioRewardsAmount, ratioRewardsDuration, ratioPrice);
-      setRatioRewardAPY(apy);
+      const apr = calculateAPRFromFundAmount(usdrAmountMinted, ratioRewardsAmount, ratioRewardsDuration, ratioPrice);
+      setRatioRewardAPY(apr * 100);
     }
-  }, [cvtApy2Amount, usdrAmountMinted, ratioRewardsDuration, ratioRewardAPY, ratioRewardsAmount]);
+  }, [cvtApy2Amount, usdrAmountMinted, ratioRewardsDuration, ratioRewardAPR, ratioRewardsAmount]);
 
   const handlePoolDebtCelilingChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value: any = event.target.value ?? 0;
@@ -98,7 +103,7 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
     const value: any = event.target.value ?? 0;
     setRatioRewardsAmount(value);
   };
-  const handleRatioRewardAPY = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleRatioRewardAPR = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value: any = event.target.value ?? 0;
     console.log(value);
     setRatioRewardAPY(value);
@@ -107,7 +112,7 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
     const value: any = event.target.value ?? 0;
     setRatioRewardsDuration(value);
   };
-  const handleAPY2Amount = () => {
+  const handleAPR2Amount = () => {
     setCvtApy2Amount((prev) => !prev);
   };
   const savePoolDebtCeiling = async () => {
@@ -180,10 +185,10 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
           </h5>
           {cvtApy2Amount ? (
             <AdminFormInput
-              handleChange={handleRatioRewardAPY}
-              label="APY(%)"
-              name="ratioRewardAPY"
-              value={ratioRewardAPY}
+              handleChange={handleRatioRewardAPR}
+              label="APR(%)"
+              name="ratioRewardAPR"
+              value={ratioRewardAPR}
             />
           ) : (
             <AdminFormInput
@@ -193,7 +198,7 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
               value={ratioRewardsAmount}
             />
           )}
-          <Button onClick={handleAPY2Amount}>
+          <Button onClick={handleAPR2Amount}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="inherit">
               <path
                 fillRule="evenodd"
@@ -212,10 +217,10 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
             />
           ) : (
             <AdminFormInput
-              handleChange={handleRatioRewardAPY}
-              label="APY(%)"
-              name="ratioRewardAPY"
-              value={ratioRewardAPY}
+              handleChange={handleRatioRewardAPR}
+              label="APR(%)"
+              name="ratioRewardAPR"
+              value={ratioRewardAPR}
             />
           )}
           <Button onClick={fundRewards}>Fund RATIO rewards</Button>
