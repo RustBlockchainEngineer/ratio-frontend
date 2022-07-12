@@ -173,7 +173,7 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
               </h6>
             </div>
             <div className="mt-2 d-flex justify-content-between">
-              <h6>APY:</h6>
+              <h6>APR:</h6>
               <div className="d-flex align-items-start">
                 <h6 className="semiBold">{Number(data?.apr + data?.ratioAPY).toFixed(2)}%</h6>
                 {data.ratioAPY !== 0 && (
@@ -184,10 +184,10 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
                       <Tooltip id="tooltip">
                         <div className="activepaircard__overlaytooltip">
                           <p>
-                            <strong>APY</strong> is made up of:
+                            <strong>APR</strong> is made up of:
                           </p>
                           <div className="mb-1">
-                            <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                            <img src={USDrIcon} alt="USDrIcon" /> Ratio APR: {Number(data?.ratioAPY).toFixed(2)}%
                           </div>
                           <div>
                             <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
