@@ -86,7 +86,7 @@ const VaultSetupContainer = ({ data }: any) => {
         -depositAmount,
         txHash,
         poolInfo.fairPrice,
-        poolInfo.marketPrice,
+        poolInfo.virtualPrice,
         0
       );
       history.push(`/dashboard/vaultdashboard/${data.mint}`);
