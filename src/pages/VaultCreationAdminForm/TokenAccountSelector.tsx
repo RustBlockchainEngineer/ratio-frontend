@@ -48,24 +48,26 @@ export default function TokenAccountSelector({ tokens, data, isFirst, isNew, onU
           </option>
         ))}
       </AdminFormInput>
-      <Button
-        size="sm"
-        disabled={!tokenMint}
-        onClick={() => {
-          onUpdate(tokenMint, tokenAccount, data.index);
-          if (isNew) {
-            setTokenMint('');
-            setTokenAccount('');
-          }
-        }}
-      >
-        {isNew ? '++' : '>>'}
-      </Button>
-      {!isNew && (
-        <Button variant="danger" onClick={() => onUpdate('', '', data.index)}>
-          --
-        </Button>
-      )}
+      <div style={{ lineHeight: isFirst ? 6 : 5 }}>
+        <Button
+          size="sm"
+          disabled={!tokenMint}
+          onClick={() => {
+            onUpdate(tokenMint, tokenAccount, data.index);
+            if (isNew) {
+              setTokenMint('');
+              setTokenAccount('');
+            }
+          }}
+        >
+          {isNew ? '++' : '>>'}
+        </Button>{' '}
+        {!isNew && (
+          <Button size="sm" variant="danger" onClick={() => onUpdate('', '', data.index)}>
+            --
+          </Button>
+        )}
+      </div>
     </>
   );
 }

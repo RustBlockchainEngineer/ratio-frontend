@@ -13,6 +13,7 @@ import { useWallet } from '../../../contexts/wallet';
 import { FetchingStatus } from '../../../types/fetching-types';
 import { LPair, LPEditionData } from '../../../types/VaultTypes';
 import { getAllPools, setPoolPaused } from '../../../utils/ratio-lending-admin';
+import { shortenizeAddress } from '../../../utils/utils';
 import VaultEditionModal from '../VaultEditionModal';
 
 export default function VaultsTable() {
@@ -124,8 +125,8 @@ export default function VaultsTable() {
             {vaults?.map((item) => (
               <tr key={item.address_id}>
                 <td>{poolInfos[item.address_id] && poolInfos[item.address_id].isPaused ? 'Paused' : ''}</td>
-                <td>{item.address_id}</td>
-                <td>{item.vault_address_id.slice(0, 4) + '....' + item.vault_address_id.slice(-4)}</td>
+                <td>{shortenizeAddress(item.address_id)}</td>
+                <td>{shortenizeAddress(item.vault_address_id)}</td>
                 <td>{item.symbol}</td>
                 <td>{item.created_on}</td>
                 <td>{item.platform_name}</td>
