@@ -593,7 +593,7 @@ const ONE_YEAR_IN_SEC = 365 * 24 * 3600;
 
 export function estimateRATIOAPY(poolData: any, ratio_price: number) {
   const apr = estimateRATIOAPR(poolData, ratio_price);
-  const apy = ((1 + apr / 365) ** 365 - 1);
+  const apy = (1 + apr / 365) ** 365 - 1;
   return apy;
 }
 
@@ -604,7 +604,7 @@ export function calculateFundAmountFromAPY(mintAmount: number, apy: number, dura
 
 export function calculateAPYFromFundAmount(mintAmount: number, amount: number, duration: number, ratioPrice: number) {
   const apr = calculateAPRFromFundAmount(mintAmount, amount, duration, ratioPrice);
-  const apy = ((1 + apr / 100 / 365) ** 365 - 1);
+  const apy = (1 + apr / 100 / 365) ** 365 - 1;
   return apy;
 }
 
@@ -634,4 +634,3 @@ export function calculateAPRFromFundAmount(mintAmount: number, amount: number, d
   const apr = annual_reward_value / mintAmount;
   return apr;
 }
-
