@@ -21,7 +21,13 @@ const Breadcrumb = ({ vaultData, availableVaults }: any) => {
 
   useEffect(() => {
     const p = availableVaults.map((item: any) => {
-      return { label: item.title, icon1: item.icons[0], icon2: item.icons[1], icon: item.icon, value: item.mint };
+      return {
+        label: item.title,
+        icon1: item.icons ? item.icons[0] : '',
+        icon2: item.icons ? item.icons[1] : '',
+        icon: item.icon,
+        value: item.mint,
+      };
     });
     setOptions(p);
   }, [availableVaults]);
