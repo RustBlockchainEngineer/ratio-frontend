@@ -102,9 +102,9 @@ export interface Token {
   updated_on?: number;
 }
 
-export interface LPAssetCreationData {
-  token_address_id: string;
-  token_pool_size: number;
+export interface UnderlyingAssetInfo {
+  mint: string;
+  account: string;
 }
 
 export interface LPEditionData {
@@ -119,11 +119,7 @@ export interface LPEditionData {
   collateralization_ratio: Maybe<number>;
   liquidation_ratio: Maybe<number>;
   risk_rating: Maybe<string>;
-  lpasset: LPAssetCreationData[];
 
   reward_mint: string;
-  token_mint_a: string;
-  token_mint_b: string;
-  token_reserve_a: string;
-  token_reserve_b: string;
+  assets: UnderlyingAssetInfo[];
 }
