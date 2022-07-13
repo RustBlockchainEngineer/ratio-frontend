@@ -43,10 +43,13 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     setValidated(false);
   };
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setData((values) => ({
-      ...values,
-      [event.target.name]: event.target.value ?? 0,
-    }));
+    const newValues = { ...values };
+    newValues[event.target.name] = event.target.value ?? 0;
+
+    if (event.target.name === 'platform_id') {
+      newValues['platform_symbol'] = platforms[platforms.map((plt) => plt.id).indexOf(event.target.value)].name;
+    }
+    setData(newValues);
   };
   const getOrCreateTokenVault = async (connection: Connection, data: LPEditionData): Promise<PublicKey | undefined> => {
     if (wallet?.publicKey?.toBase58()?.toLowerCase() !== superOwner?.toLowerCase()) {
@@ -207,13 +210,6 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
               </option>
             ))}
           </AdminFormInput>
-          <AdminFormInput
-            handleChange={handleChange}
-            label="Platform's symbol"
-            required={true}
-            name="platform_symbol"
-            value={data?.platform_symbol}
-          />
           <AdminFormInput
             handleChange={handleChange}
             label="Risk rating"

@@ -59,14 +59,14 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
     if (poolInfo) {
       const debtCeiling = poolInfo.debtCeiling.toNumber() / 10 ** USDR_MINT_DECIMALS;
       setPoolDebtCeilingValue(debtCeiling);
-      const lastRewardFundStart = poolInfo.lastRewardFundStart.toNumber();
-      const lastRewardFundEnd = poolInfo.lastRewardFundEnd.toNumber();
-      const lastRewardFundAmount = poolInfo.lastRewardFundAmount.toNumber();
-      const days = Math.round((lastRewardFundEnd - lastRewardFundStart) / (3600 * 24));
+      const newLastRewardFundStart = poolInfo.lastRewardFundStart.toNumber();
+      const newLastRewardFundEnd = poolInfo.lastRewardFundEnd.toNumber();
+      const newLastRewardFundAmount = poolInfo.lastRewardFundAmount.toNumber();
+      const days = Math.round((newLastRewardFundEnd - newLastRewardFundStart) / (3600 * 24));
       setRatioRewardsDuration(days);
-      setLastRewardFundStart(getDateStr(lastRewardFundStart));
-      setLastRewardFundEnd(getDateStr(lastRewardFundEnd));
-      setRatioRewardsAmount(Math.round(lastRewardFundAmount / 10 ** RATIO_MINT_DECIMALS));
+      setLastRewardFundStart(getDateStr(newLastRewardFundStart));
+      setLastRewardFundEnd(getDateStr(newLastRewardFundEnd));
+      setRatioRewardsAmount(Math.round(newLastRewardFundAmount / 10 ** RATIO_MINT_DECIMALS));
     }
   }, [vault]);
 
