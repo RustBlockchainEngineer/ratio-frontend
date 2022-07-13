@@ -165,6 +165,10 @@ const VaultDashboard = () => {
       </div>
     );
 
+  const isSinglePool = () => {
+    return vaultData?.platform?.symbol === 'Saber';
+  };
+
   return (
     <>
       <TokenCapBanner mint={vault_mint as string} />
@@ -178,7 +182,7 @@ const VaultDashboard = () => {
               <div>
                 <h3>{vaultData.title === 'USDC-USDR' ? 'USDC-USDr' : vaultData.title} Vault</h3>
                 {isMobile && (
-                  <a href={solanaBeachUrl} rel="noreferrer" target="_blank">
+                  <a href={solanaBeachUrl} rel="noreferrer" target="_blank" className="!flex gap-2 items-center">
                     View on Solana Beach
                     <img src={share} alt="share" />
                   </a>
@@ -186,7 +190,7 @@ const VaultDashboard = () => {
               </div>
               <div className="row align-items-center no-md-gutters">
                 <div className="col-lg-auto col-md-4 col-sm-12">
-                  <RiskLevel level={vaultData.risk} />
+                  <RiskLevel level={vaultData.risk} isSinglePool={isSinglePool()} />
                 </div>
                 <div className="col-lg-auto col-md-4 col-sm-12">
                   <MintableProgressBar mint={vault_mint as string} />
@@ -197,8 +201,8 @@ const VaultDashboard = () => {
                 </div>
                 <div className="col-lg-auto col-md-12 vaultdashboard__header_rightBox col-md-2 col-sm-12 ml-auto">
                   {isDesktop && (
-                    <div className="text-right mb-4">
-                      <img src={share} alt="share" />
+                    <div className="flex flex-col items-end justify-end mb-4">
+                      <img src={share} alt="share" className="" />
                       <a href={solanaBeachUrl} rel="noopener noreferrer" target="_blank">
                         View on
                       </a>

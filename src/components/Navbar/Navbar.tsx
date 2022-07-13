@@ -6,6 +6,7 @@ import { useWallet } from '../../contexts/wallet';
 import NavbarItem from './../NavbarItem/NavbarItem';
 // import Button from '../Button';
 import logo from '../../assets/images/logo-side.svg';
+// import instaBuyIcon from '../../assets/images/insta-buy-icon.svg';
 import darkLogo from '../../assets/images/dark-logoside.svg';
 import collapseLogo from '../../assets/images/image-logo.svg';
 import allVaultsIcon from '../../assets/images/all-vaults-icon.svg';
@@ -93,12 +94,20 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
   };
 
   return (
-    <div className={classNames('navbar-vertical', { 'navbar-vertical--collapse': collapseFlag }, { closed: open })}>
-      <img
-        src={collapseFlag ? collapseLogo : darkMode ? darkLogo : logo}
-        alt="logo"
-        className="mt-md-0 ml-md-0 mt-4 ml-4"
-      />
+    <div
+      className={classNames(
+        'navbar-vertical text-center',
+        { 'navbar-vertical--collapse': collapseFlag },
+        { closed: open }
+      )}
+    >
+      <div className="flex justify-center">
+        <img
+          src={collapseFlag ? collapseLogo : darkMode ? darkLogo : logo}
+          alt="logo"
+          className="mt-md-0 ml-md-0 mt-4 ml-4"
+        />
+      </div>
       <div className="mt-4">
         <NavbarItem
           icon={allVaultsIcon}
@@ -140,6 +149,7 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
           active={navIndex === '/dashboard/insta-buy-lp'}
           navIndex="/dashboard/insta-buy-lp"
           onItemClick={onItemClick}
+          collapseFlag={false}
         /> */}
         <div
           className="navbar-vertical__atrixItem"
@@ -152,7 +162,7 @@ const Navbar = ({ clickMenuItem, open, darkMode, collapseFlag, setCollapseFlag }
               className="navbar-vertical__atrixItem--logo"
             />
           )}
-          <div>
+          <div className="!flex">
             <a
               target="_blank"
               href="https://app.atrix.finance/liquidity/7V7igBALu1xyu4ZkXfuS6LnfkZ1aA6DKBx55ouA6Jhbm/deposit"
