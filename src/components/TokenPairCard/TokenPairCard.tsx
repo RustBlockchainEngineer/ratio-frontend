@@ -15,7 +15,7 @@ import smallRatioIcon from '../../assets/images/smallRatio.svg';
 import { IoAlertCircleOutline } from 'react-icons/io5';
 import linkIcon from '../../assets/images/link.svg';
 import LoadingSpinner from '../../atoms/LoadingSpinner';
-import { usePoolInfo } from '../../contexts/state';
+import { useLoadingState, usePoolInfo } from '../../contexts/state';
 import { useGetPoolManager } from '../../hooks/useGetPoolManager';
 import { ProgressBarVaultUSDr } from '../Navbar/ProgressBarVaultUSDr';
 import USDrIcon from '../../assets/images/USDr.svg';
@@ -32,8 +32,16 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
   const hasUserReachedDebtLimit = false;
   const poolInfo = usePoolInfo(data.mint);
   const poolManager = useGetPoolManager(data.item);
+  const loadingState = useLoadingState();
 
   const renderModalButton = (status: boolean) => {
+    if (loadingState) {
+      return (
+        <Button disabled className="button button--blue tokenpaircard__generate mt-2">
+          <LoadingSpinner className="spinner-border-sm text-dark" />
+        </Button>
+      );
+    }
     return (
       <div className="col">
         <div className="d-flex">
@@ -112,7 +120,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
                 <p>TVL {printTvl()}</p>
               </div>
             </div>
-            {data.activeStatus && <div className="tokenpaircard__header--activeSticker">● Active</div>}
+            {!loadingState && data.activeStatus && <div className="tokenpaircard__header--activeSticker">● Active</div>}
           </div>
           <div className="tokenpaircard__aprBox">
             <div className="d-flex justify-content-between align-items-center">
@@ -126,7 +134,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
               </a>
             </div>
             <div className="d-flex justify-content-between align-items-center mt-2">
-              <h6>APY:</h6>
+              <h6>APR:</h6>
 
               <div className="d-flex">
                 <h6 className="semiBold">{Number(data?.apr + data?.ratioAPY).toFixed(2)}%</h6>
@@ -138,10 +146,10 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
                       <Tooltip id="tooltip">
                         <div className="activepaircard__overlaytooltip">
                           <p>
-                            <strong>APY</strong> is made up of:
+                            <strong>APR</strong> is made up of:
                           </p>
                           <div className="mb-1">
-                            <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                            <img src={USDrIcon} alt="USDrIcon" /> Ratio APR: {Number(data?.ratioAPY).toFixed(2)}%
                           </div>
                           <div>
                             <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {printApy()}

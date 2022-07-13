@@ -14,7 +14,7 @@ import {
   // USD_FAIR_PRICE,
   getLendingPoolByMint,
   getFarmInfoByPlatform,
-  estimateRATIOAPY,
+  estimateRATIOAPR,
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
   RATIO_MINT_KEY,
@@ -38,6 +38,7 @@ interface RFStateConfig {
   poolState: any;
   vaultState: any;
   overview: any;
+  loadingState: boolean;
   appendUserAction: (
     walletKey: string,
     mintCollat: string,
@@ -60,6 +61,7 @@ const RFStateContext = React.createContext<RFStateConfig>({
   overview: {},
   appendUserAction: () => {},
   subscribeTx: () => {},
+  loadingState: false,
 });
 
 export function RFStateProvider({ children = undefined as any }) {
@@ -71,6 +73,7 @@ export function RFStateProvider({ children = undefined as any }) {
   const [poolState, setPoolState] = useState<any>(null);
   const [vaultState, setVaultState] = useState<any>(null);
   const [overview, setOverview] = useState<any>(null);
+  const [loadingState, setLoadingState] = useState<boolean>(false);
 
   const [updateFinished, setUpdateFinished] = useState(false);
   const [toogleUpdateState, setToogleUpdateState] = useState(false);
@@ -172,6 +175,7 @@ export function RFStateProvider({ children = undefined as any }) {
     if (state) {
       info = {
         ...state,
+        tvlUsd: globalState?.tvlUsd,
         mintableUSDr: Math.max(
           0,
           parseFloat(
@@ -269,7 +273,7 @@ export function RFStateProvider({ children = undefined as any }) {
         poolInfo['farmTVL'] = +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() * lpSupply;
         poolInfo['farmAPY'] = '0.0';
       }
-      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
+      poolInfo['ratioAPY'] = estimateRATIOAPR(poolInfo, oracleState[RATIO_MINT_KEY]) * 100;
 
       poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];
     }
@@ -311,7 +315,7 @@ export function RFStateProvider({ children = undefined as any }) {
     }
     setGlobalState({
       ...globalState,
-      tvlUsd: newGlobalTVL,
+      tvlUsd: BN.max(globalState.totalDebt.muln(1.10567), newGlobalTVL),
     });
     setPoolState(poolInfos);
     return poolInfos;
@@ -453,6 +457,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateRFStateByMint = async (mint) => {
     console.log('----- Updating state by mint -----');
+    setLoadingState(true);
     await updateVaultStateByMint(globalState, oracleState, poolState[mint], overview, mint);
 
     const newGlobalState = await updateGlobalState();
@@ -460,17 +465,19 @@ export function RFStateProvider({ children = undefined as any }) {
     const newPoolState = await updatePoolStateByMint(newGlobalState, newOracleState, mint);
     const newOverview = await updateOracleState();
     await updateVaultStateByMint(newGlobalState, newOracleState, newPoolState[mint], newOverview, mint);
+    setLoadingState(false);
     console.log('***** Updated state by mint *****');
   };
 
   const updateRFStateOverall = async () => {
     console.log('----- Updating all state -----');
+    setLoadingState(true);
     const globalState = await updateGlobalState();
     const oracleState = await updateOracleState();
     const poolState = await updateAllPoolState(globalState, oracleState);
     const overview = await updateOverview();
     await updateAllVaultState(globalState, oracleState, poolState, overview);
-
+    setLoadingState(false);
     console.log('***** Updated all state *****');
   };
 
@@ -522,9 +529,12 @@ export function RFStateProvider({ children = undefined as any }) {
   }, [toogleUpdateState]);
 
   useEffect(() => {
-    updateRewardDisplay();
+    if (!loadingState) {
+      updateRewardDisplay();
+    }
+
     return () => {};
-  }, [toogleUpdateReward]);
+  }, [toogleUpdateReward, loadingState]);
 
   useEffect(() => {
     if (actionList.length) {
@@ -571,6 +581,7 @@ export function RFStateProvider({ children = undefined as any }) {
         poolState,
         vaultState,
         overview,
+        loadingState,
         appendUserAction: appendUserAction,
         subscribeTx,
       }}
@@ -620,6 +631,12 @@ export function useOracleInfo(mint: string) {
 export function useAllOracleInfo() {
   const context = React.useContext(RFStateContext);
   return context.oracleState;
+}
+
+export function useLoadingState() {
+  const context = React.useContext(RFStateContext);
+
+  return context.loadingState;
 }
 
 export function useUserOverview() {

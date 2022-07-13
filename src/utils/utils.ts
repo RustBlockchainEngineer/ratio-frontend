@@ -8,11 +8,6 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import * as serumCmn from '@project-serum/common';
 import * as anchor from '@project-serum/anchor';
 
-import usdt_usdc_icon from '../assets/images/tokens/usdt-usdc.png';
-import uxd_usdc_icon from '../assets/images/tokens/uxd-usdc.png';
-import usdh_usdc_icon from '../assets/images/tokens/usdh-usdc.png';
-import cusdt_cusdc_icon from '../assets/images/tokens/cusdt-cusdc.png';
-
 //type KnownTokenMap = Map<string, TokenInfo>;
 
 // const formatPriceNumber = new Intl.NumberFormat('en-US', {
@@ -288,22 +283,9 @@ export const isWalletApproveError = (e: any) => {
 };
 
 export const getTokenIcon = (tokenName) => {
-  let tokenIcon;
-  switch (tokenName) {
-    case 'usdt-usdc':
-      tokenIcon = usdt_usdc_icon;
-      break;
-    case 'uxd-usdc':
-      tokenIcon = uxd_usdc_icon;
-      break;
-    case 'usdh-usdc':
-      tokenIcon = usdh_usdc_icon;
-      break;
-    case 'cusdt-cusdc':
-      tokenIcon = cusdt_cusdc_icon;
-      break;
-  }
-  return tokenIcon;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const imgURL = require(`../assets/images/tokens/${tokenName}.png`).default;
+  return imgURL;
 };
 export const getDateTimeStr = (num: number) => {
   if (num === 0) {

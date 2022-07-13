@@ -143,7 +143,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
   }, [connected, filter_data, sort_data, view_data, platform_data, vaults, userVaultInfos, poolInfos]);
 
   const showContent = (vtype: string) => {
-    if (!userVaultInfos) {
+    if (!poolInfos) {
       return (
         <div className="d-flex justify-content-center mt-5">
           <LoadingSpinner className="spinner-border-lg text-primary" />
@@ -192,7 +192,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
               <tr>
                 <th scope="col">Asset</th>
                 <th scope="col">Status</th>
-                <th scope="col">APY</th>
+                <th scope="col">APR</th>
                 <th scope="col">Collateralization Ratio</th>
                 <th scope="col">Platform</th>
                 <th scope="col">
@@ -204,7 +204,7 @@ const BaseVaultsPage = ({ showOnlyActive = false, title }: { showOnlyActive: boo
             ) : (
               <tr>
                 <th scope="col">Asset</th>
-                <th scope="col">APY</th>
+                <th scope="col">APR</th>
                 <th scope="col">Collateralization Ratio</th>
                 <th scope="col">
                   <img src={smallRatioIcon} alt="lisklevel" className="allvaults__table-ratioIcon" />
