@@ -21,3 +21,6 @@ code {
   display: flex;
   justify-content: space-between;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

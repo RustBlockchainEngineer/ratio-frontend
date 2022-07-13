@@ -36,6 +36,50 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script defer src="https://analytics.zigzag.exchange/pixel/BKIOp3DaNjMJojM9"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    tailwind.config = {
+      prefix: 'tw-',
+      darkMode: "class", // or 'media' or 'class', also darkMode increases bundle size noticeably
+      theme: {
+        textIndent: {
+          none: "0rem",
+          xs: "1rem",
+          sm: "2rem",
+          md: "3rem",
+          lg: "4rem",
+        },
+        textShadow: {
+          default: "0 2px 5px rgba(0, 0, 0, 0.5)",
+          lg: "0 2px 10px rgba(0, 0, 0, 0.5)",
+        },
+        fontFamily: {
+          work: ["Poppins", "sans-serif"],
+        },
+        extend: {
+          screens: {
+            xs: "360px",
+            xsh: { raw: `(min-height: 360px)` },
+            smh: { raw: `(min-height: 600px)` },
+            mdh: { raw: `(min-height: 960px)` },
+            lgh: { raw: `(min-height: 1280px)` },
+            xlh: { raw: `(min-height: 1920px)` },
+          },
+          fontFamily: {
+            work: ["Poppins", "sans-serif"],
+          },
+        },
+      },
+      variants: {
+        animation: ["responsive", "motion-safe", "motion-reduce"],
+        textIndent: ["responsive"],
+        extend: {},
+      }
+    }
+  </script>
     <div id="root"></div>
     <!--
       This HTML file is a template.

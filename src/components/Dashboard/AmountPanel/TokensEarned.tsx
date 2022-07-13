@@ -119,9 +119,7 @@ const TokensEarned = ({ data }: any) => {
                 {/* <span>{poolManager?.getTokenName()}</span> */}
               </div>
             </td>
-            <td className="align-middle">
-              {vaultState ? vaultState.reward : 0} {poolManager?.getTokenName()}
-            </td>
+            <td className="align-middle">{vaultState ? vaultState.reward : 0}</td>
             <td className="align-middle">
               {!vaultState?.rewardUSD ? (
                 <LoadingSpinner className="spinner-border-sm text-info" />
@@ -143,7 +141,7 @@ const TokensEarned = ({ data }: any) => {
             <td className="tokensearned__name" style={{ gap: 12 }}>
               <img src={RatioIcon} alt="RatioIcon" className="tokensearned__icon" />
             </td>
-            <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} RATIO</td>
+            <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} </td>
             <td className="align-middle">
               {!vaultState?.ratioRewardUSD ? (
                 <LoadingSpinner className="spinner-border-sm text-info" />

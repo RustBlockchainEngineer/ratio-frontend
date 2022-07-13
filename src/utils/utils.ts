@@ -12,6 +12,7 @@ import usdt_usdc_icon from '../assets/images/tokens/usdt-usdc.png';
 import uxd_usdc_icon from '../assets/images/tokens/uxd-usdc.png';
 import usdh_usdc_icon from '../assets/images/tokens/usdh-usdc.png';
 import cusdt_cusdc_icon from '../assets/images/tokens/cusdt-cusdc.png';
+import swimUSD_icon from '../assets/images/tokens/swimUSD.png';
 
 //type KnownTokenMap = Map<string, TokenInfo>;
 
@@ -295,6 +296,9 @@ export const getTokenIcon = (tokenName) => {
       break;
     case 'cusdt-cusdc':
       tokenIcon = cusdt_cusdc_icon;
+      break;
+    case 'swimusd':
+      tokenIcon = swimUSD_icon;
       break;
   }
   return tokenIcon;
