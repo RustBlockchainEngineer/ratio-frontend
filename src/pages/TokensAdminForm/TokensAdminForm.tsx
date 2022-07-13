@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Dropdown, Form, Row, Col, Table } from 'react-bootstrap';
 import { IoMenuOutline, IoTrashOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
@@ -10,27 +10,12 @@ import { useConnection } from '../../contexts/connection';
 import { useWallet } from '../../contexts/wallet';
 import { useFetchData } from '../../hooks/useFetchData';
 import { useFetchPlatforms } from '../../hooks/useFetchPlatforms';
+import { TokenCreation, TokenSource } from '../../types/admin-types';
 import { FetchingStatus } from '../../types/fetching-types';
 import { createPriceOracle, getPriceOracle } from '../../utils/ratio-lending-admin';
 import AdminFormLayout from '../AdminFormLayout';
 import PlatformAdditionModal from './PlatformAdditionModal';
 import PriceSourceAdditionModal from './PriceSourceAdditionModal';
-
-interface PlatformId {
-  id: string;
-}
-export interface TokenSource {
-  source: string;
-  token_id: string;
-}
-
-interface TokenCreation {
-  address_id: string;
-  symbol: string;
-  icon: string;
-  platforms: PlatformId[];
-  token_ids: TokenSource[];
-}
 
 export default function TokensAdminForm() {
   const [version, setVersion] = React.useState(0);
@@ -45,6 +30,8 @@ export default function TokensAdminForm() {
     status: sourcesFetchStatus,
     error: sourcesFetchError,
   } = useFetchData<string[]>('/tokens/pricessources');
+  const { data: tokens } = useFetchData<TokenCreation[]>('/tokens');
+
   const defaultValues: TokenCreation = {
     address_id: '',
     symbol: '',
@@ -66,41 +53,6 @@ export default function TokensAdminForm() {
   };
 
   const { accessToken } = useAuthContextProvider();
-
-  const fetchData = useCallback(async () => {
-    if (accessToken) {
-      const response = await fetch(`${API_ENDPOINT}/tokens`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': accessToken,
-        },
-        method: 'GET',
-      });
-      if (!response.ok) {
-        throw await response.json();
-      }
-      return response.json();
-    }
-  }, [accessToken, version]);
-
-  const [data, setData] = useState<TokenCreation[]>([]);
-
-  useEffect(() => {
-    let active = true;
-    load();
-    return () => {
-      active = false;
-    };
-
-    async function load() {
-      setData([]);
-      const res = await fetchData();
-      if (!active) {
-        return;
-      }
-      setData(res);
-    }
-  }, [fetchData, version]);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -293,7 +245,7 @@ export default function TokensAdminForm() {
           </tr>
         </thead>
         <tbody>
-          {data?.map((token) => (
+          {tokens?.map((token) => (
             <tr key={token.address_id}>
               <td>{token.address_id}</td>
               <td>{token.symbol}</td>

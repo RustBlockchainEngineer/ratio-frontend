@@ -262,6 +262,12 @@ export const getMint = async (connection: Connection, key: any) => {
   }
 };
 
+export const shortenizeAddress = (address: PublicKey | string) => {
+  const LEN = 5;
+  const str_addr = address.toString();
+  return str_addr.slice(0, LEN) + '....' + str_addr.slice(-LEN);
+};
+
 /**
  * Get a random number between a min and a max
  * @param {number} min

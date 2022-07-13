@@ -52,31 +52,21 @@ export default function VaultEditionModal({ show, close, vault }: VaultEditionMo
     collateralization_ratio: vault?.collateralization_ratio ?? null,
     liquidation_ratio: vault?.liquidation_ratio ?? null,
     risk_rating: vault?.risk_rating,
-    lpasset:
-      vault?.lpasset?.map((x) => {
-        return {
-          token_address_id: x.token_address_id,
-          token_pool_size: x.token_pool_size,
-        };
-      }) ?? [],
     reward_mint: vault?.reward_mint,
-    token_mint_a: vault?.token_mint_a,
-    token_mint_b: vault?.token_mint_b,
-    token_reserve_a: vault?.token_reserve_a,
-    token_reserve_b: vault?.token_reserve_b,
+    assets: vault?.assets,
   };
   useEffect(() => {
     if (poolInfo) {
       const debtCeiling = poolInfo.debtCeiling.toNumber() / 10 ** USDR_MINT_DECIMALS;
       setPoolDebtCeilingValue(debtCeiling);
-      const lastRewardFundStart = poolInfo.lastRewardFundStart.toNumber();
-      const lastRewardFundEnd = poolInfo.lastRewardFundEnd.toNumber();
-      const lastRewardFundAmount = poolInfo.lastRewardFundAmount.toNumber();
-      const days = Math.round((lastRewardFundEnd - lastRewardFundStart) / (3600 * 24));
+      const newLastRewardFundStart = poolInfo.lastRewardFundStart.toNumber();
+      const newLastRewardFundEnd = poolInfo.lastRewardFundEnd.toNumber();
+      const newLastRewardFundAmount = poolInfo.lastRewardFundAmount.toNumber();
+      const days = Math.round((newLastRewardFundEnd - newLastRewardFundStart) / (3600 * 24));
       setRatioRewardsDuration(days);
-      setLastRewardFundStart(getDateStr(lastRewardFundStart));
-      setLastRewardFundEnd(getDateStr(lastRewardFundEnd));
-      setRatioRewardsAmount(Math.round(lastRewardFundAmount / 10 ** RATIO_MINT_DECIMALS));
+      setLastRewardFundStart(getDateStr(newLastRewardFundStart));
+      setLastRewardFundEnd(getDateStr(newLastRewardFundEnd));
+      setRatioRewardsAmount(Math.round(newLastRewardFundAmount / 10 ** RATIO_MINT_DECIMALS));
     }
   }, [vault]);
 
