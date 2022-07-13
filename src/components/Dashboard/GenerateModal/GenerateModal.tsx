@@ -96,7 +96,7 @@ const GenerateModal = ({ data }: any) => {
           +borrowAmount,
           txHash,
           poolInfo.fairPrice,
-          poolInfo.marketPrice,
+          poolInfo.virtualPrice,
           borrowAmount * borrow_fee
         );
       })

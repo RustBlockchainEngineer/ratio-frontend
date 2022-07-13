@@ -14,7 +14,7 @@ import {
   // USD_FAIR_PRICE,
   getLendingPoolByMint,
   getFarmInfoByPlatform,
-  estimateRATIOAPY,
+  estimateRATIOAPR,
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
   RATIO_MINT_KEY,
@@ -273,7 +273,7 @@ export function RFStateProvider({ children = undefined as any }) {
         poolInfo['farmTVL'] = +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() * lpSupply;
         poolInfo['farmAPY'] = '0.0';
       }
-      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
+      poolInfo['ratioAPY'] = estimateRATIOAPR(poolInfo, oracleState[RATIO_MINT_KEY]) * 100;
 
       poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];
     }
@@ -625,7 +625,7 @@ export function usePoolInfo(mint: string) {
 export function useOracleInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
-  return context.oracleState[mint];
+  return context.oracleState ? context.oracleState[mint] : null;
 }
 
 export function useAllOracleInfo() {

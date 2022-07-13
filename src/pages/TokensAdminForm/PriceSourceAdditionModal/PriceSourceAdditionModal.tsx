@@ -3,7 +3,7 @@ import { Button, Form, Modal, Row } from 'react-bootstrap';
 import { IoMdClose } from 'react-icons/io';
 import AdminFormInput from '../../../components/AdminFormInput';
 import { FormControlElement } from '../../../components/AdminFormInput/AdminFormInput';
-import { TokenSource } from '../TokensAdminForm';
+import { TokenSource } from '../../../types/admin-types';
 
 interface PriceSourceAdditionModalProps {
   show: boolean;
