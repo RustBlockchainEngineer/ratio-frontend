@@ -9,7 +9,9 @@ type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
-    endpoint: 'https://solana--mainnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
+    // endpoint: 'https://solana--mainnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
+    // endpoint: 'https://stableswap.rpcpool.com',
+    endpoint: 'https://solana-api.projectserum.com',
   },
   {
     name: 'testnet' as ENV,
