@@ -43,7 +43,7 @@ export default function VaultEditionForm({ values, onSave = () => {} }: VaultEdi
     setValidated(false);
   };
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const newValues = { ...values };
+    const newValues = { ...data };
     newValues[event.target.name] = event.target.value ?? 0;
 
     if (event.target.name === 'platform_id') {
