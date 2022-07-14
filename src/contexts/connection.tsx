@@ -12,31 +12,30 @@ export interface Rpc {
   url: string;
   weight: number;
 }
+const STRATEGY: 'speed' | 'weight' = 'speed';
 
 const ENDPOINTS = [
   {
     name: 'Figment RPC',
     url: 'https://solana--mainnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
-    weight: 100,
+    weight: 70,
   },
   {
     name: 'Project Serum RPC',
     url: 'https://solana-api.projectserum.com',
-    weight: 100,
+    weight: 10,
   },
   {
     name: 'Project Serum RPC',
     url: 'https://solana-api.tt-prod.net',
-    weight: 100,
+    weight: 10,
   },
   {
     name: 'Mainnet Beta',
     url: 'https://api.mainnet-beta.solana.com',
-    weight: 100,
+    weight: 10,
   },
 ];
-
-const DEFAULT = ENDPOINTS[0];
 
 interface ConnectionConfig {
   connection: Connection;
@@ -44,8 +43,8 @@ interface ConnectionConfig {
 }
 
 const ConnectionContext = React.createContext<ConnectionConfig>({
-  endpoint: DEFAULT,
-  connection: new Connection(DEFAULT.url, 'recent'),
+  endpoint: null,
+  connection: null,
 });
 async function getEpochInfo(rpcURL) {
   return axios.post(rpcURL, { jsonrpc: '2.0', id: 1, method: 'getEpochInfo' });
@@ -73,46 +72,56 @@ function getWeightEndpoint(endpoints: Rpc[]) {
 async function getFastEndpoint(endpoints: Rpc[]) {
   return await Promise.any(endpoints.map((endpoint) => getEpochInfo(endpoint.url).then(() => endpoint)));
 }
-
+async function getBestEndpoint(endpoints: Rpc[], strategy) {
+  let endpoint;
+  if (strategy === 'speed') {
+    endpoint = await getFastEndpoint(endpoints);
+  } else {
+    endpoint = getWeightEndpoint(endpoints);
+  }
+  console.log('Best Endpoint is', endpoint.url);
+  return endpoint;
+}
 export function ConnectionProvider({ children = undefined as any }) {
-  const strategy = 'speed';
-  const [endpoint, setEndpoint] = useState<Rpc>(DEFAULT);
+  const [endpoint, setEndpoint] = useState<Rpc>(null);
 
   useEffect(() => {
-    if (strategy === 'speed') {
-      getFastEndpoint(ENDPOINTS).then((endpoint) => {
-        console.log('Finding fast one', endpoint);
-        setEndpoint(endpoint);
-      });
-    } else {
-      setEndpoint(getWeightEndpoint(ENDPOINTS));
-    }
+    getBestEndpoint(ENDPOINTS, STRATEGY).then((endpoint) => {
+      setEndpoint(endpoint);
+    });
   }, []);
 
   const web3ConnectionConfig: Web3ConnectionConfig = {
     commitment: 'confirmed',
   };
-  const connection = useMemo(() => new Connection(endpoint.url, web3ConnectionConfig), [endpoint]);
+  const connection = useMemo(() => {
+    if (endpoint) {
+      return new Connection(endpoint.url, web3ConnectionConfig);
+    } else {
+      return null;
+    }
+  }, [endpoint]);
 
   useEffect(() => {
     cache.clear();
   }, [connection]);
 
-  // The websocket library solana/web3.js uses closes its websocket connection when the subscription list
-  // is empty after opening its first time, preventing subsequent subscriptions from receiving responses.
-  // This is a hack to prevent the list from every getting empty
   useEffect(() => {
-    const id = connection.onAccountChange(new Account().publicKey, () => {});
-    return () => {
-      connection.removeAccountChangeListener(id);
-    };
+    if (connection) {
+      const id = connection.onAccountChange(new Account().publicKey, () => {});
+      return () => {
+        connection.removeAccountChangeListener(id);
+      };
+    }
   }, [connection]);
 
   useEffect(() => {
-    const id = connection.onSlotChange(() => null);
-    return () => {
-      connection.removeSlotChangeListener(id);
-    };
+    if (connection) {
+      const id = connection.onSlotChange(() => null);
+      return () => {
+        connection.removeSlotChangeListener(id);
+      };
+    }
   }, [connection]);
 
   return (
@@ -133,5 +142,5 @@ export function useConnection() {
 
 export function useRPCEndpoint() {
   const context = useContext(ConnectionContext);
-  return context.endpoint;
+  return context.endpoint ?? { url: '' };
 }
