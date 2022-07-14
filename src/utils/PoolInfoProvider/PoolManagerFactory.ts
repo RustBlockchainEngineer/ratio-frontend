@@ -1,5 +1,6 @@
 import { LPair, PoolProvider } from '../../types/VaultTypes';
 import { IPoolManagerStrategy } from './IPoolManagerStrategy';
+import { RaydiumPoolManager } from './raydium/RaydiumPoolManager';
 
 // import { MercurialPoolManager } from './MercurialPoolManager';
 // import { OrcaPoolManager } from './OrcaPoolManager';
@@ -16,7 +17,7 @@ export class PoolManagerFactory {
   private constructor() {
     PoolManagerFactory.providers = {};
     // this.providers[PoolProvider.ORCA] = new OrcaPoolManager(_orcaPools);
-    // this.providers[PoolProvider.RAYDIUM] = new RaydiumPoolManager(_raydiumPools);
+    PoolManagerFactory.providers[PoolProvider.RAYDIUM] = new RaydiumPoolManager();
     PoolManagerFactory.providers[PoolProvider.SABER] = new SaberPoolManager();
     PoolManagerFactory.providers[PoolProvider.SWIM] = new SwimPoolManager();
     // this.providers[PoolProvider.MERCURIAL] = new MercurialPoolManager(_mercurialPools);
