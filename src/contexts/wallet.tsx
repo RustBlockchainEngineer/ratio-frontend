@@ -168,7 +168,7 @@ export function WalletProvider({ children = null as any }) {
             };
 
             return (
-              <Button size="lg" onClick={onClick} className="walletProviderModal__button d-block" key={index}>
+              <Button size="lg" onClick={onClick} className="walletProviderModal__button !flex" key={index}>
                 <img alt={`${provider.name}`} width={20} height={20} src={provider.icon} style={{ marginRight: 8 }} />
                 {provider.name}
               </Button>

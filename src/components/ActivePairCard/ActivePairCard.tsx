@@ -126,11 +126,15 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
     );
   };
 
+  const isSinglePool = () => {
+    return data.platform.symbol === 'Saber';
+  };
+
   return (
     <>
       <div className="col-xxl-4 col-md-6 col-sm-12">
         <div className={classNames('activepaircard mt-4')}>
-          <div className="activepaircard__header">
+          <div className="activepaircard__header h-20">
             <div className="d-flex">
               <div>
                 <img src={data.icon} alt={'Token1'} className="tokenpaircard__header-icon" />{' '}
@@ -159,19 +163,20 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
               </div>
             </div> */}
           </div>
-          <div className="activepaircard__aprBox">
+          <div className="activepaircard__aprBox h-56">
             <div className="d-flex align-items-center justify-content-between">
               <h6>Platform:</h6>
               <h6 className="semiBold">
                 <a href={poolManager.getLpLink(data.title)} target="_blank" rel="noreferrer">
-                  <div className="d-inline-flex align-items-center mt-1 position-relative">
-                    <img src={data.platform.icon} />
+                  <div className="flex items-center mt-1 relative">
+                    <img src={data.platform.icon} className="w-5 h-5" />
                     <p className="semiBold ml-1">{data.platform.name}</p>
                     <img src={linkIcon} alt="linkIcon" className="activepaircard__titleBox--linkIcon" />
                   </div>
                 </a>
               </h6>
             </div>
+
             <div className="mt-2 d-flex justify-content-between">
               <h6>APR:</h6>
               <div className="d-flex align-items-start">
@@ -186,12 +191,14 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
                           <p>
                             <strong>APR</strong> is made up of:
                           </p>
-                          <div className="mb-1">
-                            <img src={USDrIcon} alt="USDrIcon" /> Ratio APR: {Number(data?.ratioAPY).toFixed(2)}%
+                          <div className="mb-1 flex">
+                            <img src={USDrIcon} alt="USDrIcon" /> Mint APR: {Number(data?.ratioAPY).toFixed(2)}%
                           </div>
-                          <div>
-                            <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
-                          </div>
+                          {isSinglePool() && (
+                            <div className="flex mt-2">
+                              <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
+                            </div>
+                          )}
                         </div>
                       </Tooltip>
                     }
@@ -203,18 +210,21 @@ const ActivePairCard = ({ data }: TokenPairCardProps) => {
                 )}
               </div>
             </div>
+
             <div className="mt-2 d-flex justify-content-between">
               <h6>Collateralization Ratio:</h6>
               <h6 className="semiBold">{(100 / poolInfo?.ratio).toFixed(2)}%</h6>
             </div>
-            <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
-              <div className="d-flex align-items-center">
-                <img src={smallRatioIcon} alt="smallRatio" />
-                <p className="mx-1">Risk Rating:</p>
-                {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
+            {isSinglePool() && (
+              <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
+                <div className="d-flex align-items-center">
+                  <img src={smallRatioIcon} alt="smallRatio" />
+                  <p className="mx-1">Risk Rating:</p>
+                  {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
+                </div>
+                <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
               </div>
-              <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
-            </div>
+            )}
             <div className="mt-3 d-flex justify-content-between">
               <h6>USDr Debt:</h6>
               <h6 className="semiBold">{Number(totalDebt.toFixed(2))}</h6>
