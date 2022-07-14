@@ -12,11 +12,17 @@ import {
   Transaction,
 } from '@solana/web3.js';
 import { sendTransaction } from './rf-web3';
-import { RATIO_LENDING_PROGRAM_ID } from '../constants/ids';
+import { RATIO_LENDING_PROGRAM_ID, RAYDIUM_FARM_PROGRAM_ID } from '../constants/ids';
 import { calculateSaberReward, getQuarryInfo } from './PoolInfoProvider/saber/saber-utils';
 import { getATAKey, getGlobalStatePDA, getOraclePDA, getPoolPDA, getUserStatePDA, getVaultPDA } from './ratio-pda';
 import { BN, Program } from '@project-serum/anchor';
 import { TokenAmount } from './safe-math';
+import {
+  calculateRaydiumReward,
+  getAssociatedLedgerAccount,
+  getRaydiumFarmInfo,
+  isRaydiumLp,
+} from './PoolInfoProvider/raydium/raydium-utils';
 export const COLL_RATIOS_DECIMALS = 8;
 export const COLL_RATIOS_ARR_SIZE = 10;
 
@@ -163,8 +169,39 @@ export async function depositCollateralTx(connection: Connection, wallet: any, a
   try {
     await program.account.vault.fetch(vaultKey);
   } catch {
+    const isRaydium = isRaydiumLp(mintCollat);
+
+    if (isRaydium) {
+      console.log('creating raydium ledger');
+      const raydiumFarmInfo = await getRaydiumFarmInfo(connection, mintCollat);
+      const ledgerKey = await getAssociatedLedgerAccount({
+        programId: RAYDIUM_FARM_PROGRAM_ID,
+        poolId: raydiumFarmInfo.publicKey,
+        owner: vaultKey,
+      });
+      const txLedger = program.instruction.createRaydiumLedger({
+        accounts: {
+          // account that owns the vault
+          authority: wallet.publicKey,
+          // state account where all the platform funds go thru or maybe are stored
+          pool: poolKey,
+          // the user's vault is the authority for the collateral tokens within it
+          vault: vaultKey,
+
+          raydiumProgram: RAYDIUM_FARM_PROGRAM_ID,
+
+          stakePool: raydiumFarmInfo.publicKey,
+
+          stakerInfo: ledgerKey,
+
+          ...DEFAULT_PROGRAMS,
+        },
+      });
+      transaction.add(txLedger);
+    }
+
     console.log('creating vault');
-    const tx = await program.instruction.createVault({
+    const tx = program.instruction.createVault({
       accounts: {
         // account that owns the vault
         authority: wallet.publicKey,
@@ -555,6 +592,8 @@ export async function calculateRewardByPlatform(
   let newData = null;
   if (platformType === PLATFORM_IDS.SABER) {
     [reward, newData] = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey), cacheData);
+  } else if (platformType === PLATFORM_IDS.RAYDIUM) {
+    reward = await calculateRaydiumReward(connection, wallet, new PublicKey(mintCollKey));
   }
 
   return [reward, newData];
@@ -567,6 +606,8 @@ export async function getFarmInfoByPlatform(
 ) {
   if (platformType === PLATFORM_IDS.SABER) {
     return await getQuarryInfo(connection, new PublicKey(mintCollKey));
+  } else if (platformType === PLATFORM_IDS.RAYDIUM) {
+    return await getRaydiumFarmInfo(connection, new PublicKey(mintCollKey));
   } else {
     return null;
   }

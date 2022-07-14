@@ -368,7 +368,6 @@ export async function calculateSaberReward(
   mintCollKey: PublicKey,
   cacheData: { quarry; miner } | null
 ): Promise<[number, any]> {
-  console.log(cacheData);
   try {
     const program = getProgramInstance(connection, wallet);
 
