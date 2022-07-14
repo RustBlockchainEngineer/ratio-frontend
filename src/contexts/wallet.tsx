@@ -10,7 +10,7 @@ import { Button, Modal } from 'react-bootstrap';
 import EventEmitter from 'eventemitter3';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { notify } from './../utils/notifications';
-import { useConnectionConfig } from './connection';
+import { useRPCEndpoint } from './connection';
 import { useLocalStorageState } from './../utils/utils';
 //import { LedgerWalletAdapter } from '../wallet-adapters/ledger';
 import { PhantomWalletAdapter } from '../wallet-adapters/phantom';
@@ -61,7 +61,7 @@ const WalletContext = React.createContext<{
 });
 
 export function WalletProvider({ children = null as any }) {
-  const { endpoint } = useConnectionConfig();
+  const { url: rpcURL } = useRPCEndpoint();
   const dispatch = useDispatch();
   // const [autoConnect, setAutoConnect] = useState(true);
 
@@ -73,10 +73,10 @@ export function WalletProvider({ children = null as any }) {
   const wallet = useMemo(
     function () {
       if (provider) {
-        return new (provider.adapter || Wallet)(providerUrl, endpoint) as WalletAdapter;
+        return new (provider.adapter || Wallet)(providerUrl, rpcURL) as WalletAdapter;
       }
     },
-    [provider, providerUrl, endpoint]
+    [provider, providerUrl, rpcURL]
   );
 
   const [connected, setConnected] = useState(false);
@@ -168,7 +168,7 @@ export function WalletProvider({ children = null as any }) {
             };
 
             return (
-              <Button size="lg" onClick={onClick} className="walletProviderModal__button d-block" key={index}>
+              <Button size="lg" onClick={onClick} className="walletProviderModal__button !flex" key={index}>
                 <img alt={`${provider.name}`} width={20} height={20} src={provider.icon} style={{ marginRight: 8 }} />
                 {provider.name}
               </Button>

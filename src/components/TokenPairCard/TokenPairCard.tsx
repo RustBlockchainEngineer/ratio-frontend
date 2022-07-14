@@ -102,6 +102,10 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
     return Number(data?.apr).toFixed(2) + '%';
   };
 
+  const isSinglePool = () => {
+    return data.platform.symbol === 'Saber';
+  };
+
   return (
     <>
       <div className="col-xxl-4 col-md-6 col-sm-12">
@@ -110,7 +114,7 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
             'tokenpaircard--warning': hasUserReachedDebtLimit,
           })}
         >
-          <div className="tokenpaircard__header">
+          <div className="tokenpaircard__header h-20">
             <div className="d-flex align-items-start">
               <img src={data.icon} alt={'Token1'} className="tokenpaircard__header-icon" />{' '}
               <div className="tokenpaircard__titleBox">
@@ -122,8 +126,8 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
             </div>
             {!loadingState && data.activeStatus && <div className="tokenpaircard__header--activeSticker">● Active</div>}
           </div>
-          <div className="tokenpaircard__aprBox">
-            <div className="d-flex justify-content-between align-items-center">
+          <div className="tokenpaircard__aprBox h-48">
+            <div className="flex justify-between items-center">
               <h6>Platform:</h6>
               <a href={poolManager.getLpLink(data.title)} target="_blank" rel="noreferrer">
                 <div className="d-flex align-items-center mt-1 position-relative">
@@ -133,8 +137,9 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
                 </div>
               </a>
             </div>
+
             <div className="d-flex justify-content-between align-items-center mt-2">
-              <h6>APY:</h6>
+              <h6>APR:</h6>
 
               <div className="d-flex">
                 <h6 className="semiBold">{Number(data?.apr + data?.ratioAPY).toFixed(2)}%</h6>
@@ -144,40 +149,45 @@ const TokenPairCard = (tokenPairCardProps: TokenPairCardProps) => {
                     delay={{ show: 100, hide: 100 }}
                     overlay={
                       <Tooltip id="tooltip">
-                        <div className="activepaircard__overlaytooltip">
+                        <div className="tokenpaircard__overlaytooltip">
                           <p>
-                            <strong>APY</strong> is made up of:
+                            <strong>APR</strong> is made up of:
                           </p>
-                          <div className="mb-1">
-                            <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                          <div className="mb-2 flex">
+                            <img src={USDrIcon} alt="USDrIcon" /> Mint APR: {Number(data?.ratioAPY).toFixed(2)}%
                           </div>
-                          <div>
-                            <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {printApy()}
-                          </div>
+                          {isSinglePool() && (
+                            <div className="flex">
+                              <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {printApy()}
+                            </div>
+                          )}
                         </div>
                       </Tooltip>
                     }
                   >
-                    <div className="activepaircard__overlaytrigger">
+                    <div className="tokenpaircard__overlaytrigger">
                       <img src={infoIcon} alt="infoIcon" />
                     </div>
                   </OverlayTrigger>
                 )}
               </div>
             </div>
-            <div className="mt-2 d-flex justify-content-between">
+
+            <div className={classNames('d-flex justify-content-between mt-2')}>
               <h6>Collateralization Ratio:</h6>
               <h6 className="semiBold">{(100 / poolInfo?.ratio).toFixed(2)}%</h6>
             </div>
-            <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
-              <div className="d-flex align-items-center">
-                <img src={smallRatioIcon} alt="smallRatio" />
-                <p className="mx-1">Risk Rating:</p>
-                {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
+            {isSinglePool() && (
+              <div className="d-flex justify-content-between align-items-center mt-2 tokenpaircard__riskBox">
+                <div className="d-flex align-items-center">
+                  <img src={smallRatioIcon} alt="smallRatio" />
+                  <p className="mx-1">Risk Rating:</p>
+                  {/* <img src={liskLevelIcon} alt="lisklevel" /> */}
+                </div>
+                <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
               </div>
-              <h6 className={classNames('ml-1 semiBold', data.risk)}>{data.risk} </h6>
-            </div>
-            <ProgressBarVaultUSDr mint={data.mint} className="activepaircard__usdrDebtbar" />
+            )}
+            <ProgressBarVaultUSDr mint={data.mint} className={classNames('activepaircard__usdrDebtbar mt-2')} />
             {/* <div>
               <h5>Platform:</h5>
               <a href={data.platform.link} target="_blank" rel="noreferrer">

@@ -14,7 +14,7 @@ import {
   // USD_FAIR_PRICE,
   getLendingPoolByMint,
   getFarmInfoByPlatform,
-  estimateRATIOAPY,
+  estimateRATIOAPR,
   estimateRatioRewards,
   RATIO_MINT_DECIMALS,
   RATIO_MINT_KEY,
@@ -273,7 +273,7 @@ export function RFStateProvider({ children = undefined as any }) {
         poolInfo['farmTVL'] = +new TokenAmount(virtualPrice, USDR_MINT_DECIMALS).fixed() * lpSupply;
         poolInfo['farmAPY'] = '0.0';
       }
-      poolInfo['ratioAPY'] = estimateRATIOAPY(poolInfo, oracleState[RATIO_MINT_KEY]);
+      poolInfo['ratioAPY'] = estimateRATIOAPR(poolInfo, oracleState[RATIO_MINT_KEY]) * 100;
 
       poolInfo['apy'] = poolInfo['farmAPY'] + poolInfo['ratioAPY'];
     }
@@ -457,6 +457,7 @@ export function RFStateProvider({ children = undefined as any }) {
 
   const updateRFStateByMint = async (mint) => {
     console.log('----- Updating state by mint -----');
+    setLoadingState(true);
     await updateVaultStateByMint(globalState, oracleState, poolState[mint], overview, mint);
 
     const newGlobalState = await updateGlobalState();
@@ -464,6 +465,7 @@ export function RFStateProvider({ children = undefined as any }) {
     const newPoolState = await updatePoolStateByMint(newGlobalState, newOracleState, mint);
     const newOverview = await updateOracleState();
     await updateVaultStateByMint(newGlobalState, newOracleState, newPoolState[mint], newOverview, mint);
+    setLoadingState(false);
     console.log('***** Updated state by mint *****');
   };
 
@@ -520,16 +522,21 @@ export function RFStateProvider({ children = undefined as any }) {
   }, []);
 
   useEffect(() => {
-    console.log('Updated is toggled');
-    actionList.push(UPDATE_ALL);
-    updateRFState();
+    if (connection) {
+      console.log('Updated is toggled');
+      actionList.push(UPDATE_ALL);
+      updateRFState();
+    }
     return () => {};
-  }, [toogleUpdateState]);
+  }, [toogleUpdateState, connection]);
 
   useEffect(() => {
-    updateRewardDisplay();
+    if (!loadingState) {
+      updateRewardDisplay();
+    }
+
     return () => {};
-  }, [toogleUpdateReward]);
+  }, [toogleUpdateReward, loadingState]);
 
   useEffect(() => {
     if (actionList.length) {
@@ -620,7 +627,7 @@ export function usePoolInfo(mint: string) {
 export function useOracleInfo(mint: string) {
   const context = React.useContext(RFStateContext);
 
-  return context.oracleState[mint];
+  return context.oracleState ? context.oracleState[mint] : null;
 }
 
 export function useAllOracleInfo() {

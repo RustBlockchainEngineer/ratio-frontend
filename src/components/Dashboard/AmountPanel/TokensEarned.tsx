@@ -98,6 +98,10 @@ const TokensEarned = ({ data }: any) => {
     setIsHarvestingRatio(false);
   };
 
+  const isSinglePool = () => {
+    return data?.platform?.symbol === 'Saber';
+  };
+
   return (
     <div className="tokensearned">
       <h4>Tokens Earned</h4>
@@ -111,39 +115,39 @@ const TokensEarned = ({ data }: any) => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>
-              {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
-              <div className="tokensearned__name">
-                <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
-                <span>{poolManager?.getTokenName()}</span>
-              </div>
-            </td>
-            <td className="align-middle">
-              {vaultState ? vaultState.reward : 0} {poolManager?.getTokenName()}
-            </td>
-            <td className="align-middle">
-              {!vaultState?.rewardUSD ? (
-                <LoadingSpinner className="spinner-border-sm text-info" />
-              ) : (
-                `$  ${vaultState?.rewardUSD}`
-              )}
-            </td>
-            <td>
-              <Button
-                className="button--blue tokensearned__harvestBtn btn-block"
-                onClick={harvest}
-                disabled={isHarvesting}
-              >
-                Harvest
-              </Button>
-            </td>
-          </tr>
+          {isSinglePool() && (
+            <tr>
+              <td>
+                {/* {data.icon && <img src={data.icon} alt="icon" className="tokensearned__icon" />} */}
+                <div className="tokensearned__name">
+                  <img src={data?.platform?.icon} alt="SBR" className="tokensearned__icon" />
+                  {/* <span>{poolManager?.getTokenName()}</span> */}
+                </div>
+              </td>
+              <td className="align-middle">{vaultState ? vaultState.reward : 0}</td>
+              <td className="align-middle">
+                {!vaultState?.rewardUSD ? (
+                  <LoadingSpinner className="spinner-border-sm text-info" />
+                ) : (
+                  `$  ${vaultState?.rewardUSD}`
+                )}
+              </td>
+              <td>
+                <Button
+                  className="button--blue tokensearned__harvestBtn btn-block"
+                  onClick={harvest}
+                  disabled={isHarvesting}
+                >
+                  Harvest
+                </Button>
+              </td>
+            </tr>
+          )}
           <tr>
             <td className="tokensearned__name" style={{ gap: 12 }}>
-              <img src={RatioIcon} alt="RatioIcon" className="tokensearned__icon" /> RATIO
+              <img src={RatioIcon} alt="RatioIcon" className="tokensearned__icon" />
             </td>
-            <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} RATIO</td>
+            <td className="align-middle">{vaultState ? vaultState.ratioReward : 0} </td>
             <td className="align-middle">
               {!vaultState?.ratioRewardUSD ? (
                 <LoadingSpinner className="spinner-border-sm text-info" />

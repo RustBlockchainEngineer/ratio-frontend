@@ -13,6 +13,7 @@ export default function AdminFormInput({
   handleChange,
   required = true,
   yetNotImplemented = false,
+  readOnly = false,
   as,
   children,
 }: {
@@ -28,6 +29,7 @@ export default function AdminFormInput({
   yetNotImplemented?: boolean;
   as?: ElementType<any>;
   children?: any;
+  readOnly?: boolean;
 }) {
   const renderControl = () => (
     <Form.Control
@@ -39,6 +41,7 @@ export default function AdminFormInput({
       as={as}
       disabled={yetNotImplemented}
       onChange={handleChange}
+      readOnly={readOnly}
     >
       {children}
     </Form.Control>

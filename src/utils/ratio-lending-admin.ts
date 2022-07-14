@@ -208,7 +208,7 @@ export async function createPool(
     transaction.add(
       program.instruction.createOracle(
         // price of token
-        new BN(10 ** USDR_MINT_DECIMALS),
+        new BN(0),
         {
           accounts: {
             authority: wallet.publicKey,

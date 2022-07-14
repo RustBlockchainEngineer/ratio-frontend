@@ -76,6 +76,10 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
     return formatUSD.format(data.tvl);
   };
 
+  const isSinglePool = () => {
+    return data.platform.symbol === 'Saber';
+  };
+
   return (
     <>
       <tr>
@@ -120,14 +124,16 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
                   <Tooltip id="tooltip">
                     <div className="tokenpaircard__overlaytooltip">
                       <p>
-                        <strong>APY</strong> is made up of:
+                        <strong>APR</strong> is made up of:
                       </p>
-                      <div className="mb-1">
-                        <img src={USDrIcon} alt="USDrIcon" /> Ratio APY: {Number(data?.ratioAPY).toFixed(2)}%
+                      <div className="mb-1 flex">
+                        <img src={USDrIcon} alt="USDrIcon" /> Mint APR: {Number(data?.ratioAPY).toFixed(2)}%
                       </div>
-                      <div>
-                        <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
-                      </div>
+                      {isSinglePool() && (
+                        <div className="flex mt-2">
+                          <img src={USDrIcon} alt="USDrIcon" /> Yield Farming: {Number(data?.apr).toFixed(2)}%
+                        </div>
+                      )}
                     </div>
                   </Tooltip>
                 }
@@ -156,11 +162,13 @@ const TokenPairListItem = (tokenPairCardProps: TokenPairCardProps) => {
           </div>
         </td>
         <td>
-          <div className="d-flex justify-content-between align-items-start">
-            <div className="tokenpaircard__table__td">
-              <h6 className={classNames('ml-2 mt-1', data.risk)}>{data.risk} </h6>
+          {isSinglePool() && (
+            <div className="d-flex justify-content-between align-items-start">
+              <div className="tokenpaircard__table__td">
+                <h6 className={classNames('ml-2 mt-1', data.risk)}>{data.risk} </h6>
+              </div>
             </div>
-          </div>
+          )}
         </td>
         <td className="text-right">
           <div className="tokenpaircard__table__td">{renderModalButton(data.activeStatus)}</div>

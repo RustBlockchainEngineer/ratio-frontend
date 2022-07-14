@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'react-bootstrap';
-import { useConnectionConfig } from '../../../contexts/connection';
+import { SOLANA_CLUSTER } from '../../../contexts/connection';
 import share from '../../../assets/images/share.svg';
 import LoadingSpinner from '../../../atoms/LoadingSpinner';
 import { useWallet } from '../../../contexts/wallet';
@@ -15,7 +15,6 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
   const [lastTen, setLastTen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [historyData, setHistoryData] = useState<any>();
-  const cluster = useConnectionConfig()?.env;
   const overview = useUserOverview();
 
   useEffect(() => {
@@ -36,7 +35,7 @@ const VaultHistoryTable = ({ mintAddress }: any) => {
           const d: any = new Date(b.created_on);
           return d - c;
         });
-        const formattedTxData = formatTxHistory(d, cluster);
+        const formattedTxData = formatTxHistory(d, SOLANA_CLUSTER);
         if (lastTen) {
           setHistoryData(formattedTxData.slice(0, 10));
         } else {

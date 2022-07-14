@@ -21,7 +21,7 @@ const Breadcrumb = ({ vaultData, availableVaults }: any) => {
 
   useEffect(() => {
     const p = availableVaults.map((item: any) => {
-      return { label: item.title, icon1: item.icons[0], icon2: item.icons[1], icon: item.icon, value: item.mint };
+      return { label: item.title, icon: item.icon, value: item.mint };
     });
     setOptions(p);
   }, [availableVaults]);
@@ -57,7 +57,7 @@ const Breadcrumb = ({ vaultData, availableVaults }: any) => {
 
   return (
     <div className="bread-crumb">
-      <p className="bread-crumb__text">
+      <p className="bread-crumb__text flex items-center">
         {breadCrumbTitle} <IoIosArrowForward />
       </p>
       <Dropdown onToggle={onToggle} show={isOpen}>
