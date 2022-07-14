@@ -31,7 +31,6 @@ function formatDate(timestamp = ''): string {
 }
 
 export function formatTxHistory(transactions: WalletTXDetail[], cluster: string): FormattedTX[] {
-  console.log(cluster);
   const formattedTxs = transactions.map((tx: WalletTXDetail) => {
     return {
       date: formatDate(tx?.created_on),
