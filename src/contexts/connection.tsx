@@ -18,7 +18,7 @@ const ENDPOINTS = [
   {
     name: 'Figment RPC',
     url: 'https://solana--mainnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
-    weight: 70,
+    weight: 80,
   },
   {
     name: 'Project Serum RPC',
@@ -28,11 +28,6 @@ const ENDPOINTS = [
   {
     name: 'Project Serum RPC',
     url: 'https://solana-api.tt-prod.net',
-    weight: 10,
-  },
-  {
-    name: 'Mainnet Beta',
-    url: 'https://api.mainnet-beta.solana.com',
     weight: 10,
   },
 ];
