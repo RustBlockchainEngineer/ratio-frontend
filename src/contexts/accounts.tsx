@@ -326,20 +326,23 @@ export function AccountsProvider({ children = null as any }) {
   }, [nativeAccount, wallet, tokenAccounts, selectUserAccounts]);
 
   useEffect(() => {
-    const subs: number[] = [];
-    cache.emitter.onCache((args) => {
-      if (args.isNew) {
-        const { id } = args;
-        const deserialize = args.parser;
-        connection.onAccountChange(new PublicKey(id), (info) => {
-          cache.add(id, info, deserialize);
-        });
-      }
-    });
+    if (connection) {
+      const subs: number[] = [];
+      cache.emitter.onCache((args) => {
+        if (args.isNew) {
+          const { id } = args;
+          const deserialize = args.parser;
+          connection.onAccountChange(new PublicKey(id), (info) => {
+            cache.add(id, info, deserialize);
+          });
+        }
+      });
 
-    return () => {
-      subs.forEach((id) => connection.removeAccountChangeListener(id));
-    };
+      return () => {
+        subs.forEach((id) => connection.removeAccountChangeListener(id));
+      };
+    }
+    return () => {};
   }, [connection]);
 
   useEffect(() => {
