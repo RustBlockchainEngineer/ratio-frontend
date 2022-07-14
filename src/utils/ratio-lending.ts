@@ -549,7 +549,7 @@ export async function calculateRewardByPlatform(
   wallet: any,
   mintCollKey: string | PublicKey,
   platformType: number,
-  cacheData: any = null,
+  cacheData: any = null
 ): Promise<[number, any]> {
   let reward = 0;
   let newData = null;
