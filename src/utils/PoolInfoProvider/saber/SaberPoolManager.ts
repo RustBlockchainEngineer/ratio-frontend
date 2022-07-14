@@ -26,7 +26,7 @@ export class SaberPoolManager extends GenericPoolManager {
   async getRewards(connection: Connection, wallet: any, vault: LPair): Promise<number> {
     // TODO Implement this function
     if (vault) {
-      const amount = await calculateRewardByPlatform(
+      const [amount] = await calculateRewardByPlatform(
         connection,
         wallet,
         new PublicKey(vault.address_id),

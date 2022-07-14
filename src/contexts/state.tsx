@@ -346,7 +346,12 @@ export function RFStateProvider({ children = undefined as any }) {
       const globalDebtLimit = globalState.debtCeilingGlobal.toNumber() - globalState.totalDebt.toNumber();
       const mintableUSDr = Math.max(0, Math.min(vaultDebtLimit, userDebtLimit, poolDebtLimit, globalDebtLimit));
 
-      const rewardWithoutFee = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
+      const [rewardWithoutFee, rewardCacheData] = await calculateRewardByPlatform(
+        connection,
+        wallet,
+        mint,
+        poolInfo.platformType
+      );
       const reward = +(rewardWithoutFee * globalState.harvestRate).toFixed(USDR_MINT_DECIMALS);
 
       const ratioRewardWithoutFee = new TokenAmount(
@@ -370,6 +375,7 @@ export function RFStateProvider({ children = undefined as any }) {
         poolInfo,
         ratioReward,
         ratioRewardUSD: (ratioReward * oracleState[RATIO_MINT_KEY]).toFixed(USDR_MINT_DECIMALS),
+        rewardCacheData,
       };
     }
     return null;
@@ -384,7 +390,13 @@ export function RFStateProvider({ children = undefined as any }) {
       poolInfo &&
       vaultInfo
     ) {
-      const rewardWithoutFee = await calculateRewardByPlatform(connection, wallet, mint, poolInfo.platformType);
+      const [rewardWithoutFee, rewardCacheData] = await calculateRewardByPlatform(
+        connection,
+        wallet,
+        mint,
+        poolInfo.platformType,
+        vaultInfo.rewardCacheData
+      );
       const reward = +(rewardWithoutFee * globalState.harvestRate).toFixed(USDR_MINT_DECIMALS);
 
       const ratioRewardWithoutFee = new TokenAmount(
@@ -399,6 +411,7 @@ export function RFStateProvider({ children = undefined as any }) {
         reward,
         rewardUSD: new TokenAmount(oracleState[SBR_MINT] * reward, USDR_MINT_DECIMALS, false).fixed(),
         ratioReward,
+        rewardData: rewardCacheData,
       };
     }
     return null;

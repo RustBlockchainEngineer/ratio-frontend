@@ -362,7 +362,12 @@ const redeemAllTokensTx = async (connection: Connection, wallet: typeof anchor.W
   return txn;
 };
 
-export async function calculateSaberReward(connection: Connection, wallet: any, mintCollKey: PublicKey) {
+export async function calculateSaberReward(
+  connection: Connection,
+  wallet: any,
+  mintCollKey: PublicKey,
+  cacheData: { quarry; miner } | null
+): Promise<[number, any]> {
   try {
     const program = getProgramInstance(connection, wallet);
 
@@ -371,33 +376,37 @@ export async function calculateSaberReward(connection: Connection, wallet: any, 
     const sdk: QuarrySDK = QuarrySDK.load({
       provider: program.provider as any,
     });
-    const rewarder = await sdk.mine.loadRewarderWrapper(SBR_REWARDER);
 
-    const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
+    if (!cacheData) {
+      const rewarder = await sdk.mine.loadRewarderWrapper(SBR_REWARDER);
 
-    const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
-    const quarry = await rewarder.getQuarry(poolMintToken);
+      const collMintInfo = await serumCmn.getMintInfo(program.provider, mintCollKey);
 
-    const miner = await quarry.getMiner(vaultKey);
-    if (miner) {
-      const payroll = quarry.payroll;
+      const poolMintToken = SToken.fromMint(mintCollKey, collMintInfo.decimals);
 
-      const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
+      const quarry = await rewarder.getQuarry(poolMintToken);
 
-      const expectedWagesEarned = (
-        await payroll.calculateRewardsEarned(
-          currentTimeStamp,
-          miner.balance,
-          miner.rewardsPerTokenPaid,
-          miner.rewardsEarned
-        )
-      ).toNumber();
-      return parseFloat(new TokenAmount(expectedWagesEarned, SABER_IOU_MINT_DECIMALS).fixed());
-    } else {
-      return 0;
+      const miner = await quarry.getMiner(vaultKey);
+      cacheData = { quarry, miner };
     }
+
+    const { quarry, miner } = cacheData;
+
+    const payroll = quarry.payroll;
+
+    const currentTimeStamp = new anchor.BN(Math.ceil(new Date().getTime() / 1000));
+
+    const expectedWagesEarned = (
+      await payroll.calculateRewardsEarned(
+        currentTimeStamp,
+        miner.balance,
+        miner.rewardsPerTokenPaid,
+        miner.rewardsEarned
+      )
+    ).toNumber();
+    return [parseFloat(new TokenAmount(expectedWagesEarned, SABER_IOU_MINT_DECIMALS).fixed()), cacheData];
   } catch (e) {
-    // console.log(e);
-    return 0;
+    console.log(e);
+    return [0, null];
   }
 }

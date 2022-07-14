@@ -585,16 +585,18 @@ export async function calculateRewardByPlatform(
   connection: Connection,
   wallet: any,
   mintCollKey: string | PublicKey,
-  platformType: number
-) {
+  platformType: number,
+  cacheData: any = null
+): Promise<[number, any]> {
   let reward = 0;
+  let newData = null;
   if (platformType === PLATFORM_IDS.SABER) {
-    reward = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey));
+    [reward, newData] = await calculateSaberReward(connection, wallet, new PublicKey(mintCollKey), cacheData);
   } else if (platformType === PLATFORM_IDS.RAYDIUM) {
     reward = await calculateRaydiumReward(connection, wallet, new PublicKey(mintCollKey));
   }
 
-  return reward;
+  return [reward, newData];
 }
 
 export async function getFarmInfoByPlatform(
