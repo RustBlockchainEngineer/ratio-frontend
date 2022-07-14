@@ -15,23 +15,23 @@ export interface Rpc {
 
 const ENDPOINTS = [
   {
-    name: 'Project Serum RPC' as ENV,
-    url: 'https://solana-api.projectserum.com',
-    weight: 100,
-  },
-  {
-    name: 'Figment RPC' as ENV,
+    name: 'Figment RPC',
     url: 'https://solana--mainnet.datahub.figment.io/apikey/45406ccdf5b28663e64c83b6806906d7',
     weight: 100,
   },
   {
-    name: 'Project Serum RPC' as ENV,
+    name: 'Project Serum RPC',
+    url: 'https://solana-api.projectserum.com',
+    weight: 100,
+  },
+  {
+    name: 'Project Serum RPC',
     url: 'https://solana-api.tt-prod.net',
     weight: 100,
   },
   {
-    name: 'StableSwap RPC' as ENV,
-    url: 'https://stableswap.rpcpool.com',
+    name: 'Mainnet Beta',
+    url: 'https://api.mainnet-beta.solana.com',
     weight: 100,
   },
 ];
