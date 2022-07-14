@@ -65,7 +65,7 @@ const Header = (headerProps: HeaderProps) => {
     if (connected) {
       return (
         <div
-          className="header__connected"
+          className="header__connected w-48"
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           onClick={onClickDisconnect}

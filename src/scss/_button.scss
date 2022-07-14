@@ -5,26 +5,26 @@
   color: white;
   &:disabled {
     cursor: default;
-    opacity: 0.8;
+    opacity: 0.8 !important;
   }
   &:focus {
     background-color: transparent;
   }
   &--blue {
-    background-image: url('../assets/images/btn-bg.svg');
+    background-image: url('../assets/images/btn-bg.svg') !important;
     // background: transparent linear-gradient(90deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
-    opacity: 1;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
+    opacity: 1 !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: 50% 50% !important;
     &:hover {
-      opacity: 0.8;
+      opacity: 0.8 !important;
     }
     &:focus {
-      background-image: url('../assets/images/btn-bg.svg');
+      background-image: url('../assets/images/btn-bg.svg') !important;
       // background: transparent linear-gradient(90deg, #ff69ce 0%, #bc5cf7 100%) 0% 0% no-repeat padding-box;
-      background-size: cover;
-      background-repeat: no-repeat;
+      background-size: cover !important;
+      background-repeat: no-repeat !important;
     }
   }
 
@@ -58,7 +58,7 @@
   }
 
   &--disabled {
-    background: rgba(#4c646f, 0.5);
+    background: rgba(#4c646f, 0.5) !important;
     color: #4c646f !important;
     border: none !important;
     &:focus {
@@ -68,7 +68,7 @@
   }
 
   &:disabled {
-    background: rgba(#4c646f, 0.5);
+    background: rgba(#4c646f, 0.5) !important;
     color: #4c646f !important;
     border: none !important;
     &:focus {
