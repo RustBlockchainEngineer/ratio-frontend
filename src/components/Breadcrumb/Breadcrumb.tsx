@@ -19,7 +19,6 @@ const Breadcrumb = ({ vaultData, availableVaults }: any) => {
 
   const isVaultActive = useIsActiveUserVault(vaultData?.mint || '');
 
-  console.log(availableVaults);
   useEffect(() => {
     const p = availableVaults.map((item: any) => {
       return { label: item.title, icon: item.icon, value: item.mint };
