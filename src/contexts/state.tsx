@@ -522,11 +522,13 @@ export function RFStateProvider({ children = undefined as any }) {
   }, []);
 
   useEffect(() => {
-    console.log('Updated is toggled');
-    actionList.push(UPDATE_ALL);
-    updateRFState();
+    if (connection) {
+      console.log('Updated is toggled');
+      actionList.push(UPDATE_ALL);
+      updateRFState();
+    }
     return () => {};
-  }, [toogleUpdateState]);
+  }, [toogleUpdateState, connection]);
 
   useEffect(() => {
     if (!loadingState) {
