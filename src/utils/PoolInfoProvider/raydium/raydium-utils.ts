@@ -24,6 +24,7 @@ import { getATAKey, getPoolPDA, getVaultPDA } from '../../ratio-pda';
 import { RAYDIUM_FARM_PROGRAM_ID, RAYDIUM_FARM_VERSION } from '../../../constants/ids';
 import { RAYDIUM_FARMS } from './raydium-farms';
 import { FARM_LEDGER_LAYOUT_V5_2, REAL_FARM_STATE_LAYOUT_V5 } from './raydium_layout';
+import BigNumber from 'bignumber.js';
 
 export const RAY_MINT_DECIMALS = 6;
 
@@ -108,7 +109,7 @@ export const getRaydiumFarmInfo = async (connection: Connection, mintCollKey: Pu
   }
   const parsedData = farmLayout.decode(farmInfo?.data);
   return {
-    publicKey: farmKey,
+    publicKey: new PublicKey(farmKey),
     parsedData,
   };
 };
@@ -303,12 +304,12 @@ export async function calculateRaydiumReward(userConnection: Connection, userWal
 
   //   const currentSlot = new BN(Math.round(Date.now() / 1000));
   //   const lastSlot = raydiumFarmInfo.parsedData.lastSlot;
-  const perShareReward = raydiumFarmInfo.parsedData.perShareRewardA;
+  const perShareReward = new BigNumber(raydiumFarmInfo.parsedData.perShareRewardA.toString());
   //   const perSlotReward = raydiumFarmInfo.parsedData.perSlotRewardA;
-  const ledgerDebt = ledgerInfo.parsedData.rewardDebts[0];
-  const deposited = ledgerInfo.parsedData.deposited;
-
-  const pendingRewards = deposited.mul(perShareReward).sub(ledgerDebt);
+  const ledgerDebt = new BigNumber(ledgerInfo.parsedData.rewardDebts[0].toString());
+  const deposited = new BigNumber(ledgerInfo.parsedData.deposited.toString());
+  const pendingRewards = deposited.multipliedBy(perShareReward).dividedBy(new BigNumber(1e15)).minus(ledgerDebt);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const uiPendingRewards = pendingRewards.toNumber() / 10 ** RAY_MINT_DECIMALS;
   return uiPendingRewards;
 }

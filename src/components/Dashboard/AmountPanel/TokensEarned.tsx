@@ -99,7 +99,7 @@ const TokensEarned = ({ data }: any) => {
   };
 
   const isSinglePool = () => {
-    return data?.platform?.symbol === 'Saber';
+    return data?.platform?.symbol === 'Saber' || data?.platform?.symbol === 'RAYDIUM';
   };
 
   return (
